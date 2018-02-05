@@ -1,0 +1,226 @@
+#
+# This is a Shiny web application. You can run the application by clicking
+# the 'Run App' button above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
+
+
+require(shiny)
+require(dropR)
+testfun<-function(x) {x+1}
+make.sigma<-function(cor,ntests) {
+  sigma<-matrix(rep(cor,ntests*ntests),nrow=ntests,ncol=ntests)
+  diag(sigma)<-1
+  return(sigma)
+}
+make.mdes.vec<-function(MDES,ntests) {c(rep(MDES,ntests))}
+est.power.mult<-function(MDES,M,meanprobT,alpha,J,n.j,numcovar.1=0,numcovar.2=0,R2.1,R2.2,ICC,omega,sigma,mod.type,tnum=10000,snum=1000,ncl=2) {
+  #snum is number of samples for WY
+  #tnum is number of test statistics (samples) for all procedures other than WY
+  #tnum is number of permutations for WY
+  
+  numfalse<-sum(1*MDES>0)
+  
+  require(MASS)
+  require(mvtnorm)
+  require(multtest)
+  require(doParallel)
+  
+  # for rawp and BF
+  
+  P1mP <- meanprobT*(1-meanprobT)
+  
+  if (mod.type=="fixed") {
+    numcovar.1 <- numcovar.1 + M
+    df <- J*n.j - J - numcovar.1 - 1
+    shift.beta <- MDES *  sqrt(P1mP*J*n.j)/sqrt(1-R2.1)
+  }
+  
+  if (mod.type=="random") {
+    df <- J - numcovar.2 -1 
+    shift.beta <- MDES * sqrt(P1mP*J*n.j/ (ICC*omega*(1-R2.2)*P1mP*n.j+(1-ICC)*(1-R2.1)) )  
+  }
+  
+  shift.beta.mat<-t(matrix(rep(shift.beta,tnum),M,tnum)) # repeating shift.beta on every row
+  
+  # critical values for no adjustment and BF adjustment
+  crit.alpha <- qt(p=(1-alpha/2),df=df)  
+  crit.alphaxM <- qt(p=(1-alpha/M/2),df=df)  
+  crit.beta <- crit.alpha - shift.beta  
+  crit.betaxM <- crit.alphaxM - shift.beta  
+  
+  power.ind <- 1- pt(q=crit.beta,df=df) 
+  power.min.nosim <- 1-pmvt(lower=rep(-Inf,M),upper=crit.beta,delta=rep(0,M),sigma=sigma,df=df)
+  power.ind.BF <- 1- pt(q=crit.betaxM,df=df) 
+  power.min.nosim.BF <- 1-pmvt(lower=rep(-Inf,M),upper=crit.betaxM,delta=rep(0,M),sigma=sigma,df=df)
+  
+  # for remaining procedures, generate test statistics under null and alternative
+  
+  Zs.H0<-rmvt(tnum, sigma = sigma, df = df, delta = rep(0,M),type = c("shifted", "Kshirsagar")) 
+  pvals.H0<-2*pt(-abs(Zs.H0),df=df)
+  Zs.H1 <- Zs.H0 + shift.beta.mat
+  pvals.H1<-2*pt(-abs(Zs.H1),df=df)    
+  abs.Zs.H0 <- abs(Zs.H0)
+  abs.Zs.H1 <- abs(Zs.H1)
+  
+  # alpha critical value for single-step WY (and subsequent tests for approximation of step-down WY)
+  crit.alpha.SS<-numeric(M)
+  abs.Zs.H0.red<-abs.Zs.H0
+  for (m in 1:M) {
+    maxZ.H0<-apply(as.matrix(abs.Zs.H0.red),1,max)
+    crit.alpha.SS[m] <-quantile(maxZ.H0,prob=1-alpha) # we don't divide alpha by 2 because using absolute value
+    if (m<M) abs.Zs.H0.red<-abs.Zs.H0.red[,-1]
+  }
+  
+  # BH & Holm
+  BH.HO<-apply(pvals.H1,1,mt.rawp2adjp,proc=c("BH","Holm"),alpha=0.05)
+  grab.BH<-function(...) {return(...$adjp[order(...$index),"BH"])}
+  grab.HO<-function(...) {return(...$adjp[order(...$index),"Holm"])}
+  adjp.BH<-do.call(rbind,lapply(BH.HO,grab.BH))
+  adjp.HO<-do.call(rbind,lapply(BH.HO,grab.HO))
+  
+  # step-down WY 
+  r.m.r.all<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
+  adjp.WY <- matrix(NA,snum,M)
+  #snum is the number of samples for WY 
+  #tnum is the number of test statistics (samples) for all other procs
+  #for WY tnum is the number of permutations
+  
+  cl <- makeCluster(ncl)
+  registerDoParallel(cl)
+  doWY <- foreach(s=1:snum, .combine=rbind) %dopar% {
+    
+    comp.rawt <- function(nulltrow, rawt, r.m.r) {
+      M<-length(nulltrow)
+      maxt <- rep(NA, M)
+      nullt.oo<-abs(nulltrow)[r.m.r]
+      rawt.oo<-abs(rawt)[r.m.r]
+      maxt[1] <- max(nullt.oo) > rawt.oo[1]
+      for (h in 2:M) {maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]}
+      return(as.integer(maxt))
+    }
+    
+    ind.B<-t(apply(Zs.H0, 1, comp.rawt, rawt=Zs.H1[s,], r.m.r=r.m.r.all[s,]))
+    pi.p.m <- colMeans(ind.B)
+    adjp.minp <- numeric(M)
+    adjp.minp[1] <- pi.p.m[1]
+    for (h in 2:M) {adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])}
+    oo<-order(r.m.r.all[s,])
+    adjp.WY[s,] <- adjp.minp[oo]
+  }
+  stopCluster(cl)
+  
+  adjp.WY<-doWY  
+  reject.WY<-as.matrix(1*(adjp.WY<alpha))
+  reject.BH<-as.matrix(1*(adjp.BH<alpha))
+  reject.HO<-as.matrix(1*(adjp.HO<alpha))
+  
+  # for minimum powers for all procs, use empirical distributions of test statistics when null false
+  gt.alpha     <- as.matrix(1*(Zs.H1[,MDES>0]>crit.alpha))
+  gt.alphaxM   <- as.matrix(1*(Zs.H1[,MDES>0]>crit.alphaxM))
+  gt.alpha.SS  <- as.matrix(1*(Zs.H1>crit.alpha.SS[1]))
+  gt.alpha.WYap<- as.matrix(1*(Zs.H1[,MDES>0]>crit.alpha.SS))
+  gt.alpha.all     <- apply(gt.alpha,1,sum)
+  gt.alphaxM.all   <- apply(gt.alphaxM,1,sum)
+  gt.alpha.SS.all  <- apply(gt.alpha.SS,1,sum)
+  gt.alpha.WYap.all<- apply(gt.alpha.WYap,1,sum)
+  gt.alpha.WY.all  <- apply(as.matrix(reject.WY[,MDES>0]),1,sum)
+  gt.alpha.BH.all  <- apply(as.matrix(reject.BH[,MDES>0]),1,sum)
+  gt.alpha.HO.all  <- apply(as.matrix(reject.HO[,MDES>0]),1,sum)
+  
+  power.ind.WYap <- mean(Zs.H1[,1] > crit.alpha.SS) 
+  for (m in 1:M) { power.ind.WYap[m]<-mean(Zs.H1[,m]>crit.alpha.SS[m]) } # power.ind.SS[1] is avg indiv power for WY SS, all others used to approx WY SD
+  # indiv power for WY, BH, and HO is mean of columns of dummies of whether adjusted pvalues were less than alpha
+  power.ind.SS <- apply(gt.alpha.SS,2,mean)
+  power.ind.WY <- apply(reject.WY,2,mean)
+  power.ind.BH <- apply(reject.BH,2,mean)
+  power.ind.HO <- apply(reject.HO,2,mean)
+  
+  # min powers for all procs (including complete power when m=M)
+  power.min.rawp<-power.min.BF<-power.min.SS<-power.min.WY<-power.min.WYap<-power.min.BH<-power.min.HO<-numeric(M)
+  cnt<-0
+  for (m in 1:M) { #count non zero MDES entries
+    power.min.rawp[m]  <- mean(gt.alpha.all>cnt)
+    power.min.BF[m]    <- mean(gt.alphaxM.all>cnt)
+    power.min.SS[m]    <- mean(gt.alpha.SS.all>cnt)
+    power.min.WYap[m]  <- mean(gt.alpha.WYap.all>cnt)
+    power.min.WY[m]    <- mean(gt.alpha.WY.all>cnt)
+    power.min.BH[m]    <- mean(gt.alpha.BH.all>cnt)
+    power.min.HO[m]    <- mean(gt.alpha.HO.all>cnt)
+    cnt<-cnt+1
+  }
+  
+  power.cmp<-power.min.rawp[M] # no adjustments for complete power
+  
+  all.power.rawp <-c(power.ind   ,power.min.rawp[-M],power.cmp)
+  all.power.BF   <-c(power.ind.BF,power.min.BF[-M],power.cmp)
+  all.power.HO   <-c(power.ind.HO,power.min.HO[-M],power.cmp)
+  all.power.SS   <-c(power.ind.SS,power.min.SS[-M],power.cmp)
+  all.power.WYap <-c(power.ind.WYap,power.min.WYap[-M],power.cmp) 
+  all.power.WY   <-c(power.ind.WY,power.min.WY[-M],power.cmp)
+  all.power.BH   <-c(power.ind.BH,power.min.BH[-M],power.cmp)
+  
+  all.power<-rbind(all.power.rawp,all.power.BF,all.power.HO,all.power.BH,all.power.SS,all.power.WYap,all.power.WY)
+  mean.ind.eff <- apply(as.matrix(all.power[,1:M][,MDES>0]),1,mean)
+  all.power<-cbind(mean.ind.eff,all.power)
+  colnames(all.power)<-c("avg indiv",paste0("indiv",1:M),rep("min",M-1),"complete")
+  rownames(all.power)<-c("rawp","BF","HO","BH","SS","WYap","WY")
+  return(all.power)
+}
+
+# Define UI for application that draws a histogram
+ui <- shinyUI(fluidPage(
+   
+   # Application title
+   titlePanel("Statistical Power When Adjusting for Multiple Hypothesis Tests"),
+
+   # Sidebar  
+   
+   sidebarLayout(
+     sidebarPanel(
+       selectInput("ntests", "Number of tests", 
+                   choices = list("2" = 2, "3" = 3, "4" = 4,"5" = 5, "6" = 6)),
+       selectInput("MTP", "What MTP do you plan to use?", 
+                   choices = list("Bonferroni" = "BF", "Holm" = "HO", "Westfall-Young" = "WY","Benjamini-Hochberg" = "BH")),
+       numericInput("mdes", "What is the minimum detectable effect size?",value=0.15,min=0.05,max=NA,step=0.05),
+       numericInput("cor", "What is the correlation between the test statistics?",value=0.2,min=0,max=1,step=0.1),
+       numericInput("meanprobT", "What percent of sample were assigned to treatment?",value=0.5,min=0.1,max=0.9,step=0.1),
+       numericInput("nblocks", "How many blocks?",value=20,min=1,max=NA,step=10),     
+       numericInput("nindiv", "How many individuals per block?",value=20,min=5,max=NA,step=5),
+       numericInput("R2", "What is the explanatory power of the baseline covariates (R2)?",value=0.2,min=0,max=1,step=0.05)
+     ),
+     
+     # Show a plot of the generated distribution
+     mainPanel(
+       textOutput("testout")
+       
+     )
+   )
+))
+
+# Define server logic required to draw a histogram
+server <- shinyServer(function(input, output) {
+
+  comp.pow<-function() {
+    mdes.vec<-make.mdes.vec(as.numeric(input$cor),as.numeric(input$ntests)) 
+    sigma<-make.sigma(as.numeric(input$cor),as.numeric(input$ntests))    
+    pow<-est.power.mult(MDES=mdes.vec,M=as.numeric(input$ntests),meanprobT=0.5,alpha=0.05,
+                        J=as.numeric(input$nindiv),n.j=as.numeric(input$nblocks),numcovar.1=as.numeric(input$nblocks)+1,numcovar.2=0,
+                      R2.1=as.numeric(input$R2),R2.2=0,ICC=0,omega=0,sigma=sigma,mod.type="fixed",tnum=20000,snum=3,ncl=2)
+    return(pow)
+  }
+  output$testout <- 
+    renderPrint({
+     comp.pow()
+    })
+      
+})
+
+# Run the application 
+options(shiny.trace=TRUE)
+shinyApp(ui = ui, server = server)
+
+
