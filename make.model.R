@@ -1,0 +1,49 @@
+###########################################################################
+#  Function: make.model	Inputs:dat,dummies,funct	                        #
+#		a reshaped dataset (dat)-->data for one m 			                      #
+#		dummies, string of dummy names in formula, if function needs          #
+#		funct, the model type to use as string				                        #
+#         fixfastLm, fixlmer, or random                                   #
+#	Outputs: model object of type function					                        #
+#	Notes: dummies can be output of make.dummies $dnames			              #
+###########################################################################
+
+if (funct == "fixfastLm") {
+  make.model<-function(dat, dummies, funct="fixfastLm") {
+#     form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+", dummies))
+#     mod <- fastLm(form, data=dat)
+    mmat <- cbind(dat[,c("Treat.ij", "Covar.j", "Covar.ij")], 
+                  dat[,grep("block[0-9]", colnames(dat))])
+    mod <- fastLm(mmat, dat[,"D"])
+    return(mod)
+  }
+} else if (funct == "fixlmer") {
+  make.model<-function(dat, dummies, funct="fixlmer") {
+    form <- as.formula("D~Treat.ij+Covar.j+Covar.ij+(1|block.id)")
+    mod <- lmer(form, data=dat)
+    return(mod)
+  }
+} else if (funct == "random") {
+  make.model<-function(dat, dummies, funct="random") {
+    form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+(Treat.ij|block.id)"))
+    mod <- lmer(form, data=dat)
+    return(mod)
+  }
+} else {
+  print("String entered as funct did not match any of fixfastLm, fixlmer, or random and will not run")
+  make.model <- function(dat, dummies, funct){
+    if (funct == 'fixfastLm') {
+      form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+", dummies))
+      mod <- fastLm(form, data=dat)
+    } else {
+      if (funct == 'fixlmer') { 
+        form <- as.formula("D~Treat.ij+Covar.j+Covar.ij+(1|block.id)")
+      }
+      else if (funct == 'random') {
+        form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+(Treat.ij|block.id)"))   
+      }
+      suppressMessages(mod <- lmer(form, data=dat))
+    }
+    return(mod)
+  }
+}
