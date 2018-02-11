@@ -6,21 +6,29 @@ output: html_notebook
 This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
 
 ```{r}
-require(RcppEigen)
-require(snow)
-require(lme4)
+rm(list=ls())
+```
 
-#source("http://bioconductor.org/biocLite.R")
+```{r}
+library(RcppEigen)
+library(snow)
+library(lme4)
+
+#require(RcppEigen)
+#require(snow)
+#require(lme4)
+
 source("http://bioconductor.org/biocLite.R")
 biocLite("multtest")
-require(multtest)
+#require(multtest)
+library(multtest)
 
-source("R/gen.blocked.data.R")
-source("R/adjust.WY.R")
-source("R/functions.R")
+source("gen.blocked.data.R")
+source("adjust.WY.R")
+source("functions.R")
 
 funct<-"fixfastLm"; mod.type<-"fixed"
-source("R/make.model.R")
+source("make.model.R")
 
 rho<-0.8
 
@@ -30,7 +38,8 @@ procs<-c("Bonferroni", "BH", "Holm", "WY")
 M<-6
 MDES<-rep(0.125, M)
 p.j.range<-c(0.5,0.5)
-S=2000
+#S=2000
+S=3
 B=10000
 J=20;n.j=100
 theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
