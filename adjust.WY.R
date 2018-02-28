@@ -71,7 +71,7 @@ adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, clusterby, funct, maxT)
 
   
   cl <- makeSOCKcluster(rep("localhost", ncl))
-  clusterExport(cl, varlist=c("perm.regs", "data", "clustered", "clusterby", "funct", "make.dummies", "make.model", "get.tstat", "get.pval", "p.j", "resamp.by.block", "fastLm", "lmer"), envir=environment())
+  clusterExport(cl, list("perm.regs", "data", "clustered", "clusterby", "funct", "make.dummies", "make.model", "get.tstat", "get.pval", "p.j", "resamp.by.block", "fastLm", "lmer"), envir=environment())
   
   # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
   nullpt <- parApply(cl,permT,2,perm.regs,data=data,clusterby=clusterby,funct=funct,maxT=maxT,n.j=n.j,J=J)   # revised KP
