@@ -1,7 +1,8 @@
 ---
-title: "Validation Template for Design X"
-output: html_notebook
-
+title: "Verification for 1-Level RCT"
+author: "Deni Chen"
+date: "3/7/2018"
+output: html_document
 ---
 
 # Sourcing all needed code 

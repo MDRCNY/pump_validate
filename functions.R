@@ -179,7 +179,7 @@ makelist.samp <-function(M, samp) {
 #	Notes: 	                              		                              #
 ###########################################################################
 
-est.power <- function(procs, M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,theta,ICC,alpha, Gamma.00,sig.sq, p.j.range, R2.1, R2.2, check, omega, funct, S, B, maxT) {
+est.power <- function(procs, M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,theta,ICC,alpha, Gamma.00,sig.sq, p.j.range, R2.1, R2.2, check, omega, funct, S, ncl, B, maxT) {
   if (M==1) {
     print("Multiple testing corrections are not needed when M=1")
     procs <- NULL

@@ -36,8 +36,8 @@ procs<-c("Bonferroni", "BH", "Holm", "WY")
 M<-6
 MDES<-rep(0.125, M)
 p.j.range<-c(0.5,0.5)
-#S=2000
-S=3
+S=2000
+#S=3
 B=10000
 J=20;n.j=100
 theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
@@ -54,7 +54,7 @@ simname<-paste0("M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho
 simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
                   rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
                   alpha=alpha, Gamma.00=Gamma.00, sig.sq=sig.sq, p.j.range=p.j.range, 
-                  R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S, B=B,maxT=FALSE)
+                  R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S, ncl=ncl, B=B,maxT=FALSE)
 #save(simpwr, file=simname)
 
 
