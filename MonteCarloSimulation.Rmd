@@ -6,6 +6,8 @@ output: html_notebook
 This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
 
 ```{r}
+#source("libraries.install.R")
+
 library(RcppEigen)
 library(snow)
 library(lme4)

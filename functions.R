@@ -4,8 +4,8 @@
 #	Contents: 	make.dummies; make.model; get.pval; get.rawp		            #
 #							get.output, get.adjp, get.rejects					                  #
 ###########################################################################
-dir <- getwd()
-source(paste0(dir,"/gen.blocked.data.r"))
+#dir <- getwd()
+#source(paste0(dir,"/gen.blocked.data.r"))
 ###########################################################################
 #	Function: make.dummies		Inputs:	dat, clusterby, n.j, J	              #
 #		a dataset (dat), 								                                      #
