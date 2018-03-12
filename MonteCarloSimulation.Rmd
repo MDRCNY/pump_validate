@@ -36,8 +36,8 @@ procs<-c("Bonferroni", "BH", "Holm", "WY")
 M<-6
 MDES<-rep(0.125, M)
 p.j.range<-c(0.5,0.5)
-S=2000
-#S=3
+#S=2000
+S=3
 B=10000
 J=20;n.j=100
 theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
