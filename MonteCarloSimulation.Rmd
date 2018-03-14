@@ -7,10 +7,12 @@ output: html_notebook
 
 This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
 
+Clear everything from memory
 ```{r clear_memory}
 rm(list=ls())
 ```
 
+Set up: install and load libraries and source functions
 ```{r source}
 #source("libraries.install.R")
 
@@ -53,6 +55,8 @@ Specifications:
 * rho.1_lev2  = MxM matrix of correlations for Level 2 effects        
 * DDMDES      = desired minimum detectable effect size, number 
 
+
+Specify parameters
 ```{r specifications}
 funct<-"fixfastLm"; mod.type<-"fixed"
 
@@ -81,6 +85,7 @@ rho.1_lev2<-matrix(0.5,M,M); diag(rho.1_lev2)<-1
 simname<-paste0("M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B, "_R2.1", R2.1[1],"_R2.2",R2.2[1], mod.type, "_sim.Rda")
 ```
 
+Simulate data
 ```{r simulate_data}
 simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
                   rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
