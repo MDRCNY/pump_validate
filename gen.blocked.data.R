@@ -31,6 +31,13 @@
 #           X.ij, and X.j for each M, block.id, Treat.ij                  #
 #	Notes:  Some inputs must be length M, fixed models have ICC, R2.2 = 0,  #
 #           omega=NULL, some inputs do not change but are still specified #
+
+# D0.ij = potential outcomes under no treatment within each site
+# Treat.ij = assign to treatment or control group 
+
+
+
+
 ###########################################################################
 
 
