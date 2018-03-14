@@ -1,32 +1,65 @@
 #' ---
 #' title: "Monte Carlo Simulation Code"
+#' author: "Kristin Porter and Deni Chen"
+#' date: "`r format(Sys.time(), '%B %d, %Y')`"
 #' output: html_notebook
 #' ---
 #' 
 #' This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
 #' 
-## ------------------------------------------------------------------------
+#' 
+#' Clear everything from memory
+## ----clear_memory--------------------------------------------------------
+rm(list=ls())
+
+#' 
+#' Set up: install and load libraries and source functions
+## ----source--------------------------------------------------------------
 #source("libraries.install.R")
 
 library(RcppEigen)
 library(snow)
 library(lme4)
 
-#require(RcppEigen)
-#require(snow)
-#require(lme4)
-
 source("http://bioconductor.org/biocLite.R")
 biocLite("multtest")
-#require(multtest)
 library(multtest)
 
 source("gen.blocked.data.R")
 source("adjust.WY.R")
 source("functions.R")
-
-funct<-"fixfastLm"; mod.type<-"fixed"
 source("make.model.R")
+
+#' 
+#' 
+#' Specify parameters
+#' * rho         = Spearman's correlation determines the strength and direction of the monotonic relationship between two variables rather than the                 strength and direction of the linear relationship between your two variables (Pearson's correlation)    
+#' * ncl         = number of clusters set at 24 because that is the max cpus on datalab
+#' * procs       = a vector of strings for adjustment procedures
+#' * M           = number of tests/domains/outcomes
+#' * MDES        = minimum detectable effect size, vector length M 
+#' * p.j.range   = vector of minimum and maximum probabilities of being assigned to treatment, across all sites
+#' * S           = number of samples for power calc
+#' * B           = number of permutations for WY
+#' * J           = number of blocks
+#' * n.j         = number of observations per block 
+#' * theta       = MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2 effects 
+#' * omega       = effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M
+#' * Gamma.00    = grand mean outcome w/o treat, held 0, vector length M 
+#' * sig.sq      = vector length M, held at 1 for now
+#' * alpha       = the significance level, 0.05 usually 
+#' * ICC         = a number, intraclass correlation; 0 if fixed model  
+#' * R2.1        = R squared for mth level 1 outcome by mth level 1 covar          
+#' * R2.2        = R squared for mth level 2 outcome by mth level 1 covar          
+#' * rho.0_lev1  = MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment                   
+#' * rho.0_lev2  = MxM matrix of correlations for Level 2 residuals in models of outcomes under no treatment                   
+#' * rho.1_lev2  = MxM matrix of correlations for Level 2 effects        
+#' * DDMDES      = desired minimum detectable effect size, number 
+#' 
+#' 
+#' 
+## ----specifications------------------------------------------------------
+funct<-"fixfastLm"; mod.type<-"fixed"
 
 rho<-0.8
 
@@ -36,8 +69,8 @@ procs<-c("Bonferroni", "BH", "Holm", "WY")
 M<-6
 MDES<-rep(0.125, M)
 p.j.range<-c(0.5,0.5)
-S=2000
-#S=3
+#S=2000
+S=3
 B=10000
 J=20;n.j=100
 theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
@@ -49,13 +82,18 @@ rho.0_lev2<-matrix(0.5,M,M); diag(rho.0_lev2)<-1
 rho.1_lev2<-matrix(0.5,M,M); diag(rho.1_lev2)<-1
 
 
-
+#pastes together specifications into a file name
 simname<-paste0("M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B, "_R2.1", R2.1[1],"_R2.2",R2.2[1], mod.type, "_sim.Rda")
+
+#' 
+#' Simulate data
+## ----simulate_data-------------------------------------------------------
 simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
                   rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
                   alpha=alpha, Gamma.00=Gamma.00, sig.sq=sig.sq, p.j.range=p.j.range, 
-                  R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S, ncl=ncl, B=B,maxT=FALSE)
+                  R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S, ncl=ncl, B=B,maxT=FALSE)     
+
+#what is maxT and check?
+
 #save(simpwr, file=simname)
-
-
 

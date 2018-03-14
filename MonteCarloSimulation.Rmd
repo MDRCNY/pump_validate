@@ -32,7 +32,7 @@ source("make.model.R")
 ```
 
 
-Specifications:
+Specify parameters
 * rho         = Spearman's correlation determines the strength and direction of the monotonic relationship between two variables rather than the                 strength and direction of the linear relationship between your two variables (Pearson's correlation)    
 * ncl         = number of clusters set at 24 because that is the max cpus on datalab
 * procs       = a vector of strings for adjustment procedures
@@ -57,7 +57,7 @@ Specifications:
 * DDMDES      = desired minimum detectable effect size, number 
 
 
-Specify parameters
+
 ```{r specifications}
 funct<-"fixfastLm"; mod.type<-"fixed"
 
