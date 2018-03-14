@@ -136,17 +136,3 @@ source("powerFunctions.R")
 
 
 
-## QUESTIONS
-###   Do we use the code from the verification template for specification?
-###     if so, how do we loop through these parameters? Some of this code generates an error
-###   Are the specifications in chunk3 the same for MDES SS, and MC? Do we need to make new specifications for those chunks?
-###   Function to generate MDES is not finalized in powerFunctions - need to revise and input 
-###   Function to generate sample size is not created yet
-
-###  powerFunctions: are the functions in this RMD to be used for all designs? Or do we need to create a separate function (power, MDES, ss) for each design? Naming conventions for these functions
-
-###   MC code is sourced but the .R file needs to be edited-
-###     Take out the specifications in .R
-###     Are we using the same specifications from the power function in the MC function?
-
-
