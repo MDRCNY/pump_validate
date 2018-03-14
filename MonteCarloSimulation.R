@@ -1,11 +1,11 @@
----
-title: "Monte Carlo Simulation Code"
-output: html_notebook
----
-
-This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
-
-```{r}
+#' ---
+#' title: "Monte Carlo Simulation Code"
+#' output: html_notebook
+#' ---
+#' 
+#' This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
+#' 
+## ------------------------------------------------------------------------
 #source("libraries.install.R")
 
 library(RcppEigen)
@@ -36,8 +36,8 @@ procs<-c("Bonferroni", "BH", "Holm", "WY")
 M<-6
 MDES<-rep(0.125, M)
 p.j.range<-c(0.5,0.5)
-#S=2000
-S=3
+S=2000
+#S=3
 B=10000
 J=20;n.j=100
 theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
@@ -58,4 +58,4 @@ simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_l
 #save(simpwr, file=simname)
 
 
-```
+
