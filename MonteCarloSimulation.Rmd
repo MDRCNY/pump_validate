@@ -7,6 +7,7 @@ output: html_notebook
 
 This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
 
+
 Clear everything from memory
 ```{r clear_memory}
 rm(list=ls())
@@ -62,7 +63,7 @@ funct<-"fixfastLm"; mod.type<-"fixed"
 
 rho<-0.8
 
-ncl<-8
+ncl<-24
 
 procs<-c("Bonferroni", "BH", "Holm", "WY") 
 M<-6
@@ -90,10 +91,9 @@ Simulate data
 simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
                   rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
                   alpha=alpha, Gamma.00=Gamma.00, sig.sq=sig.sq, p.j.range=p.j.range, 
-                  R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S, B=B,maxT=FALSE)
+                  R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S, ncl=ncl, B=B,maxT=FALSE)     
 
 #what is maxT and check?
-
 
 #save(simpwr, file=simname)
 ```
