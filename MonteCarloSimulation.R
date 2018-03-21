@@ -20,6 +20,7 @@ rm(list=ls())
 library(RcppEigen)
 library(snow)
 library(lme4)
+library(rmarkdown)
 
 source("http://bioconductor.org/biocLite.R")
 biocLite("multtest")
@@ -97,3 +98,7 @@ simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_l
 
 #save(simpwr, file=simname)
 
+#' 
+#' Convert R Script to RMD
+## ----convert_to_RMD-------------------------------------------------------
+rmarkdown::render('MonteCarloSimulation.R')
