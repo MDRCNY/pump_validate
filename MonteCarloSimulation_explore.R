@@ -104,4 +104,4 @@ simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_l
 #' 
 #' Convert R Script to RMD
 ## ----convert_to_RMD-------------------------------------------------------
-rmarkdown::render('MonteCarloSimulation.R')
+#rmarkdown::render('MonteCarloSimulation.R')
