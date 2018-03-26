@@ -20,6 +20,7 @@ rm(list=ls())
 library(RcppEigen)
 library(snow)
 library(lme4)
+library(rmarkdown)
 
 source("http://bioconductor.org/biocLite.R")
 biocLite("multtest")
@@ -28,9 +29,6 @@ library(multtest)
 source("gen.blocked.data.R")
 source("adjust.WY.R")
 source("functions.R")
-
-#funct onject needs to be assigned before sourcing "make.model.R"
-funct<-"fixfastLm"; mod.type<-"fixed"
 source("make.model.R")
 
 #' 
@@ -62,12 +60,14 @@ source("make.model.R")
 #' 
 #' 
 ## ----specifications------------------------------------------------------
+funct<-"fixfastLm"; mod.type<-"fixed"
+
 rho<-0.8
 
 ncl<-24
 
 procs<-c("Bonferroni", "BH", "Holm", "WY") 
-M<-6
+M<-1
 MDES<-rep(0.125, M)
 p.j.range<-c(0.5,0.5)
 #S=2000
@@ -89,6 +89,9 @@ simname<-paste0("M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho
 #' 
 #' Simulate data
 ## ----simulate_data-------------------------------------------------------
+debugonce(est.power)
+debugonce(gen.blocked.data)
+
 simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
                   rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
                   alpha=alpha, Gamma.00=Gamma.00, sig.sq=sig.sq, p.j.range=p.j.range, 
@@ -97,15 +100,8 @@ simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_l
 #what is maxT and check?
 
 #save(simpwr, file=simname)
-<<<<<<< HEAD
 
 #' 
-#' 
-#' Make replica of this RMD into an R Script (.R file to be sourced into another pgm)
-## ----create_RMD----------------------------------------------------------
-library(knitr)
-
-purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
-
-=======
->>>>>>> ab7deb3c4aab61d04c6bbe3e7040f7308c182d8e
+#' Convert R Script to RMD
+## ----convert_to_RMD-------------------------------------------------------
+#rmarkdown::render('MonteCarloSimulation.R')

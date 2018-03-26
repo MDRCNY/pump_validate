@@ -166,12 +166,13 @@ makelist.samp <-function(M, samp) {
 
 
 ###########################################################################
-#	Function: est.power			Inputs: procs, funct, S, B, gen.blocked.data    #
-#		procs, a vector of strings for adjustment procedures		 	            #
-#		funct, a string "random", "fixfastLm", or "fixlmer"                   #
-#   S, number of samples for power calc                                   #
-#   B, number of permutations for WY                                      #
-#   all other inputs for gen.blocked.data                                 #
+#	Function: est.power			
+#   Inputs: procs, funct, S, B, gen.blocked.data                            #
+#		  procs, a vector of strings for adjustment procedures		 	            #
+#		  funct, a string "random", "fixfastLm", or "fixlmer"                   #
+#     S, number of samples for power calc                                   #
+#     B, number of permutations for WY                                      #
+#     all other inputs for gen.blocked.data                                 #
 #												                                                  #
 # Calls:  get.adjp, get.rejects, gen.blocked.data, makelist.samp,         #
 #         get.rawp                                                        #
@@ -180,6 +181,43 @@ makelist.samp <-function(M, samp) {
 ###########################################################################
 
 est.power <- function(procs, M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,theta,ICC,alpha, Gamma.00,sig.sq, p.j.range, R2.1, R2.2, check, omega, funct, S, ncl, B, maxT) {
+  # function that __________________________
+  #
+  # input: 
+  #   procs: a vector of strings for adjustment procedures
+  #   M: number of tests/domains/outcomes
+  #   DDMDES: desired minimum detectable effect size, number 
+  #   n.j: number of observations per block 
+  #   J: number of blocks
+  #   rho.0_lev1: MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment
+  #   rho.0_lev2: MxM matrix of correlations for Level 2 residuals in models of outcomes under no treatment
+  #   rho.1_lev2: MxM matrix of correlations for Level 2 effects        
+  #   theta: MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2 effects 
+  #   ICC: a number, intraclass correlation; 0 if fixed model 
+  #   alpha: the significance level, 0.05 usually 
+  #   Gamma.00: grand mean outcome w/o treat, held 0, vector length M
+  #   sig.sq: vector length M, held at 1 for now
+  #   p.j.range: vector of minimum and maximum probabilities of being assigned to treatment, across all sites
+  #   R2.1: R squared for mth level 1 outcome by mth level 1 covar  
+  #   R2.2: R squared for mth level 2 outcome by mth level 1 covar  
+  #   check: 
+  #   omega: effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M
+  #   funct: a string "random", "fixfastLm", or "fixlmer" 
+  #   S: number of samples for power calc      
+  #   ncl: number of clusters set at 24 because that is the max cpus on datalab
+  #   B: number of permutations for WY       
+  #   maxT: 
+  #   all other inputs for gen.blocked.data      
+  #
+  #
+  # calls: gen.blocked.data, makelist.samp, get.adjp, get.rejects, get.rawp
+  #
+  # output: matrix of power calculations
+  #
+  # NOTE:
+  
+  
+  
   if (M==1) {
     print("Multiple testing corrections are not needed when M=1")
     procs <- NULL
