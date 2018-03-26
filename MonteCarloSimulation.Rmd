@@ -28,6 +28,9 @@ library(multtest)
 source("gen.blocked.data.R")
 source("adjust.WY.R")
 source("functions.R")
+
+#funct onject needs to be assigned before sourcing "make.model.R"
+funct<-"fixfastLm"; mod.type<-"fixed"
 source("make.model.R")
 ```
 
@@ -59,8 +62,6 @@ Specify parameters
 
 
 ```{r specifications}
-funct<-"fixfastLm"; mod.type<-"fixed"
-
 rho<-0.8
 
 ncl<-24
@@ -96,4 +97,12 @@ simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_l
 #what is maxT and check?
 
 #save(simpwr, file=simname)
+```
+
+
+Make replica of this RMD into an R Script (.R file to be sourced into another pgm)
+```{r create_RMD}
+library(knitr)
+
+purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
 ```
