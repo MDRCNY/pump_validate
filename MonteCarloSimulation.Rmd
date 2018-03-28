@@ -64,7 +64,7 @@ Specify parameters
 ```{r specifications}
 rho<-0.8
 
-ncl<-8
+ncl<-1
 
 procs<-c("Bonferroni", "BH", "Holm", "WY") 
 M<-6
@@ -99,7 +99,6 @@ simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_l
 endingtime<-Sys.time()
 
 print(paste("Run with S=", S, " and B =", B, " with ncl=", ncl, " took ", endingtime-startingtime, " seconds. Ended at ", Sys.time()))
-
 
 
 #what is maxT and check?
