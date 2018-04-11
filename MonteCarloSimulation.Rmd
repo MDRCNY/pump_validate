@@ -67,6 +67,7 @@ rho<-0.8
 ncl<-8
 
 procs<-c("Bonferroni", "BH", "Holm", "WY") 
+design <- c("Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r", "Blocked_i1_3r", "Blocked_i1_4r")
 M<-6
 MDES<-rep(0.125, M)
 p.j.range<-c(0.5,0.5)
@@ -84,7 +85,8 @@ rho.1_lev2<-matrix(0.5,M,M); diag(rho.1_lev2)<-1
 
 
 #pastes together specifications into a file name
-simname<-paste0("M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B, "_R2.1", R2.1[1],"_R2.2",R2.2[1], mod.type, "_sim.Rda")
+simname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B, "_R2.1", R2.1[1],"_R2.2",R2.2[1], "_sim.Rda")
+
 ```
 
 Simulate data
