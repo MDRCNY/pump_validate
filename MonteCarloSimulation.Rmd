@@ -29,7 +29,7 @@ source("gen.blocked.data.R")
 source("adjust.WY.R")
 source("functions.R")
 
-#funct onject needs to be assigned before sourcing "make.model.R"
+#funct object needs to be assigned before sourcing "make.model.R"
 funct<-"fixfastLm"; mod.type<-"fixed"
 source("make.model.R")
 ```
@@ -64,7 +64,7 @@ Specify parameters
 ```{r specifications}
 rho<-0.8
 
-ncl<-24
+ncl<-8
 
 procs<-c("Bonferroni", "BH", "Holm", "WY") 
 M<-6
@@ -72,7 +72,7 @@ MDES<-rep(0.125, M)
 p.j.range<-c(0.5,0.5)
 #S=2000
 S=3
-B=10000
+B=100   #10000
 J=20;n.j=100
 theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
 Gamma.00<-rep(0,M);sig.sq<-rep(1,M); alpha<-0.05
@@ -89,10 +89,18 @@ simname<-paste0("M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho
 
 Simulate data
 ```{r simulate_data}
+startingtime<-Sys.time()
+
 simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
                   rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
                   alpha=alpha, Gamma.00=Gamma.00, sig.sq=sig.sq, p.j.range=p.j.range, 
                   R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S, ncl=ncl, B=B,maxT=FALSE)     
+
+endingtime<-Sys.time()
+
+print(paste("Run with S=", S, " and B =", B, " with ncl=", ncl, " took ", endingtime-startingtime, " seconds. Ended at ", Sys.time()))
+
+
 
 #what is maxT and check?
 
@@ -102,7 +110,6 @@ simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_l
 
 Make replica of this RMD into an R Script (.R file to be sourced into another pgm)
 ```{r create_RMD}
-library(knitr)
-
-purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
+#library(knitr)
+#purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
 ```

@@ -68,14 +68,17 @@ adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, clusterby, funct, maxT)
     permT[,b]<-as.vector(apply(cbind(n.j,p.j),1,resamp.by.block))
     summary(permT[,b])
   }
-
   
   cl <- makeSOCKcluster(rep("localhost", ncl))
   clusterExport(cl, list("perm.regs", "data", "clustered", "clusterby", "funct", "make.dummies", "make.model", "get.tstat", "get.pval", "p.j", "resamp.by.block", "fastLm", "lmer"), envir=environment())
   
+  #print these to see what is assigned
+  print(cl)
+  print(ncl)
+  
   # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
   nullpt <- parApply(cl,permT,2,perm.regs,data=data,clusterby=clusterby,funct=funct,maxT=maxT,n.j=n.j,J=J)   # revised KP
-
+  
   stopCluster(cl)
   
 #   # get B p-values for all tests
