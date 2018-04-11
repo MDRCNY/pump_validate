@@ -64,7 +64,7 @@ Specify parameters
 ```{r specifications}
 rho<-0.8
 
-ncl<-1
+ncl<-24
 
 procs<-c("Bonferroni", "BH", "Holm", "WY") 
 M<-6
@@ -72,7 +72,7 @@ MDES<-rep(0.125, M)
 p.j.range<-c(0.5,0.5)
 #S=2000
 S=3
-B=100   #10000
+B=300   #10000
 J=20;n.j=100
 theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
 Gamma.00<-rep(0,M);sig.sq<-rep(1,M); alpha<-0.05
@@ -98,8 +98,7 @@ simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_l
 
 endingtime<-Sys.time()
 
-print(paste("Run with S=", S, " and B =", B, " with ncl=", ncl, " took ", endingtime-startingtime, " seconds. Ended at ", Sys.time()))
-
+print(paste("Run with S=", S, " and B =", B, " with ncl=", ncl, " took ", difftime(endingtime,startingtime, units = "secs"), " seconds. Started at", startingtime, "Ended at ", endingtime))
 
 #what is maxT and check?
 
