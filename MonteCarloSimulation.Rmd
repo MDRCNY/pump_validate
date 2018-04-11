@@ -64,7 +64,7 @@ Specify parameters
 ```{r specifications}
 rho<-0.8
 
-ncl<-24
+ncl<-1
 
 procs<-c("Bonferroni", "BH", "Holm", "WY") 
 M<-6
