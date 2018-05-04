@@ -1,5 +1,5 @@
 ---
-title: "Verification for 2-Level RCT"
+title: "Verification for 2-Level Blocked RCT with Constant Effects"
 author: "Deni Chen"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: html_document:
@@ -9,14 +9,19 @@ output: html_document:
     #theme: cerulean
 ---
 
-# Sourcing all needed code 
+# Loading data files
 
-```{r chunk1_source }
-# source functions for computing power, MDES, sample size that correspond to design of focus
-source("powerFunctions.R")
+```{r chunk1_load}
+#set directory for reading in files
+fdir <- "~/R/Data Files/"
 
-# source functions for simulations that correspond to design of focus
-#source("MonteCarloSimulation.R")
+#files
+fil1 <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125rho0.5_S3B200_R2.10_R2.20_sim.Rda"
+fil2 <- "M6n.j100J20MDES0.125rho0.5_power.Rda"
+
+#load files
+load(paste0(fdir,fil1))
+load(paste0(fdir,fil2))
 ```
 
 
