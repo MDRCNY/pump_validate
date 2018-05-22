@@ -197,7 +197,7 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
 ```{r power.blockedRCT.2_Example, eval=TRUE, message=FALSE, warning=FALSE}
   design <- c("Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r", "Blocked_i1_3r", "Blocked_i1_4r")
   ncl<-2
-  rho<-0.5
+  rho<-0
   M <- 6
   sigma<-matrix(rep(rho,M*M),nrow=M,ncol=M)
   diag(sigma)<-1
@@ -212,22 +212,41 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   J <- 20
   n.j <- 50
   alpha = 0.05
+  tnum = 10000
+  snum = 2
+  
 
+#############################################cycling through rho
+#for (rho in c(0,0.2,0.5,0.8)) {
+
+#pastes together specifications into a file name
+#powname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "MDES", MDES[1], "rho", rho, "_power.Rda")
+
+
+
+#run power function
+#powname <- power.blockedRCT.2(M, MDES, J, n.j,
+#                    p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
+#                    mod.type = "constant", sigma, omega = NULL,
+#                    tnum=tnum, snum=snum, ncl)
+#}
+#####################################################################
+  
+  
   
 #pastes together specifications into a file name
 powname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "MDES", MDES[1], "rho", rho, "_power.Rda")
-
   
-power.mult <- power.blockedRCT.2(M, MDES, J, n.j,
+powname <- power.blockedRCT.2(M, MDES, J, n.j,
                     p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
                     mod.type = "constant", sigma, omega = NULL,
-                    tnum=10000, snum=2, ncl)
+                    tnum=tnum, snum=snum, ncl)
   
 
 #export file
 #fdir <- "I:/Multiplicity/git/dc_repo/"
 #fname<- paste0(fdir,powname)
-#save(power.mult, file=fname)
+#save(powname, file=fname)
 
 ```
 

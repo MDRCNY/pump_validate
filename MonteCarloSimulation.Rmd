@@ -85,7 +85,7 @@ rho.1_lev2<-matrix(0.5,M,M); diag(rho.1_lev2)<-1
 
 
 #pastes together specifications into a file name
-simname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B, "_R2.1", R2.1[1],"_R2.2",R2.2[1], mod.type, "_sim.Rds")
+simname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B, "_R2.1", R2.1[1],"_R2.2",R2.2[1], "_sim.Rds")
 
 ```
 
