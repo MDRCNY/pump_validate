@@ -32,6 +32,11 @@ source("functions.R")
 #funct object needs to be assigned before sourcing "make.model.R"
 funct<-"fixfastLm"; mod.type<-"fixed"
 source("make.model.R")
+
+#function to check time lapse
+devtools::install_github("collectivemedia/tictoc")
+library(tictoc)
+
 ```
 
 
@@ -62,53 +67,70 @@ Specify parameters
 
 
 ```{r specifications}
-rho<-0
+#loop through different correlations (like Table C.3 in Appendix of paper)
 
-ncl<-8
+#create loop ID for list of power estimates with different correlations
+loop_idx <- 1
 
-procs<-c("Bonferroni", "BH", "Holm", "WY") 
-design <- c("Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r", "Blocked_i1_3r", "Blocked_i1_4r")
-M<-6
-MDES<-rep(0.125, M)
-p.j.range<-c(0.5,0.5)
-#S=2000
-S=3
-B=300   #10000
-J=20;n.j=100
-theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
-Gamma.00<-rep(0,M);sig.sq<-rep(1,M); alpha<-0.05
-ICC<-rep(0, M); R2.2<-rep(0,M); R2.1<-rep(0, M)
+#assign list object to save datafiles into a list
+sim_power_storage <- list()
 
-rho.0_lev1<-matrix(rho,M,M); diag(rho.0_lev1)<-1 
-rho.0_lev2<-matrix(0.5,M,M); diag(rho.0_lev2)<-1
-rho.1_lev2<-matrix(0.5,M,M); diag(rho.1_lev2)<-1
+#loopa through different correlations
+for (rho in c(0,0.2,0.5,0.8)) {
 
+  #rho<-0
+  ncl<-8
+  
+  procs<-c("Bonferroni", "BH", "Holm", "WY") 
+  design <- c("Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r", "Blocked_i1_3r", "Blocked_i1_4r")
+  M<-6
+  MDES<-rep(0.125, M)
+  p.j.range<-c(0.5,0.5)
+  #S=2000
+  S=3
+  B=300   #10000
+  J=20;n.j=100
+  theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
+  Gamma.00<-rep(0,M);sig.sq<-rep(1,M); alpha<-0.05
+  ICC<-rep(0, M); R2.2<-rep(0,M); R2.1<-rep(0, M)
+  
+  rho.0_lev1<-matrix(rho,M,M); diag(rho.0_lev1)<-1 
+  rho.0_lev2<-matrix(0.5,M,M); diag(rho.0_lev2)<-1
+  rho.1_lev2<-matrix(0.5,M,M); diag(rho.1_lev2)<-1
 
-#pastes together specifications into a file name
-simname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B, "_R2.1", R2.1[1],"_R2.2",R2.2[1], "_sim.Rds")
+  #create file name
+  simname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B,   "_R2.1", R2.1[1],"_R2.2",R2.2[1], "_simpwr.Rda")
+  
+  #create list name
+  lname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "_S", S, "B", B, "_R2.1",        R2.1[1],"_R2.2",R2.2[1], "_simpwrLIST.Rda")
+      
 
-```
+  #simulate and run power calculations
+  simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
+                    rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
+                    alpha=alpha, Gamma.00=Gamma.00, sig.sq=sig.sq, p.j.range=p.j.range, 
+                    R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S, ncl=ncl, B=B,maxT=FALSE) 
+  
+  toc()
 
-Simulate data
-```{r simulate_data}
-startingtime<-Sys.time()
+  #add data files to list
+  sim_power_storage[[loop_idx]] <- list()
+  sim_power_storage[[loop_idx]][["simname"]] <- simname
+  sim_power_storage[[loop_idx]][["obj"]] <- simpwr
+  
+  
+  #export separate data files
+  fdir <- "I:/Multiplicity/git/dc_repo/"
+  fname<- paste0(fdir,simname)
+  save(simpwr, file=fname)
+  loop_idx <- loop_idx + 1
 
-simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
-                  rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
-                  alpha=alpha, Gamma.00=Gamma.00, sig.sq=sig.sq, p.j.range=p.j.range, 
-                  R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S, ncl=ncl, B=B,maxT=FALSE)     
+}
 
-endingtime<-Sys.time()
+#export the list of data files with different correlations for import into validation RMD
+lpath <- paste0(fdir, lname)
+save(sim_power_storage, file= lpath)
 
-print(paste("Run with S=", S, " and B =", B, " with ncl=", ncl, " took ", difftime(endingtime,startingtime, units = "secs"), " seconds. Started at", startingtime, "Ended at ", endingtime))
-
-#what is maxT and check?
-
-#save file
-#fdir <- "I:/Multiplicity/git/dc_repo/"
-#fname<- paste0(fdir,simname)
-
-#write.table(simpwr, file=fname)
 ```
 
 
