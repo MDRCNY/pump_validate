@@ -62,7 +62,7 @@ Specify parameters
 
 
 ```{r specifications}
-rho<-0.5
+rho<-0
 
 ncl<-8
 
