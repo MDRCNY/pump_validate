@@ -196,7 +196,7 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
 
 ```{r power.blockedRCT.2_Example, eval=TRUE, message=FALSE, warning=FALSE}
 #file directory
-fdir <- "I:/Multiplicity/git/dc_repo/"
+fdir <- "I:/Multiplicity/datafiles/"
 
 #create loop ID for list of power estimates with different correlations
 loop_idx <- 1
