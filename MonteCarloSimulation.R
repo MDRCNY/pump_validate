@@ -96,16 +96,12 @@ simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_l
 
 #what is maxT and check?
 
-#save(simpwr, file=simname)
-<<<<<<< HEAD
 
 #' 
 #' 
 #' Make replica of this RMD into an R Script (.R file to be sourced into another pgm)
 ## ----create_RMD----------------------------------------------------------
-library(knitr)
+#library(knitr)
 
-purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
+#purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
 
-=======
->>>>>>> ab7deb3c4aab61d04c6bbe3e7040f7308c182d8e
