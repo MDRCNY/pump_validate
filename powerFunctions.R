@@ -193,98 +193,72 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   return(all.power.results)
 }
 
+#' 
+## ----power.blockedRCT.2_Example, eval=TRUE, message=FALSE, warning=FALSE----
+library(yaml)
 
 
+#read in configs file
+configs <- yaml.load_file("configs.yaml")
 
-#' 
-#' First, for individual power, we can compute MDES easily for raw and BF: 
-#' 
-#' The critical value for rejecting the $m^{th}$ null hypotheses with a two-sided test, $c_(\alpha/2)(m)$, is the inverse of the t cumulative density function for the value of $\frac{\alpha}{2}$ since
-#' 	
-#' $\frac{alpha}{2} = Pr(t(m)>c_{(\frac{\alpha}{2})} |H0(m))$
-#' 	
-#' If alternatively, $ES(m)=$ a specified minimum detectable effect size (MDES), then $t(m)$ has a t-distribution with mean $\frac{MDES(m)},{Q(m)}$ and again degrees of freedom $df$. Therefore, the critical value for determining power for rejecting the $m^{th}$ null hypothesis, $c_{(1-\beta)}(m)$, is given by
-#' 	
-#' $c_{(1-??)}(m)=c_{\alpha\2)}-\frac{MDES(m)}{Q(m)}$.
-#' 
-#' 
-#' Then, power $(1-\beta)$ is the inverse of the cumulative density function (t-distributed with mean zero and df degrees of freedom) for the value of $c_{(1-\beta)}(m)$, or proportion of the area under this density function that lies to the right of $c_{(1-\beta)}$.
-#' 
-#' 
-#' 
-#' 
-## ----MDESfun, message=FALSE, warning=FALSE-------------------------------
+#set file directory
+fdir <- configs$fdir
 
-MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
-                            p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
-                            mod.type, sigma, omega,
-                            tnum = 10000, snum=2, ncl=2) {
+#create loop ID for list of power estimates with different correlations
+loop_idx <- 1
 
-# We don't need snum high if not WY  
-  if (!(MTP %in% c("WY-SS","WY-SD"))) snum <- 2
+#assign list object to save datafiles into a list
+power_mutl_storage <- list()
+
+#loop through different correlations
+for (rho in configs$rho) {
+  
+  design <- configs$design
+  ncl<-configs$ncl
+  M <- configs$M
+  sigma<-matrix(rep(rho,M*M),nrow=M,ncol=M)
+  diag(sigma)<-1
+  MDES<-c(rep(configs$MDES,M))
+# MDES<-c(rep(0.3,M*2/3),rep(0,M/3))
+  p <- configs$p
+  R2.1 <- configs$R2.1
+  R2.2 <- configs$R2.2
+  numCovar.1 <- configs$numCovar.1
+  numCovar.2 <- configs$numCovar.2
+  ICC <- configs$ICC
+  J <- configs$J
+  n.j <- configs$n.j
+  alpha = configs$alpha
+  tnum = configs$tnum
+  snum = configs$snum
+  mod.type = configs$mod.type
+  
+  
+  #create file name
+  filname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "MDES", MDES[1], "rho", rho, "_power.Rda")
+  
+  #create list name
+  lname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "MDES", MDES[1], "_powerLIST.Rda")
     
-# Compute Q(m)
-  Q.m<-sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
-  t.df<-df(J,n.j,numCovar.1)
+  #run power calculation
+  power.mult <- power.blockedRCT.2(M, MDES, J, n.j,
+                      p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
+                      mod.type, sigma, omega,
+                      tnum, snum, ncl)
   
-# For raw and BF, compute critical values 
-  crit.alpha <- qt(p=(1-alpha/2),df=t.df)  
-  crit.alphaxM <- qt(p=(1-alpha/M/2),df=t.df)  
+  #add data files to list
+  power_mutl_storage[[loop_idx]] <- list()
+  power_mutl_storage[[loop_idx]][["filename"]] <- filname
+  power_mutl_storage[[loop_idx]][["obj"]] <- power.mult
   
-# Compute raw and BF MDES for INDIVIDUAL POWER
-  crit.beta <- qt(power,df=t.df)
-  MDES.raw <- ifelse(power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta)) 
-  MDES.BF <- ifelse(power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta)) 
   
-### INDIVIDUAL POWER ###
-if (power.definition=="indiv") {  
-  if (MTP == "raw") return (c(MDES.raw,power))
-  if (MTP == "BF")  return (c(MDES.BF,power)) 
-}
-    
-# For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint
-  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
-    lowhigh <- c(MDES.raw,MDES.BF)
-    try.MDES <- (MDES.raw + MDES.BF) / 2
-  }
+  #export separate data files
+  fpath<- paste0(fdir,filname)
+#  save(power.mult, file=fpath)
+  loop_idx <- loop_idx + 1
 
-# For minimal powers, makes starting value = MDES.raw
-  if (power.definition != "indiv")  {
-    lowhigh <- c(0,1)
-    try.MDES <- MDES.raw
-  }
-    target.power <- 0 
-    ii <- 0
-    while (ii < 10 & (target.power < power - marginError | target.power > power + marginError)) {
-      print(lowhigh)
-      print(target.power)
-      print(try.MDES)
-      runpower <- power.blockedRCT.2(M, try.MDES, J, n.j,
-                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
-                                     mod.type, sigma, omega,
-                                     tnum, snum, ncl)
-      #print(runpower)
-      target.power <- runpower[MTP,power.definition]
-      is.over <- target.power > power
-      if(target.power > power - marginError & target.power < power + marginError) return(c(try.MDES,target.power))
-      if(!is.over) {
-        p.off <- (power - target.power) / power
-        lowhigh[1] <- try.MDES
-      }
-      if(is.over) {
-        lowhigh[2] <- try.MDES
-        p.off <- (target.power - power) / (1 - power)
-      }
-      lowhigh.dist <- lowhigh[2]-lowhigh[1]
-#      try.MDES <- ifelse(is.over, lowhigh[2] - p.off * lowhigh.dist, lowhigh[1] + p.off*lowhigh.dist)
-      try.MDES <- ifelse(target.power < power, (try.MDES + lowhigh[2])/2, (try.MDES + lowhigh[1])/2) # midpoint
-      ii <- ii + 1
-      } # end while
 }
 
-
-
-#' 
-#' NOTES:
-#'     # how do we optimize tnum and snum - can we provide margin of error? 
-#'     # how to handle MDES when numfalse not equal to M
+#export the list of data files with different correlations for import into validation RMD
+lpath <- paste0(fdir, lname)
+#save(power_mutl_storage, file= lpath)
