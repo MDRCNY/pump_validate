@@ -6,11 +6,29 @@
 
 options(error=traceback)
 
-# load libraries
+#source("libraries.install.R")
+
+#load libraries
+library(yaml)
 library(knitr)
 
-# convert powerFunction.Rmd to R file
-purl("powerFunctions.Rmd", output = "powerFunctions.R", documentation = 2)
+#read in configs file
+configs <- yaml.load_file("configs.yaml")
 
-#source files
-source("powerFunctions.R")
+#set file directory
+fdir <- configs$fdir
+
+#run powerFunctions file
+if (configs$run_powerFunctions == TRUE)
+{
+
+  # convert powerFunction.Rmd to R file
+  #purl("powerFunctions.Rmd", output = "powerFunctions.R", documentation = 2)
+  
+  #source files
+  source("powerFunctions.R")
+
+}
+
+
+
