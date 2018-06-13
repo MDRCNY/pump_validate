@@ -195,15 +195,6 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
 
 #' 
 ## ----power.blockedRCT.2_Example, eval=TRUE, message=FALSE, warning=FALSE----
-library(yaml)
-
-
-#read in configs file
-configs <- yaml.load_file("configs.yaml")
-
-#set file directory
-fdir <- configs$fdir
-
 #create loop ID for list of power estimates with different correlations
 loop_idx <- 1
 
@@ -262,3 +253,4 @@ for (rho in configs$rho) {
 #export the list of data files with different correlations for import into validation RMD
 lpath <- paste0(fdir, lname)
 #save(power_mutl_storage, file= lpath)
+

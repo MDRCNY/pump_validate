@@ -11,9 +11,14 @@ output: html_document:
 
 # Loading data files
 
-```{r chunk1_load}
+```{r}
+library(yaml)
+
+#read in configs file
+configs <- yaml.load_file("configs.yaml")
+
 #set directory for reading in files
-fdir <- "I:/Multiplicity/git/dc_repo/"
+fdir <- configs$fdir
 
 #files
 power.cor <- "Blocked_i1_2cM6n.j50J20MDES0.125_powerLIST.Rda"
