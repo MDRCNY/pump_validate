@@ -34,7 +34,18 @@ load(paste0(fdir, simpwr.cor))
 
 ```{r chunk3_verifyPower}
 # loop through combinations (don't need all crossed - TBD)
-  # 2 level RCT constant effects, Table C.3 from paper
+
+# Compare power estimates from our methods vs MC methods
+
+power.rho0<- power_mutl_storage[[1]]["obj"]
+sim.rho0<-sim_power_storage[[1]]["obj"]
+
+power.rho0
+sim.rho0[[1]]
+
+matrix(unlist(sim.rho0), ncol=11)
+
+#sim.rho0$[df$datay == 5] <- NA
 
   # display new power calculations
     power_mutl_storage[[1]]["filename"]
@@ -49,6 +60,9 @@ load(paste0(fdir, simpwr.cor))
   
     sim_power_storage[[2]]["simname"]
     sim_power_storage[[2]]["obj"]
+    
+    
+    
   
   # for M=1, look up in Power-Up
 

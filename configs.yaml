@@ -1,0 +1,31 @@
+###########################################################################
+#                                                                         #
+#                                                                         #
+#             Configs file for PUM                                        #
+#                                                                         #
+#                                                                         #
+#                                                                         #
+###########################################################################
+
+# PowerFunctions.Rmd
+
+rho: [0, 0.2, 0.5, 0.8]
+ncl: 2
+M: 6
+MDES: 0.125
+p: 0.5
+R2.1: 0
+R2.2: 0
+numCovar.1: 0
+numCovar.2: 0
+ICC: 0
+J: 20
+n.j: 50
+alpha: 0.05
+tnum: 10000
+snum: 2
+mod.type: "constant"
+omega: NULL
+
+design: ["Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r", "Blocked_i1_3r", "Blocked_i1_4r"]
+fdir: "I:/Multiplicity/datafiles/"

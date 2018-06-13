@@ -195,8 +195,14 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
 ```
 
 ```{r power.blockedRCT.2_Example, eval=TRUE, message=FALSE, warning=FALSE}
-#file directory
-fdir <- "I:/Multiplicity/datafiles/"
+library(yaml)
+
+
+#read in configs file
+configs <- yaml.load_file("configs.yaml")
+
+#set file directory
+fdir <- configs$fdir
 
 #create loop ID for list of power estimates with different correlations
 loop_idx <- 1
@@ -204,28 +210,28 @@ loop_idx <- 1
 #assign list object to save datafiles into a list
 power_mutl_storage <- list()
 
-#look through different correlations
-for (rho in c(0,0.2,0.5,0.8)) {
-
-  design <- c("Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r", "Blocked_i1_3r", "Blocked_i1_4r")
-  ncl<-2
-  #rho<-0
-  M <- 6
+#loop through different correlations
+for (rho in configs$rho) {
+  
+  design <- configs$design
+  ncl<-configs$ncl
+  M <- configs$M
   sigma<-matrix(rep(rho,M*M),nrow=M,ncol=M)
   diag(sigma)<-1
-  MDES<-c(rep(0.125,M))
-#  MDES<-c(rep(0.3,M*2/3),rep(0,M/3))
-  p <- 0.5
-  R2.1 <- 0
-  R2.2 <- 0
-  numCovar.1 <- 0
-  numCovar.2 <- 0
-  ICC <- 0
-  J <- 20
-  n.j <- 50
-  alpha = 0.05
-  tnum = 10000
-  snum = 2
+  MDES<-c(rep(configs$MDES,M))
+# MDES<-c(rep(0.3,M*2/3),rep(0,M/3))
+  p <- configs$p
+  R2.1 <- configs$R2.1
+  R2.2 <- configs$R2.2
+  numCovar.1 <- configs$numCovar.1
+  numCovar.2 <- configs$numCovar.2
+  ICC <- configs$ICC
+  J <- configs$J
+  n.j <- configs$n.j
+  alpha = configs$alpha
+  tnum = configs$tnum
+  snum = configs$snum
+  mod.type = configs$mod.type
   
   
   #create file name
@@ -237,8 +243,8 @@ for (rho in c(0,0.2,0.5,0.8)) {
   #run power calculation
   power.mult <- power.blockedRCT.2(M, MDES, J, n.j,
                       p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
-                      mod.type = "constant", sigma, omega = NULL,
-                      tnum=tnum, snum=snum, ncl)
+                      mod.type, sigma, omega,
+                      tnum, snum, ncl)
   
   #add data files to list
   power_mutl_storage[[loop_idx]] <- list()
