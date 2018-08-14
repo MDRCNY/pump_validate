@@ -42,30 +42,53 @@ load(paste0(fdir, simpwr.cor))
 
 # Compare power estimates from our methods vs MC methods
 
-power.rho0<- power_mutl_storage[[1]]["obj"]
-sim.rho0<-sim_power_storage[[1]]["obj"]
-
-power.rho0
-sim.rho0[[1]]
-
-matrix(unlist(sim.rho0), ncol=11)
-
-#sim.rho0$[df$datay == 5] <- NA
-
-  # display new power calculations
+  # display power calculation matrices
     power_mutl_storage[[1]]["filename"]
     power_mutl_storage[[1]]["obj"]
     
     power_mutl_storage[[2]]["filename"]
     power_mutl_storage[[2]]["obj"]
 
-  # run simulations
+  # display simulation matrices
     sim_power_storage[[1]]["simname"]
     sim_power_storage[[1]]["obj"]
   
     sim_power_storage[[2]]["simname"]
     sim_power_storage[[2]]["obj"]
     
+
+power.rho0<- power_mutl_storage[[1]]["obj"]
+sim.rho0<-sim_power_storage[[1]]["obj"]
+
+power.rho0
+sim.rho0[[1]]
+
+
+#add a correlation column to power_mult_storage
+corr <- c(0, .2,.5,.8)
+
+if(length( power_mutl_storage) == length(corr)){
+  
+  idx <- 1
+  
+  while(idx <= length(corr)){
+    
+    power_mutl_storage[[idx]]$obj <-  cbind(power_mutl_storage[[idx]]$obj, correlation = rep(corr[idx], nrow( power_mutl_storage[[idx]]$obj)))
+    
+    idx <- idx+1
+  }
+} else {
+  print("Error length of power mult storage different than correlation parameter")
+}
+
+
+
+#power.rho0t<-matrix(unlist(power.rho0), ncol=13)
+
+
+#sim.rho0$[df$datay == 5] <- NA
+
+
     
     
   
