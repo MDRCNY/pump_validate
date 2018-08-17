@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sample flask web site and API on Domino Data Lab</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.js"></script>
+</head>
+
+<body>
+    <h1>Hello, world!</h1>
+
+    <h2>Overview on Domino App routing</h2>
+    <p>Domino apps and notebooks run within an iframe. The location you see in your browser above (containing 'embeddedNotebook') is a link to Domino's web frontend that generates the iframe with the blue Domino pullout on the right. Changing that URL always results in 404 as the new route doesn't exist in Domino's web application.</p>
+    <p>If you examine the source of the page, you will see that the iframe points to a URL containing 'r/notebookSession'. This URL leads directly to your application. Any navigation within your Flask app while in an iframe (with the blue Domino pullout panel) will not result in a change of your browser's address.</p>
+    <p>(*) If you want to test direct access, you need to get the 'r/notebookSession' URL from the source and paste it into your browser's address bar.</p>
+    <p>The links below will work either when you click them (navigation within the iframe, check the page source), or if you append the component ('another_page', 'redirect_test_fail', etc) to the URL after you did (*) above.
+        <ul>
+            <li>A call to flask's url_for('another_page') returns <a href="{{ url_for('another_page') }}">{{ url_for('another_page') }}</a> (which has the 'r/notebookSession' component).</li>
+            <li>A link to a redirect 'redirect_test' which then goes to url_for('another_page'): <a href="{{ url_for('redirect_test') }}">{{ url_for('redirect_test') }}</a></li>
+        </ul>
+    </p>
+
+    <h2>Sample API-powered visualization</h2>
+    <p>The histogram below is built from 100 random numbers returned by an AJAX call to /random and then uses Plotly to generate the visualization.</p>
+    <p>Take a look at the python code and page source to see we are calling url_for('random', n=100) (which ends up being <a href="{{ url_for('random', n=100) }}">{{ url_for('random', n=100) }}</a>) for the right AJAX URL to request the random numbers for.</p>
+
+    <div id="histogram"></div>
+
+    <script>
+        jQuery(document).ready(function() {
+            jQuery.getJSON("{{ url_for('random', n=100) }}", function(random_numbers) {
+
+                var plotConfig = [{
+                    x: random_numbers,
+                    type: 'histogram',
+                    marker: {
+                        color: 'rgba(100,250,100,0.7)',
+                    },
+                }];
+                Plotly.newPlot('histogram', plotConfig);
+
+            })
+        });
+    </script>
+</body>
+
+</html>
