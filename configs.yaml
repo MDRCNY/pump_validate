@@ -33,4 +33,5 @@ design: ["Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r", "Blocked_i1_3r", "Bl
 fdir: "I:/Multiplicity/datafiles/"
 
 ## Controls
-run_powerFunctions: TRUE
+run_powerFunctions: TRUE 
+
