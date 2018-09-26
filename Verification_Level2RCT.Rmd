@@ -64,9 +64,10 @@ power.rho0
 sim.rho0[[1]]
 
 
-#add a correlation column to power_mult_storage
+#add a correlation column to the data files
 corr <- c(0, .2,.5,.8)
 
+#power_mult_storage
 if(length( power_mutl_storage) == length(corr)){
   
   idx <- 1
@@ -74,12 +75,34 @@ if(length( power_mutl_storage) == length(corr)){
   while(idx <= length(corr)){
     
     power_mutl_storage[[idx]]$obj <-  cbind(power_mutl_storage[[idx]]$obj, correlation = rep(corr[idx], nrow( power_mutl_storage[[idx]]$obj)))
+    power_mutl_storage[[idx]]$obj <-  cbind(power_mutl_storage[[idx]]$obj, adjname = c("rawp", "BF","HO", "BH", "WY-SS", "WY-SD"))
     
     idx <- idx+1
   }
 } else {
   print("Error length of power mult storage different than correlation parameter")
 }
+
+
+#sim_power_storage
+if(length( sim_power_storage) == length(corr)){
+  
+  idx <- 1
+  
+  while(idx <= length(corr)){
+    
+    sim_power_storage[[idx]]$obj <-  cbind(sim_power_storage[[idx]]$obj, correlation = rep(corr[idx], nrow( sim_power_storage[[idx]]$obj)))
+    sim_power_storage[[idx]]$obj <-  cbind(sim_power_storage[[idx]]$obj, adjname = c("rawp", "BF", "BH", "HO", "WY-SD"))
+    
+    idx <- idx+1
+  }
+} else {
+  print("Error length of sim_power_storage different than correlation parameter")
+}
+
+ourmethods <- rbind(power_mutl_storage[[1]]$obj, power_mutl_storage[[2]]$obj, power_mutl_storage[[3]]$obj, power_mutl_storage[[4]]$obj)
+MCmethods <- as.data.frame(rbind(sim_power_storage[[1]]$obj, sim_power_storage[[2]]$obj, sim_power_storage[[3]]$obj, sim_power_storage[[4]]$obj))
+
 
 
 
