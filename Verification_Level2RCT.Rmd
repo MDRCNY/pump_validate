@@ -42,28 +42,6 @@ load(paste0(fdir, simpwr.cor))
 
 # Compare power estimates from our methods vs MC methods
 
-  # display power calculation matrices
-    power_mutl_storage[[1]]["filename"]
-    power_mutl_storage[[1]]["obj"]
-    
-    power_mutl_storage[[2]]["filename"]
-    power_mutl_storage[[2]]["obj"]
-
-  # display simulation matrices
-    sim_power_storage[[1]]["simname"]
-    sim_power_storage[[1]]["obj"]
-  
-    sim_power_storage[[2]]["simname"]
-    sim_power_storage[[2]]["obj"]
-    
-
-power.rho0<- power_mutl_storage[[1]]["obj"]
-sim.rho0<-sim_power_storage[[1]]["obj"]
-
-power.rho0
-sim.rho0[[1]]
-
-
 #add a correlation column to the data files
 corr <- c(0, .2,.5,.8)
 
@@ -100,9 +78,47 @@ if(length( sim_power_storage) == length(corr)){
   print("Error length of sim_power_storage different than correlation parameter")
 }
 
-ourmethods <- rbind(power_mutl_storage[[1]]$obj, power_mutl_storage[[2]]$obj, power_mutl_storage[[3]]$obj, power_mutl_storage[[4]]$obj)
+#bind list of data files
+ourmethods <- as.data.frame(rbind(power_mutl_storage[[1]]$obj, power_mutl_storage[[2]]$obj, power_mutl_storage[[3]]$obj, power_mutl_storage[[4]]$obj))
 MCmethods <- as.data.frame(rbind(sim_power_storage[[1]]$obj, sim_power_storage[[2]]$obj, sim_power_storage[[3]]$obj, sim_power_storage[[4]]$obj))
 
+ourmethods<- ourmethods[, c("indiv", "min1", "min2", "min3", "min4", "complete", "correlation", "adjname")]
+MCmethods<- MCmethods[, c("D1indiv", "min", "1/3", "1/2", "2/3", "full", "correlation", "adjname")]
+
+colnames(ourmethods) <- paste("method", colnames(ourmethods), sep = "_")
+colnames(MCmethods) <- paste("sim", colnames(MCmethods), sep = "_")
+
+#merge methods and sim tables
+validtable <- merge(ourmethods, MCmethods, by.x = c("method_adjname", "method_correlation"), by.y = c("sim_adjname", "sim_correlation"), all = TRUE) 
+
+#reorder columns
+validtable <- validtable[, c("method_adjname", "method_correlation", )]
+
+
+
+
+#DELETE
+
+  # display power calculation matrices
+    power_mutl_storage[[1]]["filename"]
+    power_mutl_storage[[1]]["obj"]
+    
+    power_mutl_storage[[2]]["filename"]
+    power_mutl_storage[[2]]["obj"]
+
+  # display simulation matrices
+    sim_power_storage[[1]]["simname"]
+    sim_power_storage[[1]]["obj"]
+  
+    sim_power_storage[[2]]["simname"]
+    sim_power_storage[[2]]["obj"]
+    
+
+power.rho0<- power_mutl_storage[[1]]["obj"]
+sim.rho0<-sim_power_storage[[1]]["obj"]
+
+power.rho0
+sim.rho0[[1]]
 
 
 
