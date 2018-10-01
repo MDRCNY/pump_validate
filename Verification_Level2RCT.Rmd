@@ -30,6 +30,16 @@ simpwr.cor <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125_S3B300_R2.10_R2.20_simpwrLI
 load(paste0(fdir, power.cor))
 load(paste0(fdir, simpwr.cor))
 
+# display power calculation matrices
+power_mutl_storage[[1]]["filename"]
+power_mutl_storage[[1]]["obj"]
+    
+# display simulation matrices
+sim_power_storage[[1]]["simname"]
+sim_power_storage[[1]]["obj"]
+
+power.rho0<- power_mutl_storage[[1]]["obj"]
+sim.rho0<-sim_power_storage[[1]]["obj"]
 ```
 
 
@@ -114,28 +124,17 @@ kable(validtable[, 2:12], caption = "MTP Used and Correlations") %>%
 
 
 
-
-#DELETE
-
-  # display power calculation matrices
-    power_mutl_storage[[1]]["filename"]
-    power_mutl_storage[[1]]["obj"]
-    
-
-  # display simulation matrices
-    sim_power_storage[[1]]["simname"]
-    sim_power_storage[[1]]["obj"]
-    
-
-power.rho0<- power_mutl_storage[[1]]["obj"]
-sim.rho0<-sim_power_storage[[1]]["obj"]
-
-power.rho0
-sim.rho0[[1]]
-
-
   
   # for M=1, look up in Power-Up
+    #app to generate power can be found here https://metinbulus.shinyapps.io/powerupr/
+
+      #power from PowerUp! app: 0.1662404  - what is n? unclear
+
+      #extract M=1 power from our methods
+      power.rawpind <- validtable[which(validtable$method_adjname =="rawp" & validtable$method_correlation == "0"), "method_indiv"]
+      power.rawpind <- as.numeric(levels(power.rawpind))[power.rawpind]
+
+
 
   # create table of results and check for if within TBD margin of error
 
