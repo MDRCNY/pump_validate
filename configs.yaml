@@ -34,4 +34,5 @@ fdir: "I:/Multiplicity/datafiles/"
 
 ## Controls
 run_powerFunctions: TRUE 
+run_MCSim: FALSE
 
