@@ -24,7 +24,7 @@ J: 20
 n.j: 50
 alpha: 0.05
 tnum: 10000
-snum: 2
+snum: 1000
 mod.type: "constant"
 omega: NULL
 design: ["Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r", "Blocked_i1_3r", "Blocked_i1_4r"]

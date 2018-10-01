@@ -114,21 +114,17 @@ kable(validtable[, 2:12], caption = "MTP Used and Correlations") %>%
 
 
 
+
 #DELETE
 
   # display power calculation matrices
     power_mutl_storage[[1]]["filename"]
     power_mutl_storage[[1]]["obj"]
     
-    power_mutl_storage[[2]]["filename"]
-    power_mutl_storage[[2]]["obj"]
 
   # display simulation matrices
     sim_power_storage[[1]]["simname"]
     sim_power_storage[[1]]["obj"]
-  
-    sim_power_storage[[2]]["simname"]
-    sim_power_storage[[2]]["obj"]
     
 
 power.rho0<- power_mutl_storage[[1]]["obj"]
@@ -138,15 +134,6 @@ power.rho0
 sim.rho0[[1]]
 
 
-
-#power.rho0t<-matrix(unlist(power.rho0), ncol=13)
-
-
-#sim.rho0$[df$datay == 5] <- NA
-
-
-    
-    
   
   # for M=1, look up in Power-Up
 

@@ -23,7 +23,7 @@ if (configs$run_powerFunctions == TRUE)
 {
 
   # convert powerFunction.Rmd to R file
-  #purl("powerFunctions.Rmd", output = "powerFunctions.R", documentation = 2)
+  purl("powerFunctions.Rmd", output = "powerFunctions.R", documentation = 2)
   
   #source files
   source("powerFunctions.R")
