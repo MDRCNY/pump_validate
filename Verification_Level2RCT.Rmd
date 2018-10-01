@@ -91,8 +91,9 @@ colnames(MCmethods) <- paste("sim", colnames(MCmethods), sep = "_")
 #merge methods and sim tables
 validtable <- merge(ourmethods, MCmethods, by.x = c("method_adjname", "method_correlation"), by.y = c("sim_adjname", "sim_correlation"), all = TRUE) 
 
-#reorder columns
-validtable <- validtable[, c("method_adjname", "method_correlation", )]
+#reorder/subset columns
+validtable <- validtable[, c("method_adjname", "method_correlation", "method_indiv", "sim_D1indiv", "method_min1", "sim_min", "method_min2",
+                             "sim_1/3", "method_min4", "sim_2/3", "method_complete", "sim_full")]
 
 
 
