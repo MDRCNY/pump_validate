@@ -15,6 +15,7 @@ output: html_document:
 library(yaml)
 library(knitr)
 library(kableExtra)
+library(PowerUpR)
 
 #read in configs file
 configs <- yaml.load_file("configs.yaml")
@@ -38,8 +39,6 @@ power_mutl_storage[[1]]["obj"]
 sim_power_storage[[1]]["simname"]
 sim_power_storage[[1]]["obj"]
 
-power.rho0<- power_mutl_storage[[1]]["obj"]
-sim.rho0<-sim_power_storage[[1]]["obj"]
 ```
 
 
@@ -47,12 +46,9 @@ sim.rho0<-sim_power_storage[[1]]["obj"]
 
 ## Maybe different chunk for each design specification (e.g, constant, fixed, random effects)
 
-### The simulations will take a long time so may want to run these separately, and pull results into this markdown??
-
 ```{r chunk3_verifyPower}
-# loop through combinations (don't need all crossed - TBD)
-
 # Compare power estimates from our methods vs MC methods
+  # loop through correlations
 
 #add a correlation column to the data files
 corr <- c(0, .2,.5,.8)
@@ -72,7 +68,6 @@ if(length( power_mutl_storage) == length(corr)){
 } else {
   print("Error length of power mult storage different than correlation parameter")
 }
-
 
 #sim_power_storage
 if(length( sim_power_storage) == length(corr)){
@@ -110,35 +105,38 @@ validtable <- validtable[, c("method_adjname", "method_correlation", "method_ind
                              "sim_1/3", "method_min4", "sim_2/3", "method_complete", "sim_full")]
 
 
-
-#table aesthetics
+#create validation table our methods vs MC Sim
 kable(validtable[, 2:12], caption = "MTP Used and Correlations") %>%
   kable_styling("striped") %>%
   add_header_above(c(" " = 1, "Individual" = 2, "1-minimal" = 2, "1/3-minimal" = 2, "2/3-minimal" = 2, "Complete" = 2)) %>%
   group_rows("No adjustment", 1, 4) %>%
-  group_rows("Bonferroni", 5, 8) %>%
+  group_rows("Bonferroni", 5, 8) %>% 
   group_rows("Holm", 9, 12) %>%
   group_rows("Benjamini-Hochberg", 13, 16) %>%
   group_rows("Westfall-Young (step-down)", 17, 20) %>%
   group_rows("Westfall-Young (single-step)", 21, 24)
 
+```
 
+```{r verifyPowerUp}
+# for M=1, look up in Power-Up
 
+#RESULTS LOOK WEIRD - troubleshoot
+  #app to generate power can be found here https://metinbulus.shinyapps.io/powerupr/
+    #power from PowerUp! app: 0.1662404
+
+#extract power estimate using PowerUp! package -  what is n? unclear
+powerUp<- power.bira2c1(es=.125, alpha=.05, two.tailed=TRUE, p=.50, g1=0, r21=0, n=50, J=20)
+powerUp.M1 <- powerUp$power
+
+#extract M=1 power from our methods
+power.M1 <- validtable[which(validtable$method_adjname =="rawp" & validtable$method_correlation == "0"), "method_indiv"]
+power.M1 <- as.numeric(levels(power.M1))[power.M1]
   
-  # for M=1, look up in Power-Up
-    #app to generate power can be found here https://metinbulus.shinyapps.io/powerupr/
+# create table of results and check for if within TBD margin of error
+powerUpvalidtable <- cbind(powerUp.M1, power.M1)
 
-      #power from PowerUp! app: 0.1662404  - what is n? unclear
-
-      #extract M=1 power from our methods
-      power.rawpind <- validtable[which(validtable$method_adjname =="rawp" & validtable$method_correlation == "0"), "method_indiv"]
-      power.rawpind <- as.numeric(levels(power.rawpind))[power.rawpind]
-
-
-
-  # create table of results and check for if within TBD margin of error
-
-  # create table of run times
+# create table of run times
 
 ```
 
