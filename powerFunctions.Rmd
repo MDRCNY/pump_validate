@@ -2,7 +2,7 @@
 title: "Power Under Multiplicity Functions"
 author: "Kristin Porter"
 date: "September 13, 2016"
-output: html_notebook
+output: github_document
 ---
 
 ## Functions for Computing Power for Westfall-Young
@@ -109,6 +109,7 @@ df<-function(J,n.j,numCovar.1) {J*n.j - J - numCovar.1 - 1}
     # snum is number of samples for WY
 
 ```{r}
+
 power.blockedRCT.2<-function(M, MDES, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
                              mod.type, sigma, omega,

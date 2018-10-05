@@ -1,11 +1,9 @@
-#
 # This is a Shiny web application. You can run the application by clicking
 # the 'Run App' button above.
 #
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
-#
 
 # fake data for testing
 nblocks<-c(10,20,30,40,50,60)
@@ -18,9 +16,32 @@ prfalse<-c("1/3","2/3","1")
 defn<-c("individual","1-minimal","1/3-minimal","2/3-minimal","complete")
 dat<-expand.grid(nblocks,nindiv,mtp,R2,cor,ntests,prfalse,defn)
 colnames(dat)<-c("nblocks","nindiv","mtp","R2","cor","ntests","prfalse","defn")
-dat$power<-rnorm(nrow(dat),0.7,0.15)
+dat$power<-rnorm(nrow(dat),0.7,0.15) #drawn from Normal Distribution
 dat$power[dat$power>1]<-0.1
 
+
+#data generating process function
+## Note: To be sourced into later, Specify what the data generating process is too later.
+
+
+dgp = function(N, beta_0, beta_1, tau = 5, seed){
+  
+  # N : Number of sample size
+  # beta_0 : Intercept/The baseline value
+  # beta_1 : The group mean difference of X1 covariate
+  # tau : treatment effect
+  # seed : To be set for consistency in the data generating process
+  
+  set.seed(seed = seed)
+  X = rnorm(seq(N), mean = 65, sd = 3)
+  Y_0 = beta_0 + beta_1 * X + 0 + rnorm(seq(N), mean = 0, sd = 1)
+  Y_1 = beta_0 + beta_1 * X + tau + rnorm(seq(N), mean = 0, sd = 1)
+  dat = data.frame(cbind(seq(N), X, Y_0,Y_1))
+  return(dat)
+  
+}
+
+# Libraries loaded here
 library(shiny)
 library(dropR)
 library(shinyBS)
@@ -124,11 +145,27 @@ ui <- shinyUI(fluidPage(
                           p("This too.")
                         )
                       )),
-             tabPanel("Last page", 
-                      mainPanel(
-                        p("some text for the specific tab")
-                      )
-             )               
+             tabPanel("Monte Carlo Simulation", 
+                  
+                  # A sidebar layout
+                  sidebarLayout(
+                    sidebarPanel(
+                      selectInput("t.sim", "Type of Simulations", choices = list("Sample Based" = "s.base", "Randomization Based" = "r.base")),
+                      numericInput("n", "N", value = 100, min = 100, max = 100000),
+                      sliderInput("beta_0", "Beta_0", min = 5, max = 15, value = 10, step = 1),
+                      sliderInput("beta_1", "Beta_1", min = 1, max = 5, value = 3.5, step = 0.5),
+                      numericInput("seed", "Seed", value = 1234, min = 1000, max = 2000),
+                      sliderInput("assign", "Assignment Probabilites", min = 0.3, max = 0.8, value = 0.5, step = 0.1)
+                    ),# sidebar panel 1
+                    
+               
+                    mainPanel(plotOutput("LineChart2")) # main panel
+                        
+                        
+                      )# sidebar layout 
+                      
+                     
+             )#tabpanel              
              
   )
 ))
@@ -137,13 +174,21 @@ ui <- shinyUI(fluidPage(
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session) {
   
+  # Function Section
+  ## Subset plot function
   subsetplot<-function(dat,which.defn) {
     dat<-dat[dat$defn==which.defn,]
+    
+    #what is ww here?
+    
     if (input$plot.what=="cor")     ww<-which(dat$nindiv==input$nindiv & dat$nblocks==input$nblocks & dat$ntests==input$ntests & dat$R2==input$R2)
     if (input$plot.what=="nblocks") ww<-which(dat$nindiv==input$nindiv                              & dat$ntests==input$ntests & dat$R2==input$R2 & dat$cor==cor)
     if (input$plot.what=="nindiv")  wW<-which(                           dat$nblocks==input$nblocks & dat$ntests==input$ntests & dat$R2==input$R2 & dat$cor==cor)
     if (input$plot.what=="R2")      ww<-which(dat$nindiv==input$nindiv & dat$nblocks==input$nblocks & dat$ntests==input$ntests                    & dat$cor==cor)
     dc<-dat[ww,]
+    
+    #So the X covariates are the columns from input$plot.what??
+    
     cc<-which(colnames(dc)==input$plot.what)
     
     dc.3.3<-dc[dc$prfalse=="1",]
@@ -157,6 +202,9 @@ server <- shinyServer(function(input, output, session) {
     legend("bottom", inset=c(0,-0.5), legend=c("All nulls are false","2/3 nulls are false","1/3 nulls are false"), col=c(1,2,3), xpd=TRUE)
     
   }
+  
+  ##Data Generating Process for 
+  
   
   
   output$LineChart1 <- renderPlot({subsetplot(dat,"individual") }, width = 700, height= 500) #this sets the plot size
