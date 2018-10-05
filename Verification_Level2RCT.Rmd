@@ -99,13 +99,17 @@ colnames(MCmethods) <- paste("sim", colnames(MCmethods), sep = "_")
 validtable <- merge(ourmethods, MCmethods, by.x = c("method_adjname", "method_correlation"), by.y = c("sim_adjname", "sim_correlation"), all = TRUE) 
 
 #reorder/subset columns and obs
-levels(validtable$method_adjname) <- c("rawp", "BF", "HO", "BH", "WY-SD", "WY-SS")
+validtable$method_adjname <- ordered(validtable$method_adjname, c("rawp", "BF", "HO", "BH", "WY-SD", "WY-SS"))
+validtable <- validtable[order(validtable$method_adjname),]
 
 validtable <- validtable[, c("method_adjname", "method_correlation", "method_indiv", "sim_D1indiv", "method_min1", "sim_min", "method_min2",
                              "sim_1/3", "method_min4", "sim_2/3", "method_complete", "sim_full")]
 
+##create validation table our methods vs MC Sim
 
-#create validation table our methods vs MC Sim
+#adjust rownames to work with kable headers
+rownames(validtable) <- c(1:24)
+
 kable(validtable[, 2:12], caption = "MTP Used and Correlations") %>%
   kable_styling("striped") %>%
   add_header_above(c(" " = 1, "Individual" = 2, "1-minimal" = 2, "1/3-minimal" = 2, "2/3-minimal" = 2, "Complete" = 2)) %>%
@@ -121,7 +125,6 @@ kable(validtable[, 2:12], caption = "MTP Used and Correlations") %>%
 ```{r verifyPowerUp}
 # for M=1, look up in Power-Up
 
-#RESULTS LOOK WEIRD - troubleshoot
   #app to generate power can be found here https://metinbulus.shinyapps.io/powerupr/
     #power from PowerUp! app: 0.1662404
 
@@ -135,6 +138,7 @@ power.M1 <- as.numeric(levels(power.M1))[power.M1]
   
 # create table of results and check for if within TBD margin of error
 powerUpvalidtable <- cbind(powerUp.M1, power.M1)
+powerUpvalidtable
 
 # create table of run times
 
