@@ -32,14 +32,15 @@ dgp = function(N, beta_0, beta_1, tau = 5, seed){
   # tau : treatment effect
   # seed : To be set for consistency in the data generating process
   
-  set.seed(seed = seed)
-  X = rnorm(seq(N), mean = 65, sd = 3)
-  Y_0 = beta_0 + beta_1 * X + 0 + rnorm(seq(N), mean = 0, sd = 1)
-  Y_1 = beta_0 + beta_1 * X + tau + rnorm(seq(N), mean = 0, sd = 1)
-  dat = data.frame(cbind(seq(N), X, Y_0,Y_1))
+    set.seed(seed = seed)
+    X = rnorm(seq(N), mean = 65, sd = 3)
+    Y_0 = beta_0 + beta_1 * X + 0 + rnorm(seq(N), mean = 0, sd = 1)
+    Y_1 = beta_0 + beta_1 * X + tau + rnorm(seq(N), mean = 0, sd = 1)
+    dat = data.frame(cbind(seq(N), X, Y_0,Y_1))
+    dat = colnames("Num of Samples", "X", "Y0", "Y1")
   return(dat)
-  
-}
+    
+}#dgp function ends
 
 # Libraries loaded here
 library(shiny)
@@ -150,7 +151,9 @@ ui <- shinyUI(fluidPage(
                   # A sidebar layout
                   sidebarLayout(
                     sidebarPanel(
+                      #selector input for type of Simulation
                       selectInput("t.sim", "Type of Simulations", choices = list("Sample Based" = "s.base", "Randomization Based" = "r.base")),
+                      #numeric input for number of sample sizes
                       numericInput("n", "N", value = 100, min = 100, max = 100000),
                       sliderInput("beta_0", "Beta_0", min = 5, max = 15, value = 10, step = 1),
                       sliderInput("beta_1", "Beta_1", min = 1, max = 5, value = 3.5, step = 0.5),
@@ -159,7 +162,11 @@ ui <- shinyUI(fluidPage(
                     ),# sidebar panel 1
                     
                
-                    mainPanel(plotOutput("LineChart2")) # main panel
+                    mainPanel(
+                      
+                      tableOutput("view") #The view table output
+                      
+                    ) # main panel
                         
                         
                       )# sidebar layout 
@@ -203,8 +210,21 @@ server <- shinyServer(function(input, output, session) {
     
   }
   
-  ##Data Generating Process for 
+  ##Data Generating Process attached with 5 input parameters of 
+  ### N, number of sample
+  ### beta_0, the intercept
+  ### beta_1, the coefficient of covariate X1
+  ### seed, random number generating process
+  ### assignment prob, the assignment probabilities
   
+  #A reactive expression for the data generating process
+  random_block <- reactive({dgp(input$N, input$beta_0, input$beta_1, input$seed)})
+
+  #Rendering a reactive object table for the Data Generating Process
+  output$view <- renderTable({
+    #displaying based on the number of sample sizes
+    head(random_block, n = input$N)
+  })
   
   
   output$LineChart1 <- renderPlot({subsetplot(dat,"individual") }, width = 700, height= 500) #this sets the plot size
