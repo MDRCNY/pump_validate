@@ -1,0 +1,148 @@
+2018-06-13 11:53:57,926 EDT DEBUG PoolingHttpClientConnectionManager - Closing expired connections
+2018-06-13 11:53:57,926 EDT DEBUG PoolingHttpClientConnectionManager - Closing connections idle longer than 30 SECONDS
+2018-06-13 11:53:57,989 EDT DEBUG RequestAddCookies - CookieSpec selected: standard
+2018-06-13 11:53:57,989 EDT DEBUG RequestAuthCache - Auth cache not set in the context
+2018-06-13 11:53:57,989 EDT DEBUG PoolingHttpClientConnectionManager - Connection request: [route: {s}->https://app.dominodatalab.com:443][total kept alive: 0; route allocated: 0 of 10; total allocated: 0 of 30]
+2018-06-13 11:53:58,020 EDT DEBUG PoolingHttpClientConnectionManager - Connection leased: [id: 0][route: {s}->https://app.dominodatalab.com:443][total kept alive: 0; route allocated: 1 of 10; total allocated: 1 of 30]
+2018-06-13 11:53:58,020 EDT DEBUG MainClientExec - Opening connection {s}->https://app.dominodatalab.com:443
+2018-06-13 11:53:58,051 EDT DEBUG DefaultHttpClientConnectionOperator - Connecting to app.dominodatalab.com/35.162.134.178:443
+2018-06-13 11:53:58,051 EDT DEBUG SSLConnectionSocketFactory - Connecting socket to app.dominodatalab.com/35.162.134.178:443 with timeout 60000
+2018-06-13 11:53:58,413 EDT DEBUG SSLConnectionSocketFactory - Enabled protocols: [TLSv1, TLSv1.1, TLSv1.2]
+2018-06-13 11:53:58,413 EDT DEBUG SSLConnectionSocketFactory - Enabled cipher suites:[TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA, TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA, SSL_RSA_WITH_3DES_EDE_CBC_SHA, TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA, TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA, SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA, SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSV]
+2018-06-13 11:53:58,413 EDT DEBUG SSLConnectionSocketFactory - Starting handshake
+2018-06-13 11:53:58,664 EDT DEBUG SSLConnectionSocketFactory - Secure session established
+2018-06-13 11:53:58,664 EDT DEBUG SSLConnectionSocketFactory -  negotiated protocol: TLSv1.2
+2018-06-13 11:53:58,664 EDT DEBUG SSLConnectionSocketFactory -  negotiated cipher suite: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+2018-06-13 11:53:58,664 EDT DEBUG SSLConnectionSocketFactory -  peer principal: CN=*.dominodatalab.com
+2018-06-13 11:53:58,664 EDT DEBUG SSLConnectionSocketFactory -  peer alternative names: [*.dominodatalab.com, *.app.dominodatalab.com, dominodatalab.com]
+2018-06-13 11:53:58,664 EDT DEBUG SSLConnectionSocketFactory -  issuer principal: CN=Amazon, OU=Server CA 1B, O=Amazon, C=US
+2018-06-13 11:53:58,664 EDT DEBUG DefaultHttpClientConnectionOperator - Connection established 172.16.18.18:61247<->35.162.134.178:443
+2018-06-13 11:53:58,664 EDT DEBUG DefaultManagedHttpClientConnection - http-outgoing-0: set socket timeout to 60000
+2018-06-13 11:53:58,664 EDT DEBUG MainClientExec - Executing request GET /client/checkMessage HTTP/1.1
+2018-06-13 11:53:58,664 EDT DEBUG MainClientExec - Target auth state: UNCHALLENGED
+2018-06-13 11:53:58,664 EDT DEBUG MainClientExec - Proxy auth state: UNCHALLENGED
+2018-06-13 11:53:58,679 EDT DEBUG headers - http-outgoing-0 >> GET /client/checkMessage HTTP/1.1
+2018-06-13 11:53:58,679 EDT DEBUG headers - http-outgoing-0 >> User-Agent: domino-cli/2.6.0
+2018-06-13 11:53:58,679 EDT DEBUG headers - http-outgoing-0 >> X-Requested-With: domino.common.util.http.HttpService
+2018-06-13 11:53:58,679 EDT DEBUG headers - http-outgoing-0 >> Host: app.dominodatalab.com
+2018-06-13 11:53:58,679 EDT DEBUG headers - http-outgoing-0 >> Connection: Keep-Alive
+2018-06-13 11:53:58,679 EDT DEBUG headers - http-outgoing-0 >> Accept-Encoding: gzip,deflate
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << HTTP/1.1 404 Not Found
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << Server: nginx
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << Date: Wed, 13 Jun 2018 15:53:58 GMT
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << Content-Type: text/html; charset=utf-8
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << Transfer-Encoding: chunked
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << Connection: keep-alive
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << Set-Cookie: PLAY_SESSION=c3642fa56e096a37036e1dfad3d793d84e1939fc-csrfToken=c3eb648fa2529657385e8cf8abe5c3f0066ad63f-1528905238475-b0f79f7bfd219a664c18ca4e; Path=/; HTTPOnly
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << Play-Processing-Time: 1
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << X-Frame-Options: DENY
+2018-06-13 11:53:58,788 EDT DEBUG headers - http-outgoing-0 << Content-Encoding: gzip
+2018-06-13 11:53:58,804 EDT DEBUG MainClientExec - Connection can be kept alive indefinitely
+2018-06-13 11:53:58,804 EDT DEBUG ResponseProcessCookies - Cookie accepted [PLAY_SESSION="c3642fa56e096a37036e1dfad3d793d84e1939fc-csrfToken=c3eb648fa2529657385e8cf8abe5c3f0066ad63f-15289052...", version:0, domain:app.dominodatalab.com, path:/, expiry:null]
+2018-06-13 11:53:59,245 EDT DEBUG DefaultManagedHttpClientConnection - http-outgoing-0: Close connection
+2018-06-13 11:53:59,260 EDT DEBUG MainClientExec - Connection discarded
+2018-06-13 11:53:59,307 EDT DEBUG PoolingHttpClientConnectionManager - Connection released: [id: 0][route: {s}->https://app.dominodatalab.com:443][total kept alive: 0; route allocated: 0 of 10; total allocated: 0 of 30]
+2018-06-13 11:54:00,680 EDT DEBUG RequestAddCookies - CookieSpec selected: standard
+2018-06-13 11:54:00,680 EDT DEBUG RequestAddCookies - Cookie [version: 0][name: PLAY_SESSION][value: c3642fa56e096a37036e1dfad3d793d84e1939fc-csrfToken=c3eb648fa2529657385e8cf8abe5c3f0066ad63f-1528905238475-b0f79f7bfd219a664c18ca4e][domain: app.dominodatalab.com][path: /][expiry: null] match [(secure)app.dominodatalab.com:443/gitRepoUri/dchen/quick-start]
+2018-06-13 11:54:00,680 EDT DEBUG RequestAuthCache - Auth cache not set in the context
+2018-06-13 11:54:00,680 EDT DEBUG PoolingHttpClientConnectionManager - Connection request: [route: {s}->https://app.dominodatalab.com:443][total kept alive: 0; route allocated: 0 of 10; total allocated: 0 of 30]
+2018-06-13 11:54:00,680 EDT DEBUG PoolingHttpClientConnectionManager - Connection leased: [id: 1][route: {s}->https://app.dominodatalab.com:443][total kept alive: 0; route allocated: 1 of 10; total allocated: 1 of 30]
+2018-06-13 11:54:00,680 EDT DEBUG MainClientExec - Opening connection {s}->https://app.dominodatalab.com:443
+2018-06-13 11:54:00,680 EDT DEBUG DefaultHttpClientConnectionOperator - Connecting to app.dominodatalab.com/35.162.134.178:443
+2018-06-13 11:54:00,680 EDT DEBUG SSLConnectionSocketFactory - Connecting socket to app.dominodatalab.com/35.162.134.178:443 with timeout 60000
+2018-06-13 11:54:00,774 EDT DEBUG SSLConnectionSocketFactory - Enabled protocols: [TLSv1, TLSv1.1, TLSv1.2]
+2018-06-13 11:54:00,774 EDT DEBUG SSLConnectionSocketFactory - Enabled cipher suites:[TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA, TLS_RSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA, TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA, SSL_RSA_WITH_3DES_EDE_CBC_SHA, TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA, TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA, SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA, SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSV]
+2018-06-13 11:54:00,774 EDT DEBUG SSLConnectionSocketFactory - Starting handshake
+2018-06-13 11:54:00,869 EDT DEBUG SSLConnectionSocketFactory - Secure session established
+2018-06-13 11:54:00,869 EDT DEBUG SSLConnectionSocketFactory -  negotiated protocol: TLSv1.2
+2018-06-13 11:54:00,869 EDT DEBUG SSLConnectionSocketFactory -  negotiated cipher suite: TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+2018-06-13 11:54:00,869 EDT DEBUG SSLConnectionSocketFactory -  peer principal: CN=*.dominodatalab.com
+2018-06-13 11:54:00,869 EDT DEBUG SSLConnectionSocketFactory -  peer alternative names: [*.dominodatalab.com, *.app.dominodatalab.com, dominodatalab.com]
+2018-06-13 11:54:00,869 EDT DEBUG SSLConnectionSocketFactory -  issuer principal: CN=Amazon, OU=Server CA 1B, O=Amazon, C=US
+2018-06-13 11:54:00,869 EDT DEBUG DefaultHttpClientConnectionOperator - Connection established 172.16.18.18:61249<->35.162.134.178:443
+2018-06-13 11:54:00,869 EDT DEBUG DefaultManagedHttpClientConnection - http-outgoing-1: set socket timeout to 60000
+2018-06-13 11:54:00,869 EDT DEBUG MainClientExec - Executing request GET /gitRepoUri/dchen/quick-start HTTP/1.1
+2018-06-13 11:54:00,869 EDT DEBUG MainClientExec - Target auth state: UNCHALLENGED
+2018-06-13 11:54:00,869 EDT DEBUG MainClientExec - Proxy auth state: UNCHALLENGED
+2018-06-13 11:54:00,869 EDT DEBUG headers - http-outgoing-1 >> GET /gitRepoUri/dchen/quick-start HTTP/1.1
+2018-06-13 11:54:00,869 EDT DEBUG headers - http-outgoing-1 >> User-Agent: domino-cli/2.6.0
+2018-06-13 11:54:00,869 EDT DEBUG headers - http-outgoing-1 >> X-Domino-Api-Key: oY5jq0rbP8h8X77KCRQmty4NpvbGpl9GYix68rQn7z73mkR4muEINoc13msdSn0X
+2018-06-13 11:54:00,869 EDT DEBUG headers - http-outgoing-1 >> X-Requested-With: domino.common.util.http.HttpService
+2018-06-13 11:54:00,869 EDT DEBUG headers - http-outgoing-1 >> Host: app.dominodatalab.com
+2018-06-13 11:54:00,885 EDT DEBUG headers - http-outgoing-1 >> Connection: Keep-Alive
+2018-06-13 11:54:00,885 EDT DEBUG headers - http-outgoing-1 >> Cookie: PLAY_SESSION=c3642fa56e096a37036e1dfad3d793d84e1939fc-csrfToken=c3eb648fa2529657385e8cf8abe5c3f0066ad63f-1528905238475-b0f79f7bfd219a664c18ca4e
+2018-06-13 11:54:00,885 EDT DEBUG headers - http-outgoing-1 >> Accept-Encoding: gzip,deflate
+2018-06-13 11:54:01,009 EDT DEBUG headers - http-outgoing-1 << HTTP/1.1 200 OK
+2018-06-13 11:54:01,009 EDT DEBUG headers - http-outgoing-1 << Server: nginx
+2018-06-13 11:54:01,009 EDT DEBUG headers - http-outgoing-1 << Date: Wed, 13 Jun 2018 15:54:00 GMT
+2018-06-13 11:54:01,009 EDT DEBUG headers - http-outgoing-1 << Content-Type: text/plain; charset=utf-8
+2018-06-13 11:54:01,009 EDT DEBUG headers - http-outgoing-1 << Transfer-Encoding: chunked
+2018-06-13 11:54:01,009 EDT DEBUG headers - http-outgoing-1 << Connection: keep-alive
+2018-06-13 11:54:01,009 EDT DEBUG headers - http-outgoing-1 << Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+2018-06-13 11:54:01,009 EDT DEBUG headers - http-outgoing-1 << Play-Processing-Time: 13
+2018-06-13 11:54:01,009 EDT DEBUG headers - http-outgoing-1 << X-Frame-Options: DENY
+2018-06-13 11:54:01,009 EDT DEBUG MainClientExec - Connection can be kept alive indefinitely
+2018-06-13 11:54:01,009 EDT DEBUG PoolingHttpClientConnectionManager - Connection [id: 1][route: {s}->https://app.dominodatalab.com:443] can be kept alive indefinitely
+2018-06-13 11:54:01,009 EDT DEBUG PoolingHttpClientConnectionManager - Connection released: [id: 1][route: {s}->https://app.dominodatalab.com:443][total kept alive: 1; route allocated: 1 of 10; total allocated: 1 of 30]
+2018-06-13 11:54:01,126 EDT DEBUG RequestAddCookies - CookieSpec selected: standard
+2018-06-13 11:54:01,126 EDT DEBUG RequestAddCookies - Cookie [version: 0][name: PLAY_SESSION][value: c3642fa56e096a37036e1dfad3d793d84e1939fc-csrfToken=c3eb648fa2529657385e8cf8abe5c3f0066ad63f-1528905238475-b0f79f7bfd219a664c18ca4e][domain: app.dominodatalab.com][path: /][expiry: null] match [(secure)app.dominodatalab.com:443/gitRepoUri/dchen/quick-start]
+2018-06-13 11:54:01,126 EDT DEBUG RequestAuthCache - Auth cache not set in the context
+2018-06-13 11:54:01,126 EDT DEBUG PoolingHttpClientConnectionManager - Connection request: [route: {s}->https://app.dominodatalab.com:443][total kept alive: 1; route allocated: 1 of 10; total allocated: 1 of 30]
+2018-06-13 11:54:01,141 EDT DEBUG PoolingHttpClientConnectionManager - Connection leased: [id: 1][route: {s}->https://app.dominodatalab.com:443][total kept alive: 0; route allocated: 1 of 10; total allocated: 1 of 30]
+2018-06-13 11:54:01,141 EDT DEBUG DefaultManagedHttpClientConnection - http-outgoing-1: set socket timeout to 60000
+2018-06-13 11:54:01,141 EDT DEBUG MainClientExec - Executing request GET /gitRepoUri/dchen/quick-start HTTP/1.1
+2018-06-13 11:54:01,141 EDT DEBUG MainClientExec - Target auth state: UNCHALLENGED
+2018-06-13 11:54:01,141 EDT DEBUG MainClientExec - Proxy auth state: UNCHALLENGED
+2018-06-13 11:54:01,141 EDT DEBUG headers - http-outgoing-1 >> GET /gitRepoUri/dchen/quick-start HTTP/1.1
+2018-06-13 11:54:01,141 EDT DEBUG headers - http-outgoing-1 >> User-Agent: domino-cli/2.6.0
+2018-06-13 11:54:01,141 EDT DEBUG headers - http-outgoing-1 >> X-Domino-Api-Key: oY5jq0rbP8h8X77KCRQmty4NpvbGpl9GYix68rQn7z73mkR4muEINoc13msdSn0X
+2018-06-13 11:54:01,141 EDT DEBUG headers - http-outgoing-1 >> X-Requested-With: domino.common.util.http.HttpService
+2018-06-13 11:54:01,141 EDT DEBUG headers - http-outgoing-1 >> Host: app.dominodatalab.com
+2018-06-13 11:54:01,141 EDT DEBUG headers - http-outgoing-1 >> Connection: Keep-Alive
+2018-06-13 11:54:01,141 EDT DEBUG headers - http-outgoing-1 >> Cookie: PLAY_SESSION=c3642fa56e096a37036e1dfad3d793d84e1939fc-csrfToken=c3eb648fa2529657385e8cf8abe5c3f0066ad63f-1528905238475-b0f79f7bfd219a664c18ca4e
+2018-06-13 11:54:01,141 EDT DEBUG headers - http-outgoing-1 >> Accept-Encoding: gzip,deflate
+2018-06-13 11:54:01,252 EDT DEBUG headers - http-outgoing-1 << HTTP/1.1 200 OK
+2018-06-13 11:54:01,252 EDT DEBUG headers - http-outgoing-1 << Server: nginx
+2018-06-13 11:54:01,252 EDT DEBUG headers - http-outgoing-1 << Date: Wed, 13 Jun 2018 15:54:00 GMT
+2018-06-13 11:54:01,252 EDT DEBUG headers - http-outgoing-1 << Content-Type: text/plain; charset=utf-8
+2018-06-13 11:54:01,252 EDT DEBUG headers - http-outgoing-1 << Transfer-Encoding: chunked
+2018-06-13 11:54:01,252 EDT DEBUG headers - http-outgoing-1 << Connection: keep-alive
+2018-06-13 11:54:01,268 EDT DEBUG headers - http-outgoing-1 << Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+2018-06-13 11:54:01,268 EDT DEBUG headers - http-outgoing-1 << Play-Processing-Time: 13
+2018-06-13 11:54:01,268 EDT DEBUG headers - http-outgoing-1 << X-Frame-Options: DENY
+2018-06-13 11:54:01,268 EDT DEBUG MainClientExec - Connection can be kept alive indefinitely
+2018-06-13 11:54:01,268 EDT DEBUG PoolingHttpClientConnectionManager - Connection [id: 1][route: {s}->https://app.dominodatalab.com:443] can be kept alive indefinitely
+2018-06-13 11:54:01,268 EDT DEBUG PoolingHttpClientConnectionManager - Connection released: [id: 1][route: {s}->https://app.dominodatalab.com:443][total kept alive: 1; route allocated: 1 of 10; total allocated: 1 of 30]
+2018-06-13 11:54:02,935 EDT DEBUG PoolingHttpClientConnectionManager - Closing expired connections
+2018-06-13 11:54:02,935 EDT DEBUG PoolingHttpClientConnectionManager - Closing connections idle longer than 30 SECONDS
+2018-06-13 11:54:05,083 EDT DEBUG RequestAddCookies - CookieSpec selected: standard
+2018-06-13 11:54:05,083 EDT DEBUG RequestAddCookies - Cookie [version: 0][name: PLAY_SESSION][value: c3642fa56e096a37036e1dfad3d793d84e1939fc-csrfToken=c3eb648fa2529657385e8cf8abe5c3f0066ad63f-1528905238475-b0f79f7bfd219a664c18ca4e][domain: app.dominodatalab.com][path: /][expiry: null] match [(secure)app.dominodatalab.com:443/client/checkMessage]
+2018-06-13 11:54:05,083 EDT DEBUG RequestAuthCache - Auth cache not set in the context
+2018-06-13 11:54:05,083 EDT DEBUG PoolingHttpClientConnectionManager - Connection request: [route: {s}->https://app.dominodatalab.com:443][total kept alive: 1; route allocated: 1 of 10; total allocated: 1 of 30]
+2018-06-13 11:54:05,098 EDT DEBUG PoolingHttpClientConnectionManager - Connection leased: [id: 1][route: {s}->https://app.dominodatalab.com:443][total kept alive: 0; route allocated: 1 of 10; total allocated: 1 of 30]
+2018-06-13 11:54:05,098 EDT DEBUG DefaultManagedHttpClientConnection - http-outgoing-1: set socket timeout to 60000
+2018-06-13 11:54:05,098 EDT DEBUG MainClientExec - Executing request GET /client/checkMessage HTTP/1.1
+2018-06-13 11:54:05,098 EDT DEBUG MainClientExec - Target auth state: UNCHALLENGED
+2018-06-13 11:54:05,098 EDT DEBUG MainClientExec - Proxy auth state: UNCHALLENGED
+2018-06-13 11:54:05,098 EDT DEBUG headers - http-outgoing-1 >> GET /client/checkMessage HTTP/1.1
+2018-06-13 11:54:05,098 EDT DEBUG headers - http-outgoing-1 >> User-Agent: domino-cli/2.6.0
+2018-06-13 11:54:05,098 EDT DEBUG headers - http-outgoing-1 >> X-Requested-With: domino.common.util.http.HttpService
+2018-06-13 11:54:05,098 EDT DEBUG headers - http-outgoing-1 >> Host: app.dominodatalab.com
+2018-06-13 11:54:05,098 EDT DEBUG headers - http-outgoing-1 >> Connection: Keep-Alive
+2018-06-13 11:54:05,098 EDT DEBUG headers - http-outgoing-1 >> Cookie: PLAY_SESSION=c3642fa56e096a37036e1dfad3d793d84e1939fc-csrfToken=c3eb648fa2529657385e8cf8abe5c3f0066ad63f-1528905238475-b0f79f7bfd219a664c18ca4e
+2018-06-13 11:54:05,098 EDT DEBUG headers - http-outgoing-1 >> Accept-Encoding: gzip,deflate
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << HTTP/1.1 404 Not Found
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << Server: nginx
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << Date: Wed, 13 Jun 2018 15:54:04 GMT
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << Content-Type: text/html; charset=utf-8
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << Transfer-Encoding: chunked
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << Connection: keep-alive
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << Cache-Control: no-cache, no-store, must-revalidate, max-age=0
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << Play-Processing-Time: 2
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << X-Frame-Options: DENY
+2018-06-13 11:54:05,209 EDT DEBUG headers - http-outgoing-1 << Content-Encoding: gzip
+2018-06-13 11:54:05,209 EDT DEBUG MainClientExec - Connection can be kept alive indefinitely
+2018-06-13 11:54:05,747 EDT DEBUG DefaultManagedHttpClientConnection - http-outgoing-1: Close connection
+2018-06-13 11:54:05,747 EDT DEBUG MainClientExec - Connection discarded
+2018-06-13 11:54:05,747 EDT DEBUG PoolingHttpClientConnectionManager - Connection released: [id: 1][route: {s}->https://app.dominodatalab.com:443][total kept alive: 0; route allocated: 0 of 10; total allocated: 0 of 30]

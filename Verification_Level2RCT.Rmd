@@ -13,6 +13,9 @@ output: html_document:
 
 ```{r}
 library(yaml)
+library(knitr)
+library(kableExtra)
+library(PowerUpR)
 
 #read in configs file
 configs <- yaml.load_file("configs.yaml")
@@ -28,6 +31,14 @@ simpwr.cor <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125_S3B300_R2.10_R2.20_simpwrLI
 load(paste0(fdir, power.cor))
 load(paste0(fdir, simpwr.cor))
 
+# display power calculation matrices
+power_mutl_storage[[1]]["filename"]
+power_mutl_storage[[1]]["obj"]
+    
+# display simulation matrices
+sim_power_storage[[1]]["simname"]
+sim_power_storage[[1]]["obj"]
+
 ```
 
 
@@ -35,45 +46,101 @@ load(paste0(fdir, simpwr.cor))
 
 ## Maybe different chunk for each design specification (e.g, constant, fixed, random effects)
 
-### The simulations will take a long time so may want to run these separately, and pull results into this markdown??
-
 ```{r chunk3_verifyPower}
-# loop through combinations (don't need all crossed - TBD)
-
 # Compare power estimates from our methods vs MC methods
+  # loop through correlations
 
-power.rho0<- power_mutl_storage[[1]]["obj"]
-sim.rho0<-sim_power_storage[[1]]["obj"]
+#add a correlation column to the data files
+corr <- c(0, .2,.5,.8)
 
-power.rho0
-sim.rho0[[1]]
-
-matrix(unlist(sim.rho0), ncol=11)
-
-#sim.rho0$[df$datay == 5] <- NA
-
-  # display new power calculations
-    power_mutl_storage[[1]]["filename"]
-    power_mutl_storage[[1]]["obj"]
-    
-    power_mutl_storage[[2]]["filename"]
-    power_mutl_storage[[2]]["obj"]
-
-  # run simulations
-    sim_power_storage[[1]]["simname"]
-    sim_power_storage[[1]]["obj"]
+#power_mult_storage
+if(length( power_mutl_storage) == length(corr)){
   
-    sim_power_storage[[2]]["simname"]
-    sim_power_storage[[2]]["obj"]
-    
-    
-    
+  idx <- 1
   
-  # for M=1, look up in Power-Up
+  while(idx <= length(corr)){
+    
+    power_mutl_storage[[idx]]$obj <-  cbind(power_mutl_storage[[idx]]$obj, correlation = rep(corr[idx], nrow( power_mutl_storage[[idx]]$obj)))
+    power_mutl_storage[[idx]]$obj <-  cbind(power_mutl_storage[[idx]]$obj, adjname = c("rawp", "BF","HO", "BH", "WY-SS", "WY-SD"))
+    
+    idx <- idx+1
+  }
+} else {
+  print("Error length of power mult storage different than correlation parameter")
+}
 
-  # create table of results and check for if within TBD margin of error
+#sim_power_storage
+if(length( sim_power_storage) == length(corr)){
+  
+  idx <- 1
+  
+  while(idx <= length(corr)){
+    
+    sim_power_storage[[idx]]$obj <-  cbind(sim_power_storage[[idx]]$obj, correlation = rep(corr[idx], nrow( sim_power_storage[[idx]]$obj)))
+    sim_power_storage[[idx]]$obj <-  cbind(sim_power_storage[[idx]]$obj, adjname = c("rawp", "BF", "BH", "HO", "WY-SD"))
+    
+    idx <- idx+1
+  }
+} else {
+  print("Error length of sim_power_storage different than correlation parameter")
+}
 
-  # create table of run times
+#bind list of data files
+ourmethods <- as.data.frame(rbind(power_mutl_storage[[1]]$obj, power_mutl_storage[[2]]$obj, power_mutl_storage[[3]]$obj, power_mutl_storage[[4]]$obj))
+MCmethods <- as.data.frame(rbind(sim_power_storage[[1]]$obj, sim_power_storage[[2]]$obj, sim_power_storage[[3]]$obj, sim_power_storage[[4]]$obj))
+
+ourmethods<- ourmethods[, c("indiv", "min1", "min2", "min3", "min4", "complete", "correlation", "adjname")]
+MCmethods<- MCmethods[, c("D1indiv", "min", "1/3", "1/2", "2/3", "full", "correlation", "adjname")]
+
+colnames(ourmethods) <- paste("method", colnames(ourmethods), sep = "_")
+colnames(MCmethods) <- paste("sim", colnames(MCmethods), sep = "_")
+
+#merge methods and sim tables
+validtable <- merge(ourmethods, MCmethods, by.x = c("method_adjname", "method_correlation"), by.y = c("sim_adjname", "sim_correlation"), all = TRUE) 
+
+#reorder/subset columns and obs
+validtable$method_adjname <- ordered(validtable$method_adjname, c("rawp", "BF", "HO", "BH", "WY-SD", "WY-SS"))
+validtable <- validtable[order(validtable$method_adjname),]
+
+validtable <- validtable[, c("method_adjname", "method_correlation", "method_indiv", "sim_D1indiv", "method_min1", "sim_min", "method_min2",
+                             "sim_1/3", "method_min4", "sim_2/3", "method_complete", "sim_full")]
+
+##create validation table our methods vs MC Sim
+
+#adjust rownames to work with kable headers
+rownames(validtable) <- c(1:24)
+
+kable(validtable[, 2:12], caption = "MTP Used and Correlations") %>%
+  kable_styling("striped") %>%
+  add_header_above(c(" " = 1, "Individual" = 2, "1-minimal" = 2, "1/3-minimal" = 2, "2/3-minimal" = 2, "Complete" = 2)) %>%
+  group_rows("No adjustment", 1, 4) %>%
+  group_rows("Bonferroni", 5, 8) %>% 
+  group_rows("Holm", 9, 12) %>%
+  group_rows("Benjamini-Hochberg", 13, 16) %>%
+  group_rows("Westfall-Young (step-down)", 17, 20) %>%
+  group_rows("Westfall-Young (single-step)", 21, 24)
+
+```
+
+```{r verifyPowerUp}
+# for M=1, look up in Power-Up
+
+  #app to generate power can be found here https://metinbulus.shinyapps.io/powerupr/
+    #power from PowerUp! app: 0.1662404
+
+#extract power estimate using PowerUp! package -  what is n? unclear
+powerUp<- power.bira2c1(es=.125, alpha=.05, two.tailed=TRUE, p=.50, g1=0, r21=0, n=50, J=20)
+powerUp.M1 <- powerUp$power
+
+#extract M=1 power from our methods
+power.M1 <- validtable[which(validtable$method_adjname =="rawp" & validtable$method_correlation == "0"), "method_indiv"]
+power.M1 <- as.numeric(levels(power.M1))[power.M1]
+  
+# create table of results and check for if within TBD margin of error
+powerUpvalidtable <- cbind(powerUp.M1, power.M1)
+powerUpvalidtable
+
+# create table of run times
 
 ```
 
