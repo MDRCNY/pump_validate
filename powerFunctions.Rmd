@@ -51,7 +51,7 @@ adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
 ```
 
 ```{r}
-adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
+adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix) {
   cl <- makeCluster(ncl)
   registerDoParallel(cl)
   clusterExport(cl=cl, list("comp.rawt.SD"))
@@ -109,7 +109,6 @@ df<-function(J,n.j,numCovar.1) {J*n.j - J - numCovar.1 - 1}
     # snum is number of samples for WY
 
 ```{r}
-
 power.blockedRCT.2<-function(M, MDES, J, n.j,
                              p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
                              mod.type, sigma, omega,
@@ -146,7 +145,7 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
 # adjust p-values for Westfall-Young (single-step and step-down)
   order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
   adjp.SS<-adjust.allsamps.WYSS(snum,abs.Zs.H0,abs.Zs.H1)
-  adjp.WY<-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl)
+  adjp.WY<-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix)
 
 # combine all adjusted p-values in list (each entry is matrix for given MTP)
   adjp.all<-list(rawp,adjp.BF,adjp.HO,adjp.BH,adjp.SS,adjp.WY)
@@ -193,8 +192,6 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
   return(all.power.results)
 }
-
-
 ```
 
 ```{r power.blockedRCT.2_Example, eval=TRUE, message=FALSE, warning=FALSE}
@@ -344,179 +341,14 @@ if (power.definition=="indiv") {
       } # end while
 }
 
-```
-
-These currrently only work if numFalse = M and if MDES is the same or all outcomes. 
-
-```{r SSfun, message=FALSE, warning=FALSE}
-
-SS.blockedRCT.2<-function(M, numFalse, J, n.j, MDES, power, power.definition, MTP, marginError,
-                            p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
-                            mod.type, sigma, omega,
-                            tnum = 10000, snum=2, ncl=2) {
-
-# We don't need snum high if not WY  
-[1] 0.129725
-[1] 0.1228725 0.1297250
-[1] 0.4563
-[1] 0.1262987
-[1] 0.1262987 0.1297250
-[1] 0.4096
-[1] 0.1280119
-> 
-> 
-> print(test.MDES)
-NULL
-> 
-> test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, power=0.417, power.definition, MTP, marginError = 0.005,
-+                           p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
-+                           mod.type="constant", sigma=sigma, omega=NULL,
-+                           tnum = 10000, snum=2, ncl=2)
-Error in qt(p = (1 - alpha/2), df = t.df) : 
-  if (!(MTP %in% c("WY-SS","WY-SD"))) snum <- 2
-    
-# Compute Q(m)
-  Q.m<-sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
-  t.df<-df(J,n.j,numCovar.1)
-  
-# For raw and BF, compute critical values 
-  crit.alpha <- qt(p=(1-alpha/2),df=t.df)  
-  crit.alphaxM <- qt(p=(1-alpha/M/2),df=t.df)  
-  
-# Compute raw and BF MDES for INDIVIDUAL POWER
-  crit.beta <- qt(power,df=t.df)
-  multiplier.raw <- ifelse(power > 0.5, crit.alpha + crit.beta, crit.alpha - crit.beta) 
-  multiplier.BF <- ifelse(power > 0.5, crit.alphaxM + crit.beta, crit.alphaxM - crit.beta)
-  
-# indicator for which ss to compute
-  doJ <- is.null(J)
-  don.j <- is.null(n.j)
-  
-# Compute J or n.j for raw and BF SS for INDIVIDUAL POWER
- if (doJ) {
-   J.raw <- (multiplier.raw/MDES)^2 * ( (1-R2.1) / (p*(1-p)*n.j) )
-   J.BF <-  (multiplier.BF/MDES)^2 * ( (1-R2.1) / (p*(1-p)*n.j) )
- }
- if (don.j) {
-   n.j.raw <- ( (multiplier.raw/MDES)^2 * (1-R2.1) ) / (J *(p*(1-p)) )
-   n.j.BF <- ( (multiplier.BF/MDES)^2 * (1-R2.1) ) / (J *(p*(1-p)) )
- }
-  
-
-# So below can focus on just the one being estimated
-  if (doJ) { 
-    ss.raw <- J.raw
-    ss.BF <- J.BF
-  }
-  if (don.j) {
-    ss.raw <- n.j.raw
-    ss.BF <- n.j.BF
-  }
-  
-  
-### INDIVIDUAL POWER ###
-if (power.definition=="indiv") {  
-  if (MTP == "raw" & doJ) return(J.raw) 
-  if (MTP == "BF" & doJ) return(J.BF) 
-  if (MTP == "raw" & don.j) return(n.j.raw) 
-  if (MTP == "BF" & don.j) return(n.j.BF) 
-  }
-    
-
-# For individual power, other J's or n.j's will be between raw and BF, so make starting value the midpoint
-  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
-    lowhigh <- c(ss.raw,ss.BF)
-    try.ss <- (ss.raw + ss.BF) / 2
-    }
-
-# For minimal powers, makes starting value = raw
-  if (power.definition != "indiv")  {
-    lowhigh <- c(0,1)
-    try.ss <- ss.raw
-  }
-    target.power <- 0 
-    ii <- 0
-    while (ii < 10 & (target.power < power - marginError | target.power > power + marginError) ) {
-      print(lowhigh)
-      print(target.power)
-      print(try.ss)
-      if (doJ) {
-        runpower <- power.blockedRCT.2(M, MDES, J= try.SS, n.j,
-                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
-                                     mod.type, sigma, omega,
-                                     tnum, snum, ncl)
-      }
-      if (don.j) {
-        runpower <- power.blockedRCT.2(M, MDES, J, n.j=try.SS,
-                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
-                                     mod.type, sigma, omega,
-                                     tnum, snum, ncl)
-      }
-      #print(runpower)
-      target.power <- runpower[MTP,power.definition]
-      is.over <- target.power > power
-      if(target.power > power - marginError & target.power < power + marginError) return(c(try.ss,target.power))
-      if(!is.over) {
-        p.off <- (power - target.power) / power
-        lowhigh[1] <- try.ss
-      }
-      if(is.over) {
-        lowhigh[2] <- try.ss
-        p.off <- (target.power - power) / (1 - power)
-      }
-      lowhigh.dist <- lowhigh[2]-lowhigh[1]
-#      try.ss <- ifelse(is.over, lowhigh[2] - p.off * lowhigh.dist, lowhigh[1] + p.off*lowhigh.dist)
-      try.ss <- ifelse(target.power < power, (try.ss + lowhigh[2])/2, (try.ss + lowhigh[1])/2) # midpoint
-      ii <- ii + 1
-      } # end while
-
-}
-
-```
-
-
-
-```{r testing, message=FALSE, warning=FALSE}
-
-mdes1 <- 0.125
-alpha <- 0.05
-p <- 0.5
-r2 <- 0.2
-n.j <- 20
-J <- 50
-numCovar.1 <- 1
-M <- 3
-power.definition = "min2"
-MTP="BF"
-
-# PowerUp for comparison of raw individual power
-power.bira2c1(es=mdes1,alpha,two.tailed=TRUE,p,g1=numCovar.1,r21=r2,n=n.j,J=J)
-
-sigma <-matrix(0.5,3,3)
-
-test.MDES <- MDES.blockedRCT.2(M, numFalse = M, J, n.j, power=0.417, power.definition, MTP, marginError = 0.005,
-                          p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
+test <- MDES.blockedRCT.2(M=M, numFalse = M, J=50, n.j=20, power=0.80, power.definition = "min2", MTP = "BF", marginError = 0.005,
+                          p=0.5, alpha=0.05, numCovar.1=0, numCovar.2=0, R2.1=0, R2.2=0, ICC=0, 
                           mod.type="constant", sigma=sigma, omega=NULL,
                           tnum = 10000, snum=2, ncl=2)
 
 
-print(test.MDES)
-
-test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, MDES = power=0.417, power.definition, MTP, marginError = 0.005,
-                          p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
-                          mod.type="constant", sigma=sigma, omega=NULL,
-                          tnum = 10000, snum=2, ncl=2)
-
-print(test.SS)
+print(test)
 ```
-diag(sigma)<-1
-
-test.power <- power.blockedRCT.2(M, MDES=rep(mdes1,3), J, n.j,
-                             p, alpha, numCovar.1=1, numCovar.2=0, R2.1=r2, R2.2=NULL, ICC=NULL, 
-                             mod.type="c", sigma=sigma, omega=NULL,
-                             tnum = 10000, snum=1000, ncl=2)
-test.power
-
 
 NOTES:
     # how do we optimize tnum and snum - can we provide margin of error? 
