@@ -23,11 +23,23 @@ if (configs$run_powerFunctions == TRUE)
 {
 
   # convert powerFunction.Rmd to R file
-  #purl("powerFunctions.Rmd", output = "powerFunctions.R", documentation = 2)
+  purl("powerFunctions.Rmd", output = "powerFunctions.R", documentation = 2)
   
   #source files
   source("powerFunctions.R")
 
+}
+
+#run MonteCarloSimulation file
+if (configs$run_MCSim == TRUE)
+{
+  
+  # convert powerFunction.Rmd to R file
+  purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
+  
+  #source files
+  source("MonteCarloSimulation.R")
+  
 }
 
 
