@@ -24,7 +24,7 @@ dat$power[dat$power>1]<-0.1
 ## Note: To be sourced into later, Specify what the data generating process is too later.
 
 
-dgp = function(N, beta_0, beta_1, tau = 5, seed){
+dgp = function(N, beta_0, beta_1, seed, tau = 5){
   
   # N : Number of sample size
   # beta_0 : Intercept/The baseline value
@@ -37,7 +37,7 @@ dgp = function(N, beta_0, beta_1, tau = 5, seed){
     Y_0 = beta_0 + beta_1 * X + 0 + rnorm(seq(N), mean = 0, sd = 1)
     Y_1 = beta_0 + beta_1 * X + tau + rnorm(seq(N), mean = 0, sd = 1)
     dat = data.frame(cbind(seq(N), X, Y_0,Y_1))
-    dat = colnames("Num of Samples", "X", "Y0", "Y1")
+    colnames(dat) <- c("Index", "X", "Y0", "Y1")
   return(dat)
     
 }#dgp function ends
@@ -47,6 +47,7 @@ library(shiny)
 library(dropR)
 library(shinyBS)
 library(shinydashboard)
+library(DT)
 
 # Define UI for application that draws a histogram
 ui <- shinyUI(fluidPage(
@@ -217,13 +218,25 @@ server <- shinyServer(function(input, output, session) {
   ### seed, random number generating process
   ### assignment prob, the assignment probabilities
   
+  #Testing to see if the function is working by printing to the console
+  # dat_test <- reactive({dgp(input$N, input$beta_0, input$beta_1, input$seed)})
+  # print(dat_test)
+  
   #A reactive expression for the data generating process
-  random_block <- reactive({dgp(input$N, input$beta_0, input$beta_1, input$seed)})
+  
+  random_block <- reactive({
 
+    #data generating process 
+    dgp(N = input$n, beta_0 = input$beta_0, beta_1 = input$beta_1, seed = input$seed, tau = 5)
+    
+    
+  })#random data block
+  
   #Rendering a reactive object table for the Data Generating Process
   output$view <- renderTable({
     #displaying based on the number of sample sizes
-    head(random_block, n = input$N)
+    random_block()
+    
   })
   
   
