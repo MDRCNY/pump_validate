@@ -218,10 +218,6 @@ server <- shinyServer(function(input, output, session) {
   ### seed, random number generating process
   ### assignment prob, the assignment probabilities
   
-  #Testing to see if the function is working by printing to the console
-  # dat_test <- reactive({dgp(input$N, input$beta_0, input$beta_1, input$seed)})
-  # print(dat_test)
-  
   #A reactive expression for the data generating process
   
   random_block <- reactive({
@@ -237,7 +233,7 @@ server <- shinyServer(function(input, output, session) {
     #displaying based on the number of sample sizes
     random_block()
     
-  })
+  })# Wrapping a reactive expression to a reactive table object for output view
   
   
   output$LineChart1 <- renderPlot({subsetplot(dat,"individual") }, width = 700, height= 500) #this sets the plot size
