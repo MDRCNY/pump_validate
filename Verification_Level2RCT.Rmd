@@ -110,7 +110,21 @@ validtable <- validtable[, c("method_adjname", "method_correlation", "method_ind
 #adjust rownames to work with kable headers
 rownames(validtable) <- c(1:24)
 
-kable(validtable[, 2:12], caption = "MTP Used and Correlations") %>%
+#subset the table to only the columns we care about
+validtable.s <- validtable[, 2:12]
+
+#convert columns from ordered factor to numeric (for rounding)
+str(validtable)
+
+as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
+validtable.s <- sapply(validtable.s, FUN = as.numeric.factor)
+
+#round values in the table
+validtable.s <- round(validtable.s, 2)
+
+
+#display table
+kable(validtable.s, caption = "MTP Used and Correlations") %>%
   kable_styling("striped") %>%
   add_header_above(c(" " = 1, "Individual" = 2, "1-minimal" = 2, "1/3-minimal" = 2, "2/3-minimal" = 2, "Complete" = 2)) %>%
   group_rows("No adjustment", 1, 4) %>%
@@ -119,6 +133,7 @@ kable(validtable[, 2:12], caption = "MTP Used and Correlations") %>%
   group_rows("Benjamini-Hochberg", 13, 16) %>%
   group_rows("Westfall-Young (step-down)", 17, 20) %>%
   group_rows("Westfall-Young (single-step)", 21, 24)
+
 
 ```
 
