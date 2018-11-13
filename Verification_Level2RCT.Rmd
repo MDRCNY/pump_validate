@@ -2,7 +2,7 @@
 title: "Verification for 2-Level Blocked RCT with Constant Effects"
 author: "Deni Chen"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
-output: html_document:
+output: github_document:
     toc: true
     toc_float: true
     number_sections: true
@@ -25,7 +25,7 @@ fdir <- configs$fdir
 
 #files
 power.cor <- "Blocked_i1_2cM6n.j50J20MDES0.125_powerLIST.Rda"
-simpwr.cor <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125_S2000B2_R2.10_R2.20_simpwrLIST.Rda"
+simpwr.cor <- "Blocked_i1_2cM3n.j100J20ICC0MDES0.125_S2000B10000_R2.10_R2.20_simpwrLIST.Rda"
 
 
 
