@@ -2,7 +2,7 @@
 title: "Power Under Multiplicity Functions"
 author: "Kristin Porter"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
-output: html_notebook
+output: github_document
 ---
 
 ## Functions for Computing Power for Westfall-Young
