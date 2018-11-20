@@ -5,7 +5,7 @@
 #
 #    http://shiny.rstudio.com/
 
-# fake data for testing
+# fake data for testing (Deni's original code)
 nblocks<-c(10,20,30,40,50,60)
 nindiv<-c(10,20,30,40,50,60)
 mtp<-c("None","BF","HO","BH","WY")
@@ -19,18 +19,19 @@ colnames(dat)<-c("nblocks","nindiv","mtp","R2","cor","ntests","prfalse","defn")
 dat$power<-rnorm(nrow(dat),0.7,0.15) #drawn from Normal Distribution
 dat$power[dat$power>1]<-0.1
 
-
-#data generating process function
-## Note: To be sourced into later, Specify what the data generating process is too later.
-
-
+#' Data generating function for Causal Relations
+#'
+#' @param N Number of sample size
+#' @param beta_0 Intercept/The baseline value 
+#' @param beta_1 The group mean difference of X1 covariate 
+#' @param seed To be set for consistency in the data generating process  
+#' @param tau treatment effect
+#'
+#' @return a data set
+#' @export
+#'
+#' @examples
 dgp = function(N, beta_0, beta_1, seed, tau = 5){
-  
-  # N : Number of sample size
-  # beta_0 : Intercept/The baseline value
-  # beta_1 : The group mean difference of X1 covariate
-  # tau : treatment effect
-  # seed : To be set for consistency in the data generating process
   
     set.seed(seed = seed)
     X = rnorm(seq(N), mean = 65, sd = 3)
@@ -38,6 +39,7 @@ dgp = function(N, beta_0, beta_1, seed, tau = 5){
     Y_1 = beta_0 + beta_1 * X + tau + rnorm(seq(N), mean = 0, sd = 1)
     dat = data.frame(cbind(seq(N), X, Y_0,Y_1))
     colnames(dat) <- c("Index", "X", "Y0", "Y1")
+    
   return(dat)
     
 }#dgp function ends
@@ -147,7 +149,7 @@ ui <- shinyUI(fluidPage(
                           p("This too.")
                         )
                       )),
-             tabPanel("Monte Carlo Simulation", 
+             tabPanel("Calculation", 
                   
                   # A sidebar layout
                   sidebarLayout(
@@ -155,8 +157,31 @@ ui <- shinyUI(fluidPage(
                       #selector input for type of Simulation
                       selectInput("t.sim", "Type of Simulations", choices = list("Sample Based" = "s.base", "Randomization Based" = "r.base")),
                       #numeric input for number of sample sizes
-                      numericInput("n", "N", value = 100, min = 100, max = 100000),
-                      sliderInput("beta_0", "Beta_0", min = 5, max = 15, value = 10, step = 1),
+                      #Inputting a fluid row for testing with bootstrap fluidRow and Column designs
+                      fluidRow(
+                        
+                        column(6,
+                          numericInput("n", "N", value = 100, min = 100, max = 100000)
+                        ), #End of first column
+                        
+                        column(6,
+                          numericInput("s", "S", value = 200, min = 200, max = 2000)
+                        ) #End of second column
+                        
+                      ), # End of Fluid row 1
+                      
+                      #Inputting another fluid row for testing with action button and vertical alignment
+                      fluidRow(
+                      
+                        column(11,
+                          div(style ="display: inline-block, vertical-align:top;", sliderInput("beta_0", "Beta_0", min = 5, max = 15, value = 10, step = 1))#div ends
+                        ), #End of first column
+                      
+                        column(1,
+                          div(style ="display: inline-block, vertical-align:top;",actionButton("question",label = "", icon = icon("question"))) #div ends
+                        ) # End of second column
+                        
+                      ), # End of Fluid row 2  
                       sliderInput("beta_1", "Beta_1", min = 1, max = 5, value = 3.5, step = 0.5),
                       numericInput("seed", "Seed", value = 1234, min = 1000, max = 2000),
                       sliderInput("assign", "Assignment Probabilites", min = 0.3, max = 0.8, value = 0.5, step = 0.1)
@@ -165,18 +190,29 @@ ui <- shinyUI(fluidPage(
                
                     mainPanel(
                       
-                      tableOutput("view") #The view table output
-                      
+                      fluidRow(
+                        
+                        box(
+                          title = "Calculation Answers", width = 12, height = 300
+                        ), # box for answers
+                        
+                        box( title = "Data Views", width = 12, height = 300,
+                             tableOutput("view") #The view table output
+                        ) # box for data views
+                        
+                      ) # fluid Row 
+
                     ) # main panel
-                        
-                        
-                      )# sidebar layout 
                       
-                     
-             )#tabpanel              
+                      ) # sidebar layout 
+                      
+             ) # tabpanel              
              
-  )
-))
+  ) # navbar Panel
+  
+) # fluid Panel
+
+) # shiny UI
 
 
 # Define server logic required to draw a histogram
@@ -234,6 +270,11 @@ server <- shinyServer(function(input, output, session) {
     random_block()
     
   })# Wrapping a reactive expression to a reactive table object for output view
+  
+
+  
+  
+  
   
   
   output$LineChart1 <- renderPlot({subsetplot(dat,"individual") }, width = 700, height= 500) #this sets the plot size
