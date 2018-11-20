@@ -86,9 +86,10 @@ for (rho in c(0,0.2,0.5,0.8)) {
   M<-6
   MDES<-rep(0.125, M)
   p.j.range<-c(0.5,0.5)
-  #S=2000
-  S=3
-  B=300   #10000
+  S=2000
+  #S=3
+  B=10000
+  #B=300  
   J=20;n.j=100
   theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
   Gamma.00<-rep(0,M);sig.sq<-rep(1,M); alpha<-0.05
@@ -119,23 +120,25 @@ for (rho in c(0,0.2,0.5,0.8)) {
   sim_power_storage[[loop_idx]][["obj"]] <- simpwr
   
   
-  #export separate data files
-  fdir <- "I:/Multiplicity/datafiles/"
-  fname<- paste0(fdir,simname)
-  save(simpwr, file=fname)
+  #export separate data files - for Domino to run and then pull down
+#  fdir <- "I:/Multiplicity/datafiles/"
+#  fname<- paste0(fdir,simname)
+#  save(simpwr, file=fname)
+  save(simpwr, file=simname)
   loop_idx <- loop_idx + 1
 
 }
 
 #export the list of data files with different correlations for import into validation RMD
-lpath <- paste0(fdir, lname)
-save(sim_power_storage, file= lpath)
+#lpath <- paste0(fdir, lname)
+#save(sim_power_storage, file= lpath)
+save(sim_power_storage, file= lname)
 
 
 #' 
 #' 
 #' Make replica of this RMD into an R Script (.R file to be sourced into another pgm)
 ## ----create_RMD----------------------------------------------------------
-#library(knitr)
-#purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
+library(knitr)
+purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
 
