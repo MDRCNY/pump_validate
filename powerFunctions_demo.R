@@ -7,7 +7,7 @@
 #' 
 #' 
 # load required packages
-require(MASS); require(mvtnorm); require(multtest); require(doParallel)
+library(MASS); library(mvtnorm); library(multtest); library(doParallel);
 #' ## Functions for Computing Power for Westfall-Young
 #' 
 #' This function operates on one row of null test statistics. It compares $max_{1 \leq l \leq M} {T_l}$ to $|t_m|$ for all $m$.  
@@ -15,9 +15,14 @@ require(MASS); require(mvtnorm); require(multtest); require(doParallel)
 ## ------------------------------------------------------------------------
 
 comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
+  
+  #browser()
   M<-length(abs.Zs.H0.1row)
+  #browser()
   maxt <- rep(NA, M)
+  #browser()
   for (m in 1:M) {maxt[m] <- max(abs.Zs.H0.1row[m]) > abs.Zs.H1.1samp[m]}
+  
   return(as.integer(maxt))
 }
 
@@ -38,17 +43,26 @@ comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
   return(as.integer(maxt))
 }
 
-#' 
+#' t
 #' In adjust.allsamps.WYSS, we do this multiple times, where snum is number of samples do compute WY pvals to estimate WY power. Here, 
 #'     # ind.B is a matrix of whether ordered absolute pvalue was greater than ordered null test statistics
 #'     # pi.p.m # adjusted pvalues before enforcing monotonicity
 #' 
 ## ------------------------------------------------------------------------
 adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
+  
+  #browser()
   adjp.WY<-matrix(NA,snum,ncol(abs.Zs.H0))
+  #browser()
   doWY<-for (s in 1:snum) {
+    
+    #browser()
     ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp=abs.Zs.H1[s,]))
+    #browser()
     adjp.WY[s,]<-colMeans(ind.B)
+    #browser()
+    #i <- s+1
+    #print(i)
   }
   return(adjp.WY)
 }
@@ -56,7 +70,7 @@ adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
 #' 
 ## ------------------------------------------------------------------------
 adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix) {
-  cl <- makeCluster(ncl)
+  cl <- makeCluster(ncl=2) # temporary measure
   registerDoParallel(cl)
   clusterExport(cl=cl, list("comp.rawt.SD"))
   M<-ncol(abs.Zs.H0)
@@ -77,11 +91,12 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix) {
 
 #' 
 #' ## Helper functions
-#' 
+#' Calculates the means of the test statistics under the joint alternative hypothesis
 #' Recall that $t(m)$ has a $t$-distribution with mean $MDES(m)/Q(m)$, where 
 #' $$ Q(m) = \sqrt{ \frac{(1-R^2(m))}{p(1-p)Jn_j} } $$
 #' 
 ## ------------------------------------------------------------------------
+
 t.mean.H1<-function(MDES,J,n.j,R2.1,p) { MDES * sqrt(p*(1-p)*J*n.j) / sqrt(1-R2.1) }
 
 #' 
@@ -116,61 +131,94 @@ df<-function(J,n.j,numCovar.1) {J*n.j - J - numCovar.1 - 1}
 #' 
 ## ------------------------------------------------------------------------
 power.blockedRCT.2<-function(M, MDES, J, n.j,rho,
-                             p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
+                             p, alpha, numCovar.1, numCovar.2, ICC, 
                              omega = NULL,
-                             tnum, snum, ncl) {
+                             tnum, snum, ncl = 2) {
   
   #setting the sigma
   sigma<-matrix(rep(rho,M*M),nrow=M,ncol=M)
   diag(sigma)<-1
   
+  #Setting R2.1 in the function
+  R2.1 <- 0.5
+  
   # number of false nulls  
   numfalse<-sum(1*MDES>0)
   
   # compute Q(m) for all false nulls
+  # this should be only one number as we have only one inputs of test statistics under alternative
+  
   t.shift<-t.mean.H1(MDES,J,n.j,R2.1,p)
+  
   t.df<-df(J,n.j,numCovar.1)
+  
   t.shift.mat<-t(matrix(rep(t.shift,tnum),M,tnum)) # repeating shift.beta on every row
   
   # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
   # simulating student t distribution
   
-  Zs.H0<-rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0,M),type = c("shifted", "Kshirsagar")) 
+  Zs.H0<-mvtnorm::rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0,M),type = c("shifted", "Kshirsagar")) 
+  
   Zs.H1 <- Zs.H0 + t.shift.mat
   pvals.H0<-2*pt(-abs(Zs.H0),df=t.df)
   pvals.H1<-2*pt(-abs(Zs.H1),df=t.df)    
+  
   abs.Zs.H0 <- abs(Zs.H0)
   abs.Zs.H1 <- abs(Zs.H1)
+
+  # adjust p-values for all but Westfall-Young! ERROR !
+  # document when M = 1 and error
+  #browser()
+  #adjp<-apply(pvals.H1,1,mt.rawp2adjp,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
   
-  # adjust p-values for all but Westfall-Young  
-  adjp<-apply(pvals.H1,1,mt.rawp2adjp,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
-  
+  adjp<-mt.rawp2adjp(pvals.H1,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
+  #browser()
+
   grab.pval<-function(...,proc) {return(...$adjp[order(...$index),proc])}
-  rawp<-do.call(rbind,lapply(adjp,grab.pval,proc="rawp"))
-  adjp.BF<-do.call(rbind,lapply(adjp,grab.pval,proc="Bonferroni"))
-  adjp.HO<-do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
-  adjp.BH<-do.call(rbind,lapply(adjp,grab.pval,proc="BH"))
+
+  #rawp<-do.call(rbind,lapply(adjp,grab.pval,proc="rawp"))
+  rawp <- grab.pval(adjp, proc = "rawp")
+  
+  #browser()
+  
+  #adjp.BF<-do.call(rbind,lapply(adjp,grab.pval,proc="Bonferroni"))
+  adjp.BF <- grab.pval(adjp, proc = "Bonferroni")
+  
+  #adjp.HO<-do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
+  adjp.HO <- grab.pval(adjp, proc = "Holm")
+  
+  #adjp.BH<-do.call(rbind,lapply(adjp,grab.pval,proc="BH"))
+  adjp.BH <- grab.pval(adjp, proc = "BH")
+  
+  #browser()
   
   # adjust p-values for Westfall-Young (single-step and step-down)
+  # ordering each row of p-values by descending order
   order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
   adjp.SS<-adjust.allsamps.WYSS(snum,abs.Zs.H0,abs.Zs.H1)
-  adjp.WY<-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix)
+  #adjp.WY<-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix)
+  #browser()
   
   # combine all adjusted p-values in list (each entry is matrix for given MTP)
-  adjp.all<-list(rawp,adjp.BF,adjp.HO,adjp.BH,adjp.SS,adjp.WY)
+  adjp.all<-list(rawp,adjp.BF,adjp.HO,adjp.BH,adjp.SS)
+  #browser()
   
   # for each MTP, get matrix of indicators of whether adjusted p-value is less than alpha  
   reject<-function(x) {as.matrix(1*(x<alpha))}
   reject.all<-lapply(adjp.all,reject)
+  #browser()
+  
   
   # in each row for each MTP matrix, count number of p-values less than 0.05, in rows corresponding to false nulls
   lt.alpha<-function(x) {apply(as.matrix(x[,MDES>0]),1,sum)}
   lt.alpha.all<-lapply(reject.all,lt.alpha)
+  #browser()
   
   # indiv power for WY, BH, and HO is mean of columns of dummies of whether adjusted pvalues were less than alpha
   power.ind.fun<-function(x) {apply(x,2,mean)}
   power.ind.all<-lapply(reject.all,power.ind.fun)
   power.ind.all.mat<-do.call(rbind,power.ind.all)
+  #browser()
   
   # m-min powers for all procs (including complete power when m=M)
   power.min.fun <- function(x,M) {
@@ -183,22 +231,29 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,rho,
     return(power.min)
   }
   power.min<-lapply(lt.alpha.all,power.min.fun,M=M)
+  #browser()
   power.min.mat<-do.call(rbind,power.min)
+  #browser()
   
   # complete power is probability all false nulls rejected when p-values not adjusted 
   # this is row 1 and column number = numfalse
   power.cmp<-rep(power.min.mat[1,M],length(power.min)) # should it be numfalse or M?
+  #browser()
   
   # combine all power for all definitions
   all.power.results<-cbind(power.ind.all.mat,power.min.mat[,-M],power.cmp)
-  
+  #browser()
   # take mean of all individual power estimates
   mean.ind.power <- apply(as.matrix(all.power.results[,1:M][,MDES>0]),1,mean)
+  #browser()
   
   # revise final matrix to report this mean individual power and return results  
   all.power.results<-cbind(mean.ind.power,all.power.results)
+  #browser()
   colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
-  rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
+  #browser()
+  rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS")
+  #browser()
   return(all.power.results)
 }
 
