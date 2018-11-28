@@ -68,12 +68,12 @@ ui <- fluidPage(
                    
                    
                    
-                   sliderInput("M", "Number of Outcomes", min = 1, max = 10, value = 1, step = 1),
+                   sliderInput("M", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1),
                    numericInput("MDES", "Minimum detect effect size",value = 0.125, min = 0, max = 5, step = 0.001),
                    sliderInput("J", "Number of blocks", min = 1, max = 10, value = 10, step = 1),
                    sliderInput("n.j","Number of units per block", min = 2, max = 100, value = 20, step = 1),
                    numericInput("rho", "Correlation between tests", value = 0.3, min = 0, max = 1.0, step = 0.01),
-                   numericInput("p", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001),
+                   numericInput("p", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.25, step = 0.001),
                    numericInput("alpha", "Significance Level of Tests (alpha)", min = 0.001, max = 0.9, value = 0.05, step = 0.001),
                 
                 fluidRow(
@@ -101,7 +101,7 @@ ui <- fluidPage(
                    #sliderInput("nindiv", "Number of individuals per block",min = 10, max = 60, value = 10,step=10,animate=animationOptions(interval=100, loop=TRUE)),     
                    #sliderInput("R2", "R2", min = 0, max = 1, value = 0.1 ,step=0.1, animate=animationOptions(interval=100, loop=TRUE)),
                    numericInput("tnum", "Number of Permutation for non Westfall Young Test Statistics", min = 5000, max = 50000, value = 500, step = 500),
-                   numericInput("snum", "Number of Permutation for Westfall Young", min = 500, max = 10000, value = 50, step = 100)
+                   numericInput("snum", "Number of Permutation for Westfall Young", min = 5, max = 10000, value = 10, step = 100)
                 
                  ), #sidebar Panel
               mainPanel (
