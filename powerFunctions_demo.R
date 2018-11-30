@@ -32,7 +32,7 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 #' This function operates on each row of null test statistics. It first orders the test statistics such that $t_{s_1} \geq t_{s_2} \geq \dots \geq t_{s_M}$, and then compares $max{|T_{s_1}|,\dots,|T_{s_m}|}$ to $|t_{s_1}|$, $max{|T_{s_2}|,\dots,|T_{s_m}|}$ to $|t_{s_2}|$ and so on, until one compares $max{|T_{s_m}|}$ to ${t_{s_m}$. 
 #'     
 #' In this function, $abs.Zs.H0.1row$ is one row of test statistics under the joint null hypothesis; 
-#' $abs.Zs.H1.1samp$ are the raw test statistics when the null is false, for one simulated sample, 
+#' $abs.Zs.H1.1samp$ are the raw test statistics when the null is false (I believe this is only when the null is TRUE?), for one simulated sample, 
 #' and oo is the ordering of these raw test statistics.  
 #' 
 ## ------------------------------------------------------------------------
