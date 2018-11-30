@@ -27,12 +27,12 @@ ui <- fluidPage(
                     ), # column for inputs
 
                     column(2, 
-                      div(style ="display: inline-block, vertical-align:top;",actionButton("question",label = "", icon = icon("question"))) #div for button ends
+                      div(style ="display: inline-block, vertical-align:top;",actionButton("question_mtp",label = "", icon = icon("question"))) #div for button ends
                     ) # column for buttons
                                           
                    ), # fluid Row to contain the question mark issue 
                    
-                   bsPopover(id = "question", title = NULL,
+                   bsPopover(id = "question_mtp", title = NULL,
                              content = paste0("For more information on MTP, please click!"),
                              placement = "right", 
                              trigger = "hover", 
@@ -65,11 +65,25 @@ ui <- fluidPage(
                    #                            omega = NULL,
                    #                            tnum, snum, ncl)
                    
-                   
-                   
-                   
                    sliderInput("M", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1),
-                   numericInput("MDES", "Minimum detect effect size",value = 0.125, min = 0, max = 5, step = 0.001),
+                   
+                   fluidRow(
+                      
+                     column(10,
+                        numericInput("MDES", "Minimum detect effect size",value = 0.125, min = 0, max = 5, step = 0.001)
+                     ), # column for the MDES input
+                    
+                     column(2, 
+                             div(style ="display: inline-block, vertical-align:top;",actionButton("question_mdes",label = "", icon = icon("question"))) #div for button ends
+                     ) # column for buttons
+                   ), #fluid row to contain just a pop-up
+                
+                   bsPopover(id = "question_mdes", title = NULL,
+                             content = paste0("For MDES, you would want to consider, etc etc"),
+                             placement = "right", 
+                             trigger = "hover", 
+                             options = list(container = "body")),
+                
                    sliderInput("J", "Number of blocks", min = 1, max = 10, value = 10, step = 1),
                    sliderInput("n.j","Number of units per block", min = 2, max = 100, value = 20, step = 1),
                    numericInput("rho", "Correlation between tests", value = 0.3, min = 0, max = 1.0, step = 0.01),
@@ -85,7 +99,7 @@ ui <- fluidPage(
                     numericInput("numCovar.2", "Number of Level 2 Covariates", min = 0, max = 10, value = 5, step =1)
                   )
                 ), #fluid row for block level covariate inputs
-                  
+              
                 #fluidRow(
                 # column(6,
                 #         numericInput("R2.1", "A vector of M R-squared for level 1 variables", min = 0, max = 10, value = 3, step = 1 )
@@ -101,7 +115,7 @@ ui <- fluidPage(
                    #sliderInput("nindiv", "Number of individuals per block",min = 10, max = 60, value = 10,step=10,animate=animationOptions(interval=100, loop=TRUE)),     
                    #sliderInput("R2", "R2", min = 0, max = 1, value = 0.1 ,step=0.1, animate=animationOptions(interval=100, loop=TRUE)),
                    numericInput("tnum", "Number of Permutation for non Westfall Young Test Statistics", min = 5000, max = 50000, value = 500, step = 500),
-                   numericInput("snum", "Number of Permutation for Westfall Young", min = 5, max = 10000, value = 10, step = 100)
+                   numericInput("snum", "Number of Permutation for Westfall Young", min = 5, max = 10000, value = 50, step = 100)
                 
                  ), #sidebar Panel
               mainPanel (
@@ -120,7 +134,7 @@ ui <- fluidPage(
 server <- shinyServer(function(input, output, session = TRUE) {
   
   #Observing the action button click and switching to a different Tab
-  observeEvent(input$question,{
+  observeEvent(input$question_mtp,{
     updateTabsetPanel(session, "mainmenu", selected = "MTP" )
   })
   

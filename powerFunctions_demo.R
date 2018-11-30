@@ -61,9 +61,9 @@ adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
     
     #browser()
     ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp=abs.Zs.H1[s,]))
-    browser()
+    #browser()
     adjp.WY[s,]<-colMeans(ind.B)
-    browser()
+    #browser()
     #i <- s+1
     #print(i)
   }
@@ -231,15 +231,12 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,rho,
   # ordering each row of p-values by descending order
   order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
   
-  browser()
-  
   adjp.SS<-adjust.allsamps.WYSS(snum,abs.Zs.H0,abs.Zs.H1)
   #adjp.WY<-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix)
-  browser()
-  
+
   # combine all adjusted p-values in list (each entry is matrix for given MTP)
   adjp.all<-list(rawp,adjp.BF,adjp.HO,adjp.BH,adjp.SS)
-  browser()
+  #browser()
   
   # for each MTP, get matrix of indicators of whether adjusted p-value is less than alpha  
   reject<-function(x) {as.matrix(1*(x<alpha))}
@@ -250,14 +247,14 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,rho,
   # in each row for each MTP matrix, count number of p-values less than 0.05, in rows corresponding to false nulls
   lt.alpha<-function(x) {apply(as.matrix(x[,MDES>0]),1,sum)}
   lt.alpha.all<-lapply(reject.all,lt.alpha)
-  browser()
+  # browser()
   
   # indiv power for WY, BH, and HO is mean of columns of dummies of whether adjusted pvalues were less than alpha
   power.ind.fun<-function(x) {apply(x,2,mean)}
   power.ind.all<-lapply(reject.all,power.ind.fun)
-  browser()
+  # browser()
   power.ind.all.mat<-do.call(rbind,power.ind.all)
-  browser()
+  # browser()
   
   # m-min powers for all procs (including complete power when m=M)
   power.min.fun <- function(x,M) {
