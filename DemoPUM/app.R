@@ -14,7 +14,11 @@ ui <- fluidPage(
    navbarPage(title = NULL, id = "mainmenu", 
       tabPanel("Landing Page"),
       tabPanel("MHT"),
-      tabPanel("MTP"),
+      tabPanel("MTP",
+              
+          h2("Types of Multiple Testing Procedures", style = "color:blue")
+               
+      ), # Content within MTP
       tabPanel("Power-I"),
       tabPanel("Power-II"),
       tabPanel("Calculations",
