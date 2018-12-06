@@ -1,8 +1,8 @@
 library(shiny) # for basic templates
 library(shinyBS) # for popovers and tool tips
 library(pum)
-source("../dgp.R") # Testing data generating function. This will be replaced by a library package
-#source("../powerFunctions_demo.R") # Power functions for demoing purposes
+#For testing purposes
+source("../pum-p/R/blockrct2_power.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -158,7 +158,7 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session = TRUE) {
   
-  #Observing the action button click and switching to a different Tab
+  #Observing the action button click and switching to a different Tab. Passing the session to keep the info from previous tab.
   observeEvent(input$question_mtp,{
     updateTabsetPanel(session, "mainmenu", selected = "MTP" )
   })
@@ -190,7 +190,7 @@ server <- shinyServer(function(input, output, session = TRUE) {
     #displaying based on the number of sample sizes
     random_block()
     
-  })# Wrapping a reactive expression to a reactive table object for output view
+  }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
   
 }) #Server side actions
 
