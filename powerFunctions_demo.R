@@ -142,8 +142,7 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,rho,
                              tnum, snum, ncl = 2) {
   
   #setting the sigma
-  sigma<-matrix(rep(rho,M*M),nrow=M,ncol=M)
-  diag(sigma)<-1
+  sigma <-matrix(0.99,M,M)
   
   #Setting R2.1 in the function
   R2.1 <- 0.5

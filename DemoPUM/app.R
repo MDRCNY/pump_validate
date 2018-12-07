@@ -2,7 +2,9 @@ library(shiny) # for basic templates
 library(shinyBS) # for popovers and tool tips
 library(pum)
 #For testing purposes
-source("../pum-p/R/blockrct2_power.R")
+#source("../powerFunctions_demo.R")
+#source("../blockrct2_power.R")
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -46,7 +48,7 @@ ui <- fluidPage(
                    fluidRow(
                       
                      column(5,
-                        numericInput("M", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
+                        numericInput("M", "Number of Outcomes", min = 1, max = 10, value = 2, step = 1)
                      ), # column for number of outcomes
                       
                      column(5,
@@ -69,7 +71,7 @@ ui <- fluidPage(
                      
                      column(6,
                         
-                        numericInput("J", "Number of blocks", min = 1, max = 10, value = 10, step = 1)
+                        numericInput("J", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
                         
                      ), # number of blocks
                      
@@ -83,15 +85,21 @@ ui <- fluidPage(
                    
                    fluidRow(
                      
-                     column(6,
+                     column(4,
                         
-                        numericInput("rho", "Correlation between tests", value = 0.3, min = 0, max = 1.0, step = 0.01)
+                        numericInput("R2.1", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
                             
-                    ), # corrleation btw tests
-                     
-                     column(6,
+                    ), # R square for level 1
                     
-                        sliderInput("ICC", "Intraclass correlation",min = 0, max = 1, value = 0.3, step = 0.1, animate=animationOptions(interval=100, loop=TRUE))     
+                     column(4,
+                        
+                        numericInput("R2.2", "Level 2 R2", value = 0, min = 0, max = 1.0, step = 0.01)
+                            
+                    ), # R square for level 2
+                     
+                     column(4,
+                    
+                        sliderInput("ICC", "ICC",min = 0, max = 1, value = 0.0, step = 0.1, animate=animationOptions(interval=100, loop=TRUE))     
                             
                     ) #intraclass correlation
                    ), # column correlation btw tests & intraclass correlation!
@@ -100,7 +108,7 @@ ui <- fluidPage(
                      
                      column(6,
                     
-                        numericInput("p", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.25, step = 0.001)
+                        numericInput("p", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
                             
                     ), # proportion of treatment assignment
                      
@@ -115,13 +123,13 @@ ui <- fluidPage(
                 fluidRow(
                   column(6,
                          
-                    numericInput("numCovar.1", "Number of Level 1 Covariates", min = 0, max = 10, value = 5, step = 1 )
+                    numericInput("numCovar.1", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
                   
                   ),
                   
                   column(6,
                          
-                    numericInput("numCovar.2", "Number of Level 2 Covariates", min = 0, max = 10, value = 5, step =1)
+                    numericInput("numCovar.2", "Number of Level 2 Covariates", min = 0, max = 10, value = 0, step =1)
                   
                   )
                 ), #fluid row for block level covariate inputs
@@ -130,7 +138,7 @@ ui <- fluidPage(
                   
                   column(6,
                          
-                    numericInput("tnum", "Numer of Permutation", min = 5000, max = 50000, value = 500, step = 500)
+                    numericInput("tnum", "Numer of Permutation", min = 5000, max = 50000, value = 10000, step = 500)
                   
                   ), # Permutation column
                   
@@ -180,7 +188,7 @@ server <- shinyServer(function(input, output, session = TRUE) {
   
   random_block <- reactive({
     
-    power.blockedRCT.2( M = input$M, MDES = input$MDES, J = input$J, n.j = input$n.j, rho = input$rho, p = input$p, alpha = input$alpha, 
+    power.blockedRCT.2( M = input$M, MDES = input$MDES, J = input$J, n.j = input$n.j,p = input$p, alpha = input$alpha, 
                        numCovar.1 = input$numCovar.1, numCovar.2 = input$numCovar.2, ICC = input$ICC, tnum = input$tnum, snum = input$snum)
     
   })#random data block
