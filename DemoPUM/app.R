@@ -85,23 +85,12 @@ ui <- fluidPage(
                    
                    fluidRow(
                      
-                     column(4,
+                     column(12,
                         
                         numericInput("R2.1", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
                             
-                    ), # R square for level 1
-                    
-                     column(4,
-                        
-                        numericInput("R2.2", "Level 2 R2", value = 0, min = 0, max = 1.0, step = 0.01)
-                            
-                    ), # R square for level 2
-                     
-                     column(4,
-                    
-                        sliderInput("ICC", "ICC",min = 0, max = 1, value = 0.0, step = 0.1, animate=animationOptions(interval=100, loop=TRUE))     
-                            
-                    ) #intraclass correlation
+                    ) # R square for level 1
+      
                    ), # column correlation btw tests & intraclass correlation!
                    
                    fluidRow(
@@ -121,34 +110,13 @@ ui <- fluidPage(
                    ), # proportion of treatment assignment and significance level of tests
                   
                 fluidRow(
-                  column(6,
+                  column(12,
                          
                     numericInput("numCovar.1", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
                   
-                  ),
-                  
-                  column(6,
-                         
-                    numericInput("numCovar.2", "Number of Level 2 Covariates", min = 0, max = 10, value = 0, step =1)
-                  
-                  )
-                ), #fluid row for block level covariate inputs
-            
-                fluidRow(
-                  
-                  column(6,
-                         
-                    numericInput("tnum", "Numer of Permutation", min = 5000, max = 50000, value = 10000, step = 500)
-                  
-                  ), # Permutation column
-                  
-                  column(6,
-                    
-                    numericInput("snum", "Number of Samples", min = 10, max = 500, value = 10, step = 1)
-                  
-                  ) # Number of Sample column
-                ) # fluid row for permutation and sample ssize
-                
+                  ) # Number of Level 1 covariates
+        
+                ) #fluid row for block level covariate inputs
                 
                  ), #sidebar Panel
               mainPanel (
