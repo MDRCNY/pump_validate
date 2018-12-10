@@ -1,9 +1,10 @@
 library(shiny) # for basic templates
 library(shinyBS) # for popovers and tool tips
-library(pum)
+#library(pum)
 #For testing purposes
 #source("../powerFunctions_demo.R")
-#source("../blockrct2_power.R")
+source("../blockrct2_power.R")
+
 
 
 # Define UI for application that draws a histogram
@@ -48,7 +49,7 @@ ui <- fluidPage(
                    fluidRow(
                       
                      column(5,
-                        numericInput("M", "Number of Outcomes", min = 1, max = 10, value = 2, step = 1)
+                        numericInput("M", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
                      ), # column for number of outcomes
                       
                      column(5,
@@ -156,8 +157,8 @@ server <- shinyServer(function(input, output, session = TRUE) {
   
   random_block <- reactive({
     
-    power.blockedRCT.2( M = input$M, MDES = input$MDES, J = input$J, n.j = input$n.j,p = input$p, alpha = input$alpha, 
-                       numCovar.1 = input$numCovar.1, numCovar.2 = input$numCovar.2, ICC = input$ICC, tnum = input$tnum, snum = input$snum)
+    power.blockedRCT.2( M = input$M, MDES = input$MDES, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
+                       numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10)
     
   })#random data block
   
