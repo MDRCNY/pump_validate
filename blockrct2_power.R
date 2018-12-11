@@ -80,7 +80,7 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   adjp.WY<-matrix(NA,snum,M)
   #browser()
   #s <- 1:snum
-  #`%dopar%` <- `%dopar%`
+  `%dopar%` <- foreach::`%dopar%`
   doWY <- foreach::foreach(s=1:snum, .combine=rbind) %dopar% {
     ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
     pi.p.m <- colMeans(ind.B)
@@ -180,7 +180,7 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   abs.Zs.H1 <- abs(Zs.H1)
   
   # adjust p-values for all but Westfall-Young
-  # mt.rawp2adjp <- multtest::mt.rawp2adjp
+  mt.rawp2adjp <- multtest::mt.rawp2adjp
   #adjp<-multtest::mt.rawp2adjp(pvals.H1,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
   #rawp <- grab.pval(adjp, proc = "rawp")
   #adjp.BF <- grab.pval(adjp, proc = "Bonferroni")

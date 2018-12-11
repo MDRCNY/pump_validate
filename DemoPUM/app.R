@@ -1,5 +1,7 @@
 library(shiny) # for basic templates
 library(shinyBS) # for popovers and tool tips
+library(shinycssloaders) # for ui elements showing shiny loading
+library(magrittr) # piping operator
 #library(pum)
 #For testing purposes
 #source("../powerFunctions_demo.R")
@@ -121,7 +123,7 @@ ui <- fluidPage(
                 
                  ), #sidebar Panel
               mainPanel (
-                       tableOutput("view") #The view table output
+                       tableOutput("view") %>% withSpinner() #The view table output
               ) #main panel
               
           ) #sidebar Layout
