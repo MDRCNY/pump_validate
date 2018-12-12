@@ -32,7 +32,7 @@ ui <- fluidPage(
                  sidebarPanel(
                    fluidRow(
                     column(10,
-                      div(style = "display: inline-block, vertical-align:top;", selectInput("MTP", "What MTP do you plan to use?", 
+                      div(style = "display: inline-block, vertical-align:top;", selectInput("MTP", "Which MTP do you plan to use?", 
                                choices = list("Bonferroni" = "BF", "Holm" = "HO", "Westfall-Young" = "WY","Benjamini-Hochberg" = "BH"))) # select input buttons div
                     ), # column for inputs
 
@@ -50,20 +50,29 @@ ui <- fluidPage(
                    
                    fluidRow(
                       
-                     column(5,
+                     column(6,
                         numericInput("M", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
                      ), # column for number of outcomes
                       
-                     column(5,
-                        numericInput("MDES", "Minimum effect size", value = 0.125, min = 0, max = 5, step = 0.001)
-                     ), # column for MDES
+                     column(6,
+                            numericInput("MDES", "Minimum effect size", value = 0.125, min = 0, max = 5, step = 0.001)
+                     ) # column for Minimum detectable effect size
+                     
+                   ), # number of outcomes and mdes
+
+                   
+                   fluidRow(
+
+                     column(10,
+                        numericInput("AImpact", "Number of Outcomes with Actual Effects", value = 3, min = 0, max = 10, step = 1)
+                     ), # column for outcomes with actual effect size
                      
                      column(2,
                             div(style ="display: inline-block, vertical-align:top;",actionButton("question_mdes",label = "", icon = icon("question"))) #div for button ends                            
                      ) # column for action button
-              
-                   ), # number of outcomes and mdes
-
+                     
+                   ), # MDES and number of outcomes with expected actual effect
+                   
                    bsPopover(id = "question_mdes", title = NULL,
                              content = paste0("For MDES, you would want to consider, etc etc"),
                              placement = "right", 
