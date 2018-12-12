@@ -67,9 +67,8 @@ adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
 #' @param ncl blah blah
 #'
 #' @return blah blah
-#'
-#'s
-#'
+#' 
+#' 
 adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   
   cl <- snow::makeCluster(ncl)
@@ -130,7 +129,8 @@ df<-function(J,n.j,numCovar.1) {
 #' Block RCT2 power function
 #'
 #' @param M the number of hypothesis tests (outcomes)
-#' @param MDES vector of MDES's of length M - can be zero if not assuming all nulls are false
+#' @param MDES a single entry vector detailing the minimum detectable effect size
+#' @param Ai a single entry vector detailing the number of outcomes with a non-zero effect
 #' @param J number of blocks
 #' @param n.j units per block
 #' @param p the proportion of samples that are assigned the treatment
@@ -151,15 +151,26 @@ df<-function(J,n.j,numCovar.1) {
 #' @importFrom multtest mt.rawp2adjp
 #' @export
 #'
-power.blockedRCT.2<-function(M, MDES, J, n.j,
+power.blockedRCT.2<-function(M, MDES,Ai, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
                              mod.type, sigma = 0, omega = NULL,
                              tnum = 10000, snum=1000, ncl=2) {
   
-  #MDES must be the length of M
-  MDES <- rep(MDES,M)
+  #Output error statement in R
+  if( Ai > M){
+    
+    stop('The number of outcomes with actual effects cannot be greater than the total number of outcomes of an experiment. Please readjust your inputs.')
+    
+  } # Error handling for when actual effect number is greater than the total number of outcomes
   
-  #Setting Sigma up
+  # MDES must be the length of Actual Impacts
+  MDES <- rep(MDES,Ai)
+  
+  # the difference between the length of M and Ai should be zero
+  noeffect <- rep(0, M-Ai)
+  MDES <- c(MDES, noeffect)
+  
+  # Setting Sigma up
   sigma <- matrix(0.99, M, M)
   diag(sigma) <- 1
   
