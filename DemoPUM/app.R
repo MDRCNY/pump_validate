@@ -137,16 +137,16 @@ ui <- fluidPage(
               
           ) #sidebar Layout
               
-      ), # Calculation Tabset Panel
+      ) # Calculation Tabset Panel
       
-      tabPanel("MDES calculation",
-          sidebarLayout(
+      #tabPanel("MDES calculation",
+      #    sidebarLayout(
             
             
             
-          ) # Sidebar Layout   
+      #    ) # Sidebar Layout   
                
-     ) # MDES calculation panel
+     #) # MDES calculation panel
   
   )# navBarPage
   
