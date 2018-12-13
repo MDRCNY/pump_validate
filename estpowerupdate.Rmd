@@ -57,9 +57,7 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   registerDoParallel(cl)
   clusterExport(cl=cl, list("comp.rawt.SD"))
   M<-ncol(abs.Zs.H0)
-  browser()
   adjp.WY<-matrix(NA,snum,M)
-  browser()
   doWY <- foreach(s=1:snum, .combine=rbind) %dopar% {
     ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
     pi.p.m <- colMeans(ind.B) 
@@ -142,9 +140,8 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
 # adjust p-values for Westfall-Young (single-step and step-down)
   order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
   adjp.SS<-adjust.allsamps.WYSS(snum,abs.Zs.H0,abs.Zs.H1)
-  browser()
   adjp.WY<-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl)
-  browser()
+  
 # combine all adjusted p-values in list (each entry is matrix for given MTP)
   adjp.all<-list(rawp,adjp.BF,adjp.HO,adjp.BH,adjp.SS,adjp.WY)
   
@@ -181,11 +178,8 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   mean.ind.power <- apply(as.matrix(all.power.results[,1:M][,MDES>0]),1,mean)
 # revise final matrix to report this mean individual power and return results  
   all.power.results<-cbind(mean.ind.power,all.power.results)
-  browser()
   colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
-  browser()
   rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
-  browser()
   return(all.power.results)
 }
 ```
@@ -265,7 +259,10 @@ if (power.definition=="indiv") {
       if (display.progress) print(paste("Estimated power for this MDES is",round(target.power,4)))
 
       is.over <- target.power > power
-      if(target.power > power - marginError & target.power < power + marginError) return(c(try.MDES,target.power))
+      if(target.power > power - marginError & target.power < power + marginError)
+        
+  return(c(try.MDES,target.power))
+      
       if(!is.over) {
         lowhigh[1] <- try.MDES
       }
@@ -427,10 +424,7 @@ if (power.definition=="indiv") {
 
 ```
 
-
-
 ```{r testing, message=FALSE, warning=FALSE}
-
 #library(PowerUpR)
 mdes1 <- 0.125
 alpha <- 0.05
@@ -464,11 +458,15 @@ power.up$power < (test.power["rawp","indiv"] + me) & power.up$power > (test.powe
 test.MDES <- MDES.blockedRCT.2(M, numFalse = M, J, n.j, power=test.power["BF","indiv"], power.definition = "indiv", MTP="BF", marginError = me, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
                           mod.type="constant", sigma=sigma, omega=NULL,
                           tnum = 10000, snum=2, ncl=2)
+
+# These are checks on whether the test we have specified is within bounds or not
 test.MDES[1] < (mdes1 + me) & test.MDES[1] > (mdes1 - me)
-  ## indiv, BH
+
+## indiv, BH
 test.MDES <- MDES.blockedRCT.2(M, numFalse = M, J, n.j, power=test.power["BH","indiv"], power.definition = "indiv", MTP="BH", marginError = me, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
                           mod.type="constant", sigma=sigma, omega=NULL,
                           tnum = 10000, snum=2, ncl=4)
+
 test.MDES[1] < (mdes1 + me) & test.MDES[1] > (mdes1 - me)
   ## min1, BH
 test.MDES <- MDES.blockedRCT.2(M, numFalse = M, J, n.j, power=test.power["BH","min1"], power.definition = "min1", MTP="BH", marginError = me, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 

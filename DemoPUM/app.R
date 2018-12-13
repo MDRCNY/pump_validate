@@ -27,7 +27,7 @@ ui <- fluidPage(
       ), # Content within MTP
       tabPanel("Power-I"),
       tabPanel("Power-II"),
-      tabPanel("Calculations",
+      tabPanel("Power Calculation",
               sidebarLayout(
                  sidebarPanel(
                    fluidRow(
@@ -137,8 +137,17 @@ ui <- fluidPage(
               
           ) #sidebar Layout
               
-      )# Calculation Tabset Panel
-              
+      ), # Calculation Tabset Panel
+      
+      tabPanel("MDES calculation",
+          sidebarLayout(
+            
+            
+            
+          ) # Sidebar Layout   
+               
+     ) # MDES calculation panel
+  
   )# navBarPage
   
 )# fluidPage
