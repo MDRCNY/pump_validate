@@ -208,6 +208,8 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
                             mod.type, sigma, omega,
                             tnum = 10000, snum=2, ncl=2, display.progress=TRUE) {
   
+  
+  browser()
   print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
   
   if (MTP=="WY-SD" & snum <1000) print("For the step-down Westfall-Young procedure, it is recommended that snum be at least 1000.")

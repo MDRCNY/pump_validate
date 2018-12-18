@@ -163,6 +163,8 @@ power.blockedRCT.2<-function(M, MDES,Ai, J, n.j,
     
   } # Error handling for when actual effect number is greater than the total number of outcomes
   
+  browser()
+  
   # MDES must be the length of Actual Impacts
   MDES <- rep(MDES,Ai)
   
@@ -173,6 +175,8 @@ power.blockedRCT.2<-function(M, MDES,Ai, J, n.j,
   # Setting Sigma up
   sigma <- matrix(0.99, M, M)
   diag(sigma) <- 1
+  
+  browser()
   
   # number of false nulls
   numfalse<-sum(1*MDES>0)
@@ -278,23 +282,98 @@ power.blockedRCT.2<-function(M, MDES,Ai, J, n.j,
 }
 
 
+## The code documentation below MUST be done more thoroughly!
 
+#' Midpoint function 
+#'
+#' Think of binary search trees
+#' 
+#' @param lower lower bound
+#' @param upper upper bound
+#'
+#' @return returns the next bound value
+#' 
+midpoint<-function(lower,upper) {
+  
+  lower+(dist(c(lower,upper))/2)
+} # midpoint function to calculate the right power 
 
+MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
+                            p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
+                            mod.type, sigma, omega,
+                            tnum = 10000, snum=2, ncl=2, display.progress=TRUE) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  # # Setting Sigma up
+  # sigma <- matrix(0.99, M, M)
+  # diag(sigma) <- 1
+  #
+  
+  browser()
+  
+  print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
+  
+  if (MTP=="WY-SD" & snum <1000) print("For the step-down Westfall-Young procedure, it is recommended that snum be at least 1000.")
+  if (MTP!="WY-SD") snum<- 2
+  
+  # Compute Q(m)
+  Q.m<-sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
+  t.df<-df(J,n.j,numCovar.1)
+  
+  # For raw and BF, compute critical values 
+  crit.alpha <- qt(p=(1-alpha/2),df=t.df)  
+  crit.alphaxM <- qt(p=(1-alpha/M/2),df=t.df)  
+  
+  # Compute raw and BF MDES for INDIVIDUAL POWER
+  crit.beta <- ifelse(power > 0.5, qt(power,df=t.df), qt(1-power,df=t.df))
+  MDES.raw <- ifelse(power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta)) 
+  MDES.BF <- ifelse(power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta)) 
+  
+  ### INDIVIDUAL POWER ###
+  if (power.definition=="indiv") {  
+    if (MTP == "raw") return (c(MDES.raw,power))
+    if (MTP == "BF")  return (c(MDES.BF,power))
+  }
+  
+  # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint
+  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
+    lowhigh <- c(MDES.raw,MDES.BF)
+    try.MDES <- midpoint(MDES.raw,MDES.BF)
+  }
+  
+  # For other scenarios, set lowhigh intervals and compute midpoint
+  ifelse (power.definition=="indiv", lowhigh<-c(MDES.raw,1), lowhigh<-c(0,1) )
+  try.MDES <- midpoint(lowhigh[1],lowhigh[2])
+  
+  ii <- 0
+  target.power <- 0
+  while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {   
+    if (display.progress) {
+      print(paste0("MDES is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]"))
+      print(paste("Trying MDES of",round(try.MDES,4)))
+    }
+    
+    runpower <- power.blockedRCT.2(M, try.MDES, J, n.j,
+                                   p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
+                                   mod.type, sigma, omega,
+                                   tnum, snum, ncl)
+    
+    target.power <- runpower[MTP,power.definition]
+    if (display.progress) print(paste("Estimated power for this MDES is",round(target.power,4)))
+    
+    is.over <- target.power > power
+    if(target.power > power - marginError & target.power < power + marginError)
+      
+      return(c(try.MDES,target.power))
+    
+    if(!is.over) {
+      lowhigh[1] <- try.MDES
+    }
+    if(is.over) {
+      lowhigh[2] <- try.MDES
+    }
+    #     lowhigh.dist <- lowhigh[2]-lowhigh[1]
+    #     try.MDES <- ifelse(target.power < power, (try.MDES + lowhigh[2])/2, (try.MDES + lowhigh[1])/2) # midpoint
+    try.MDES <- midpoint(lowhigh[1],lowhigh[2])
+    ii <- ii + 1 
+  } # end while
+} # MDES blockedRCT 2

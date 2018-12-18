@@ -137,23 +137,95 @@ ui <- fluidPage(
               
           ) #sidebar Layout
               
-      ) # Calculation Tabset Panel
+      ), # Calculation Tabset Panel
       
-      #tabPanel("MDES calculation",
-      #    sidebarLayout(
+      tabPanel("MDES Calculation",
+          sidebarLayout(
+            sidebarPanel(
+              fluidRow(
+                column(6,
+                    div(style = "display: inline-block, vertical-align:top;", 
+                        selectInput("MTPs", "MTP", 
+                        choices = list("Bonferroni" = "BF", "Benjamini-Hocheberg" = "BH"))) # select input buttons div
+                    
+                ), # MTP, the Mutliple Testing Procedure in Use
+                
+                column(6,
+                    numericInput("Ms", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
+                ) # M, the number of outcomes in use
+              ), # Fluid Row for MTP and M outcomes
+              
+              fluidRow(
+                column(6,
+                    numericInput("Js", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
+                  ), # Number of Blocks
+                
+                column(6,
+                    numericInput("n.js","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
+                       
+                ) # Fluid Row for Number of units per block and Number of units
+                
+              ), # Number of Block and Sample Size
+              
+              fluidRow(
+                column(6,
+                    numericInput("alphas", "Alpha value", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
+                ), # alpha value
+                
+                column(6,
+                    numericInput("mes", "Margin of error", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
+                ) # Margins of error
+              ), # For Alpha and Margin of Error
+              
+              fluidRow(
+                
+                column(6,
+                    numericInput("numCovar.1s", "Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
+                ), # number of covariates at level 1
+                
+                column(6,
+                    numericInput("R2.1s", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
+                ) # R2 (explanatory power at level 1)
+              ), # Number of Level 1 covariates and R^2 explanatory power
+              
+              fluidRow(
+                
+                column(6,
+                    numericInput("powers", "Power Value", min = 0.001, max = 1.0, value = 0.75, step = 0.001)
+                ), # Power value
+                
+                column(6,
+                    div(style = "display: inline-block, vertical-align:top;", 
+                           selectInput("pdefns", "Power Defn", 
+                                       choices = list("Inidvidual" = "indiv", "Complete" = "comp")))
+                ) # Choice of Power and Power Definition
+              ), # Fluid Row for Proportion of treatment assignment
+              
+              fluidRow(
+                
+                column(12,
+                      numericInput("ps", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
+                ) # Proportion of treatment assignment
+              ) # fluid row
+              
+            ), # Side Bar Panel
+          
+          mainPanel(
+            
+            textOutput("mdes")
             
             
             
-      #    ) # Sidebar Layout   
-               
-     #) # MDES calculation panel
+          ) # Main Panel Layout
+        ) # Sidebar Panel       
+     ) # MDES calculation panel
   
   )# navBarPage
   
 )# fluidPage
 
 # Define server logic required to draw a histogram
-server <- shinyServer(function(input, output, session = TRUE) {
+server <- shinyServer(function(input, output, session = FALSE) {
   
   #Observing the action button click and switching to a different Tab. Passing the session to keep the info from previous tab.
   observeEvent(input$question_mtp,{
@@ -175,19 +247,42 @@ server <- shinyServer(function(input, output, session = TRUE) {
   #                            omega = NULL,
   #                            tnum, snum, ncl)
   
-  random_block <- reactive({
+  power <- reactive({
     
-    power.blockedRCT.2( M = input$M, MDES = input$MDES, Ai = input$Aimpact, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
-                       numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10)
+    # power.blockedRCT.2( M = input$M, MDES = input$MDES, Ai = input$Aimpact, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
+    #                    numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10)
     
-  })#random data block
+    MDES.blockedRCT.2(M = input$M, numFalse = input$M, J = input$J, n.j = input$n.j, power=input$power, power.definition = input$pdefn, MTP=input$MTP, marginError = input$me, p = input$p, alpha = input$alpha, numCovar.1=input$numCovar.1, numCovar.2=NULL, R2.1=input$R2.1, R2.2=0, ICC=0,
+                      mod.type="constant", omega=NULL,
+                      tnum = 10000, snum=2, ncl=2)
+    
+  }) # reactive expression for power
   
-  #Rendering a reactive object table for the Data Generating Process
+  #Rendering a reactive object table from the power function
   output$view <- renderTable({
     #displaying based on the number of sample sizes
-    random_block()
+    power()
     
   }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
+
+  
+  mdes <- reactive({
+
+     MDES.blockedRCT.2(M = input$Ms, numFalse = input$Ms, J = input$Js, n.j = input$n.js, power=input$powers, power.definition = input$pdefns, MTP=input$MTPs, marginError = input$mes, p = input$ps, alpha = input$alphas, numCovar.1=input$numCovar.1s, numCovar.2=NULL, R2.1=input$R2.1s, R2.2=0, ICC=0,
+                       mod.type="constant", omega=NULL,
+                       tnum = 10000, snum=2, ncl=2)
+
+    #testzarni (M = input$M)
+    
+  }) # reactive expression for mdes Note: Need to manage the sigma
+  
+  #Rendering a reactive vector object from the
+  output$mdes <- renderText({
+  
+    mdes()
+    
+  }) # mdes output
+  
   
 }) #Server side actions
 
