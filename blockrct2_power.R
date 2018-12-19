@@ -283,24 +283,24 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   
 }
 
-
-## The code documentation below MUST be done more thoroughly!
+## NOTE TO SELF: The code documentation below MUST be done more thoroughly!
 
 #' Midpoint function 
 #'
-#' Think of binary search trees
+#' Calculating the midpoint between the lower and upper bound by calculating half the distance between the two
+#' and adding the lower bound to it.
 #' 
 #' @param lower lower bound
 #' @param upper upper bound
 #'
-#' @return returns the next bound value
+#' @return returns midpoint value
 #' 
 midpoint<-function(lower,upper) {
   
   lower+(dist(c(lower,upper))/2)
 } # midpoint function to calculate the right power 
 
-#' Title
+#' MDES function
 #'
 #' @param M 
 #' @param numFalse 
@@ -335,14 +335,15 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
                             tnum = 10000, snum=2, ncl=2, display.progress=TRUE) {
   
   
-  # Setting Sigma up
+  # SET UP #
   sigma <- matrix(0.99, M, M)
   diag(sigma) <- 1
   
-  # Question: How can a function print statement show up as output on Shiny Main Panel?
+  # CHECKS ON WHAT WE ARE ESTIMATING, SAMPLE SIZE #
   print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
   
-  if (MTP=="WY-SD" & snum <1000) print("For the step-down Westfall-Young procedure, it is recommended that snum be at least 1000.")
+  # Check to see if the MTP is Westfall Young and it has enough samples
+  if (MTP=="WY-SD" & snum <1000) print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
   if (MTP!="WY-SD") snum<- 2
   
   # Compute Q(m)
@@ -358,8 +359,12 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
   MDES.raw <- ifelse(power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta)) 
   MDES.BF <- ifelse(power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta)) 
   
+  
+  # SETTING THE BOUNDS FOR INDIVIDUAL AND OTHER TYPES OF POWER #
+  
   ### INDIVIDUAL POWER ###
-  if (power.definition=="indiv") {  
+  if (power.definition=="indiv") { 
+    
     if (MTP == "raw") return (c(MDES.raw,power))
     if (MTP == "BF")  return (c(MDES.BF,power))
   }
@@ -371,36 +376,55 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
     try.MDES <- midpoint(MDES.raw,MDES.BF)
   }
   
+  ### NOT INDIVIDUAL POWER ###
+  
   # For other scenarios, set lowhigh intervals and compute midpoint
-  ifelse (power.definition=="indiv", lowhigh<-c(MDES.raw,1), lowhigh<-c(0,1) )
+  ifelse (power.definition=="indiv", lowhigh<-c(MDES.raw,1), lowhigh<-c(0,1)) 
   
-  try.MDES <- midpoint(lowhigh[1],lowhigh[2])
+  # LOOKING FOR THE RIGHT MDES through a while loop with 20 iterations as the limit
   
-  ii <- 0
+  try.MDES <- midpoint(lowhigh[1],lowhigh[2]) # Initializing MDES for first attempt
+  ii <- 0 # Iteration counter
   target.power <- 0 # Initializing a target power
   
+  # While loop through until the iteration is past 20 or we have met the target.power which we are caculating is which is 
+  # within a margin of error of the power that is being specified. Here target refers to the type of power.
+  
   while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {   
+    
+    # Dispalying progress of the interval of MDES we are attempting and the MDES we are trying next
     
     if (display.progress) {
       print(paste0("MDES is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]"))
       print(paste("Trying MDES of",round(try.MDES,4)))
     }
     
+    # Function to calculate the target power to check in with the pre-specified power in the loop
+    
     runpower <- power.blockedRCT.2(M = M, MDES = try.MDES, Ai = M, J = J, n.j = n.j,
                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, 
                                    mod.type = mod.type, sigma = sigma, omega = omega,
                                    tnum = tnum, snum = snum, ncl = ncl)
     
-    #Debug: Check if the MTP is coming out right? Check the power definition words from power return.
-    #How do you make adjustment for that?
+    # Pull out the power value corresponding to the MTP and definition of power 
+    
     target.power <- runpower[MTP,power.definition]
-
+    
+    # Displaying the progress of power calculation
     if (display.progress) print(paste("Estimated power for this MDES is",round(target.power,4)))
     
-    is.over <- target.power > power
+    # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
+    
     if(target.power > power - marginError & target.power < power + marginError)
       
       return(c(try.MDES,target.power))
+    
+    # Check if the calculated target power is greater than the prescribed power  
+    
+    is.over <- target.power > power
+    
+    # if we are overpowered, we can detect EVEN SMALLER effect size so we would shrink the effect range with the 
+    # high end of the bound being the current MDES. Else it would be the opposite.
     
     if(!is.over) {
       lowhigh[1] <- try.MDES
@@ -410,7 +434,13 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
     }
     #     lowhigh.dist <- lowhigh[2]-lowhigh[1]
     #     try.MDES <- ifelse(target.power < power, (try.MDES + lowhigh[2])/2, (try.MDES + lowhigh[1])/2) # midpoint
+    
+    # re-establish the midpoint
     try.MDES <- midpoint(lowhigh[1],lowhigh[2])
+    
+    # run through another iteration
     ii <- ii + 1 
+    
   } # end while
+  
 } # MDES blockedRCT 2
