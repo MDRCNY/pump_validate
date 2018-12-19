@@ -151,7 +151,7 @@ df<-function(J,n.j,numCovar.1) {
 #' @importFrom multtest mt.rawp2adjp
 #' @export
 #'
-power.blockedRCT.2<-function(M, MDES,Ai, J, n.j,
+power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
                              mod.type, sigma = 0, omega = NULL,
                              tnum = 10000, snum=1000, ncl=2) {
@@ -159,6 +159,8 @@ power.blockedRCT.2<-function(M, MDES,Ai, J, n.j,
   #Output error statement in R
   if( Ai > M){
     
+    # Debug: Here to check what input$MTP is returning
+    browser()
     stop('The number of outcomes with actual effects cannot be greater than the total number of outcomes of an experiment. Please readjust your inputs.')
     
   } # Error handling for when actual effect number is greater than the total number of outcomes
@@ -298,6 +300,35 @@ midpoint<-function(lower,upper) {
   lower+(dist(c(lower,upper))/2)
 } # midpoint function to calculate the right power 
 
+#' Title
+#'
+#' @param M 
+#' @param numFalse 
+#' @param J 
+#' @param n.j 
+#' @param power 
+#' @param power.definition 
+#' @param MTP 
+#' @param marginError 
+#' @param p 
+#' @param alpha 
+#' @param numCovar.1 
+#' @param numCovar.2 
+#' @param R2.1 
+#' @param R2.2 
+#' @param ICC 
+#' @param mod.type 
+#' @param sigma 
+#' @param omega 
+#' @param tnum 
+#' @param snum 
+#' @param ncl 
+#' @param display.progress 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                             mod.type, sigma, omega,
@@ -335,6 +366,9 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
   
   # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint
   if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
+    
+    #browser mark here to debug the MTP change error
+     
     lowhigh <- c(MDES.raw,MDES.BF)
     try.MDES <- midpoint(MDES.raw,MDES.BF)
   }
@@ -351,10 +385,10 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
       print(paste("Trying MDES of",round(try.MDES,4)))
     }
     
-    runpower <- power.blockedRCT.2(M, try.MDES, J, n.j,
-                                   p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
-                                   mod.type, sigma, omega,
-                                   tnum, snum, ncl)
+    runpower <- power.blockedRCT.2(M = M, MDES = try.MDES, Ai = M, J = J, n.j = n.j,
+                                   p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, 
+                                   mod.type = mod.type, sigma = sigma, omega = omega,
+                                   tnum = tnum, snum = snum, ncl = ncl)
     
     target.power <- runpower[MTP,power.definition]
     if (display.progress) print(paste("Estimated power for this MDES is",round(target.power,4)))
