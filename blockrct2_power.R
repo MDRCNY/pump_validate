@@ -163,7 +163,7 @@ power.blockedRCT.2<-function(M, MDES,Ai, J, n.j,
     
   } # Error handling for when actual effect number is greater than the total number of outcomes
   
-  browser()
+  #browser()
   
   # MDES must be the length of Actual Impacts
   MDES <- rep(MDES,Ai)
@@ -176,7 +176,7 @@ power.blockedRCT.2<-function(M, MDES,Ai, J, n.j,
   sigma <- matrix(0.99, M, M)
   diag(sigma) <- 1
   
-  browser()
+  #browser()
   
   # number of false nulls
   numfalse<-sum(1*MDES>0)

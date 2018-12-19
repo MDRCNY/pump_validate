@@ -145,23 +145,23 @@ ui <- fluidPage(
               fluidRow(
                 column(6,
                     div(style = "display: inline-block, vertical-align:top;", 
-                        selectInput("MTP", "MTP", 
+                        selectInput("MTP_mdes", "MTP", 
                         choices = list("Bonferroni" = "BF", "Benjamini-Hocheberg" = "BH"))) # select input buttons div
                     
                 ), # MTP, the Mutliple Testing Procedure in Use
                 
                 column(6,
-                    numericInput("M", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
+                    numericInput("M_mdes", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
                 ) # M, the number of outcomes in use
               ), # Fluid Row for MTP and M outcomes
               
               fluidRow(
                 column(6,
-                    numericInput("J", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
+                    numericInput("J_mdes", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
                   ), # Number of Blocks
                 
                 column(6,
-                    numericInput("n.j","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
+                    numericInput("n.j_mdes","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
                        
                 ) # Fluid Row for Number of units per block and Number of units
                 
@@ -169,34 +169,34 @@ ui <- fluidPage(
               
               fluidRow(
                 column(6,
-                    numericInput("alpha", "Alpha value", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
+                    numericInput("alpha_mdes", "Alpha value", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
                 ), # alpha value
                 
                 column(6,
-                    numericInput("me", "Margin of error", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
+                    numericInput("me_mdes", "Margin of error", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
                 ) # Margins of error
               ), # For Alpha and Margin of Error
               
               fluidRow(
                 
                 column(6,
-                    numericInput("numCovar.1", "Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
+                    numericInput("numCovar.1_mdes", "Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
                 ), # number of covariates at level 1
                 
                 column(6,
-                    numericInput("R2.1", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
+                    numericInput("R2.1_mdes", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
                 ) # R2 (explanatory power at level 1)
               ), # Number of Level 1 covariates and R^2 explanatory power
               
               fluidRow(
                 
                 column(6,
-                    numericInput("power", "Power Value", min = 0.001, max = 1.0, value = 0.75, step = 0.001)
+                    numericInput("power_mdes", "Power Value", min = 0.001, max = 1.0, value = 0.75, step = 0.001)
                 ), # Power value
                 
                 column(6,
                     div(style = "display: inline-block, vertical-align:top;", 
-                           selectInput("pdefn", "Power Defn", 
+                           selectInput("pdefn_mdes", "Power Defn", 
                                        choices = list("Inidvidual" = "indiv", "Complete" = "comp")))
                 ) # Choice of Power and Power Definition
               ), # Fluid Row for Proportion of treatment assignment
@@ -204,7 +204,7 @@ ui <- fluidPage(
               fluidRow(
                 
                 column(12,
-                      numericInput("p", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
+                      numericInput("p_mdes", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
                 ) # Proportion of treatment assignment
               ) # fluid row
               
@@ -212,7 +212,7 @@ ui <- fluidPage(
           
           mainPanel(
             
-            textOutput("mdes")
+            textOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
             
             
             
@@ -264,7 +264,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   mdes <- reactive({
 
-     MDES.blockedRCT.2(M = input$M, numFalse = input$M, J = input$J, n.j = input$n.j, power=input$power, power.definition = input$pdefn, MTP=input$MTP, marginError = input$me, p = input$p, alpha = input$alpha, numCovar.1=input$numCovar.1, numCovar.2=NULL, R2.1=input$R2.1, R2.2=0, ICC=0,
+     MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
                        mod.type="constant", omega=NULL,
                        tnum = 10000, snum=2, ncl=2)
 
