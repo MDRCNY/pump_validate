@@ -336,10 +336,10 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
   
   
   # Setting Sigma up
-  
   sigma <- matrix(0.99, M, M)
   diag(sigma) <- 1
   
+  # Question: How can a function print statement show up as output on Shiny Main Panel?
   print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
   
   if (MTP=="WY-SD" & snum <1000) print("For the step-down Westfall-Young procedure, it is recommended that snum be at least 1000.")
@@ -367,19 +367,20 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
   # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint
   if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
     
-    #browser mark here to debug the MTP change error
-     
     lowhigh <- c(MDES.raw,MDES.BF)
     try.MDES <- midpoint(MDES.raw,MDES.BF)
   }
   
   # For other scenarios, set lowhigh intervals and compute midpoint
   ifelse (power.definition=="indiv", lowhigh<-c(MDES.raw,1), lowhigh<-c(0,1) )
+  
   try.MDES <- midpoint(lowhigh[1],lowhigh[2])
   
   ii <- 0
-  target.power <- 0
+  target.power <- 0 # Initializing a target power
+  
   while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {   
+    
     if (display.progress) {
       print(paste0("MDES is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]"))
       print(paste("Trying MDES of",round(try.MDES,4)))
@@ -390,7 +391,10 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
                                    mod.type = mod.type, sigma = sigma, omega = omega,
                                    tnum = tnum, snum = snum, ncl = ncl)
     
+    #Debug: Check if the MTP is coming out right? Check the power definition words from power return.
+    #How do you make adjustment for that?
     target.power <- runpower[MTP,power.definition]
+
     if (display.progress) print(paste("Estimated power for this MDES is",round(target.power,4)))
     
     is.over <- target.power > power

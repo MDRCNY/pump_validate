@@ -194,7 +194,7 @@ ui <- fluidPage(
                 column(6,
                     div(style = "display: inline-block, vertical-align:top;", 
                            selectInput("pdefn_mdes", "Power Defn", 
-                                       choices = list("Inidvidual" = "indiv", "Complete" = "comp")))
+                                       choices = list("Inidvidual" = "indiv", "Complete" = "complete")))
                 ) # Choice of Power and Power Definition
               ), # Fluid Row for Proportion of treatment assignment
               
