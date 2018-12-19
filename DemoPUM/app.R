@@ -12,21 +12,18 @@ source("../blockrct2_power.R")
 # Define UI for application that draws a histogram
 ui <- fluidPage(
    
-   # Application title
-   titlePanel("PUM: Power Under Multiplicity"),
+   # Nav Bar to construct the set of options we have along with the name of the title
    
-   # Nav Bar to construct the set of options we have
-   
-   navbarPage(title = NULL, id = "mainmenu", 
-      tabPanel("Landing Page"),
+   navbarPage(title = "Power Under Multiplicity", id = "mainmenu", 
+      tabPanel("Home"),
       tabPanel("MHT"),
       tabPanel("MTP",
               
           h2("Types of Multiple Testing Procedures", style = "color:blue")
                
       ), # Content within MTP
-      tabPanel("Power-I"),
-      tabPanel("Power-II"),
+      tabPanel("Power Primer"),
+      tabPanel("Power Effects"),
       tabPanel("Power Calculation",
               sidebarLayout(
                  sidebarPanel(

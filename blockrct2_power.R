@@ -302,7 +302,8 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                             mod.type, sigma, omega,
                             tnum = 10000, snum=2, ncl=2, display.progress=TRUE) {
-
+  
+  
   # Setting Sigma up
   
   sigma <- matrix(0.99, M, M)
