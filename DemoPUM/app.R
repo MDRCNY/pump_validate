@@ -209,7 +209,7 @@ ui <- fluidPage(
           
           mainPanel(
             
-            textOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
+            tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
             
             
             
@@ -270,7 +270,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   }) # reactive expression for mdes Note: Need to manage the sigma
   
   #Rendering a reactive vector object from the
-  output$mdes <- renderText({
+  output$mdes <- renderTable({
   
     mdes()
     

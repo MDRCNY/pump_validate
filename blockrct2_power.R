@@ -365,9 +365,25 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
   ### INDIVIDUAL POWER ###
   if (power.definition=="indiv") { 
     
-    if (MTP == "raw") return (c(MDES.raw,power))
-    if (MTP == "BF")  return (c(MDES.BF,power))
-  }
+    if (MTP == "raw"){ 
+        
+        mdes.results <- t(data.frame(c(MDES.raw,power))) #transpose the MDES raw and power to have the results columnwise
+        colnames(mdes.results) <- c("MDES without adjustment", "Individual Power")
+
+        return (mdes.results)
+    
+    } #Raw MDES if anybody ever asked for it
+    
+    if (MTP == "BF"){
+      
+      mdes.results <- t(data.frame(c(MDES.raw,power))) #transpose the MDES raw and power to have the results columnwise
+      colnames(mdes.results) <- c(paste0("MDES with ", MTP, " adjustment"), "Individual Power")
+      
+      return(mdes.results)
+      
+    } # Bonferroni adjusted MDES for Individual Power
+  
+  } # if we are doing power for unadjusted and Bonferroni
   
   # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint
   if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
@@ -432,6 +448,7 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
     if(is.over) {
       lowhigh[2] <- try.MDES
     }
+    
     #     lowhigh.dist <- lowhigh[2]-lowhigh[1]
     #     try.MDES <- ifelse(target.power < power, (try.MDES + lowhigh[2])/2, (try.MDES + lowhigh[1])/2) # midpoint
     
