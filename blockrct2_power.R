@@ -159,9 +159,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   #Output error statement in R
   if( Ai > M){
     
-    # Debug: Here to check what input$MTP is returning
-    browser()
-    stop('The number of outcomes with actual effects cannot be greater than the total number of outcomes of an experiment. Please readjust your inputs.')
+      stop('The number of outcomes with actual effects cannot be greater than the total number of outcomes of an experiment. Please readjust your inputs.')
     
   } # Error handling for when actual effect number is greater than the total number of outcomes
   
@@ -368,7 +366,7 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
     if (MTP == "raw"){ 
         
         mdes.results <- t(data.frame(c(MDES.raw,power))) #transpose the MDES raw and power to have the results columnwise
-        colnames(mdes.results) <- c("MDES without adjustment", "Individual Power")
+        colnames(mdes.results) <- c("MDES without adjustment", paste0(power.definition, " power"))
 
         return (mdes.results)
     
@@ -376,8 +374,8 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
     
     if (MTP == "BF"){
       
-      mdes.results <- t(data.frame(c(MDES.raw,power))) #transpose the MDES raw and power to have the results columnwise
-      colnames(mdes.results) <- c(paste0("MDES with ", MTP, " adjustment"), "Individual Power")
+      mdes.results <- t(data.frame(c(MDES.BF,power))) #transpose the MDES raw and power to have the results columnwise
+      colnames(mdes.results) <- c(paste0( MTP, " adjusted MDES"), paste0(power.definition, " power"))
       
       return(mdes.results)
       
@@ -390,7 +388,8 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
     
     lowhigh <- c(MDES.raw,MDES.BF)
     try.MDES <- midpoint(MDES.raw,MDES.BF)
-  }
+    
+  } # MTP that is not Bonferroni and for individual power
   
   ### NOT INDIVIDUAL POWER ###
   
@@ -431,10 +430,16 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
     
     # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
     
-    if(target.power > power - marginError & target.power < power + marginError)
+    if(target.power > power - marginError & target.power < power + marginError){
       
-      return(c(try.MDES,target.power))
+      mdes.results <- data.frame(try.MDES[1], target.power) 
+      
+      colnames(mdes.results) <- c(paste0(MTP, " adjusted MDES"),paste0(power.definition, " power")) # Giving the proper colnames
+      
+      return(mdes.results)
     
+    } # Return results if our targeted power is within a margin of error of the specified power
+      
     # Check if the calculated target power is greater than the prescribed power  
     
     is.over <- target.power > power
