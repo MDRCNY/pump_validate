@@ -159,7 +159,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   #Output error statement in R
   if( Ai > M){
     
-      stop('The number of outcomes with actual effects cannot be greater than the total number of outcomes of an experiment. Please readjust your inputs.')
+      stop('The number of outcomes with actual effects cannot be greater than the total number of outcomes of an experiment. Please adjust your inputs.')
     
   } # Error handling for when actual effect number is greater than the total number of outcomes
   
