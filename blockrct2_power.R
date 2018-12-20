@@ -327,11 +327,10 @@ midpoint<-function(lower,upper) {
 #' @export
 #'
 #' @examples
-MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
+MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                             mod.type, sigma, omega,
                             tnum = 10000, snum=2, ncl=2, display.progress=TRUE) {
-  
   
   # SET UP #
   sigma <- matrix(0.99, M, M)
@@ -416,7 +415,7 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
     
     # Function to calculate the target power to check in with the pre-specified power in the loop
     
-    runpower <- power.blockedRCT.2(M = M, MDES = try.MDES, Ai = M, J = J, n.j = n.j,
+    runpower <- power.blockedRCT.2(M = M, MDES = try.MDES, Ai = Ai_mdes, J = J, n.j = n.j,
                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, 
                                    mod.type = mod.type, sigma = sigma, omega = omega,
                                    tnum = tnum, snum = snum, ncl = ncl)
@@ -424,7 +423,7 @@ MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, m
     # Pull out the power value corresponding to the MTP and definition of power 
     
     target.power <- runpower[MTP,power.definition]
-    
+
     # Displaying the progress of power calculation
     if (display.progress) print(paste("Estimated power for this MDES is",round(target.power,4)))
     

@@ -153,6 +153,18 @@ ui <- fluidPage(
               ), # Fluid Row for MTP and M outcomes
               
               fluidRow(
+                
+                column(10,
+                       numericInput("Aimpact_mdes", "Number of Outcomes with an expected non-zero effects", value = 3, min = 0, max = 10, step = 1)
+                ), # column for outcomes with actual effect size
+                
+                column(2,
+                       div(style ="display: inline-block, vertical-align:top;",actionButton("question_mdes_mdes",label = "", icon = icon("question"))) #div for button ends                            
+                ) # column for action button
+                
+              ), # MDES and number of outcomes with expected actual effect
+              
+              fluidRow(
                 column(6,
                     numericInput("J_mdes", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
                   ), # Number of Blocks
@@ -211,8 +223,6 @@ ui <- fluidPage(
             
             tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
             
-            
-            
           ) # Main Panel Layout
         ) # Sidebar Panel       
      ) # MDES calculation panel
@@ -227,22 +237,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   #Observing the action button click and switching to a different Tab. Passing the session to keep the info from previous tab.
   observeEvent(input$question_mtp,{
     updateTabsetPanel(session, "mainmenu", selected = "MTP" )
-  })
-  
-  
-  ##Data Generating Process attached with 5 input parameters of 
-  ### N, number of sample
-  ### beta_0, the intercept
-  ### beta_1, the coefficient of covariate X1
-  ### seed, random number generating process
-  ### assignment prob, the assignment probabilities
-  
-  #A reactive expression for the power function
-  
-  # power.blockedRCT.2<-function(M, MDES, J, n.j,rho,
-  #                             p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
-  #                            omega = NULL,
-  #                            tnum, snum, ncl)
+  }) # Action button that switch tabs
   
   power <- reactive({
     
@@ -261,7 +256,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   mdes <- reactive({
 
-     MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
+     MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
                        mod.type="constant", omega=NULL,
                        tnum = 10000, snum=2, ncl=2)
 
