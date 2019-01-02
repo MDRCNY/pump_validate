@@ -221,8 +221,22 @@ ui <- fluidPage(
           
           mainPanel(
             
-            tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
+            fluidRow(
+              
+              column(12,
+                tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
+              ) # Full column
+              
+            ), #fluidRow for first half of the page
             
+            fluidRow(
+              
+             # column(12,
+                #tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
+             #  ) # Full column
+                
+            ) #fluidRow for second half of the page
+              
           ) # Main Panel Layout
         ) # Sidebar Panel       
      ) # MDES calculation panel
@@ -260,8 +274,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
                        mod.type="constant", omega=NULL,
                        tnum = 10000, snum=2, ncl=2)
 
-    #testzarni (M = input$M)
-    
   }) # reactive expression for mdes Note: Need to manage the sigma
   
   #Rendering a reactive vector object from the
