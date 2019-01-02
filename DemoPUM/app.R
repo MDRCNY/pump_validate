@@ -215,7 +215,15 @@ ui <- fluidPage(
                 column(12,
                       numericInput("p_mdes", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
                 ) # Proportion of treatment assignment
-              ) # fluid row
+              ), # fluid row for Proportion of Treatment assignment
+              
+              fluidRow(
+                
+                column(12,
+                       actionButton("goButton", "Go!") # Action Button to trigger other reactive values
+                ) # Column for action button
+                
+              ) # fluid row for Action Button
               
             ), # Side Bar Panel
           
@@ -272,14 +280,43 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
      MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
                        mod.type="constant", omega=NULL,
-                       tnum = 10000, snum=2, ncl=2)
+                       tnum = 10000, snum=2, ncl=2, updateProgress)
 
-  }) # reactive expression for mdes Note: Need to manage the sigma
+  }) # reactive expression for mdes, Note: Need to manage the sigma. Current: Decomissioned temporarily
   
-  #Rendering a reactive vector object from the
+  #Rendering a reactive vector object from the reactive expression. Current: Skipping reactive expression
   output$mdes <- renderTable({
   
-    mdes()
+    #mdes()
+    input$goButton
+    
+    #Creating a progress bar
+    progress <- shiny::Progress$new()
+    progress$set(message = "Calculating MDES", value = 0)
+    # Close the progress bar when this reactive expression is done (even if there is an error)
+    on.exit(progress$close())
+    
+    #Update Progress Bar Callback function
+    updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+      
+      if (is.null(value)){
+        
+        value <- progress$getValue()
+        value <- value + (progress$getMax() - value)/10
+        
+      } # Progess bar in terms of values' increments
+      
+      progress$set(value = value, detail = detail, message = message)
+      
+    } # End of Callback Progress Function
+    
+    
+    
+    
+    #The MDES calculation function
+    MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
+                     mod.type="constant", omega=NULL,
+                      tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress) #data table that is isolated
     
   }) # mdes output
   

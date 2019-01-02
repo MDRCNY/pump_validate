@@ -320,8 +320,9 @@ midpoint<-function(lower,upper) {
 #' @param omega 
 #' @param tnum 
 #' @param snum 
+#' @param Ai_mdes 
+#' @param updateProgress this is the progress bar function that will be passed to the main MDES calculation function
 #' @param ncl 
-#' @param display.progress 
 #'
 #' @return
 #' @export
@@ -330,7 +331,7 @@ midpoint<-function(lower,upper) {
 MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                             mod.type, sigma, omega,
-                            tnum = 10000, snum=2, ncl=2, display.progress=TRUE) {
+                            tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
   
   # SET UP #
   sigma <- matrix(0.99, M, M)
@@ -406,12 +407,13 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
   
   while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {   
     
-    # Dispalying progress of the interval of MDES we are attempting and the MDES we are trying next
+    # If the updateProgress function is passed onto as a function
     
-    if (display.progress) {
-      print(paste0("MDES is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]"))
-      print(paste("Trying MDES of",round(try.MDES,4)))
-    }
+    if (is.function(updateProgress)) {
+      text <- paste0("MDES is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]") # Secondary text we want to display
+      msg  <- paste("Trying MDES of",round(try.MDES,4)) # Priamry text we want to display
+      updateProgress(message = msg, detail = text) # Passing back the progress messages onto the callback function
+    } # if the function is being called, run the progress bar
     
     # Function to calculate the target power to check in with the pre-specified power in the loop
     
@@ -425,8 +427,13 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     target.power <- runpower[MTP,power.definition]
 
     # Displaying the progress of power calculation
-    if (display.progress) print(paste("Estimated power for this MDES is",round(target.power,4)))
-    
+    if (is.function(updateProgress)) {
+      
+      msg <- paste("Estimated power for this MDES is",round(target.power,4)) # Text for estimating power
+      updateProgress(message = msg)
+      
+    } # checking on Progress Update
+      
     # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
     
     if(target.power > power - marginError & target.power < power + marginError){
