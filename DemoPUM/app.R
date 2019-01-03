@@ -139,6 +139,48 @@ ui <- fluidPage(
       tabPanel("MDES Calculation",
           sidebarLayout(
             sidebarPanel(
+              
+              # css to center the progress bar
+              tags$head(
+                tags$style(
+                  HTML(".shiny-notification {
+                       height: 50px;
+                       width: 600px;
+                       position:fixed;
+                       top: calc(50% - 50px);
+                       left: calc(45%);
+                       right: calc(15%);
+                       font-size: 100%;
+                       text-align: center;
+                       
+                      }
+                        .progress-message {
+                       
+                       padding-top: 0px;
+                       padding-right: 3px;
+                       padding-bottom: 3px;
+                       padding-left: 10px;
+                       font-weight: normal !important;
+                       font-style: italic !important;
+                       font-size: 15px;
+                      }
+                  
+                        .progress-detail {
+
+                       padding-top: 0px;
+                       padding-right: 3px;
+                       padding-bottom: 3px;
+                       padding-left: 3px;
+                       font-weight: normal;
+                       font-style: italic !important;
+                       font-size: 15px;
+                      }
+
+                    "
+                  ) # html bracket
+                  ) # css styling tag
+                  ), # The header tag
+                
               fluidRow(
                 column(6,
                     div(style = "display: inline-block, vertical-align:top;", 
@@ -232,7 +274,7 @@ ui <- fluidPage(
             fluidRow(
               
               column(12,
-                tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
+                tableOutput("mdes") # MDES part of a spinner
               ) # Full column
               
             ), #fluidRow for first half of the page
@@ -288,7 +330,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$mdes <- renderTable({
   
     #mdes()
-    input$goButton
+    input$goButton # This button is a placeholder. It's not being used yet. 
     
     #Creating a progress bar
     progress <- shiny::Progress$new()
@@ -302,16 +344,13 @@ server <- shinyServer(function(input, output, session = FALSE) {
       if (is.null(value)){
         
         value <- progress$getValue()
-        value <- value + (progress$getMax() - value)/10
+        value <- value + (progress$getMax() - value)/20
         
       } # Progess bar in terms of values' increments
       
       progress$set(value = value, detail = detail, message = message)
       
     } # End of Callback Progress Function
-    
-    
-    
     
     #The MDES calculation function
     MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,

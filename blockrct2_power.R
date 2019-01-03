@@ -410,8 +410,8 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     # If the updateProgress function is passed onto as a function
     
     if (is.function(updateProgress)) {
-      text <- paste0("MDES is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]") # Secondary text we want to display
-      msg  <- paste("Trying MDES of",round(try.MDES,4)) # Priamry text we want to display
+      text <- paste0("Optiomal MDES is currently in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),". ") # Secondary text we want to display
+      msg  <- paste0("Trying MDES of ",round(try.MDES,4)," ... ") # Priamry text we want to display
       updateProgress(message = msg, detail = text) # Passing back the progress messages onto the callback function
     } # if the function is being called, run the progress bar
     
