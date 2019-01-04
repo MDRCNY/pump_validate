@@ -246,9 +246,7 @@ ui <- fluidPage(
                 ), # Power value
                 
                 column(6,
-                    div(style = "display: inline-block, vertical-align:top;", 
-                           selectInput("pdefn_mdes", "Power Defn", 
-                                       choices = list("Inidvidual" = "indiv", "Complete" = "complete")))
+                    uiOutput("power") #Dynamic Selector User Interface for power
                 ) # Choice of Power and Power Definition
               ), # Fluid Row for Proportion of treatment assignment
               
@@ -298,6 +296,10 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session = FALSE) {
   
+  ############################################
+  # Power Calculation Server Side Begins
+  ############################################
+  
   #Observing the action button click and switching to a different Tab. Passing the session to keep the info from previous tab.
   observeEvent(input$question_mtp,{
     updateTabsetPanel(session, "mainmenu", selected = "MTP" )
@@ -317,7 +319,121 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
 
+  ############################################
+  # MDES Server Side Calculation Begins
+  ############################################
   
+  #power selection, reactive choices
+  
+  getPower <- reactive({
+    
+    if (input$M_mdes == "1"){
+      return(c( "Individual" = "indiv",
+                "Complete" = "complete"
+      ))
+    } # end of if statement
+    else if (input$M_mdes == "2"){
+      return(c( "Individual" = "indiv",
+                "Complete" = "complete",
+                "1-minimal" = "min1"
+      ))
+    }# first else if
+    else if (input$M_mdes == "3"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2"
+      ))
+    }# second else if
+    else if (input$M_mdes == "4"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3"
+      ))
+    }# third else if
+    else if (input$M_mdes == "5"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4"
+      ))
+    }# fourth else if
+    else if (input$M_mdes == "6"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5"
+      ))
+    }# fifth else if
+    else if (input$M_mdes == "7"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6" 
+      ))
+    }# sixth else if
+    else if (input$M_mdes == "8"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6",
+               "7-minmal"  = "min7"
+      ))
+    }# seventh else if
+    else if (input$M_mdes == "9"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6",
+               "7-minmal"  = "min7",
+               "8-minmal"  = "min8"
+      ))
+    }# eight else if
+    else if (input$M_mdes == "10"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6",
+               "7-minmal"  = "min7",
+               "8-minmal"  = "min8",
+               "9-minmal" = "min9"
+      ))
+    }# tenth else if
+  }) # end of Power Reactive reactive expression
+  
+  #RenderUI for the selector input for different power definitions
+  output$power <- renderUI({
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        selectInput("pdefn_mdes", "Power Defn", 
+                    choices = as.list(getPower())))
+  
+  }) #power select input options
+  
+  #mdes calculation reactive expression
   mdes <- reactive({
 
      MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
