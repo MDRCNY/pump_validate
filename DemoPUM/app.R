@@ -446,38 +446,73 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
   }) # reactive expression for mdes, Note: Need to manage the sigma. Current: Decomissioned temporarily
   
-  #Rendering a reactive vector object from the reactive expression. Current: Skipping reactive expression
-  output$mdes <- renderTable({
+  #observe Event example
+  observeEvent(input$obsEventButton,{
+    output$oText <- renderText({ runif(1) })
+  })
   
-    #mdes()
-    input$goButton # This button is a placeholder. It's not being used yet. 
-    
-    #Creating a progress bar
-    progress <- shiny::Progress$new()
-    progress$set(message = "Calculating MDES", value = 0)
-    # Close the progress bar when this reactive expression is done (even if there is an error)
-    on.exit(progress$close())
-    
-    #Update Progress Bar Callback function
-    updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+  #observe Event for mdes calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
+  observeEvent(input$goButton,{
+    output$mdes <- renderTable({
       
-      if (is.null(value)){
+      #Creating a progress bar
+      progress <- shiny::Progress$new()
+      progress$set(message = "Calculating MDES", value = 0)
+      # Close the progress bar when this reactive expression is done (even if there is an error)
+      on.exit(progress$close())
+      
+      #Update Progress Bar Callback function
+      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
         
-        value <- progress$getValue()
-        value <- value + (progress$getMax() - value)/20
+        if (is.null(value)){
+          
+          value <- progress$getValue()
+          value <- value + (progress$getMax() - value)/20
+          
+        } # Progess bar in terms of values' increments
         
-      } # Progess bar in terms of values' increments
+        progress$set(value = value, detail = detail, message = message)
+        
+      } # End of Callback Progress Function
       
-      progress$set(value = value, detail = detail, message = message)
+      #The MDES calculation function
+      isolate(MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
+                        mod.type="constant", omega=NULL,
+                        tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
       
-    } # End of Callback Progress Function
-    
-    #The MDES calculation function
-    MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
-                     mod.type="constant", omega=NULL,
-                      tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress) #data table that is isolated
-    
-  }) # mdes output
+    }) # end of isolate
+  })
+  
+  
+  #Rendering a reactive vector object from the reactive expression. Current: Skipping reactive expression
+  # output$mdes <- renderTable({
+  #   
+  #   #Creating a progress bar
+  #   progress <- shiny::Progress$new()
+  #   progress$set(message = "Calculating MDES", value = 0)
+  #   # Close the progress bar when this reactive expression is done (even if there is an error)
+  #   on.exit(progress$close())
+  #   
+  #   #Update Progress Bar Callback function
+  #   updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+  #     
+  #     if (is.null(value)){
+  #       
+  #       value <- progress$getValue()
+  #       value <- value + (progress$getMax() - value)/20
+  #       
+  #     } # Progess bar in terms of values' increments
+  #     
+  #     progress$set(value = value, detail = detail, message = message)
+  #     
+  #   } # End of Callback Progress Function
+  #   
+  #   #The MDES calculation function
+  #   MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
+  #                    mod.type="constant", omega=NULL,
+  #                     tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress) #data table that is isolated
+  #   
+  # }) # mdes output
   
   
 }) #Server side actions
