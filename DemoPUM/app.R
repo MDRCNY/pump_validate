@@ -185,7 +185,8 @@ ui <- fluidPage(
                 column(6,
                     div(style = "display: inline-block, vertical-align:top;", 
                         selectInput("MTP_mdes", "MTP", 
-                        choices = list("Bonferroni" = "BF", "Benjamini-Hocheberg" = "BH"))) # select input buttons div
+                        choices = list("Bonferroni" = "BF", "Benjamini-Hocheberg" = "BH"),
+                        selected = "BF")) # select input buttons div
                     
                 ), # MTP, the Mutliple Testing Procedure in Use
                 
@@ -323,7 +324,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   # MDES Server Side Calculation Begins
   ############################################
   
-  #power selection, reactive choices
+  #power selection, reactive choices. This is different from the mdes reactive values which are being isolated out.
   
   getPower <- reactive({
     
@@ -427,9 +428,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
   #RenderUI for the selector input for different power definitions
   output$power <- renderUI({
     
+    powerlist = as.list(getPower())
+    # browser()
     div(style = "display: inline-block, vertical-align:top;", 
         selectInput("pdefn_mdes", "Power Defn", 
-                    choices = as.list(getPower())))
+                    choices = powerlist,
+                    selected = powerlist[[1]]))
   
   }) #power select input options
   

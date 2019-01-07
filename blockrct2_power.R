@@ -301,7 +301,7 @@ midpoint<-function(lower,upper) {
 #' MDES function
 #'
 #' @param M 
-#' @param numFalse 
+#' @param numFalse the number of false numbers. Kristin has calculated it one way, but, I have structured it another using AiImpacts. 
 #' @param J 
 #' @param n.j 
 #' @param power 
@@ -341,7 +341,7 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
   print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
   
   # Check to see if the MTP is Westfall Young and it has enough samples
-  if (MTP=="WY-SD" & snum <1000) print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
+  if (MTP=="WY-SD" & snum < 1000) print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
   if (MTP!="WY-SD") snum<- 2
   
   # Compute Q(m)
@@ -359,9 +359,11 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
   
   
   # SETTING THE BOUNDS FOR INDIVIDUAL AND OTHER TYPES OF POWER #
-  
+  #browser()
   ### INDIVIDUAL POWER ###
-  if (power.definition=="indiv") { 
+  if (power.definition =="indiv") { 
+    #browser()
+    #print("I am under power definition individual")
     
     if (MTP == "raw"){ 
         
@@ -373,6 +375,8 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     } #Raw MDES if anybody ever asked for it
     
     if (MTP == "BF"){
+      
+      #print("I am under MTP definition of Bonferroni")
       
       mdes.results <- t(data.frame(c(MDES.BF,power))) #transpose the MDES raw and power to have the results columnwise
       colnames(mdes.results) <- c(paste0( MTP, " adjusted MDES"), paste0(power.definition, " power"))
@@ -394,7 +398,8 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
   ### NOT INDIVIDUAL POWER ###
   
   # For other scenarios, set lowhigh intervals and compute midpoint
-  ifelse (power.definition=="indiv", lowhigh<-c(MDES.raw,1), lowhigh<-c(0,1)) 
+  # For cases where the power definition is not related to individual
+  ifelse (power.definition =="indiv", lowhigh<-c(MDES.raw,1), lowhigh<-c(0,1)) 
   
   # LOOKING FOR THE RIGHT MDES through a while loop with 20 iterations as the limit
   
