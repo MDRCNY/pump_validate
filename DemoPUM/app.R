@@ -185,7 +185,7 @@ ui <- fluidPage(
                 column(6,
                     div(style = "display: inline-block, vertical-align:top;", 
                         selectInput("MTP_mdes", "MTP", 
-                        choices = list("Bonferroni" = "BF", "Benjamini-Hocheberg" = "BH"),
+                        choices = list("Bonferroni" = "BF", "Benjamini-Hocheberg" = "BH", "Holms" = "HO", "Westfall-Young-SS" = "WY-SS", "Westfall-Young-SD" = "WY-SD"),
                         selected = "BF")) # select input buttons div
                     
                 ), # MTP, the Mutliple Testing Procedure in Use
@@ -445,11 +445,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                        tnum = 10000, snum=2, ncl=2, updateProgress)
 
   }) # reactive expression for mdes, Note: Need to manage the sigma. Current: Decomissioned temporarily
-  
-  #observe Event example
-  observeEvent(input$obsEventButton,{
-    output$oText <- renderText({ runif(1) })
-  })
+
   
   #observe Event for mdes calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
   observeEvent(input$goButton,{
@@ -480,7 +476,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                         mod.type="constant", omega=NULL,
                         tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
       
-    }) # end of isolate
+    }) # end of isolate. We do not want 
   })
   
   
