@@ -477,3 +477,132 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
   } # end while
   
 } # MDES blockedRCT 2
+
+
+
+
+
+#These currently only work if numFalse = M and if MDES is the same or all outcomes. 
+
+#' Title
+#'
+#' @param M 
+#' @param numFalse 
+#' @param J 
+#' @param n.j 
+#' @param J0 
+#' @param n.j0 
+#' @param MDES 
+#' @param power 
+#' @param power.definition 
+#' @param MTP 
+#' @param marginError 
+#' @param p 
+#' @param alpha 
+#' @param numCovar.1 
+#' @param numCovar.2 
+#' @param R2.1 
+#' @param R2.2 
+#' @param ICC 
+#' @param mod.type 
+#' @param sigma 
+#' @param omega 
+#' @param tnum 
+#' @param snum 
+#' @param ncl 
+#' @param num.iter 
+#' @param display.progress 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
+                          ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, display.progress=TRUE) {
+  
+  
+  # indicator for which ss to compute
+  doJ <- is.null(J)
+  don.j <- is.null(n.j)
+  
+  ifelse(doJ,whichSS<-"J",whichSS<-"n.j")
+  print(paste("Estimating",whichSS,"for target ",power.definition,"power of ",round(power,4)))
+  
+  # Compute J or n.j for raw and BF SS for INDIVIDUAL POWER
+  # for now assuming only two tailed tests
+  if (doJ) {
+    J.raw <- SS.blockedRCT.2.RAW(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    J.BF <- SS.blockedRCT.2.RAW(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+  }
+  if (don.j) {
+    n.j.raw <- SS.blockedRCT.2.RAW(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    n.j.BF <- SS.blockedRCT.2.RAW(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1) 
+  }
+  
+  # So below can focus on just the one being estimated
+  if (doJ) { 
+    ss.raw <- J.raw
+    ss.BF <- J.BF
+  }
+  if (don.j) {
+    ss.raw <- n.j.raw
+    ss.BF <- n.j.BF
+  }
+  
+  
+  ### INDIVIDUAL POWER ###
+  if (power.definition=="indiv") {  
+    if (MTP == "raw") return(ss.raw) 
+    if (MTP == "BF") return(ss.BF) 
+  }
+  
+  # For individual power, other J's or n.j's will be between raw and BF, so make starting value the midpoint
+  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
+    lowhigh <- c(ss.raw,ss.BF)
+    try.ss <- midpoint(lowhigh[1],lowhigh[2])
+  }
+  # For minimal powers, makes starting value = raw
+  if (power.definition != "indiv")  {
+    lowhigh <- c(0,ss.BF)
+    try.ss <- midpoint(lowhigh[1],lowhigh[2])
+  }
+  ii <- 0
+  target.power <- 0
+  while (ii < num.iter & (target.power < power - marginError | target.power > power + marginError) ) {
+    if (display.progress) {
+      print(paste0(whichSS, " is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]"))
+      print(paste("Trying",whichSS,"of",round(try.ss,4)))
+    }
+    if (doJ) {
+      runpower <- power.blockedRCT.2(M, MDES, J= try.ss, n.j,
+                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
+                                     mod.type, sigma, omega,
+                                     tnum, snum, ncl)
+    }
+    if (don.j) {
+      runpower <- power.blockedRCT.2(M, MDES, J, n.j=try.ss,
+                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
+                                     mod.type, sigma, omega,
+                                     tnum, snum, ncl)
+    }
+    target.power <- runpower[MTP,power.definition]
+    if (display.progress) print(paste("Estimated power for this",whichSS,"is",target.power))
+    is.over <- target.power > power
+    if(target.power > power - marginError & target.power < power + marginError) return(c(try.ss,target.power))
+    if(!is.over) {
+      p.off <- (power - target.power) / power
+      lowhigh[1] <- try.ss
+    }
+    if(is.over) {
+      lowhigh[2] <- try.ss
+      p.off <- (target.power - power) / power
+    }
+    lowhigh.dist <- lowhigh[2]-lowhigh[1]
+    try.ss <- ifelse(target.power < power, (try.ss + lowhigh[2])/2, (try.ss + lowhigh[1])/2) # midpoint
+    ii <- ii + 1
+  } # end while
+  
+  if (ii==num.iter & !(target.power > power - marginError & target.power < power + marginError)) print ("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (num.iter).")
+}
+
+
