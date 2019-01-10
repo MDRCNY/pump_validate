@@ -479,12 +479,111 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
 } # MDES blockedRCT 2
 
 
+#' Calculating Raw Sample 
+#' 
+#' # this is a help function for getting SS when no adjustment - 
+#' it starts with PowerUp package function mrss.bira2cl but that function seems to have a bug - only works if pass in numeric values and not if pass in objects that hold those values. Plus mrss.bira2cl only computes J, not n.j
+#'
+#' @param J 
+#' @param n.j 
+#' @param J0 
+#' @param n.j0 
+#' @param whichSS 
+#' @param MDES 
+#' @param power 
+#' @param p 
+#' @param alpha 
+#' @param numCovar.1 
+#' @param numCovar.2 
+#' @param R2.1 
+#' @param R2.2 
+#' @param ICC 
+#' @param mod.type 
+#' @param sigma 
+#' @param omega 
+#' @param two.tailed 
+#' @param num.iter 
+#' @param tol 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
+  
+  # 
+                                     
+  i <- 0
+  conv <- FALSE
+  while (i <= num.iter & conv == FALSE) {
+    if (whichSS=="J") df <- J0 * (n.j - 1) - numCovar.1 - 1
+    if (whichSS=="n.j") df <- J * (n.j0 - 1) - numCovar.1 - 1
+    if (df < 0 | df < 0 | is.infinite(df)) {
+      break
+    }
+    T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), 
+                 abs(qt(alpha, df)))
+    T2 <- abs(qt(power, df))
+    MT <- ifelse(power >= 0.5, T1 + T2, T1 - T2)
+    if (whichSS=="J") {
+      J1 <- (MT/MDES)^2 * ((1 - R2.1)/(p * (1 - p) * n.j))
+      if (abs(J1 - J0) < tol) {
+        conv <- TRUE
+      }
+      J0 <- (J1 + J0)/2
+    }
+    if (whichSS=="n.j") {
+      n.j1 <- (MT/MDES)^2 * ((1 - R2.1)/(p * (1 - p) * J))
+      if (abs(n.j1 - n.j0) < tol) {
+        conv <- TRUE
+      }
+      n.j0 <- (n.j1 + n.j0)/2
+    }
+    
+    i <- i + 1
+  }
+  if (whichSS=="J") {
+    J <- ifelse(df > 0, round(J0), NA)
+    return(J)
+  }
+  if (whichSS=="n.j") {
+    n.j <- ifelse(df > 0, round(n.j0), NA)
+    return(n.j)
+  }
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 #These currently only work if numFalse = M and if MDES is the same or all outcomes. 
 
-#' Title
+#' Sample Function
 #'
 #' @param M 
 #' @param numFalse 
@@ -517,6 +616,8 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
 #' @export
 #'
 #' @examples
+#' 
+#' 
 SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
                           ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, display.progress=TRUE) {
   
