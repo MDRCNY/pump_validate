@@ -288,8 +288,163 @@ ui <- fluidPage(
               
           ) # Main Panel Layout
         ) # Sidebar Panel       
-     ) # MDES calculation panel
-  
+     ), # Tabpanel MDES calculation
+
+     tabPanel("Sample Size Calculation",
+              sidebarLayout(
+                sidebarPanel(
+                  
+                  # css to center the progress bar
+                  tags$head(
+                    tags$style(
+                      HTML(".shiny-notification {
+                           height: 50px;
+                           width: 600px;
+                           position:fixed;
+                           top: calc(50% - 50px);
+                           left: calc(45%);
+                           right: calc(15%);
+                           font-size: 100%;
+                           text-align: center;
+                           
+                           }
+                           .progress-message {
+                           
+                           padding-top: 0px;
+                           padding-right: 3px;
+                           padding-bottom: 3px;
+                           padding-left: 10px;
+                           font-weight: normal !important;
+                           font-style: italic !important;
+                           font-size: 15px;
+                           }
+                           
+                           .progress-detail {
+                           
+                           padding-top: 0px;
+                           padding-right: 3px;
+                           padding-bottom: 3px;
+                           padding-left: 3px;
+                           font-weight: normal;
+                           font-style: italic !important;
+                           font-size: 15px;
+                           }
+                           
+                           "
+                      ) # html bracket
+                      ) # css styling tag
+                      ), # The header tag
+                  
+                  fluidRow(
+                    column(6,
+                           div(style = "display: inline-block, vertical-align:top;", 
+                               selectInput("MTP_sample", "MTP", 
+                                           choices = list("Bonferroni" = "BF", "Benjamini-Hocheberg" = "BH", "Holms" = "HO", "Westfall-Young-SS" = "WY-SS", "Westfall-Young-SD" = "WY-SD"),
+                                           selected = "BF")) # select input buttons div
+                           
+                    ), # MTP, the Mutliple Testing Procedure in Use
+                    
+                    column(6,
+                           numericInput("M_sample", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
+                    ) # M, the number of outcomes in use
+                  ), # Fluid Row for MTP and M outcomes
+                  
+                  fluidRow(
+                    
+                    column(10,
+                           numericInput("NumFalse_sample", "Number of False Nulls", value = 3, min = 0, max = 10, step = 1)
+                    ), # column for outcomes with actual effect size
+                    
+                    column(2,
+                           div(style ="display: inline-block, vertical-align:top;",actionButton("question_sample_sample",label = "", icon = icon("question"))) #div for button ends                            
+                    ) # column for action button
+                    
+                  ), # MDES and number of outcomes with expected actual effect
+                  
+                  fluidRow(
+                    column(6,
+                           numericInput("J_sample", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
+                    ), # Number of Blocks
+                    
+                    column(6,
+                           numericInput("n.j_sample","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
+                           
+                    ) # Fluid Row for Number of units per block and Number of units
+                    
+                  ), # Number of Block and Sample Size
+                  
+                  fluidRow(
+                    column(6,
+                           numericInput("alpha_sample", "Alpha value", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
+                    ), # alpha value
+                    
+                    column(6,
+                           numericInput("me_sample", "Margin of error", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
+                    ) # Margins of error, #me = margin of error
+                  ), # For Alpha and Margin of Error
+                  
+                  fluidRow(
+                    
+                    column(6,
+                           numericInput("numCovar.1_sample", "Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
+                    ), # number of covariates at level 1
+                    
+                    column(6,
+                           numericInput("R2.1_sample", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
+                    ) # R2 (explanatory power at level 1)
+                  ), # Number of Level 1 covariates and R^2 explanatory power
+                  
+                  fluidRow(
+                    
+                    column(6,
+                           numericInput("power_sample", "Power Value", min = 0.001, max = 1.0, value = 0.75, step = 0.001)
+                    ), # Power value
+                    
+                    column(6,
+                           uiOutput("power_sample_sample") #Dynamic Selector User Interface for power
+                    ) # Choice of Power and Power Definition
+                  ), # Fluid Row for Proportion of treatment assignment
+                  
+                  fluidRow(
+                    
+                    column(12,
+                           numericInput("p_sample", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
+                    ) # Proportion of treatment assignment
+                  ), # fluid row for Proportion of Treatment assignment
+                  
+                  fluidRow(
+                    
+                    column(12,
+                           actionButton("goButton_sample", "Go!") # Action Button to trigger other reactive values
+                    ) # Column for action button
+                    
+                  ) # fluid row for Action Button
+                  
+                      ), # Side Bar Panel
+                
+                mainPanel(
+                  
+                  fluidRow(
+                    
+                    column(12,
+                           tableOutput("mdes") # MDES part of a spinner
+                    ) # Full column
+                    
+                  ), #fluidRow for first half of the page
+                  
+                  fluidRow(
+                    
+                    # column(12,
+                    #tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
+                    #  ) # Full column
+                    
+                  ) #fluidRow for second half of the page
+                  
+                ) # Main Panel Layout
+                    ) # Sidebar Panel       
+                )  # Tabpanel MDES calculation
+     
+     
   )# navBarPage
   
 )# fluidPage
@@ -479,6 +634,157 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }) # end of isolate. We do not want 
   })
   
+  ############################################
+  # Sample  Server Side Calculation Begins
+  ############################################
+  
+  #power definition selection, reactive choices. This is different from the mdes reactive values which are being isolated out.
+  
+  getPower_sample <- reactive({
+    
+    if (input$M_sample == "1"){
+      return(c( "Individual" = "indiv",
+                "Complete" = "complete"
+      ))
+    } # end of if statement
+    else if (input$M_sample == "2"){
+      return(c( "Individual" = "indiv",
+                "Complete" = "complete",
+                "1-minimal" = "min1"
+      ))
+    }# first else if
+    else if (input$M_sample == "3"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2"
+      ))
+    }# second else if
+    else if (input$M_sample == "4"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3"
+      ))
+    }# third else if
+    else if (input$M_sample == "5"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4"
+      ))
+    }# fourth else if
+    else if (input$M_sample == "6"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5"
+      ))
+    }# fifth else if
+    else if (input$M_sample == "7"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6" 
+      ))
+    }# sixth else if
+    else if (input$M_sample == "8"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6",
+               "7-minmal"  = "min7"
+      ))
+    }# seventh else if
+    else if (input$M_sample == "9"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6",
+               "7-minmal"  = "min7",
+               "8-minmal"  = "min8"
+      ))
+    }# eight else if
+    else if (input$M_sample == "10"){
+      return(c("Individual" = "indiv",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6",
+               "7-minmal"  = "min7",
+               "8-minmal"  = "min8",
+               "9-minmal" = "min9"
+      ))
+    }# tenth else if
+  }) # end of Power Reactive reactive expression
+  
+  #RenderUI for the selector input for different power definitions
+  output$power_sample <- renderUI({
+    
+    powerlist_sample = as.list(getPower_sample())
+    # browser()
+    div(style = "display: inline-block, vertical-align:top;", 
+        selectInput("pdefn_mdes", "Power Defn", 
+                    choices = powerlist_sample,
+                    selected = powerlist_sample[[1]]))
+    
+  }) #power select input options
+  
+  #observe Event for mdes calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
+  observeEvent(input$goButton_sample,{
+    output$sample <- renderTable({
+      
+      #Creating a progress bar
+      progress <- shiny::Progress$new()
+      progress$set(message = "Calculating MDES", value = 0)
+      # Close the progress bar when this reactive expression is done (even if there is an error)
+      on.exit(progress$close())
+      
+      #Update Progress Bar Callback function
+      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+        
+        if (is.null(value)){
+          
+          value <- progress$getValue()
+          value <- value + (progress$getMax() - value)/20
+          
+        } # Progess bar in terms of values' increments
+        
+        progress$set(value = value, detail = detail, message = message)
+        
+      } # End of Callback Progress Function
+      
+      #The MDES calculation function
+      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, J = input$J_sample, n.j = input$n.j_sample,J0 = 10, n.j0 = 0,MDES = input$mdes, power=input$power_sample, power.definition = input$pdefn_sample, MTP=input$MTP_sample, marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
+                              numCovar.1=input$numCovar.1_sample, numCovar.2=NULL, R2.1=input$R2.1_sample, R2.2=0, ICC=0,
+                                mod.type="constant", omega=NULL,
+                                tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
+      
+    }) # end of isolate. We do not want 
+  })
+    
+    
   
   #Rendering a reactive vector object from the reactive expression. Current: Skipping reactive expression
   # output$mdes <- renderTable({
