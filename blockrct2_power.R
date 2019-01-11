@@ -486,8 +486,8 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
 #'
 #' @param J 
 #' @param n.j 
-#' @param J0 
-#' @param n.j0 
+#' @param J0 starting values for J0 to look for optimal J and n.j
+#' @param n.j0 starting values for n.j0 to look for optimal J and n.j
 #' @param whichSS 
 #' @param MDES 
 #' @param power 
@@ -592,7 +592,6 @@ SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, a
 SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
                           ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, display.progress=TRUE) {
   
-  
   # SET UP #
   sigma <- matrix(0.99, M, M)
   diag(sigma) <- 1
@@ -628,7 +627,12 @@ SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.defi
   
   ### INDIVIDUAL POWER ###
   if (power.definition=="indiv") {  
-    if (MTP == "raw") return(ss.raw) 
+    if (MTP == "raw"){
+      
+      raw.ss <- data.frame("Raw","Indivdual", ss.raw)
+      colnames(raw.ss) <- c("Type of MTP", "Type of Power", "Sample Size")
+      return(raw.ss)      
+    }  
     if (MTP == "BF") return(ss.BF) 
   }
   

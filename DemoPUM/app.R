@@ -289,7 +289,6 @@ ui <- fluidPage(
           ) # Main Panel Layout
         ) # Sidebar Panel       
      ), # Tabpanel MDES calculation
-
      tabPanel("Sample Size Calculation",
               sidebarLayout(
                 sidebarPanel(
@@ -397,11 +396,11 @@ ui <- fluidPage(
                   fluidRow(
                     
                     column(6,
-                           numericInput("power_sample", "Power Value", min = 0.001, max = 1.0, value = 0.75, step = 0.001)
+                           numericInput("power_samples", "Power Value", min = 0.001, max = 1.0, value = 0.75, step = 0.001)
                     ), # Power value
                     
                     column(6,
-                           uiOutput("power_sample_sample") #Dynamic Selector User Interface for power
+                           uiOutput("power_sample") #Dynamic Selector User Interface for power
                     ) # Choice of Power and Power Definition
                   ), # Fluid Row for Proportion of treatment assignment
                   
@@ -426,9 +425,9 @@ ui <- fluidPage(
                   
                   fluidRow(
                     
-                    column(12,
-                           tableOutput("mdes") # MDES part of a spinner
-                    ) # Full column
+                    # column(12,
+                    #        tableOutput("mdes") # MDES part of a spinner
+                    # ) # Full column
                     
                   ), #fluidRow for first half of the page
                   
@@ -442,7 +441,8 @@ ui <- fluidPage(
                   
                 ) # Main Panel Layout
                     ) # Sidebar Panel       
-                )  # Tabpanel MDES calculation
+                )  # Tabpanel Sample calculation
+     
      
      
   )# navBarPage
@@ -745,7 +745,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     powerlist_sample = as.list(getPower_sample())
     # browser()
     div(style = "display: inline-block, vertical-align:top;", 
-        selectInput("pdefn_mdes", "Power Defn", 
+        selectInput("pdefn_sample", "Power Defn", 
                     choices = powerlist_sample,
                     selected = powerlist_sample[[1]]))
     
@@ -775,47 +775,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
       } # End of Callback Progress Function
       
-      #The MDES calculation function
-      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, J = input$J_sample, n.j = input$n.j_sample,J0 = 10, n.j0 = 0,MDES = input$mdes, power=input$power_sample, power.definition = input$pdefn_sample, MTP=input$MTP_sample, marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
+      #The Sample calculation function
+      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, J = input$J_sample, n.j = input$n.j_sample,J0 = 10, n.j0 = 0,MDES = input$mdes, power=input$power_samples, power.definition = input$pdefn_sample, MTP=input$MTP_sample, marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
                               numCovar.1=input$numCovar.1_sample, numCovar.2=NULL, R2.1=input$R2.1_sample, R2.2=0, ICC=0,
-                                mod.type="constant", omega=NULL,
-                                tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
+                              mod.type="constant", omega=NULL,
+                              tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
       
     }) # end of isolate. We do not want 
-  })
-    
-    
-  
-  #Rendering a reactive vector object from the reactive expression. Current: Skipping reactive expression
-  # output$mdes <- renderTable({
-  #   
-  #   #Creating a progress bar
-  #   progress <- shiny::Progress$new()
-  #   progress$set(message = "Calculating MDES", value = 0)
-  #   # Close the progress bar when this reactive expression is done (even if there is an error)
-  #   on.exit(progress$close())
-  #   
-  #   #Update Progress Bar Callback function
-  #   updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-  #     
-  #     if (is.null(value)){
-  #       
-  #       value <- progress$getValue()
-  #       value <- value + (progress$getMax() - value)/20
-  #       
-  #     } # Progess bar in terms of values' increments
-  #     
-  #     progress$set(value = value, detail = detail, message = message)
-  #     
-  #   } # End of Callback Progress Function
-  #   
-  #   #The MDES calculation function
-  #   MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
-  #                    mod.type="constant", omega=NULL,
-  #                     tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress) #data table that is isolated
-  #   
-  # }) # mdes output
-  
+  }) # Sample calculation
   
 }) #Server side actions
 
