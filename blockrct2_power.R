@@ -590,7 +590,7 @@ SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, a
 #' 
 #' 
 SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
-                          ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, display.progress=TRUE) {
+                          ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
   
   # SET UP #
   sigma <- matrix(0.99, M, M)
@@ -601,8 +601,14 @@ SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.defi
   don.j <- is.null(n.j)
   
   ifelse(doJ,whichSS<-"J",whichSS<-"n.j")
-  print(paste("Estimating",whichSS,"for target ",power.definition,"power of ",round(power,4)))
   
+  # Printing Progress Message
+  if(is.function(updateProgress)){
+    msg <- (paste0("Estimating ",whichSS," for target ",power.definition," power of ",round(power,4))) #msg to be displayed in the progress bar
+    updateProgress(message = msg)
+  } # For printing via update progress function
+    
+    
   # Compute J or n.j for raw and BF SS for INDIVIDUAL POWER
   # for now assuming only two tailed tests
   if (doJ) {
@@ -631,10 +637,20 @@ SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.defi
       
       raw.ss <- data.frame("Raw","Indivdual", ss.raw)
       colnames(raw.ss) <- c("Type of MTP", "Type of Power", "Sample Size")
+      
       return(raw.ss)      
-    }  
-    if (MTP == "BF") return(ss.BF) 
-  }
+    } #MTP raw
+    
+    if (MTP == "BF") {
+
+      ss.BF <- data.frame("Bonferroni", "Individual", ss.BF)
+      colnames(ss.BF) <- c("Type of MTP", "Type of Power", "Sample Size")
+      
+      return(ss.BF) 
+    
+    } #MTP BF
+      
+  } # Individual power
   
   # For individual power, other J's or n.j's will be between raw and BF, so make starting value the midpoint
   if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
@@ -649,10 +665,13 @@ SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.defi
   ii <- 0
   target.power <- 0
   while (ii < num.iter & (target.power < power - marginError | target.power > power + marginError) ) {
-    if (display.progress) {
-      print(paste0(whichSS, " is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]"))
-      print(paste("Trying",whichSS,"of",round(try.ss,4)))
+    
+    if (is.function(updateProgress)) {
+      text <- paste0(whichSS, " is in the interval [ ",round(lowhigh[1],4)," , ",round(lowhigh[2],4)," ]")
+      msg <- paste0("Trying ",whichSS," of ",round(try.ss,4))
+      updateProgress(message = msg, detail = text)
     }
+    
     if (doJ) {
       runpower <- power.blockedRCT.2(M, MDES, J= try.ss, n.j,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
@@ -666,9 +685,19 @@ SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.defi
                                      tnum, snum, ncl)
     }
     target.power <- runpower[MTP,power.definition]
-    if (display.progress) print(paste("Estimated power for this",whichSS,"is",target.power))
+    
+    if (is.function(updateProgress)){ 
+      text <- paste0("Estimated power for this ",whichSS," is ",target.power)
+      updateProgress(detail = text)
+    }
+    
     is.over <- target.power > power
-    if(target.power > power - marginError & target.power < power + marginError) return(c(try.ss,target.power))
+    if(target.power > power - marginError & target.power < power + marginError) {
+      
+      return(c(try.ss,target.power))
+    
+    }  
+      
     if(!is.over) {
       p.off <- (power - target.power) / power
       lowhigh[1] <- try.ss
@@ -682,8 +711,12 @@ SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.defi
     ii <- ii + 1
   } # end while
   
-  if (ii==num.iter & !(target.power > power - marginError & target.power < power + marginError)) print ("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (num.iter).")
-}
+  if (ii==num.iter & !(target.power > power - marginError & target.power < power + marginError)) {
+    
+    text <- paste0("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (num.iter).")
+    updateProgress(detail = text)
+  }
+} # SS.blockedRCT.2
 
 ## indiv, BF, J
 # test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = rep(mdes1,M), power=test.power["BF","indiv"], power.definition = "indiv", MTP = "BF", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
