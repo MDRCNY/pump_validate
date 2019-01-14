@@ -416,9 +416,14 @@ ui <- fluidPage(
                   
                   fluidRow(
                     
-                    column(12,
+                    column(6,
                            numericInput("p_sample", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
-                    ) # Proportion of treatment assignment
+                    ), # Proportion of treatment assignment
+                    
+                    column(6,
+                           numericInput("MDES_sample", "Minimum effect size", value = 0.125, min = 0, max = 5, step = 0.001)
+                    ) # column for Minimum detectable effect size
+    
                   ), # fluid row for Proportion of Treatment assignment
                   
                   fluidRow(
@@ -786,7 +791,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #The Sample calculation function
-      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, typesample = input$typesample, J = input$J_sample, n.j = input$n.j_sample,J0 = 10, n.j0 = 0,MDES = input$mdes, power=input$power_samples, power.definition = input$pdefn_sample, MTP=input$MTP_sample, marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
+      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, typesample = input$typesample, J = input$J_sample, n.j = input$n.j_sample,J0 = 10, n.j0 = 0,MDES = input$MDES_sample, power=input$power_samples, power.definition = input$pdefn_sample, MTP=input$MTP_sample, marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
                               numCovar.1=input$numCovar.1_sample, numCovar.2=NULL, R2.1=input$R2.1_sample, R2.2=0, ICC=0,
                               mod.type="constant", omega=NULL,
                               tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated

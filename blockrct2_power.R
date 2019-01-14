@@ -515,18 +515,29 @@ SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, a
   i <- 0
   conv <- FALSE #
   while (i <= num.iter & conv == FALSE) {
-    if (whichSS=="J") df <- J0 * (n.j - 1) - numCovar.1 - 1
-    if (whichSS=="n.j") df <- J * (n.j0 - 1) - numCovar.1 - 1
+    if (whichSS =="J"){ 
+      df <- J0 * (n.j - 1) - numCovar.1 - 1 # degree of freedom calculation
+    }
+    if (whichSS =="n.j") {
+      df <- J * (n.j0 - 1) - numCovar.1 - 1
+    }
     if (df < 0 | df < 0 | is.infinite(df)) {
       break
     }
+    
     T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), 
                  abs(qt(alpha, df)))
+    
     T2 <- abs(qt(power, df))
+    
     MT <- ifelse(power >= 0.5, T1 + T2, T1 - T2)
+    
     if (whichSS=="J") {
+
       J1 <- (MT/MDES)^2 * ((1 - R2.1)/(p * (1 - p) * n.j))
+      
       if (abs(J1 - J0) < tol) {
+        
         conv <- TRUE
       }
       J0 <- (J1 + J0)/2
@@ -624,6 +635,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     J.raw <- SS.blockedRCT.2.RAW(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
     J.BF <- SS.blockedRCT.2.RAW(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
   }
+  
   if (don.j) {
     n.j.raw <- SS.blockedRCT.2.RAW(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
     n.j.BF <- SS.blockedRCT.2.RAW(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1) 
@@ -634,11 +646,11 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     ss.raw <- J.raw
     ss.BF <- J.BF
   }
+  
   if (don.j) {
     ss.raw <- n.j.raw
     ss.BF <- n.j.BF
   }
-  
   
   ### INDIVIDUAL POWER ###
   if (power.definition=="indiv") {
@@ -692,12 +704,14 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
                                      mod.type, sigma, omega,
                                      tnum, snum, ncl)
     }
+    
     if (don.j) {
       runpower <- power.blockedRCT.2(M, MDES, J, n.j=try.ss,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
                                      mod.type, sigma, omega,
                                      tnum, snum, ncl)
     }
+    
     target.power <- runpower[MTP,power.definition]
     
     if (is.function(updateProgress)){ 
@@ -716,10 +730,12 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
       p.off <- (power - target.power) / power
       lowhigh[1] <- try.ss
     }
+    
     if(is.over) {
       lowhigh[2] <- try.ss
       p.off <- (target.power - power) / power
     }
+    
     lowhigh.dist <- lowhigh[2]-lowhigh[1]
     try.ss <- ifelse(target.power < power, (try.ss + lowhigh[2])/2, (try.ss + lowhigh[1])/2) # midpoint
     ii <- ii + 1
