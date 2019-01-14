@@ -699,14 +699,14 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     }
     
     if (doJ) {
-      runpower <- power.blockedRCT.2(M, MDES, J= try.ss, n.j,
+      runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J= try.ss, n.j,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
                                      mod.type, sigma, omega,
                                      tnum, snum, ncl)
     }
     
     if (don.j) {
-      runpower <- power.blockedRCT.2(M, MDES, J, n.j=try.ss,
+      runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J, n.j=try.ss,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
                                      mod.type, sigma, omega,
                                      tnum, snum, ncl)
