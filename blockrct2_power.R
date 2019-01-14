@@ -589,7 +589,7 @@ SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, a
 #' @examples
 #' 
 #' 
-SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
+SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
                           ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
   
   # SET UP #
@@ -597,8 +597,17 @@ SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.defi
   diag(sigma) <- 1
   
   # indicator for which ss to compute
-  doJ <- is.null(J)
-  don.j <- is.null(n.j)
+  if(typesample == "J"){ 
+
+    doJ <- TRUE
+    don.j <- FALSE
+  
+  } else if (typesample == "n.j") {
+    
+    don.j <- TRUE 
+    doJ <- FALSE
+  
+  } # Sample within block
   
   ifelse(doJ,whichSS<-"J",whichSS<-"n.j")
   
@@ -632,13 +641,18 @@ SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.defi
   
   
   ### INDIVIDUAL POWER ###
-  if (power.definition=="indiv") {  
+  if (power.definition=="indiv") {
+    
     if (MTP == "raw"){
       
       raw.ss <- data.frame("Raw","Indivdual", ss.raw)
       colnames(raw.ss) <- c("Type of MTP", "Type of Power", "Sample Size")
       
-      return(raw.ss)      
+      # To check if the function is returning a table
+      browser()
+      
+      return(raw.ss)  
+      
     } #MTP raw
     
     if (MTP == "BF") {

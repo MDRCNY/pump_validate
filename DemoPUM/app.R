@@ -361,6 +361,16 @@ ui <- fluidPage(
                   ), # MDES and number of outcomes with expected actual effect
                   
                   fluidRow(
+                    
+                    column(12,
+                           div(style = "display: inline-block, vertical-align:top;", 
+                               selectInput("typesample", "Which type of sample would you like to estimate ?", 
+                                           choices = list("Number of Blocks" = "J", "Number of Samples within block" = "n.j"))) # select input buttons div
+                    ) # Choice of type of Sample we want to estimate 
+                    
+                  ), #fluidRow for radio button choice
+                  
+                  fluidRow(
                     column(6,
                            numericInput("J_sample", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
                     ), # Number of Blocks
@@ -425,19 +435,19 @@ ui <- fluidPage(
                   
                   fluidRow(
                     
-                    # column(12,
-                    #        tableOutput("mdes") # MDES part of a spinner
-                    # ) # Full column
+                     column(12,
+                            tableOutput("sample") # MDES part of a spinner
+                     ) # Full column
                     
-                  ), #fluidRow for first half of the page
+                  ) #fluidRow for first half of the page
                   
-                  fluidRow(
+                 # fluidRow(
                     
                     # column(12,
                     #tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
                     #  ) # Full column
                     
-                  ) #fluidRow for second half of the page
+                 # ) #fluidRow for second half of the page
                   
                 ) # Main Panel Layout
                     ) # Sidebar Panel       
@@ -776,7 +786,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #The Sample calculation function
-      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, J = input$J_sample, n.j = input$n.j_sample,J0 = 10, n.j0 = 0,MDES = input$mdes, power=input$power_samples, power.definition = input$pdefn_sample, MTP=input$MTP_sample, marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
+      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, typesample = input$typesample, J = input$J_sample, n.j = input$n.j_sample,J0 = 10, n.j0 = 0,MDES = input$mdes, power=input$power_samples, power.definition = input$pdefn_sample, MTP=input$MTP_sample, marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
                               numCovar.1=input$numCovar.1_sample, numCovar.2=NULL, R2.1=input$R2.1_sample, R2.2=0, ICC=0,
                               mod.type="constant", omega=NULL,
                               tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
