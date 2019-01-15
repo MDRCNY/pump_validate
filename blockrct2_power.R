@@ -705,9 +705,9 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
       
       #if statement to get the more apprpriate sample text for progress bar
       if (whichSS == "J"){
-        typeofsample <- "Sample number of blocks"
+        typeofsample <- "Number of blocks"
       } else {
-        typeofsample <- "Numer of samples within blocks"
+        typeofsample <- "Samples within blocks"
       }
     
       text <- paste0(typeofsample, " is in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),".")

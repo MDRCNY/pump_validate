@@ -125,8 +125,16 @@ ui <- fluidPage(
                   
                   ) # Number of Level 1 covariates
         
-                ) #fluid row for block level covariate inputs
+                ), #fluid row for block level covariate inputs
                 
+                fluidRow(
+                  
+                  column(12,
+                         actionButton("goButton_power", "Go!") # Action Button to trigger other reactive values
+                  ) # Column for action button
+                  
+                )
+            
                  ), #sidebar Panel
               mainPanel (
                        tableOutput("view") %>% withSpinner() #The view table output
@@ -261,7 +269,7 @@ ui <- fluidPage(
               fluidRow(
                 
                 column(12,
-                       actionButton("goButton", "Go!") # Action Button to trigger other reactive values
+                       actionButton("goButton_mdes", "Go!") # Action Button to trigger other reactive values
                 ) # Column for action button
                 
               ) # fluid row for Action Button
@@ -618,7 +626,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
   
   #observe Event for mdes calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
-  observeEvent(input$goButton,{
+  observeEvent(input$goButton_mdes,{
     output$mdes <- renderTable({
       
       #Creating a progress bar
