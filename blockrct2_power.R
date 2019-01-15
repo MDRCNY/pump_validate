@@ -607,7 +607,8 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
   sigma <- matrix(0.99, M, M)
   diag(sigma) <- 1
   
-  # indicator for which ss to compute
+  # indicator for which sample to compute. J is for blocks. n.j is for 
+  
   if(typesample == "J"){ 
 
     doJ <- TRUE
@@ -624,7 +625,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
   
   # Printing Progress Message
   if(is.function(updateProgress)){
-    msg <- (paste0("Estimating ",whichSS," for target ",power.definition," power of ",round(power,4))) #msg to be displayed in the progress bar
+    msg <- (paste0("Estimating ",whichSS," for target ",power.definition," power of ",round(power,4), " .")) #msg to be displayed in the progress bar
     updateProgress(message = msg)
   } # For printing via update progress function
     
@@ -652,7 +653,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     ss.BF <- n.j.BF
   }
   
-  ### INDIVIDUAL POWER ###
+  ### INDIVIDUAL POWER for Raw and BF ###
   if (power.definition=="indiv") {
     
     if (MTP == "raw"){
@@ -678,28 +679,46 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
       
   } # Individual power
   
+  ### INDIVIDUAL POWER FOR NON BF MTPs ###
+  
+  # Like the MDES calculation, the sample size would be between raw and Bonferroni. There is no adjustment and there is very
+  # conservative adjustment
+  
   # For individual power, other J's or n.j's will be between raw and BF, so make starting value the midpoint
   if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
+    
     lowhigh <- c(ss.raw,ss.BF)
     try.ss <- midpoint(lowhigh[1],lowhigh[2])
+    
   }
   # For minimal powers, makes starting value = raw
   if (power.definition != "indiv")  {
+    
     lowhigh <- c(0,ss.BF)
     try.ss <- midpoint(lowhigh[1],lowhigh[2])
+    
   }
   ii <- 0
   target.power <- 0
   while (ii < num.iter & (target.power < power - marginError | target.power > power + marginError) ) {
     
     if (is.function(updateProgress)) {
-      text <- paste0(whichSS, " is in the interval [ ",round(lowhigh[1],4)," , ",round(lowhigh[2],4)," ]")
-      msg <- paste0("Trying ",whichSS," of ",round(try.ss,4))
+      
+      #if statement to get the more apprpriate sample text for progress bar
+      if (whichSS == "J"){
+        typeofsample <- "Sample number of blocks"
+      } else {
+        typeofsample <- "Numer of samples within blocks"
+      }
+    
+      text <- paste0(typeofsample, " is in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),".")
+      msg <- paste0("Trying ",typeofsample," of ",round(try.ss,4), " .")
       updateProgress(message = msg, detail = text)
+    
     }
     
     if (doJ) {
-      runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J= try.ss, n.j,
+      runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J= try.ss,n.j,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
                                      mod.type, sigma, omega,
                                      tnum, snum, ncl)
@@ -719,10 +738,18 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
       updateProgress(detail = text)
     }
     
+    # checking if the estimation is over or not
     is.over <- target.power > power
     if(target.power > power - marginError & target.power < power + marginError) {
       
-      return(c(try.ss,target.power))
+      # estimated sample for a given MTP, type of power
+      
+      try.ss.numeric <- as.numeric(try.ss)
+      
+      est.sample <- data.frame(MTP, power.definition, try.ss.numeric, target.power)
+      colnames(est.sample) <- c("Type of MTP", "Type of Power", "Sample Size", "Target Power")
+      
+      return(est.sample)
     
     }  
       
