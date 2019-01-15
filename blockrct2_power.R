@@ -662,8 +662,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
       colnames(raw.ss) <- c("Type of MTP", "Type of Power", "Sample Size")
       
       # To check if the function is returning a table
-      browser()
-      
+
       return(raw.ss)  
       
     } #MTP raw
@@ -718,6 +717,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     }
     
     if (doJ) {
+      
       runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J= try.ss,n.j,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
                                      mod.type, sigma, omega,
@@ -725,10 +725,12 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     }
     
     if (don.j) {
+      
       runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J, n.j=try.ss,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
                                      mod.type, sigma, omega,
                                      tnum, snum, ncl)
+
     }
     
     target.power <- runpower[MTP,power.definition]
