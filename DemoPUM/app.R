@@ -2,12 +2,7 @@ library(shiny) # for basic templates
 library(shinyBS) # for popovers and tool tips
 library(shinycssloaders) # for ui elements showing shiny loading
 library(magrittr) # piping operator
-#library(pum)
-#For testing purposes
-#source("../powerFunctions_demo.R")
 source("../blockrct2_power.R")
-
-
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -27,6 +22,47 @@ ui <- fluidPage(
       tabPanel("Power Calculation",
               sidebarLayout(
                  sidebarPanel(
+                   # css to center the progress bar
+                   tags$head(
+                     tags$style(
+                       HTML(".shiny-notification {
+                            height: 50px;
+                            width: 600px;
+                            position:fixed;
+                            top: calc(50% - 50px);
+                            left: calc(45%);
+                            right: calc(15%);
+                            font-size: 100%;
+                            text-align: center;
+                            
+                            }
+                            .progress-message {
+                            
+                            padding-top: 0px;
+                            padding-right: 3px;
+                            padding-bottom: 3px;
+                            padding-left: 10px;
+                            font-weight: normal !important;
+                            font-style: italic !important;
+                            font-size: 15px;
+                            }
+                            
+                            .progress-detail {
+                            
+                            padding-top: 0px;
+                            padding-right: 3px;
+                            padding-bottom: 3px;
+                            padding-left: 3px;
+                            font-weight: normal;
+                            font-style: italic !important;
+                            font-size: 15px;
+                            }
+                            
+                            "
+                       ) # html bracket
+                       ) # css styling tag
+                       ), # The header tag
+                   
                    fluidRow(
                     column(10,
                       div(style = "display: inline-block, vertical-align:top;", selectInput("MTP", "Which MTP do you plan to use?", 
@@ -137,7 +173,7 @@ ui <- fluidPage(
             
                  ), #sidebar Panel
               mainPanel (
-                       tableOutput("view") %>% withSpinner() #The view table output
+                       tableOutput("powercalc") %>% withSpinner() #The view table output
               ) #main panel
               
           ) #sidebar Layout
@@ -284,16 +320,7 @@ ui <- fluidPage(
                 tableOutput("mdes") # MDES part of a spinner
               ) # Full column
               
-            ), #fluidRow for first half of the page
-            
-            fluidRow(
-              
-             # column(12,
-                #tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
-             #  ) # Full column
-                
-            ) #fluidRow for second half of the page
-              
+            ) #fluidRow for first half of the page
           ) # Main Panel Layout
         ) # Sidebar Panel       
      ), # Tabpanel MDES calculation
@@ -454,19 +481,9 @@ ui <- fluidPage(
                     
                   ) #fluidRow for first half of the page
                   
-                 # fluidRow(
-                    
-                    # column(12,
-                    #tableOutput("mdes") %>% withSpinner() #Textoutput of the Spinner
-                    #  ) # Full column
-                    
-                 # ) #fluidRow for second half of the page
-                  
                 ) # Main Panel Layout
                     ) # Sidebar Panel       
                 )  # Tabpanel Sample calculation
-     
-     
      
   )# navBarPage
   
@@ -492,7 +509,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   }) # reactive expression for power
   
   #Rendering a reactive object table from the power function
-  output$view <- renderTable({
+  output$powercalc <- renderTable({
     #displaying based on the number of sample sizes
     power()
     
