@@ -520,9 +520,23 @@ server <- shinyServer(function(input, output, session = FALSE) {
       # Close the progress bar when this reactive expression is done (even if there is an error)
       on.exit(progress$close())
       
+      #Update Progress Bar Callback function
+      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+        
+        if (is.null(value)){
+          
+          value <- progress$getValue()
+          value <- value + (progress$getMax() - value)/5
+          
+        } # Progess bar in terms of values' increments
+        
+        progress$set(value = value, detail = detail, message = message)
+        
+      } # End of Callback Progress Function
+      
       #displaying based on the number of sample sizes
       isolate(power.blockedRCT.2(M = input$M, MDES = input$MDES, Ai = input$Aimpact, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
-                                numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10))
+                                numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = updateProgress))
       
     }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
     

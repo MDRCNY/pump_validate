@@ -154,7 +154,7 @@ df<-function(J,n.j,numCovar.1) {
 power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
                              mod.type, sigma = 0, omega = NULL,
-                             tnum = 10000, snum=1000, ncl=2) {
+                             tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
   
   #Output error statement in R
   if( Ai > M){
@@ -186,6 +186,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   t.df<-df(J,n.j,numCovar.1)
   t.shift.mat<-t(matrix(rep(t.shift,tnum),M,tnum)) # repeating shift.beta on every row
   
+  
   # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
   Zs.H0<- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0,M),type = c("shifted", "Kshirsagar"))
   Zs.H1 <- Zs.H0 + t.shift.mat
@@ -193,6 +194,12 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   pvals.H1<- stats::pt(-abs(Zs.H1),df=t.df) * 2
   abs.Zs.H0 <- abs(Zs.H0)
   abs.Zs.H1 <- abs(Zs.H1)
+  
+  # 1st call back to progress bar on progress of calculation: P values generation 
+  if (is.function(updateProgress) & !is.null(abs.Zs.H0)) {
+    msg  <- paste0("P-values have been generated!") # Priamry text we want to display
+    updateProgress(message = msg) # Passing back the progress messages onto the callback function
+  } # if the function is being called, run the progress bar
   
   # adjust p-values for all but Westfall-Young
   mt.rawp2adjp <- multtest::mt.rawp2adjp
@@ -210,6 +217,12 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   adjp.HO<-do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
   adjp.BH<-do.call(rbind,lapply(adjp,grab.pval,proc="BH"))
   
+  #2nd call back to progress bar on adjustments except WestFall Young is done
+  if (is.function(updateProgress) & !is.null(adjp.BH)) {
+    msg  <- paste0("Multiple adjustments done except for WestFall Young.") # Priamry text we want to display
+    updateProgress(message = msg) # Passing back the progress messages onto the callback function
+  } # if the function is being called, run the progress bar
+
   # adjust p-values for Westfall-Young (single-step and step-down)
   order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
   adjp.SS<-adjust.allsamps.WYSS(snum,abs.Zs.H0,abs.Zs.H1)
@@ -217,28 +230,31 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   # combine all adjusted p-values in list (each entry is matrix for given MTP)
   adjp.all<-list(rawp,adjp.BF,adjp.HO,adjp.BH,adjp.SS,adjp.WY)
   
-  #browser()
-  
+  #3rd call back to progress bar on adjustments: Westfall Young Single Step and Step Down is done
+  if (is.function(updateProgress) & !is.null(adjp.all)) {
+    msg  <- paste0("Multiple adjustments done for WestFall Young SS & SD.") # Priamry text we want to display
+    updateProgress(message = msg) # Passing back the progress messages onto the callback function
+  } # if the function is being called, run the progress bar
+
   # for each MTP, get matrix of indicators of whether adjusted p-value is less than alpha
   reject<-function(x) {as.matrix(1*(x<alpha))}
   reject.all<-lapply(adjp.all,reject)
   
-  #browser()
-  
   # in each row for each MTP matrix, count number of p-values less than 0.05, in rows corresponding to false nulls
   lt.alpha<-function(x) {apply(as.matrix(x[,MDES>0]),1,sum)}
-  #browser()
   
   lt.alpha.all<-lapply(reject.all,lt.alpha)
   # indiv power for WY, BH, and HO is mean of columns of dummies of whether adjusted pvalues were less than alpha
   power.ind.fun<-function(x) {apply(x,2,mean)}
   power.ind.all<-lapply(reject.all,power.ind.fun)
-  
-  #browser()
-  
   power.ind.all.mat<-do.call(rbind,power.ind.all)
   
-  #browser()
+  #4th call back to progress bar: Individual Power calculation done
+  if (is.function(updateProgress) & !is.null(power.ind.all.mat)) {
+    msg  <- paste0("Individual power calculation is done.") # Priamry text we want to display
+    updateProgress(message = msg) # Passing back the progress messages onto the callback function
+  } # if the function is being called, run the progress bar
+
   # m-min powers for all procs (including complete power when m=M)
   power.min.fun <- function(x,M) {
     power.min<-numeric(M)
@@ -266,17 +282,16 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   #browser()
   # revise final matrix to report this mean individual power and return results
   all.power.results<-cbind(mean.ind.power,all.power.results)
-  
-  #browser to check dim names
-  #browser()
-  
   colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
-  
-  #browser to chekc dim names
-  #browser()
-  
   rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
   #browser()
+  
+  #5th call back to progress bar: All power calculation done
+  if (is.function(updateProgress) & !is.null(power.ind.all.mat)) {
+    msg  <- paste0("All definitions of power calculation are done.") # Priamry text we want to display
+    updateProgress(message = msg) # Passing back the progress messages onto the callback function
+  } # if the function is being called, run the progress bar
+  
   return(all.power.results)
   
 }
@@ -431,13 +446,13 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     
     target.power <- runpower[MTP,power.definition]
 
-    # Displaying the progress of power calculation
+    # Displaying the progress of mdes calculation via target power
     if (is.function(updateProgress)) {
       
       msg <- paste("Estimated power for this MDES is",round(target.power,4)) # Text for estimating power
       updateProgress(message = msg)
       
-    } # checking on Progress Update
+    } # checking on Progress Update for MDES
       
     # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
     
