@@ -173,7 +173,7 @@ ui <- fluidPage(
             
                  ), #sidebar Panel
               mainPanel (
-                       tableOutput("powercalc") %>% withSpinner() #The view table output
+                       tableOutput("powercalc") #The power calculation table output
               ) #main panel
               
           ) #sidebar Layout
@@ -501,20 +501,32 @@ server <- shinyServer(function(input, output, session = FALSE) {
     updateTabsetPanel(session, "mainmenu", selected = "MTP" )
   }) # Action button that switch tabs
   
-  power <- reactive({
-    
-    power.blockedRCT.2(M = input$M, MDES = input$MDES, Ai = input$Aimpact, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
-                        numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10)
-    
-  }) # reactive expression for power
+  # power <- reactive({
+  #   
+  #   power.blockedRCT.2(M = input$M, MDES = input$MDES, Ai = input$Aimpact, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
+  #                       numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10)
+  #   
+  # }) # reactive expression for power
   
-  #Rendering a reactive object table from the power function
-  output$powercalc <- renderTable({
-    #displaying based on the number of sample sizes
-    power()
+  #observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
+  observeEvent(input$goButton_power,{
+  
+    #Rendering a reactive object table from the power function
+    output$powercalc <- renderTable({
+      
+      #Creating a progress bar
+      progress <- shiny::Progress$new()
+      progress$set(message = "Calculating MDES", value = 0)
+      # Close the progress bar when this reactive expression is done (even if there is an error)
+      on.exit(progress$close())
+      
+      #displaying based on the number of sample sizes
+      isolate(power.blockedRCT.2(M = input$M, MDES = input$MDES, Ai = input$Aimpact, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
+                                numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10))
+      
+    }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
     
-  }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
-
+}) # observe Event go Button for power
   ############################################
   # MDES Server Side Calculation Begins
   ############################################
@@ -672,7 +684,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                         tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
       
     }) # end of isolate. We do not want 
-  })
+  }) # ObserveEvent for the Go Button ends here
   
   ############################################
   # Sample  Server Side Calculation Begins
