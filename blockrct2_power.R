@@ -287,7 +287,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   #browser()
   
   #5th call back to progress bar: All power calculation done
-  if (is.function(updateProgress) & !is.null(power.ind.all.mat)) {
+  if (is.function(updateProgress) & !is.null(all.power.results)) {
     msg  <- paste0("All definitions of power calculation are done.") # Priamry text we want to display
     updateProgress(message = msg) # Passing back the progress messages onto the callback function
   } # if the function is being called, run the progress bar
