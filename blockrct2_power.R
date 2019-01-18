@@ -569,11 +569,11 @@ SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, a
   }
   if (whichSS=="J") {
     J <- ifelse(df > 0, round(J0), NA)
-    return(J)
+    return(ceiling(J))
   }
   if (whichSS=="n.j") {
     n.j <- ifelse(df > 0, round(n.j0), NA)
-    return(n.j)
+    return(ceiling(n.j))
   }
   
 }
@@ -761,7 +761,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
       
       # estimated sample for a given MTP, type of power
       
-      try.ss.numeric <- as.numeric(try.ss)
+      try.ss.numeric <- ceiling(as.numeric(try.ss))
       
       est.sample <- data.frame(MTP, power.definition, try.ss.numeric, target.power)
       colnames(est.sample) <- c("Type of MTP", "Type of Power", "Sample Size", "Target Power")
