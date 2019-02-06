@@ -10,9 +10,9 @@ output: pdf_document
 source("blockrct2_power.R")
 #library(pum)
 ```
-## Parameters for testing power function
+## Parameters for testing power function en masse
 
-The initial conditions for power are set as below. We are setting vectors of 5 variables as the initial choices.
+The initial conditions for power are set as below. These are initial conditions set of a vector of length 5 that would allow us to use expand grid to test out all different combinations of scenarios.
 
 ```{r}
 M <- c(5:10)
@@ -26,22 +26,37 @@ alpha <- 0.05
 numCovar.1 <- c(5:10)
 ```
 
+## Test Cases before implmenting optimization
+
+### Summary 
+
+The key drivers of computational time are Westfall-Young Single Step and Westfall-Young Step Down procedures within the power function.
+
+* Increasing the baseline parameters other than sample number (snum) are not going to significantly change the computational time.
+
+* Increasing snum, however, affects computational time significantly to as much as 3 minutes per power calculation should we want to calculate base on set initial conditions.
+
+* Parallelization appears to be working as WestFall-Young Step Down and Westfall-Young Single Step takes about the same time. By code design, WYSD has an additional loop structure going compared to WYSS.
+
 ### Test case 1 for power
 
-M = 5
-MDES = 0.125
-Ai = 3
-J = 10
-n.j = 10
-R2.1 = 0.5
-p = 0.5
-alpha = 0.05
-numCovar.1 = 5
-numCovar.2 = NULL
-ICC = NULL
-tnum = 10000
-snum = 10
-updateProgress = NULL
+An initial test case with a **baseline** parameters set as below. The total elapsed time for the computation is **5.4** seconds. 
+The majority of the time is spent on apply function using multtest's built in function to find adjustments for all the MTPs except Westfall-Young at 2.2 seconds. The rest is split in over 1 seconds each with Westfall-Young SD and Westfall-Young Single Step. Sample number for Westfall-Young is set at 10.
+
+* M = 5
+* MDES = 0.125
+* Ai = 3
+* J = 10
+* n.j = 10
+* R2.1 = 0.5
+* p = 0.5
+* alpha = 0.05
+* numCovar.1 = 5
+* numCovar.2 = NULL
+* ICC = NULL
+* tnum = 10000
+* snum = 10
+* updateProgress = NULL
 
 ```{r}
 power.blockedRCT.2(M = 5, MDES = 0.125, Ai = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
@@ -49,20 +64,23 @@ power.blockedRCT.2(M = 5, MDES = 0.125, Ai = 3 , J = 10 , n.j = 10, R2.1 = 0.5 ,
 
 ### Test case 2 for Power
 
-M = 10
-MDES = 0.125
-Ai = 3
-J = 10
-n.j = 100
-R2.1 = 0.5
-p = 0.5
-alpha = 0.05
-numCovar.1 = 5
-numCovar.2 = NULL
-ICC = NULL
-tnum = 10000
-snum = 10
-updateProgress = NULL
+Here the **baseline** parameters of the harmonic mean is made 10 times compared to in test case 1. The number of M outcomes is made twice the original set amount of 5, too. The total elapsed time for the computation is ~ **8** seconds. 
+Again, the majority of the time is spent on apply function using multtest's built in function to find adjustments for all the MTPs except Westfall-Young at ~ 3 seconds. We see increases in both Westfall-Young SD and Westfall-Young SS, too with more time allocated towards WYSD.
+
+* M = 10
+* MDES = 0.125
+* Ai = 3
+* J = 10
+* n.j = 100
+* R2.1 = 0.5
+* p = 0.5
+* alpha = 0.05
+* numCovar.1 = 5
+* numCovar.2 = NULL
+* ICC = NULL
+* tnum = 10000
+* snum = 10
+* updateProgress = NULL
 
 ```{r}
 power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
@@ -70,20 +88,24 @@ power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 10 , n.j = 100, R2.1 = 0.5
 
 ### Test case 3 for Power
 
-M = 5
-MDES = 0.125
-Ai = 3
-J = 10
-n.j = 10
-R2.1 = 0.5
-p = 0.5
-alpha = 0.05
-numCovar.1 = 5
-numCovar.2 = NULL
-ICC = NULL
-tnum = 10000
-snum = 100
-updateProgress = NULL
+In test case 3, we go back to the baseline conditions for all the parameters except the number of sample as it applies to Westfall-Young. The target number of samples stands at 1,000 but, currently, we have increased it by **10** times to **1,00** from **10**.
+
+This leads to a significant increase in the computation time up to **22** seconds from the original **5.4** seconds.We are seeing an increase of about **4** times. The allocation across programming pieces have also shifted towards Westfall-Young procedures taking the balk of it at **10** and **9** seconds each with not much in the multtest procedure. 
+
+* M = 5
+* MDES = 0.125
+* Ai = 3
+* J = 10
+* n.j = 10
+* R2.1 = 0.5
+* p = 0.5
+* alpha = 0.05
+* numCovar.1 = 5
+* numCovar.2 = NULL
+* ICC = NULL
+* tnum = 10000
+* snum = 100
+* updateProgress = NULL
 
 ```{r}
 power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 100, updateProgress = NULL)
@@ -91,68 +113,69 @@ power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 10 , n.j = 100, R2.1 = 0.5
 
 ### Test case 4 for Power
 
-M = 10
-MDES = 0.125
-Ai = 3
-J = 50
-n.j = 100
-R2.1 = 0.5
-p = 0.5
-alpha = 0.05
-numCovar.1 = 5
-numCovar.2 = NULL
-ICC = NULL
-tnum = 10000
-snum = 200
-updateProgress = NULL
+In test case 4, we have increased some of the baseline parameters such as M, J and n.j. Additionally, we doubled the number of samples for Westfall-Young from 100 to 200, a doubling. With this, we are seeing a further increase in computation time of up to **37** seconds with a non-linear increase in Westfall-Young procedure of up to **16** seconds each.
+
+* M = 10
+* MDES = 0.125
+* Ai = 3
+* J = 50
+* n.j = 100
+* R2.1 = 0.5
+* p = 0.5
+* alpha = 0.05
+* numCovar.1 = 5
+* numCovar.2 = NULL
+* ICC = NULL
+* tnum = 10000
+* snum = 200
+* updateProgress = NULL
 
 ```{r}
-power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 100, updateProgress = NULL)
+power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 200, updateProgress = NULL)
 ```
 
 
 ### Test case 5 for Power
 
-M = 10
-MDES = 0.125
-Ai = 3
-J = 50
-n.j = 100
-R2.1 = 0.5
-p = 0.5
-alpha = 0.05
-numCovar.1 = 5
-numCovar.2 = NULL
-ICC = NULL
-tnum = 10000
-snum = 500
-updateProgress = NULL
+In test case 5, we have maintained the same parameters as before except the sample for Westfall-Young is increased from 200 to 500. With this, we see a significant increase in computation time of up to **86** (i.e 1 minute and 26) seconds. The majority of the time elapsed increase could be contributed as before to Westfall-Young procedures each clocking **40** seconds.
+
+* M = 10
+* MDES = 0.125
+* Ai = 3
+* J = 50
+* n.j = 100
+* R2.1 = 0.5
+* p = 0.5
+* alpha = 0.05
+* numCovar.1 = 5
+* numCovar.2 = NULL
+* ICC = NULL
+* tnum = 10000
+* snum = 500
+* updateProgress = NULL
 
 ```{r}
 power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 500, updateProgress = NULL)
 ```
 
-
-
-
 ### Test case 6 for Power
 
-Number of clusters would be changed to 4 from the default of 2.
+In test case 6, we change the number of clusters used to run the power calculation from 2 to 4. The goal was to see whether with increased cluster, we see a decline in computational time. On the contrary, we don't. The computational time increases in fact by **2** seconds to **88** (i.e 1 minute 20 seconds) seconds. More runs are needed to confirm whether there is a statistical fluke or not.
 
-M = 10
-MDES = 0.125
-Ai = 3
-J = 50
-n.j = 100
-R2.1 = 0.5
-p = 0.5
-alpha = 0.05
-numCovar.1 = 5
-numCovar.2 = NULL
-ICC = NULL
-tnum = 10000
-snum = 500
-updateProgress = NULL
+* M = 10
+* MDES = 0.125
+* Ai = 3
+* J = 50
+* n.j = 100
+* R2.1 = 0.5
+* p = 0.5
+* alpha = 0.05
+* numCovar.1 = 5
+* numCovar.2 = NULL
+* ICC = NULL
+* tnum = 10000
+* snum = 500
+* updateProgress = NULL
 
 ```{r}
 power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 500, updateProgress = NULL)
@@ -161,22 +184,22 @@ power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5
 
 ### Test case 7 for Power
 
-Number of clusters is back to 2 but, the sample number for Westfall-Young is doubled further to the minimum a thousand.
+Number of clusters is back to 2 but, the sample number for Westfall-Young is doubled further to the minimum a thousand that is required for a good run of Westfall-Young. All the other parameters remain the same. Doubling than the number of sample size leads to more than a doubling of computation time at **3** minutes. 
 
-M = 10
-MDES = 0.125
-Ai = 3
-J = 50
-n.j = 100
-R2.1 = 0.5
-p = 0.5
-alpha = 0.05
-numCovar.1 = 5
-numCovar.2 = NULL
-ICC = NULL
-tnum = 10000
-snum = 1000
-updateProgress = NULL
+* M = 10
+* MDES = 0.125
+* Ai = 3
+* J = 50
+* n.j = 100
+* R2.1 = 0.5
+* p = 0.5
+* alpha = 0.05
+* numCovar.1 = 5
+* numCovar.2 = NULL
+* ICC = NULL
+* tnum = 10000
+* snum = 1000
+* updateProgress = NULL
 
 ```{r}
 power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 1000, updateProgress = NULL)
