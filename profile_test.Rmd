@@ -28,7 +28,7 @@ numCovar.1 <- c(5:10)
 
 ## Test Cases before implmenting optimization
 
-### Summary 
+### Summary for power function speed profiles
 
 The key drivers of computational time are Westfall-Young Single Step and Westfall-Young Step Down procedures within the power function.
 
@@ -36,9 +36,11 @@ The key drivers of computational time are Westfall-Young Single Step and Westfal
 
 * Increasing snum, however, affects computational time significantly to as much as 3 minutes per power calculation should we want to calculate base on set initial conditions.
 
-* Parallelization appears to be working as WestFall-Young Step Down and Westfall-Young Single Step takes about the same time. By code design, WYSD has an additional loop structure going compared to WYSS.
+* Parallelization appears to be working as WestFall-Young Step Down and Westfall-Young Single Step takes about the same time. By code design, WYSD has an additional loop structure going compared to WYSS. In other words, you have an additional N computational time.
 
-### Test case 1 for power
+* Increasing the number of clusters do not decrease the speed of computation.
+
+### Test case 1 for Power
 
 An initial test case with a **baseline** parameters set as below. The total elapsed time for the computation is **5.4** seconds. 
 The majority of the time is spent on apply function using multtest's built in function to find adjustments for all the MTPs except Westfall-Young at 2.2 seconds. The rest is split in over 1 seconds each with Westfall-Young SD and Westfall-Young Single Step. Sample number for Westfall-Young is set at 10.
@@ -181,7 +183,6 @@ In test case 6, we change the number of clusters used to run the power calculati
 power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 500, updateProgress = NULL)
 ```
 
-
 ### Test case 7 for Power
 
 Number of clusters is back to 2 but, the sample number for Westfall-Young is doubled further to the minimum a thousand that is required for a good run of Westfall-Young. All the other parameters remain the same. Doubling than the number of sample size leads to more than a doubling of computation time at **3** minutes. 
@@ -204,6 +205,206 @@ Number of clusters is back to 2 but, the sample number for Westfall-Young is dou
 ```{r}
 power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 1000, updateProgress = NULL)
 ```
+
+## Summary for MDES speed profiles
+
+### Test case 1 for MDES-BH-indiv speed profile
+
+* M_mdes = 5
+* Aimpact_mdes = 3
+* J_mdes = 10
+* n.j_mdes = 10
+* power_mdes = 0.75
+* pdefn_mdes = indiv
+* MTP_mdes = BH
+* me_mdes = 0.05
+* p_mdes = 0.5
+* alpha_mdes = 0.05
+* numCovar.1_mdes = 5
+* R2.1_mdes = 0.5
+* tnum = 10000
+* snum = 10
+* power.definition = indiv
+
+
+```{r}
+MDES.blockedRCT.2(M = 5, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 10, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 10, ncl = 2, updateProgress = NULL)
+```
+
+### Test case 2 for MDES-BH-indiv speed profile
+
+* M_mdes = 10
+* Aimpact_mdes = 3
+* J_mdes = 10
+* n.j_mdes = 100
+* power_mdes = 0.75
+* pdefn_mdes = indiv
+* MTP_mdes = BH
+* me_mdes = 0.05
+* p_mdes = 0.5
+* alpha_mdes = 0.05
+* numCovar.1_mdes = 5
+* R2.1_mdes = 0.5
+* tnum = 10000
+* snum = 10
+* power.definition = indiv
+
+
+```{r}
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 10, ncl = 2, updateProgress = NULL)
+```
+
+### Test case 3 for MDES-BH-indiv speed profile
+
+* M_mdes = 10
+* Aimpact_mdes = 3
+* J_mdes = 10
+* n.j_mdes = 100
+* power_mdes = 0.75
+* pdefn_mdes = indiv
+* MTP_mdes = BH
+* me_mdes = 0.05
+* p_mdes = 0.5
+* alpha_mdes = 0.05
+* numCovar.1_mdes = 5
+* R2.1_mdes = 0.5
+* tnum = 10000
+* snum = 1000
+* power.definition = indiv
+
+
+```{r}
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+```
+
+### Test case 4 for MDES-BH-indiv speed profile
+
+power = 0.5 from 0.75
+
+* M_mdes = 10
+* Aimpact_mdes = 3
+* J_mdes = 10
+* n.j_mdes = 100
+* power_mdes = 0.5
+* pdefn_mdes = indiv
+* MTP_mdes = BH
+* me_mdes = 0.05
+* p_mdes = 0.5
+* alpha_mdes = 0.05
+* numCovar.1_mdes = 5
+* R2.1_mdes = 0.5
+* tnum = 10000
+* snum = 1000
+* power.definition = indiv
+
+
+```{r}
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+```
+
+### Test case 5 for MDES-BH-indiv speed profile
+
+power = 0.5 from 0.75
+Aimpact_mdes is adjusted up to 10 from 3.
+
+* M_mdes = 10
+* Aimpact_mdes = 10
+* J_mdes = 10
+* n.j_mdes = 100
+* power_mdes = 0.5
+* pdefn_mdes = indiv
+* MTP_mdes = BH
+* me_mdes = 0.05
+* p_mdes = 0.5
+* alpha_mdes = 0.05
+* numCovar.1_mdes = 5
+* R2.1_mdes = 0.5
+* tnum = 10000
+* snum = 1000
+* power.definition = indiv
+
+```{r}
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+```
+
+### Test case 6 for MDES-BH-indiv speed profile
+
+power = 0.5 from 0.75
+Aimpact_mdes is adjusted up to 10 from 3.
+Change power definition from individual to min1.
+
+First run of complete power does not result in a returned result. It looks like within 20 iterations, I could not get the optimal
+MDES for the given margin of error and power. For the next run, I increase the iteration number to 40. The whole program crashes.
+
+In these test cases, we are adjusting the number of iterations to see how far we can pushed until we run out of memory.
+25 iterations gave us a statisfactory BH answer.
+
+* M_mdes = 10
+* Aimpact_mdes = 10
+* J_mdes = 10
+* n.j_mdes = 100
+* power_mdes = 0.5
+* pdefn_mdes = min-1
+* MTP_mdes = BH
+* me_mdes = 0.05
+* p_mdes = 0.5
+* alpha_mdes = 0.05
+* numCovar.1_mdes = 5
+* R2.1_mdes = 0.5
+* tnum = 10000
+* snum = 1000
+* power.definition = indiv
+
+```{r}
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "min1", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+```
+### Test case 7 for MDES-BH-indiv speed profile
+
+Run for complete power for up to 45 iterations across M = 5 and 10 and still not returning a result for both BF and BH
+
+* M_mdes = 10
+* Aimpact_mdes = 10
+* J_mdes = 10
+* n.j_mdes = 100
+* power_mdes = 0.5
+* pdefn_mdes = complete
+* MTP_mdes = BH
+* me_mdes = 0.05
+* p_mdes = 0.5
+* alpha_mdes = 0.05
+* numCovar.1_mdes = 5
+* R2.1_mdes = 0.5
+* tnum = 10000
+* snum = 1000
+* power.definition = indiv
+
+```{r}
+mdes.complete <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "complete", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+```
+### Test case 7 for MDES-Holms-indiv speed profile
+
+Run for complete power for up to 45 iterations across M = 5 and 10 and still not returning a result for both BF and BH
+
+* M_mdes = 10
+* Aimpact_mdes = 10
+* J_mdes = 10
+* n.j_mdes = 100
+* power_mdes = 0.5
+* pdefn_mdes = complete
+* MTP_mdes = BH
+* me_mdes = 0.05
+* p_mdes = 0.5
+* alpha_mdes = 0.05
+* numCovar.1_mdes = 5
+* R2.1_mdes = 0.5
+* tnum = 10000
+* snum = 1000
+* power.definition = indiv
+
+```{r}
+mdes.complete <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "complete", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+```
+
 
 
 

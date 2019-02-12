@@ -74,7 +74,7 @@ comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 #'
 #' @return a matrix of adjusted test statistics values
 
-adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
+adjust.allsamps.WYSS <- function(snum,abs.Zs.H0,abs.Zs.H1) {
   
   # creating the matrix to store the adjusted test values with the number of samples &
   # number of M outcomes
@@ -108,7 +108,7 @@ adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
 #'
 #' @return a matrix of adjusted test statistics values
 
-adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
+adjust.allsamps.WYSD <- function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   
   # creates clusters to run parallelization on
   cl <- snow::makeCluster(ncl)
@@ -156,7 +156,7 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
 #'
 #' @return mean of the test statistics under the joint alternative hypothesis
 
-t.mean.H1<-function(MDES,J,n.j,R2.1,p) {
+t.mean.H1 <- function(MDES,J,n.j,R2.1,p) {
   MDES * sqrt(p*(1-p)*J*n.j) / sqrt(1-R2.1)
 }
 
@@ -170,7 +170,7 @@ t.mean.H1<-function(MDES,J,n.j,R2.1,p) {
 #'
 #' @return the degree of freedom
 
-df<-function(J,n.j,numCovar.1) {
+df <- function(J,n.j,numCovar.1) {
   
   J*n.j - J - numCovar.1 - 1
   
@@ -205,7 +205,7 @@ df<-function(J,n.j,numCovar.1) {
 #' @return power results across all definitions of power and MTP
 #' @export
 
-power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
+power.blockedRCT.2 <- function(M, MDES, Ai, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
                              mod.type, sigma = 0, omega = NULL,
                              tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
@@ -372,7 +372,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
 #' @importFrom stats dist
 #' @return returns midpoint value
 
-midpoint<-function(lower,upper) {
+midpoint <- function(lower,upper) {
   
   lower+(dist(c(lower,upper))/2)
 } # midpoint function to calculate the right power
@@ -411,7 +411,7 @@ midpoint<-function(lower,upper) {
 #' @return mdes results
 #' @export
 
-MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
+MDES.blockedRCT.2 <- function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                             mod.type, sigma, omega,
                             tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
@@ -424,12 +424,12 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
   print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
   
   # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
-  if (MTP=="WY-SD" & snum < 1000){
+  if (MTP=="WY-SD" | MTP == "WY-SS" & snum < 1000){
     print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
     snum <- 1000
   } # end of if
   
-  if (MTP!="WY-SD"){
+  if (MTP!="WY-SD" & MTP != "WY=SS"){
     snum <- 2
   } # end of if
   
@@ -496,8 +496,8 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
   # While loop through until the iteration is past 20 or we have met the target.power as we search for the right MDES
   # within the margin of error we have specified.
   
-  while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {
-    
+  while (ii < 45 & (target.power < power - marginError | target.power > power + marginError)) {
+    print(ii)
     # Passing our callback function
     if (is.function(updateProgress)) {
       text <- paste0("Optiomal MDES is currently in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),". ") # Secondary text we want to display
@@ -679,7 +679,7 @@ SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p,
 #' @return Sample number returns
 #' @export
 
-SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
+SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
                           ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
   
   # SET UP #
