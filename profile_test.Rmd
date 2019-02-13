@@ -208,7 +208,14 @@ power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5
 
 ## Summary for MDES speed profiles
 
+
+
+
+
 ### Test case 1 for MDES-BH-indiv speed profile
+
+In test case 1 for MDES of Benjamini Hocheberg, we have the baseline parameters of 5 outcomes, 10 blocks, a harmonic mean of 10.
+We have set the statistical power to be at 0.75 with the power definition set. The total computation time turns out to be at approximately **21.5** seconds.
 
 * M_mdes = 5
 * Aimpact_mdes = 3
@@ -233,6 +240,8 @@ MDES.blockedRCT.2(M = 5, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 10, power = 0.
 
 ### Test case 2 for MDES-BH-indiv speed profile
 
+Here we increase the harmoninc mean to 100. The elapsed time for computing MDES increases by 5 seconds to approximately **28** seconds.
+
 * M_mdes = 10
 * Aimpact_mdes = 3
 * J_mdes = 10
@@ -255,6 +264,8 @@ MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 
 ```
 
 ### Test case 3 for MDES-BH-indiv speed profile
+
+Here compared to test case 2, we increase the number of samples to **1000**. The time elapsed increases by barely **1** second to **29.5** seconds.
 
 * M_mdes = 10
 * Aimpact_mdes = 3
@@ -279,7 +290,7 @@ MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 
 
 ### Test case 4 for MDES-BH-indiv speed profile
 
-power = 0.5 from 0.75
+Here compared to test 3, we decreased the statistical power to **0.5** from **0.75**. The time elapsed again inched up by approximately **1** seconds to **30** seconds.
 
 * M_mdes = 10
 * Aimpact_mdes = 3
@@ -304,8 +315,7 @@ MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 
 
 ### Test case 5 for MDES-BH-indiv speed profile
 
-power = 0.5 from 0.75
-Aimpact_mdes is adjusted up to 10 from 3.
+Here compared to test 4, we increase the actual impact of MDES to 10 from 3. The time elapsed actually goes back down by 1.5 seconds to **28.5** seconds.
 
 * M_mdes = 10
 * Aimpact_mdes = 10
@@ -329,15 +339,7 @@ MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 
 
 ### Test case 6 for MDES-BH-indiv speed profile
 
-power = 0.5 from 0.75
-Aimpact_mdes is adjusted up to 10 from 3.
-Change power definition from individual to min1.
-
-First run of complete power does not result in a returned result. It looks like within 20 iterations, I could not get the optimal
-MDES for the given margin of error and power. For the next run, I increase the iteration number to 40. The whole program crashes.
-
-In these test cases, we are adjusting the number of iterations to see how far we can pushed until we run out of memory.
-25 iterations gave us a statisfactory BH answer.
+In this test case, changed the definition of power from individual to 1-minimal. The time elapsed to get an estimate of the MDES within the range is **37.5** seconds after **5** iterations of binary search. 
 
 * M_mdes = 10
 * Aimpact_mdes = 10
@@ -353,14 +355,20 @@ In these test cases, we are adjusting the number of iterations to see how far we
 * R2.1_mdes = 0.5
 * tnum = 10000
 * snum = 1000
-* power.definition = indiv
+* power.definition = min1
 
 ```{r}
 MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "min1", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
-### Test case 7 for MDES-BH-indiv speed profile
+### Test case 7-8-9 for MDES-BH-indiv speed profile
 
-Run for complete power for up to 45 iterations across M = 5 and 10 and still not returning a result for both BF and BH
+In test case 7, we changed the definition of power from min1 (1-minimal power) to complete power. We increased the number of iterations to search for the optimal MDES to 25, 40 (program crashes and run out of memory). At 25. we cpi;d mpt get a satisfactory BH answer.
+
+First run of complete power does not result in a returned result. It looks like within 20 iterations, I could not get the optimal
+MDES for the given margin of error and power. For the next run, I increase the iteration number to 40. The whole program crashes.
+
+In fact, I further cleared the power and ran up to 45 for both BF and BH. Neither returns a satisfactory MDES.
+
 
 * M_mdes = 10
 * Aimpact_mdes = 10
@@ -381,7 +389,10 @@ Run for complete power for up to 45 iterations across M = 5 and 10 and still not
 ```{r}
 mdes.complete <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "complete", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
-### Test case 7 for MDES-Holms-indiv speed profile
+### Test case 10 for MDES-Holms-indiv speed profile
+
+
+Continue on Holm test tmr.
 
 Run for complete power for up to 45 iterations across M = 5 and 10 and still not returning a result for both BF and BH
 
@@ -402,7 +413,7 @@ Run for complete power for up to 45 iterations across M = 5 and 10 and still not
 * power.definition = indiv
 
 ```{r}
-mdes.complete <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "complete", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.complete <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 
 
