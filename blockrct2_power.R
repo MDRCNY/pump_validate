@@ -422,16 +422,19 @@ MDES.blockedRCT.2 <- function(M, numFalse,Ai_mdes, J, n.j, power, power.definiti
   
   # Checks on what we are estimating, sample size
   print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
-  
+
   # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
-  if (MTP=="WY-SD" | MTP == "WY-SS" & snum < 1000){
-    print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
-    snum <- 1000
-  } # end of if
+  # if (MTP=="WY-SD" | MTP == "WY-SS" & snum < 1000){
+  #   print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
+  #   snum <- 1000
+  # } # end of if
+  # 
+  # if (MTP!="WY-SD" & MTP != "WY-SS"){
+  #   snum <- 2
+  # } # end of if
   
-  if (MTP!="WY-SD" & MTP != "WY=SS"){
-    snum <- 2
-  } # end of if
+  print("Current Sample size is ")
+  print(snum)
   
   # Compute Q(m)
   Q.m <- sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
