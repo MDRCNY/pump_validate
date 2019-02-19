@@ -25,21 +25,29 @@ fdir <- configs$fdir
 
 #files
 power.cor <- "Blocked_i1_2cM6n.j50J20MDES0.125_powerLIST.Rda"
-simpwr.cor <- "Blocked_i1_2cM3n.j100J20ICC0MDES0.125_S2000B10000_R2.10_R2.20_simpwrLIST.Rda"
+#simpwr.cor <- "Blocked_i1_2cM3n.j100J20ICC0MDES0.125_S2000B10000_R2.10_R2.20_simpwrLIST.Rda"
 
+simpwr0 <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125rho0_S2000B10000_R2.10_R2.20_simpwr.Rda"
+simpwr.2 <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125rho0.2_S2000B10000_R2.10_R2.20_simpwr.Rda"
+simpwr.5 <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125rho0.5_S2000B10000_R2.10_R2.20_simpwr.Rda"
+simpwr.8 <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125rho0.8_S2000B10000_R2.10_R2.20_simpwr.Rda"
 
 
 #load lists
 load(paste0(fdir, power.cor))
-load(paste0(fdir, simpwr.cor))
+simpwr.cor0 = local(get(load(paste0(fdir, simpwr0))))
+simpwr.cor.2 = local(get(load(paste0(fdir, simpwr.2))))
+simpwr.cor.5 = local(get(load(paste0(fdir, simpwr.5))))
+simpwr.cor.8 = local(get(load(paste0(fdir, simpwr.8))))
+
 
 # display power calculation matrices
 power_mutl_storage[[1]]["filename"]
 power_mutl_storage[[1]]["obj"]
     
 # display simulation matrices
-sim_power_storage[[1]]["simname"]
-sim_power_storage[[1]]["obj"]
+#sim_power_storage[[1]]["simname"]
+#sim_power_storage[[1]]["obj"]
 
 ```
 
