@@ -65,7 +65,55 @@ simpwr.cor.8 = local(get(load(paste0(fdir, simpwr.8))))
 
 # Pull in power calculations matrices via the app
 ```{r}
+M <- 6
+MDES <- 0.125
+Ai <- 6
+J <- 20
+n.j <- 100
+p <- 0.5
+alpha <- 0.05
+numCovar.1 <- 0
+numCovar.2 <- 0
+R2.1 <- 0 
+R2.2 <- 0 
+ICC <- 0 
+mod.type <- 'c'
+omega <- 0
+tnum <- 10000
+snum <- 1000
+ncl <- 2
+updateProgress <- NULL
+sigma <- 0
 
+#corr = 0
+power.corr0 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j, p=p,                alpha=alpha, numCovar.1=numCovar.1, numCovar.2 = numCovar.2,                R2.1=R2.1, R2.2=R2.2, ICC=ICC, mod.type = mod.type, 
+               sigma = sigma,
+               rho = 0, omega = omega, tnum = tnum, snum = snum, ncl = ncl,
+               updateProgress = updateProgress)
+
+#corr = 0.2
+power.corr0.2 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j,                    p=p, alpha=alpha, numCovar.1=numCovar.1, 
+                 numCovar.2 = numCovar.2,R2.1=R2.1, R2.2=R2.2, ICC=ICC,                     mod.type = mod.type, 
+                 sigma = sigma,
+                 rho = 0.2, omega = omega, tnum = tnum, snum = snum, 
+                 ncl = ncl, updateProgress = updateProgress)
+
+
+#corr = 0.5
+power.corr0.5 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j,                    p=p, alpha=alpha, numCovar.1=numCovar.1, 
+                 numCovar.2 = numCovar.2,R2.1=R2.1, R2.2=R2.2, ICC=ICC,                     mod.type = mod.type, 
+                 sigma = sigma,
+                 rho = 0.5, omega = omega, tnum = tnum, snum = snum, 
+                 ncl = ncl, updateProgress = updateProgress)
+  
+
+#corr = 0.8
+power.corr0.8 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j,                    p=p, alpha=alpha, numCovar.1=numCovar.1, 
+                 numCovar.2 = numCovar.2,R2.1=R2.1, R2.2=R2.2, ICC=ICC,                     mod.type = mod.type, 
+                 sigma = sigma,
+                 rho = 0.8, omega = omega, tnum = tnum, snum = snum, 
+                 ncl = ncl, updateProgress = updateProgress)
+  
 ```
 
 
