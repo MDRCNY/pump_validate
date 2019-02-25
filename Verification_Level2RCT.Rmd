@@ -39,8 +39,15 @@ simpwr.cor.2 = local(get(load(paste0(fdir, simpwr.2))))
 simpwr.cor.5 = local(get(load(paste0(fdir, simpwr.5))))
 simpwr.cor.8 = local(get(load(paste0(fdir, simpwr.8))))
 
+#add data frames to a list to process it altogether
+list_of_simpwr <- list(simpwr.cor0, simpwr.cor.2, simpwr.cor.5, simpwr.cor.8)
 
-## next steps - sim: add corr, append tables nto one - do the same for power calc via pum app?
+#add a correlation column to the data files
+corrlist <- c(0, .2,.5,.8)
+
+Map(cbind, list_of_simpwr, corr=corrlist)
+
+## next steps - sim: append tables nto one - do the same for power calc via pum app?
 
 
 
