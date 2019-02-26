@@ -27,7 +27,7 @@ List pack_boxes(int n,NumericVector p) {
   first[0] = 1; // Vector to hold the number of boxes we would have
   int n_boxes = 1;
   
-  for (int i = 1; i < n; i++){
+  for (int i = 0; i < n; i++){
     int new_weight = weight[i - 1] + item[i]; // initial weight of the current box
     
     if (new_weight <= w) {

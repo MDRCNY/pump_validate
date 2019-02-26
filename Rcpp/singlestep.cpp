@@ -1,7 +1,9 @@
-#include <Rcpp.h>
+#include <Rcpp.h> // This sentence enables you to use classes and functions defined by the Rcpp package.
 using namespace Rcpp;
 
 // The function below is a helper function for comparison of Single Step WestFall Young.
+
+//  By specifying export, we stipulate that the function defined just below this sentence will be accessible from R.
 // [[Rcpp::export]]
 IntegerVector compRawtSs (NumericVector absZsH01row, NumericVector absZsH11samp) {
   
@@ -14,18 +16,22 @@ IntegerVector compRawtSs (NumericVector absZsH01row, NumericVector absZsH11samp)
   // creating an empty logical vector of length M to save boolean values
   LogicalVector maxt(m);
   // Beginning of for loop
-  for (int i = 1; i < m; i++){
+  for (int i = 0; i < m; i++){
     
-    int tmp0 = max(absZsH01row);
-    int tmp1 = absZsH11samp[i];
+    // Testing functions
+    /*
+    double tmp0 = max(absZsH01row);
+    double tmp1 = absZsH11samp[i];
     
-    Rprintf("This is the H0 value, %u", tmp0);
-    Rprintf("This is the H1 value, %u", tmp1);
+    Rprintf("This is the H0 value, %f \n", tmp0);
+    Rprintf("This is the H1 value, %f \n", tmp1);
+    */
     
     maxt[i] = max(absZsH01row) > absZsH11samp[i];
-    // Rprintf("This is the boolean value, %u", maxt[i]);
+    // Rprintf("This is the boolean value, %u \n", maxt[i]);
   } // end of for loop
   
+  // Convert the LogicalVector type variable to an IntegerVector type variable through soft-copy.
   IntegerVector maxtInt = as<IntegerVector>(maxt);
   
   return maxtInt;
