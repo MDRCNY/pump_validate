@@ -50,28 +50,12 @@ Map(cbind, list_of_simpwr, corr=corrlist)
 ## next steps - sim: append tables nto one - do the same for power calc via pum app?
 
 
-
-
-#--------------------OLD---------------------#
-
-#files
-#power.cor <- "Blocked_i1_2cM6n.j50J20MDES0.125_powerLIST.Rda"
-#simpwr.cor <- "Blocked_i1_2cM3n.j100J20ICC0MDES0.125_S2000B10000_R2.10_R2.20_simpwrLIST.Rda"
-
-#load(paste0(fdir, power.cor))
-
-# display power calculation matrices
-#power_mutl_storage[[1]]["filename"]
-#power_mutl_storage[[1]]["obj"]
-    
-# display simulation matrices
-#sim_power_storage[[1]]["simname"]
-#sim_power_storage[[1]]["obj"]
 ```
 
 
-# Pull in power calculations matrices via the app
+# Pull in our power calculations (via the pum package)
 ```{r}
+#set parameters for function
 M <- 6
 MDES <- 0.125
 Ai <- 6
@@ -92,6 +76,7 @@ ncl <- 2
 updateProgress <- NULL
 sigma <- 0
 
+#generate matrices
 #corr = 0
 power.corr0 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j, p=p,                alpha=alpha, numCovar.1=numCovar.1, numCovar.2 = numCovar.2,                R2.1=R2.1, R2.2=R2.2, ICC=ICC, mod.type = mod.type, 
                sigma = sigma,
@@ -121,6 +106,11 @@ power.corr0.8 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j,        
                  rho = 0.8, omega = omega, tnum = tnum, snum = snum, 
                  ncl = ncl, updateProgress = updateProgress)
   
+#add data frames to a list to process it altogether
+list_of_power <- list(power.corr0, power.corr0.2, power.corr0.5, power.corr0.8)
+
+#add a correlation column to the data files
+Map(cbind, list_of_power, corr=corrlist)
 ```
 
 
