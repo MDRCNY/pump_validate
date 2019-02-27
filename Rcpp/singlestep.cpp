@@ -53,17 +53,20 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   // Beginning of for loop
   for (int i = 0; i < m; i++){
     
-    // Testing functions
-    /*
-     double tmp0 = max(absZsH01row);
-     double tmp1 = absZsH11samp[i];
-     
-     Rprintf("This is the H0 value, %f \n", tmp0);
-     Rprintf("This is the H1 value, %f \n", tmp1);
-     */
-    
-    maxt[i] = max(absZsH01row) > absZsH11samp[i];
-    // Rprintf("This is the boolean value, %u \n", maxt[i]);
+  //  saving the null test statistics
+  NumericVector nullOo = absZsH01row[oo];
+  
+  // saving the raw test statistics under H1
+  NumericVector rawtOo = absZsH11samp[oo];
+  
+  // saving the first boolean by comparing the max of null values with the first of raw test statistics
+  maxt[0] = max(nullOo) > rawtOo[0];
+  
+  // Step-down comparison where the next max of null values is compared to the next raw test statistics
+  // for (h in 2:M) {
+  //  maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]
+  // } # end of for loop
+  
   } // end of for loop
   
   
