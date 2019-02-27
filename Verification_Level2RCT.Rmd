@@ -44,11 +44,25 @@ list_of_simpwr <- list(simpwr.cor0, simpwr.cor.2, simpwr.cor.5, simpwr.cor.8)
 
 #add a correlation column to the data files
 corrlist <- c(0, .2,.5,.8)
+mtplist <- c("rawp", "BF", "BH", "HO", "WY-SD")
 
-Map(cbind, list_of_simpwr, corr=corrlist)
+simpwr.c <- Map(cbind, list_of_simpwr, corr=corrlist)
+
+#set up function to get mtps into col
+rowtocolumn <- function(df){
+  df$mtp <- row.names(df)
+  return(df$mtp)
+}
+
+listmtps <- lapply(simpwr.c, rowtocolumn)
+simpwr.b <- mapply(cbind, simpwr.c, 'mtp' = listmtps, SIMPLIFY = F)
+
+
+
 
 ## next steps - sim: append tables nto one - do the same for power calc via pum app?
 
+#merge mtp after append, rownmaes still hold so okay to do 
 
 ```
 
@@ -110,52 +124,22 @@ power.corr0.8 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j,        
 list_of_power <- list(power.corr0, power.corr0.2, power.corr0.5, power.corr0.8)
 
 #add a correlation column to the data files
-Map(cbind, list_of_power, corr=corrlist)
+power.c <- Map(cbind, list_of_power, corr=corrlist)
+
 ```
 
 
-# Verify power calculations and capture run times
-
-## Maybe different chunk for each design specification (e.g, constant, fixed, random effects)
+# Verify power calculations against MC methods: Replicate appendix table in report
 
 ```{r chunk3_verifyPower}
-# Compare power estimates from our methods vs MC methods
-  # loop through correlations
+#manipulate data frames to make a combined table
+# append lists into one dataset
 
-#add a correlation column to the data files
-corr <- c(0, .2,.5,.8)
+library(plyr)
+df <- ldply(simpwr, data.frame)
 
-#power_mult_storage
-if(length( power_mutl_storage) == length(corr)){
-  
-  idx <- 1
-  
-  while(idx <= length(corr)){
-    
-    power_mutl_storage[[idx]]$obj <-  cbind(power_mutl_storage[[idx]]$obj, correlation = rep(corr[idx], nrow( power_mutl_storage[[idx]]$obj)))
-    power_mutl_storage[[idx]]$obj <-  cbind(power_mutl_storage[[idx]]$obj, adjname = c("rawp", "BF","HO", "BH", "WY-SS", "WY-SD"))
-    
-    idx <- idx+1
-  }
-} else {
-  print("Error length of power mult storage different than correlation parameter")
-}
 
-#sim_power_storage
-if(length( sim_power_storage) == length(corr)){
-  
-  idx <- 1
-  
-  while(idx <= length(corr)){
-    
-    sim_power_storage[[idx]]$obj <-  cbind(sim_power_storage[[idx]]$obj, correlation = rep(corr[idx], nrow( sim_power_storage[[idx]]$obj)))
-    sim_power_storage[[idx]]$obj <-  cbind(sim_power_storage[[idx]]$obj, adjname = c("rawp", "BF", "BH", "HO", "WY-SD"))
-    
-    idx <- idx+1
-  }
-} else {
-  print("Error length of sim_power_storage different than correlation parameter")
-}
+
 
 #bind list of data files
 ourmethods <- as.data.frame(rbind(power_mutl_storage[[1]]$obj, power_mutl_storage[[2]]$obj, power_mutl_storage[[3]]$obj, power_mutl_storage[[4]]$obj))
@@ -208,6 +192,12 @@ kable(validtable.s, caption = "MTP Used and Correlations") %>%
 
 
 ```
+
+Are these topics still relevant?
+-capture run times?
+
+## Maybe different chunk for each design specification (e.g, constant, fixed, random effects)
+
 
 ```{r verifyPowerUp}
 # for M=1, look up in Power-Up
