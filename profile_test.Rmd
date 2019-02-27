@@ -7,8 +7,9 @@ output: pdf_document
 ## Loading the blockrct2_power.R file
 
 ```{r}
-source("blockrct2_power.R")
+#source("blockrct2_power.R")
 #library(pum)
+source("blockrct2_power_rcpp.R")
 ```
 ## Parameters for testing power function en masse
 
