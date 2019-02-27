@@ -61,9 +61,9 @@ adjust.allsamps.WYSS <- function(snum,abs.Zs.H0,abs.Zs.H1) {
   adjp.WY<-matrix(NA,snum,ncol(abs.Zs.H0))
   # looping through all the samples of raw test statistics under the alternative hypothesis
   doWY<-for (s in 1:snum) {
-    
+    #apply(X = h0.mat, MARGIN = 1, FUN = compRawtSs, absZsH11samp = h1.mat[1,])
     # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
-    ind.B<-t(apply(abs.Zs.H0, MARGIN = 1, FUN = compRawtSs, abs.Zs.H1.1samp=abs.Zs.H1[s,]))
+    ind.B<-t(apply(abs.Zs.H0, MARGIN = 1, FUN = compRawtSs, absZsH11samp=abs.Zs.H1[s,]))
     # calculating the p-value for each sample
     adjp.WY[s,]<-colMeans(ind.B)
     
