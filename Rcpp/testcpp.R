@@ -32,3 +32,35 @@ results.r = apply(X = h0.mat, MARGIN = 1, FUN = comp.rawt.SS, abs.Zs.H1.1samp = 
 
 if(sum(results.rcpp == results.r) == 25){print("Function working!")}
 
+
+
+
+
+
+## Deni's code help
+
+deni <- as.data.frame(matrix(data = h0, nrow = 5, ncol = 5, byrow = TRUE))
+zarni <- as.data.frame(matrix(data = h1, nrow = 5, ncol = 5, byrow = TRUE))
+
+rownames <- c("JB", "DT", "IT", "JW", "SS")
+row.names(deni) <- rownames
+row.names(zarni) <- rownames
+
+rowtocolumn <- function(df){
+  
+  df$colname <- row.names(df)
+  return (df$colname)
+  
+}
+
+dlist <- list(deni,zarni)
+tmp <- lapply(dlist, rowtocolumn)
+done <- mapply(cbind, dlist, "mtp" = tmp, SIMPLIFY = F)
+
+
+
+
+
+
+
+
