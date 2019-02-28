@@ -17,7 +17,7 @@ h1 <- c(0.5, 0.6, 0.3, 0.25, 0.75)
 
 test <- compRawtSs(h0,h1)
 
-# Test out how to use R apply function with a cpp function
+# Test out how to use R apply function with a cpp function for Single Step
 
 ## first create a matrix of h0 and h1 values
 h0.mat <- matrix(data = h0, nrow = 5, ncol = 5, byrow = TRUE)
@@ -31,6 +31,22 @@ results.r = apply(X = h0.mat, MARGIN = 1, FUN = comp.rawt.SS, abs.Zs.H1.1samp = 
 ## third compare to see if the results are the same
 
 if(sum(results.rcpp == results.r) == 25){print("Function working!")}
+
+# Test out how to use R apply function with a cpp function for Step Down
+
+## first create a matrix of h0 and h1 values
+h0.mat <- matrix(data = h0, nrow = 5, ncol = 5, byrow = TRUE)
+h1.mat <- matrix(data = h1, nrow = 5, ncol = 5, byrow = TRUE) 
+
+## second using apply function with the Rcpp function & pure R
+
+results.rcpp.sd = apply(X = h0.mat, MARGIN = 1, FUN = compRawtSd, absZsH11samp = h1.mat[1,])
+results.r.sd = apply(X = h0.mat, MARGIN = 1, FUN = comp.rawt.SD, abs.Zs.H1.1samp = h1.mat[1,])
+
+## third compare to see if the results are the same
+
+if(sum(results.rcpp.sd == results.r.sd) == 25){print("Function working!")}
+
 
 # Trying out the Vector Subsetting code from Kristin
 

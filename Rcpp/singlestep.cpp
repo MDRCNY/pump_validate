@@ -63,56 +63,18 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   maxt[0] = max(nullOo) > rawtOo[0];
   
   // A secondary for loop implement the stepdown
-  for (int j = 1; j < m; j ++){
+    for (int j = 1; j < m; j ++){
+      maxt[j] = max(nullOo[seq(1, m-1)]) > rawtOo[j];
+    } // end of inner for loop
     
-    maxt[j] = 
-    
-  }
+  } // end of outer for loop
   
-  // Step-down comparison where the next max of null values is compared to the next raw test statistics
-  // for (h in 2:M) {
-  //  maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]
-  // } # end of for loop
-  
-  } // end of for loop
-  
-  
-  
-  
-  
-}
+  // Convert the LogicalVector type variable to an IntegerVector type variable through soft-copy.
+  IntegerVector maxtInt = as<IntegerVector>(maxt);
+  return maxtInt;
+
+} // end of SD function
 
 
-
-/*
-#' Helper Functions for WestFallYoung Step down
-#'
-#' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
-#' @param abs.Zs.H1.1samp One sample of raw statistics
-#' @param oo Order matrix of test statistics in descending order
-#' @return returns a vector of 1s and 0s with lengths of M outcomes
-#' @export
-#'
-comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
-  
-# getting M number of outcomes from 1 row of statistics
-  M <- length(abs.Zs.H0.1row)
-# creating an empty vector of length M to save boolean values
-    maxt <- rep(NA, M)
-# saving the null test statistics
-    nullt.oo <- abs.Zs.H0.1row[oo]
-# saving the raw test statistics under H1
-  rawt.oo <- abs.Zs.H1.1samp[oo]
-# saving the first boolean by comparing the max of null values with the first of raw test statistics
-  maxt[1] <- max(nullt.oo) > rawt.oo[1]
-  
-# Step-down comparison where the next max of null values is compared to the next raw test statistics
-  for (h in 2:M) {
-    maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]
-  } # end of for loop
-    
-    return(as.integer(maxt))
-}
-*/
 
 
