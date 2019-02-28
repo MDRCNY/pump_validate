@@ -32,6 +32,21 @@ results.r = apply(X = h0.mat, MARGIN = 1, FUN = comp.rawt.SS, abs.Zs.H1.1samp = 
 
 if(sum(results.rcpp == results.r) == 25){print("Function working!")}
 
+# Trying out the Vector Subsetting code from Kristin
+
+## have an initial vector. A very pretty code. Ingenius.
+
+tmp <- c(0.5, 0.1, 0.3, 0.4, 0.6)
+tmp.res5 <- tmp[-(1:5)]
+tmp.res5
+tmp.res4 <- tmp[-(1:4)]
+tmp.res4
+tmp.res3 <- tmp[-(1:3)]
+tmp.res3 
+tmp.res2 <- tmp[-(1:2)]
+tmp.res2
+tmp.res1 <- tmp[-(1:1)]
+tmp.res1
 
 
 
@@ -58,7 +73,9 @@ tmp <- lapply(dlist, rowtocolumn)
 done <- mapply(cbind, dlist, "mtp" = tmp, SIMPLIFY = F)
 
 
+NumericVector xx = NumericVector::create(1.0, 2.0, 3.0, 4.0);
 
+xx[Rcpp::Range(1, 2)]
 
 
 

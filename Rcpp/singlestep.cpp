@@ -62,6 +62,13 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   // saving the first boolean by comparing the max of null values with the first of raw test statistics
   maxt[0] = max(nullOo) > rawtOo[0];
   
+  // A secondary for loop implement the stepdown
+  for (int j = 1; j < m; j ++){
+    
+    maxt[j] = 
+    
+  }
+  
   // Step-down comparison where the next max of null values is compared to the next raw test statistics
   // for (h in 2:M) {
   //  maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]

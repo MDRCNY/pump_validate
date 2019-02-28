@@ -49,3 +49,39 @@ List pack_boxes(int n,NumericVector p) {
   );
 
 } // end of function
+
+
+//[[Rcpp::export]]
+List listsubset(NumericVector sample, int beginindex, int endindex){
+  
+  int length = sample.size();
+  NumericVector item1 = sample[seq(1,length -1)];
+  double item1Max = max(item1);
+  NumericVector item2 = sample[seq(2, length -1)];
+  double item2Max = max(item2);
+  NumericVector item3 = sample[seq(3, length -1)];
+  double item3Max = max(item3);
+  NumericVector item4 = sample[seq(4, length -1)];
+  double item4Max = max(item4);
+  
+  return List::create(
+    item1 = item1Max,
+    item2 = item2Max,
+    item3 = item3Max,
+    item4 = item4Max
+  );
+  
+} 
+
+
+
+
+
+
+
+
+
+
+// [[Rcpp::plugins("cpp11")]]
+NumericVector v2 = {1.0, 2.0, 3.0};
+
