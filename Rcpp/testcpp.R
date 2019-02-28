@@ -36,17 +36,26 @@ if(sum(results.rcpp == results.r) == 25){print("Function working!")}
 
 ## have an initial vector. A very pretty code. Ingenius.
 
-tmp <- c(0.5, 0.1, 0.3, 0.4, 0.6)
-tmp.res5 <- tmp[-(1:5)]
-tmp.res5
-tmp.res4 <- tmp[-(1:4)]
-tmp.res4
-tmp.res3 <- tmp[-(1:3)]
-tmp.res3 
-tmp.res2 <- tmp[-(1:2)]
-tmp.res2
-tmp.res1 <- tmp[-(1:1)]
+tmp <- c(0.6, 0.5, 0.3, 0.4, 0.3)
+tmp.res1 <- max(tmp[-(1:1)])
 tmp.res1
+tmp.res2 <- max(tmp[-(1:2)])
+tmp.res2
+tmp.res3 <- max(tmp[-(1:3)])
+tmp.res3 
+tmp.res4 <- max(tmp[-(1:4)])
+tmp.res4
+
+tmp.r <- list(tmp.res1, tmp.res2, tmp.res3, tmp.res4)
+
+
+# Using a function from hello.cpp to test out similar C++ subsetting features
+tmp <- c(0.6, 0.5, 0.3, 0.4, 0.3)
+tmp.rcpp <- listsubset(tmp)
+
+
+
+
 
 
 
@@ -73,9 +82,7 @@ tmp <- lapply(dlist, rowtocolumn)
 done <- mapply(cbind, dlist, "mtp" = tmp, SIMPLIFY = F)
 
 
-NumericVector xx = NumericVector::create(1.0, 2.0, 3.0, 4.0);
 
-xx[Rcpp::Range(1, 2)]
 
 
 

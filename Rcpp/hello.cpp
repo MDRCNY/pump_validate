@@ -52,7 +52,7 @@ List pack_boxes(int n,NumericVector p) {
 
 
 //[[Rcpp::export]]
-List listsubset(NumericVector sample, int beginindex, int endindex){
+List listsubset(NumericVector sample){
   
   int length = sample.size();
   NumericVector item1 = sample[seq(1,length -1)];
@@ -70,18 +70,4 @@ List listsubset(NumericVector sample, int beginindex, int endindex){
     item3 = item3Max,
     item4 = item4Max
   );
-  
 } 
-
-
-
-
-
-
-
-
-
-
-// [[Rcpp::plugins("cpp11")]]
-NumericVector v2 = {1.0, 2.0, 3.0};
-
