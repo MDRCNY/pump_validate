@@ -46,7 +46,6 @@ head(order.matrix)
 
 results.rcpp.sd = apply(X = h0.mat, MARGIN = 1, FUN = compRawtSd, absZsH11samp = h1.mat[1,], oo = order.matrix[1,])
 
-
 results.r.sd = apply(X = h0.mat, MARGIN = 1, FUN = comp.rawt.SD, abs.Zs.H1.1samp = h1.mat[1,], oo = order.matrix[1,])
 
 ## third compare to see if the results are the same
@@ -74,14 +73,6 @@ tmp.r <- list(tmp.res1, tmp.res2, tmp.res3, tmp.res4)
 # Using a function from hello.cpp to test out similar C++ subsetting features
 tmp <- c(0.6, 0.5, 0.3, 0.4, 0.3)
 tmp.rcpp <- listsubset(tmp)
-
-
-
-
-
-
-
-
 
 ## Deni's code help
 

@@ -58,7 +58,7 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   // getting the number of M outcomes from 1 row of H0  
   int m = absZsH01row.size();
   
-  Rprintf("This is the H0 value, %u \n", m);
+  // Rprintf("This is the H0 value, %u \n", m);
   
   IntegerVector ooF = oo - 1;
   
@@ -68,8 +68,8 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   for (int i = 0; i < m; i++){
     
   // First Print Statement Inside the for loop
-  Rprintf("We are printing out the iteration as the first line of the for loop, %i",i);
-  rcpp_rprintf(ooF);
+  // Rprintf("We are printing out the iteration as the first line of the for loop, %i",i);
+  // rcpp_rprintf(ooF);
   
   //  saving the null test statistics
   NumericVector nullOo = absZsH01row[ooF];
@@ -82,9 +82,9 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   
   // A secondary for loop implement the stepdown
     for (int j = 1; j < m; j ++){
-      Rprintf("This is the H0 value, %u \n", j);
+      // Rprintf("This is the H0 value, %u \n", j);
       maxt[j] = max(nullOo[seq(1, m-1)]) > rawtOo[j];
-      Rprintf("This is the H0 value, %u \n", j);
+      // Rprintf("This is the H0 value, %u \n", j);
     } // end of inner for loop
     
   } // end of outer for loop
