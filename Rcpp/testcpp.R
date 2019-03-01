@@ -16,6 +16,7 @@ h0 <- c(0.4, 0.5, 0.3, 0.2, 0.1)
 h1 <- c(0.5, 0.6, 0.3, 0.25, 0.75)
 
 test <- compRawtSs(h0,h1)
+test
 
 # Test out how to use R apply function with a cpp function for Single Step
 
@@ -40,8 +41,11 @@ h1.mat <- matrix(data = h1, nrow = 5, ncol = 5, byrow = TRUE)
 
 ## second using apply function with the Rcpp function & pure R
 
-results.rcpp.sd = apply(X = h0.mat, MARGIN = 1, FUN = compRawtSd, absZsH11samp = h1.mat[1,])
-results.r.sd = apply(X = h0.mat, MARGIN = 1, FUN = comp.rawt.SD, abs.Zs.H1.1samp = h1.mat[1,])
+order.matrix <- t(apply(h1.mat, 1 , order, decreasing = TRUE))
+head(order.matrix)
+
+results.rcpp.sd = apply(X = h0.mat, MARGIN = 1, FUN = compRawtSd, absZsH11samp = h1.mat[1,], oo = order.matrix[1,])
+results.r.sd = apply(X = h0.mat, MARGIN = 1, FUN = comp.rawt.SD, abs.Zs.H1.1samp = h1.mat[1,], oo = order.matrix[1,])
 
 ## third compare to see if the results are the same
 

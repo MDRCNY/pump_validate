@@ -48,6 +48,10 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   
   // getting the number of M outcomes from 1 row of H0  
   int m = absZsH01row.size();
+  
+  Rprintf("This is the H0 value, %u \n", m);
+  
+  
   // creating an empty logical vector of length M to save boolean values
   LogicalVector maxt(m);
   // Beginning of for loop
@@ -64,7 +68,9 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   
   // A secondary for loop implement the stepdown
     for (int j = 1; j < m; j ++){
+      Rprintf("This is the H0 value, %u \n", j);
       maxt[j] = max(nullOo[seq(1, m-1)]) > rawtOo[j];
+      Rprintf("This is the H0 value, %u \n", j);
     } // end of inner for loop
     
   } // end of outer for loop
