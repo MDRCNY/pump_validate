@@ -45,6 +45,8 @@ order.matrix <- t(apply(h1.mat, 1 , order, decreasing = TRUE))
 head(order.matrix)
 
 results.rcpp.sd = apply(X = h0.mat, MARGIN = 1, FUN = compRawtSd, absZsH11samp = h1.mat[1,], oo = order.matrix[1,])
+
+
 results.r.sd = apply(X = h0.mat, MARGIN = 1, FUN = comp.rawt.SD, abs.Zs.H1.1samp = h1.mat[1,], oo = order.matrix[1,])
 
 ## third compare to see if the results are the same

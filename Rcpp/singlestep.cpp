@@ -37,6 +37,15 @@ IntegerVector compRawtSs (NumericVector absZsH01row, NumericVector absZsH11samp)
   return maxtInt;
 }
 
+// The function below is a helper function to print out vectors in Rcpp/C++ for IntegerVectors
+
+void rcpp_rprintf(IntegerVector v){
+  // printing values of all the elements of Rcpp vector  
+  for(int i = 0; i < v.length(); ++i){
+    Rprintf("the value of v[%i] : %i \n", i, v[i]);
+  }
+}
+
 // The function below is a helper function for comparison of StepDown WestFall Young.
 //  By specifying export, we stipulate that the function defined just below this sentence will be accessible from R.
 // [[Rcpp::export]]
@@ -51,17 +60,22 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   
   Rprintf("This is the H0 value, %u \n", m);
   
+  IntegerVector ooF = oo - 1;
   
   // creating an empty logical vector of length M to save boolean values
   LogicalVector maxt(m);
   // Beginning of for loop
   for (int i = 0; i < m; i++){
     
+  // First Print Statement Inside the for loop
+  Rprintf("We are printing out the iteration as the first line of the for loop, %i",i);
+  rcpp_rprintf(ooF);
+  
   //  saving the null test statistics
-  NumericVector nullOo = absZsH01row[oo];
+  NumericVector nullOo = absZsH01row[ooF];
   
   // saving the raw test statistics under H1
-  NumericVector rawtOo = absZsH11samp[oo];
+  NumericVector rawtOo = absZsH11samp[ooF];
   
   // saving the first boolean by comparing the max of null values with the first of raw test statistics
   maxt[0] = max(nullOo) > rawtOo[0];
