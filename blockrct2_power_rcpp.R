@@ -8,37 +8,6 @@ if(!exists("compRawtSs", mode = "function")) sourceCpp("Rcpp/wysinglestepdep.cpp
 #Compiling the single step function to be absolutely sure
 sourceCpp("Rcpp/wysinglestepdep.cpp")
 
-
-
-#' Helper Functions for WestFallYoung Step down
-#'
-#' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
-#' @param abs.Zs.H1.1samp One sample of raw statistics
-#' @param oo Order matrix of test statistics in descending order
-#' @return returns a vector of 1s and 0s with lengths of M outcomes
-#' @export
-#'
-comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
-  
-  # getting M number of outcomes from 1 row of statistics
-  M <- length(abs.Zs.H0.1row)
-  # creating an empty vector of length M to save boolean values
-  maxt <- rep(NA, M)
-  # saving the null test statistics
-  nullt.oo <- abs.Zs.H0.1row[oo]
-  # saving the raw test statistics under H1
-  rawt.oo <- abs.Zs.H1.1samp[oo]
-  # saving the first boolean by comparing the max of null values with the first of raw test statistics
-  maxt[1] <- max(nullt.oo) > rawt.oo[1]
-  
-  # Step-down comparison where the next max of null values is compared to the next raw test statistics
-  for (h in 2:M) {
-    maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]
-  } # end of for loop
-  
-  return(as.integer(maxt))
-}
-
 #' WestFallYoung Single Step Adjustment Function
 #'
 #' This adjustment function utilizes the comp.rawt.SS helper function to compare
@@ -95,7 +64,7 @@ adjust.allsamps.WYSD <- function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   # leveraging snow to run multiple cores for foreach loops
   doParallel::registerDoParallel(cl)
   # registering the comp.rawt.SD function in global enivronment of each node
-  parallel::clusterExport(cl=cl, list("comp.rawt.SD"))
+  parallel::clusterExport(cl=cl, list("compRawtSd"))
   # getting M number of outcomes vector
   M <- ncol(abs.Zs.H0)
   # setting up the matrix to save the adjusted p values
@@ -108,7 +77,7 @@ adjust.allsamps.WYSD <- function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   s = 1:snum
   doWY <- foreach::foreach(s= 1:snum, .combine=rbind) %dopar% {
     # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
-    ind.B <- t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
+    ind.B <- t(apply(abs.Zs.H0, 1, compRawtSd, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
     pi.p.m <- colMeans(ind.B)
     
     # enforcing monotonicity
