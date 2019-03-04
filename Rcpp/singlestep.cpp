@@ -39,12 +39,22 @@ IntegerVector compRawtSs (NumericVector absZsH01row, NumericVector absZsH11samp)
 
 // The function below is a helper function to print out vectors in Rcpp/C++ for IntegerVectors
 
-void rcpp_rprintf(IntegerVector v){
+void rcpp_rprinti(IntegerVector v){
   // printing values of all the elements of Rcpp vector  
   for(int i = 0; i < v.length(); ++i){
     Rprintf("the value of v[%i] : %i \n", i, v[i]);
   }
 }
+
+// The function below is a helper function to print out vectors in Rcpp/C++ for IntegerVectors
+
+void rcpp_rprintn(NumericVector v){
+  // printing values of all the elements of Rcpp vector  
+  for(int i = 0; i < v.length(); ++i){
+    Rprintf("the value of v[%i] : %f \n", i, v[i]);
+  }
+}
+
 
 // The function below is a helper function for comparison of StepDown WestFall Young.
 //  By specifying export, we stipulate that the function defined just below this sentence will be accessible from R.
@@ -60,6 +70,7 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
   
   // Rprintf("This is the H0 value, %u \n", m);
   
+  // Subtracting the index by 1 as C++ starts index at 0
   IntegerVector ooF = oo - 1;
   
   // creating an empty logical vector of length M to save boolean values
@@ -69,20 +80,25 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
     
   // First Print Statement Inside the for loop
   // Rprintf("We are printing out the iteration as the first line of the for loop, %i",i);
-  // rcpp_rprintf(ooF);
+  rcpp_rprinti(ooF);
   
   //  saving the null test statistics
   NumericVector nullOo = absZsH01row[ooF];
   
   // saving the raw test statistics under H1
   NumericVector rawtOo = absZsH11samp[ooF];
-  
+
+  rcpp_rprintn(rawtOo);
+    
   // saving the first boolean by comparing the max of null values with the first of raw test statistics
   maxt[0] = max(nullOo) > rawtOo[0];
   
   // A secondary for loop implement the stepdown
     for (int j = 1; j < m; j ++){
-      // Rprintf("This is the H0 value, %u \n", j);
+      
+      Rprintf("This is iteration at, %u \n", j);
+      NumericVector tmp = nullOo[seq(1, m-1)];
+      rcpp_rprintn(tmp);
       maxt[j] = max(nullOo[seq(1, m-1)]) > rawtOo[j];
       // Rprintf("This is the H0 value, %u \n", j);
     } // end of inner for loop

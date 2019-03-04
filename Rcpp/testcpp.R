@@ -52,9 +52,52 @@ results.r.sd = apply(X = h0.mat, MARGIN = 1, FUN = comp.rawt.SD, abs.Zs.H1.1samp
 
 if(sum(results.rcpp.sd == results.r.sd) == 25){print("Function working!")}
 
+# Try out another test dataset to see if the difference in results is happening at the same places
+
+## create a new matrix of h0 and h1 values
+
+h0.1 <- c(0.3,0.4, 0.25, 0.5, 0.6)
+h1.1 <- c(0.6, 0.3, 0.4, 0.25, 0.2)
+
+h0.1.mat <- matrix(data = h0.1, nrow = 5, ncol = 5, byrow = TRUE)
+h1.1.mat <- matrix(data = h1.1, nrow = 5, ncol = 5, byrow = TRUE)
+
+## We will be using the same order matrix
+
+order.matrix <- t(apply(h1.1.mat, 1 , order, decreasing = TRUE))
+head(order.matrix)
+
+
+## Generating the results set
+
+results.rcpp.sd.1 = apply(X = h0.1.mat, MARGIN = 1, FUN = compRawtSd, absZsH11samp = h1.1.mat[1,], oo = order.matrix[1,])
+results.r.sd.1 = apply(X = h0.1.mat, MARGIN = 1, FUN = comp.rawt.SD, abs.Zs.H1.1samp = h1.1.mat[1,], oo = order.matrix[1,])
+
+## third compare to see if the results are the same
+
+if(sum(results.rcpp.sd.1 == results.r.sd.1) == 25){print("Function working!")}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Trying out the Vector Subsetting code from Kristin
-
 ## have an initial vector. A very pretty code. Ingenius.
 
 tmp <- c(0.6, 0.5, 0.3, 0.4, 0.3)
