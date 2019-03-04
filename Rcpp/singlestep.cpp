@@ -55,7 +55,6 @@ void rcpp_rprintn(NumericVector v){
   }
 }
 
-
 // The function below is a helper function for comparison of StepDown WestFall Young.
 //  By specifying export, we stipulate that the function defined just below this sentence will be accessible from R.
 // [[Rcpp::export]]
@@ -97,9 +96,9 @@ IntegerVector compRawtSd (NumericVector absZsH01row, NumericVector absZsH11samp,
     for (int j = 1; j < m; j ++){
       
       Rprintf("This is iteration at, %u \n", j);
-      NumericVector tmp = nullOo[seq(1, m-1)];
+      NumericVector tmp = nullOo[seq(j, m-1)];
       rcpp_rprintn(tmp);
-      maxt[j] = max(nullOo[seq(1, m-1)]) > rawtOo[j];
+      maxt[j] = max(nullOo[seq(j, m-1)]) > rawtOo[j];
       // Rprintf("This is the H0 value, %u \n", j);
     } // end of inner for loop
     

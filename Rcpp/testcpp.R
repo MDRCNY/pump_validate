@@ -35,6 +35,10 @@ if(sum(results.rcpp == results.r) == 25){print("Function working!")}
 
 # Test out how to use R apply function with a cpp function for Step Down
 
+## raw data
+h0 <- c(0.4, 0.5, 0.3, 0.2, 0.1)
+h1 <- c(0.5, 0.6, 0.3, 0.25, 0.75)
+
 ## first create a matrix of h0 and h1 values
 h0.mat <- matrix(data = h0, nrow = 5, ncol = 5, byrow = TRUE)
 h1.mat <- matrix(data = h1, nrow = 5, ncol = 5, byrow = TRUE) 
