@@ -220,12 +220,26 @@ Are these topics still relevant?
   #app to generate power can be found here https://metinbulus.shinyapps.io/powerupr/
     #power from PowerUp! app: 0.1662404
 
-#extract power estimate using PowerUp! package -  what is n? unclear
-powerUp<- power.bira2c1(es=.125, alpha=.05, two.tailed=TRUE, p=.50, g1=0, r21=0, n=50, J=20)
+#extract power estimate using PowerUp! package
+powerUp<- power.bira2c1(es=.125, alpha=.05, two.tailed=TRUE, p=.50, g1=numCovar.1, r21=0, n=50, J=20)
 powerUp.M1 <- powerUp$power
+
+
+## Q FOR ZH/KP: What is the diff bt looking at indiv power and M=1?
+#run power with M=1 from the package  - DOESNT RUN
+power.M1 <- power.blockedRCT.2(M=1, MDES=MDES, Ai=1, J=J, n.j=n.j, p=p,                alpha=alpha, numCovar.1=numCovar.1, numCovar.2 = numCovar.2,                R2.1=R2.1, R2.2=R2.2, ICC=ICC, mod.type = mod.type, 
+               sigma = sigma,
+               rho = 0, omega = omega, tnum = tnum, snum = snum, ncl = ncl,
+               updateProgress = updateProgress)
+
+
+####OLD - SEE Q from above:
 
 #extract M=1 power from our methods
 power.M1 <- validtable[which(validtable$method_adjname =="rawp" & validtable$method_correlation == "0"), "method_indiv"]
+power.M1 <- as.numeric(levels(power.M1))[power.M1]
+
+power.M1 <- validtable[which(validtable$method_mtp =="rawp" & validtable$method_corr == "0"), "method_indiv"]
 power.M1 <- as.numeric(levels(power.M1))[power.M1]
   
 # create table of results and check for if within TBD margin of error
@@ -239,15 +253,23 @@ powerUpvalidtable
 # Verify MDES calculations and capture run times
 
 ```{r chunk4_verifyMDES}
+#set margin of error 
+me <- 0.01
 
-# Specify power estimates that match those obtained in chunk3_verifyPower (grab from final table/matrix) and corresponding sample size - and check that returned MDES is correct
+####ASK ZH: Where is the rho (correlation) parameter for MDES calc?
+  ##generate power for indiv, BH, corr = 0
+  ## is numFalse the same as Ai?
 
-#generate MDES - code has lots of warnings/errors - unfinished?
-#MDES.blockedRCT.2(M=M, numFalse = M, J=50, n.j=20, power=0.80, power.definition = "min2", MTP = "BF", marginError = 0.005,
-#                          p=0.5, alpha=0.05, numCovar.1=0, numCovar.2=0, R2.1=0, R2.2=0, ICC=0, 
-#                          mod.type="constant", sigma=sigma, omega=NULL,
-#                          tnum = 10000, snum=2, ncl=24)
+#indiv, BH
+test.MDES <- MDES.blockedRCT.2(M = M, numFalse = M, Ai_mdes = M, J = J, n.j = n.j, power = power.corr0["BH", "indiv"], power.definition = "indiv", MTP = "BH", marginError = 0.05, p = p, alpha = 0.05, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = mod.type, omega = omega,tnum = tnum, snum = snum, ncl = ncl, updateProgress = updateProgress)
 
+test.MDES[1] < (MDES + me) & test.MDES[1] > (MDES - me)
+
+
+#indiv, BH
+test.MDES <- MDES.blockedRCT.2(M = M, numFalse = M, Ai_mdes = M, J = J, n.j = n.j, power = power.corr0["BH", "indiv"], power.definition = "indiv", MTP = "BH", marginError = 0.05, p = p, alpha = 0.05, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = mod.type, omega = omega,tnum = tnum, snum = snum, ncl = ncl, updateProgress = updateProgress)
+
+test.MDES[1] < (MDES + me) & test.MDES[1] > (MDES - me)
 
 ```
 
