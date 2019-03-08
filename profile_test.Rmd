@@ -7,8 +7,8 @@ output: pdf_document
 ## Loading the blockrct2_power.R file
 
 ```{r}
-source("blockrct2_power.R")
-#library(pum)
+#source("blockrct2_power.R")
+library(pum)
 ```
 ## Parameters for testing power function en masse
 
@@ -231,7 +231,7 @@ We have set the statistical power to be at 0.75 with the power definition set. T
 * power.definition = indiv
 
 ```{r}
-MDES.blockedRCT.2(M = 5, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 10, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 10, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 5, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 10, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", rho = 0.99, omega = NULL,tnum = 10000, snum = 10, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 2 for MDES-BH-indiv speed profile
@@ -255,7 +255,7 @@ Here we increase the harmoninc mean to 100. The elapsed time for computing MDES 
 
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 100, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 100, rho = 0.99, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 3 for MDES-BH-indiv speed profile
@@ -279,7 +279,7 @@ Here compared to test case 2, we increase the number of samples to **1000**. The
 
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL, rho = 0.99,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 4 for MDES-BH-indiv speed profile
@@ -303,7 +303,7 @@ Here compared to test 3, we decreased the statistical power to **0.5** from **0.
 
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 5 for MDES-BH-indiv speed profile
@@ -326,7 +326,7 @@ Here compared to test 4, we increase the actual impact of MDES to 10 from 3. The
 * power.definition = indiv
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000,rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 6 for MDES-BH-indiv speed profile
@@ -349,7 +349,7 @@ In this test case, changed the definition of power from individual to 1-minimal.
 * power.definition = min1
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "min1", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "min1", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 ### Test case 7-8-9 for MDES-BH-complete speed profile
 
@@ -372,7 +372,7 @@ A search for an optimal MDES at complete power is unsuccessful up to 45 iteratio
 * power.definition = complete
 
 ```{r}
-mdes.complete <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "complete", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.complete <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "complete", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", rho = 0.99, omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 
 ## Summary for MDES speed profiles for HO
@@ -391,6 +391,7 @@ For the first test case of Holms, we are starting right off with 10 blocks, a ha
 * MTP_mdes = Holms
 * me_mdes = 0.05
 * p_mdes = 0.5
+* rho = 0.99
 * alpha_mdes = 0.05
 * numCovar.1_mdes = 5
 * R2.1_mdes = 0.5
@@ -399,7 +400,7 @@ For the first test case of Holms, we are starting right off with 10 blocks, a ha
 * power.definition = indiv
 
 ```{r}
-mdes.holm.indiv <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.holm.indiv <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, rho = 0.99, updateProgress = NULL)
 print(mdes.holm.indiv)
 ```
 
@@ -423,7 +424,7 @@ For the second test case of Holms, we are starting right off with 10 blocks, a h
 * power.definition = min1
 
 ```{r}
-mdes.holm.min1 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "min1", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.holm.min1 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "min1", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.holm.min1)
 ```
 
@@ -447,7 +448,7 @@ For the third test case of Holms, we are starting right off with 10 blocks, a ha
 * power.definition = complete
 
 ```{r}
-mdes.holm.complete.01 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.holm.complete.01 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.holm.complete.01)
 ```
 
@@ -472,7 +473,7 @@ For the fourth test case of holms, we are starting right off with 10 blocks, a h
 
 ```{r}
 start <- Sys.time()
-mdes.holm.complete.02 <- MDES.blockedRCT.2(M = 10, numFalse = 10, Ai_mdes = 10, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.holm.complete.02 <- MDES.blockedRCT.2(M = 10, numFalse = 10, Ai_mdes = 10, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, rho = 0.99, ncl = 2, updateProgress = NULL)
 print(mdes.holm.complete.02)
 end <- Sys.time()
 elapsed <- end-start
@@ -501,7 +502,7 @@ For the first test case of Westfall-Young Single Step, we are starting right off
 * power.definition = indiv
 
 ```{r}
-mdes.wyss.indiv.10 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 10, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.10 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 10, rho = 0.99, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.10)
 ```
 
@@ -525,7 +526,7 @@ For the first test case of Westfall-Young Single Step, we are starting right off
 * power.definition = indiv
 
 ```{r}
-mdes.wyss.indiv.20 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 20, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.20 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 20, rho = 0.99, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.100)
 ```
 
@@ -550,7 +551,7 @@ For the third test case of Westfall-Young Single Step, we are starting right off
 * power.definition = indiv
 
 ```{r}
-mdes.wyss.indiv.100 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 100, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.100 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 100, rho = 0.99, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.100)
 ```
 ### Test case 4 for MDES-Westfall-Young Single Step-indiv speed profile
@@ -574,7 +575,7 @@ For the fourth test case of Westfall-Young Single Step, we are starting right of
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.indiv.500 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 500, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.500 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 500, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.500)
 end <- Sys.time()
 elapsed <- end-start
@@ -603,7 +604,7 @@ For the fifth test case of Westfall-Young Single Step, we are starting right off
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.indiv.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.1000)
 end <- Sys.time()
 elapsed <- end-start
@@ -631,7 +632,7 @@ For the sixth test case of Westfall-Young Single Step, we are starting right off
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.min1.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "min1", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.wyss.min1.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "min1", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.min1.1000)
 end <- Sys.time()
 elapsed <- end-start
@@ -660,7 +661,7 @@ For the sixth test case of Westfall-Young Single Step, we are starting right off
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 5, numFalse = 5, Ai_mdes = 5, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 5, numFalse = 5, Ai_mdes = 5, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.complete.1000)
 end <- Sys.time()
 elapsed <- end-start
@@ -688,7 +689,7 @@ For the sixth test case of Westfall-Young Single Step, we are starting right off
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 10, Ai_mdes = 10, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 10, Ai_mdes = 10, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.complete.1000)
 end <- Sys.time()
 elapsed <- end-start
