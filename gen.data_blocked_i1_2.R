@@ -1,54 +1,43 @@
 
-###########################################################################
-#  Function: gen.blocked.data  Inputs: M, DMDES, n.j, J, rho, ICC, alpha,	#
-#				 		                    Gamma.00, sig.sq, p.j, R2.1, R2.2, omega  #
-#                               check                                     #
-#                                                                         #
-#   M, number of tests/domains/outcomes                                   #
-#   DDMDES, desired minimum detectable effect size, number                #
-#   n.j, number of observations per block                                 #
-#   J, number of blocks                                                   #                               
-#   rho.0_lev1, MxM matrix of correlations fir Level 1 residuals          #
-#          in models of outcomes under no treatment                       #
-#   rho.0_lev2, MxM matrix of correlations fir Level 2 residuals          #
-#          in models of outcomes under no treatment                       #
-#   rho.1_lev2, MxM matrix of correlations for Level 2 effects            #
-#   theta, MxM matrix of correlations between residuals in Level 2 model  #
-#          outcomes under no treatment and Level 2 effects                #
-#   ICC, a number, intraclass correlation; 0 if fixed model               #
-#   alpha, the significance level, 0.05 usually                           #
-#   Gamma.00, grand mean outcome w/o treat, held 0, vector length M       #
-#   sig.sq, vector length M, held at 1 for now                            #
-#   p.j.range, vector of minimum and maximum probabilities  of being      #
-#              assigned to treatment, across all sites                    #
-#   R2.1, R squared for mth level 1 outcome by mth level 1 covar          #
-#   R2.2, R squared for mth level 2 outcome by mth level 1 covar          #
-#   omega, vector length M, effect size variability, between 0 and 1,     #
-#           0 if no variation in effects across blocks                    #
-#   check, logical, if true performs checks section                       #
-#												                                                  #
-#	Outputs: dataset with n.j*J rows, columns of D0.ij, D1.ij, D.ij, 				#
-#           X.ij, and X.j for each M, block.id, Treat.ij                  #
-#	Notes:  Some inputs must be length M, fixed models have ICC, R2.2 = 0,  #
-#           omega=NULL, some inputs do not change but are still specified #
+#  Function: gen.blocked.data  
+#
+#   M             number of tests/domains/outcomes                                   
+#   MDES          desired minimum detectable effect size, number                
+#   n.j           number of observations per block                                 
+#   J             number of blocks  
+#   eff.assump    assumption of whether "constant", "fixed" or "random" effects
+#   rho.0_lev1    MxM correlation matrix for Level 1 residuals in models of outcomes under no treatment                       
+#   rho.0_lev2    MxM correlation matrix for Level 2 residuals in models of outcomes under no treatment                       
+#   rho.1_lev2    MxM correlation matrix for Level 2 effects            
+#   theta         MxM matrix of correlations between residuals in Level 2 model of outcomes under no treatment and Level 2 effects                
+#   ICC           value of intraclass correlation; 0 if constant or fixed effects model               
+#   alpha         the significance level, 0.05 usually                           
+#   Gamma.00      grand mean outcome w/o treat, held 0, vector length M       
+#   sig.sq        vector length M, held at 1 for now                            
+#   p.j.range     vector of minimum and maximum probabilities  of being assigned to treatment, across all sites                    
+#   R2.1          R squared for mth level 1 outcome by mth level 1 covar          
+#   R2.2          R squared for mth level 2 outcome by mth level 1 covar          
+#   omega         vector length M, effect size variability, betw 0 and 1, 0 if no variation in effects across blocks                    
+#   check         logical, if true performs checks section                       
 
-# D0.ij = potential outcomes under no treatment within each site
-# Treat.ij = assign to treatment or control group 
+#	Outputs: dataset with n.j*J rows, columns of D0.ij, D1.ij, D.ij, 				
+#           X.ij, and X.j for each M, block.id, Treat.ij                  
+
+#   D0.ij         potential outcomes under no treatment within each site
+#   Treat.ij      assign to treatment or control group 
 
 
 
-
-###########################################################################
-
-
-gen.blocked.data<-function(M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,theta,ICC,alpha,Gamma.00,sig.sq,p.j.range,R2.1,R2.2,check,omega) {
-  if(check) cat("M", M, "DMDES", DMDES, "n.j", n.j, "J", J, "rho", rho, "ICC", ICC, alpha, "Gamma.00", Gamma.00, "sig.sq", sig.sq, p.j.range, R2.1, R2.2, check, omega)
+gen.data_blocked_i1_2<-function(M,MDES,n.j,J,rho.0_lev1,rho.0_lev2,rho.1_lev2,theta,
+                           ICC,alpha,Gamma.00,sig.sq,p.j.range,R2.1,R2.2,check,omega) {
+  
+  if(check) cat("M", M, "MDES", MDES, "n.j", n.j, "J", J, "eff.assump", eff.assump, "rho", rho, "ICC", ICC, alpha, "Gamma.00", Gamma.00, "sig.sq", sig.sq, p.j.range, R2.1, R2.2, check, omega)
   require(MASS)
   
   ## Level 2 (J blocks)
   
-  #tau00.sq<-(ICC*sig.sq*(1-R2.2))/((1-R2.1)*(1-ICC))
-  tau00.sq<-ICC*sig.sq/(1-ICC) 
+  if (sig.sq!=1) tau00.sq<-(ICC*sig.sq*(1-R2.2))/((1-R2.1)*(1-ICC))
+  if (sig.sq==1) tau00.sq<-ICC/(1-ICC) 
   # Compute tau11.sq based on specified omega and tau00.sq
   tau11.sq <- tau00.sq*omega
   Sigma.u.v.j <- matrix(0, 2*M, 2*M)
@@ -143,9 +132,9 @@ gen.blocked.data<-function(M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,theta
   Gamma.11 <- rep(0, M)
   for(m in 1:M) {
     
-    Gamma.11[m]<-DMDES[m]*sd(D0.ij[,m])
-#    Gamma.11[m]<-DMDES[m]*(sig.sq) #+tau00.sq)
-#    Gamma.11[m]<-DMDES[m]
+    Gamma.11[m]<-MDES[m]*sd(D0.ij[,m])
+#    Gamma.11[m]<-MDES[m]*(sig.sq) #+tau00.sq)
+#    Gamma.11[m]<-MDES[m]
     
     beta.j<-Gamma.11[m] + as.matrix(v.j)[,m] 
     beta.j.expand<-rep(beta.j,each=n.j)
@@ -172,7 +161,7 @@ gen.blocked.data<-function(M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,theta
   output.temp<- data.frame(D0.ij,D1.ij,D.ij,Treat.ij,X.ij)
   output<-merge(output.temp,X.j,by="block.id")
   
-  #  filename = paste0("gendata_M", M,"_DMDES", DMDES, "_J", J, "_nj", n.j, "_ICC", ICC, "_rho", rho, ".csv")
+  #  filename = paste0("gendata_M", M,"_MDES", MDES, "_J", J, "_nj", n.j, "_ICC", ICC, "_rho", rho, ".csv")
   
   # CHECKS
   if (check) {

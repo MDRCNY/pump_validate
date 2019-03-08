@@ -1,9 +1,7 @@
-
-### Functions
-### trimmed to just perm.regs and adjust.WY for this project.
+# This script contains functions for carrying out Westfall-Young step-down corrections
+# Last - updated March 7, 2019, Kristin Porter
 
 ### resamp.by.block function to help resample for fixed cases
-
 resamp.by.block<-function(...) {
   tc<-numeric(...[1])
   tc[1:(...[1]*...[2])]<-1
@@ -12,15 +10,22 @@ resamp.by.block<-function(...) {
 
 
 ### perm.regs: performs regressions with permuted treatment indicator
-#Mdata is a dataset for one domain (m) for one sample, subgroups=NULL, which.mult="pooled", incl.covar-> unnecessary
-#clustered=TRUE, clusterby='block.id', funct= 'random' or 'fixed'
-perm.regs <- function(permT,data,clusterby,funct,maxT,n.j,J) {
+
+# permT = matrix with n.j * J rows and B columns, contains all permutations of treatment indicator
+# data = data for all M domains
+# blockby = blocking variable 
+# funct = "constant", "fixed" or "random"
+# maxT = TRUE if using maxT procedures, otherwise minp
+# n.j = individuals per block (assume same for all)
+# J = number of blocks
+perm.regs <- function(permT,data,blockby,funct,maxT,n.j,J) {
   outpt<-numeric(length(data))
   M<-length(data)
   for (m in 1:M) {
+    # Mdata is a dataset for one domain (m) for one sample
     Mdata<-data[[m]]
     Mdata$Treat.ij <- permT
-    mdum <- make.dummies(Mdata,clusterby=clusterby,n.j=n.j,J=J) # took this out of perm.reg so doing just once
+    mdum <- make.dummies(Mdata,blockby=blockby,n.j=n.j,J=J) # took this out of perm.reg so doing just once
     fit <- make.model(mdum$fixdat, mdum$dnames, funct)
     ifelse(maxT,outpt[m]<-get.tstat(fit),outpt[m]<-get.pval(fit))
     }
@@ -52,9 +57,19 @@ comp.rawt <- function(nullptrow, rawt, r.m.r) {
   return(as.integer(maxt))
 }
 #call to adjust.WY from get.adjp
-#adjust.WY(data=mdat, B=B, subgroup=NULL, which.mult="pooled", incl.covar=TRUE, rawp=rawp, ncl=ncl, clustered=TRUE, clusterby='block.id', funct)
+#adjust.WY(data=mdat, B=B, subgroup=NULL, which.mult="pooled", incl.covar=TRUE, rawp=rawp, ncl=ncl, clustered=TRUE, blockby='block.id', funct)
 # adjust.WY: does WY adjustments for a single sample in parallel
-adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, clusterby, funct, maxT) {
+
+# data        A list of length M. Each element in the list is a data frame holding the m'th data set
+# B           Number of permutations
+# rawp        Vector of length M of the raw p-values
+# rawt        Vector of lenght M of the raw test statistics
+# ncl         Number of clusters for parallel processing
+# clustered   True if 
+# blockby   Variable that designates the clusters
+# funct       
+
+adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, blockby, funct, maxT) {
   
   # get number of tests
   ntests <- length(data)
@@ -62,7 +77,7 @@ adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, clusterby, funct, maxT)
   # get order of raw p-values; returns ordered index for the vector "rawp"
   ifelse(maxT==FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing=TRUE))
   
-  # permute all Treatment indicator B times (outside of apply below so all outcomes have same permutation)
+  # permute all Treatment indicator B times - permutations are done by block
   permT<-matrix(NA,n.j*J,B)
   for (b in 1:B) {
     permT[,b]<-as.vector(apply(cbind(n.j,p.j),1,resamp.by.block))
@@ -70,30 +85,20 @@ adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, clusterby, funct, maxT)
   }
   
   cl <- makeSOCKcluster(rep("localhost", ncl))
-  clusterExport(cl, list("perm.regs", "data", "clustered", "clusterby", "funct", "make.dummies", "make.model", "get.tstat", "get.pval", "p.j", "resamp.by.block", "fastLm", "lmer"), envir=environment())
+  clusterExport(cl, list("perm.regs", "data", "clustered", "blockby", "funct", "make.dummies", "make.model", "get.tstat", "get.pval", "p.j", "resamp.by.block", "fastLm", "lmer"), envir=environment())
   
   #print these to see what is assigned
   print(cl)
   print(ncl)
   
   # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
-  nullpt <- parApply(cl,permT,2,perm.regs,data=data,clusterby=clusterby,funct=funct,maxT=maxT,n.j=n.j,J=J)   # revised KP
+  nullpt <- parApply(cl,permT,2,perm.regs,data=data,blockby=blockby,funct=funct,maxT=maxT,n.j=n.j,J=J)   # revised KP
   
   stopCluster(cl)
   
-#   # get B p-values for all tests
-#   nullpt <- lapply(data, function(y) {
-#  #   parSapply(cl, 1:B, function(x) { #in parallel
-#     sapply(1:B, function(x) { #in serial
-#       #perm.regs <- function(Mdata, Subgroups, which.mult, incl.covar, clustered, clusterby, funct) --> inputs for perm.regs
-#       #perm.regs calls make.dummies, make.model, and get.pval
-#       perm.regs(y, clustered=clustered, clusterby=clusterby, funct=funct, maxT=maxT) # y is dataset for one outcom
-#     })
-#   })
   
   # turn nullpt into a matrix (B rows, ntest columns)
-  nullpt.mat <- t(nullpt) # revised KP
-  #nullpt.mat <- do.call(cbind, nullpt)
+  nullpt.mat <- t(nullpt) # revised 
   
   # create dummies for comparisions of null p-values to raw p-values
  if (maxT==FALSE) ind.B <- apply(nullpt.mat, 1, comp.rawp, rawp=rawp, r.m.r=r.m.r)
@@ -117,3 +122,5 @@ adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, clusterby, funct, maxT)
   out.oo <- out[oo, ]
   return(out.oo)
 }
+
+
