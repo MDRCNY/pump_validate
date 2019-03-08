@@ -62,8 +62,6 @@ simpwr.b <- mapply(cbind, simpwr.c, 'mtp' = listmtps, SIMPLIFY = F)
 #bind sim tables
 MCmethods <- ldply(simpwr.b, data.frame)
 
-
-## next steps - sim: append tables nto one - do the same for power calc via pum app?
 ```
 
 
@@ -92,7 +90,7 @@ sigma <- 0
 
 #generate matrices
 
-##Q for ZH: What is sigma vs rho? Is sigma related to rho in the code? Is sigma a matrix of rho? Do I need to reset rho and sigma in the parameters for each correlation? Is sigma set to 1 number or a matrix?
+## NOTE: sigma is a matrix of row currently (line 232 on pump repo)
 
 #corr = 0
 power.corr0 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j, p=p,                alpha=alpha, numCovar.1=numCovar.1, numCovar.2 = numCovar.2,                R2.1=R2.1, R2.2=R2.2, ICC=ICC, mod.type = mod.type, 
@@ -240,9 +238,6 @@ power.M1 <- power.blockedRCT.2(M=1, MDES=MDES, Ai=1, J=J, n.j=n.j, p=p,         
 ####OLD - SEE Q from above:
 
 #extract M=1 power from our methods
-power.M1 <- validtable[which(validtable$method_adjname =="rawp" & validtable$method_correlation == "0"), "method_indiv"]
-power.M1 <- as.numeric(levels(power.M1))[power.M1]
-
 power.M1 <- validtable[which(validtable$method_mtp =="rawp" & validtable$method_corr == "0"), "method_indiv"]
 power.M1 <- as.numeric(levels(power.M1))[power.M1]
   
