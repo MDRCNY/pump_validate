@@ -2,7 +2,7 @@ library(shiny) # for basic templates
 library(shinyBS) # for popovers and tool tips
 library(shinycssloaders) # for ui elements showing shiny loading
 library(magrittr) # piping operator
-source("../blockrct2_power.R")
+library(pum) # our pum lirbary
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
