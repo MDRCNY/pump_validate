@@ -12,6 +12,7 @@ output: github_document:
 # Loading data files
 
 ```{r}
+#this is validation template was created before we migrated power calculations to the pum package
 library(yaml)
 library(knitr)
 library(kableExtra)
