@@ -51,7 +51,7 @@ adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
 ```
 
 ```{r}
-adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
+adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix) {
   cl <- makeCluster(ncl)
   registerDoParallel(cl)
   clusterExport(cl=cl, list("comp.rawt.SD"))
@@ -145,7 +145,7 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
 # adjust p-values for Westfall-Young (single-step and step-down)
   order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
   adjp.SS<-adjust.allsamps.WYSS(snum,abs.Zs.H0,abs.Zs.H1)
-  adjp.WY<-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl)
+  adjp.WY<-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix)
 
 # combine all adjusted p-values in list (each entry is matrix for given MTP)
   adjp.all<-list(rawp,adjp.BF,adjp.HO,adjp.BH,adjp.SS,adjp.WY)
@@ -192,8 +192,6 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
   return(all.power.results)
 }
-
-
 ```
 
 
@@ -428,17 +426,14 @@ test.MDES <- MDES.blockedRCT.2(M, numFalse = M, J, n.j, power=0.417, power.defin
                           tnum = 10000, snum=2, ncl=2)
 
 
-print(test.MDES)
-
-test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, MDES = power=0.417, power.definition, MTP, marginError = 0.005,
-                          p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
-                          mod.type="constant", sigma=sigma, omega=NULL,
-                          tnum = 10000, snum=2, ncl=2)
-
-print(test.SS)
+print(test)
 ```
 
+
+```{r}
 test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, power=0.417, power.definition, MTP, marginError = 0.005, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0 mod.type="constant", sigma=sigma, omega=NULL,tnum = 10000, snum=2, ncl=2)
+```
+
 
 NOTES:
     # how do we optimize tnum and snum - can we provide margin of error? 

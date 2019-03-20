@@ -10,6 +10,7 @@
 #' This function operates on one row of null test statistics. It compares $max_{1 \leq l \leq M} {T_l}$ to $|t_m|$ for all $m$.  
 #' 
 ## ------------------------------------------------------------------------
+
 comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
   M<-length(abs.Zs.H0.1row)
   maxt <- rep(NA, M)
@@ -93,14 +94,15 @@ df<-function(J,n.j,numCovar.1) {J*n.j - J - numCovar.1 - 1}
 #'     # for either constant, fixed or random effects
 #' 
 #'     # M is the number of hypothesis tests (outcomes)
-#'     # MDES = vector of MDES's of length M - can be zero if not assuming all nulls are false
+#'     # MDES = vector of MDES's of length M - This is to specify the minimum detectable effect size
 #'     # J = number of blocks
 #'     # n.j = units per block
-#'     # power = power (assumed same for all tests)
-#'     # meanProbT = proportion assigned to treatment group
+#'     # p = the proportion of samples that are assigned the treatment
 #'     # alpha = significance level
 #'     # numCovar.1 = number of Level 1 covariates (not including block dummies)
 #'     # numCovar.2 = number of Level 2 covariates
+#'     # R2.1 = a vector of R^2 for level 1 variables
+#'     # R2.2 = a vector of R^2 for level 2 variables
 #'     # ICC = intraclass correlation
 #'     # omega =
 #'     # sigma = correlation matrix for correlations between test statistics
@@ -126,6 +128,8 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   t.shift.mat<-t(matrix(rep(t.shift,tnum),M,tnum)) # repeating shift.beta on every row
     
 # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
+# simulating student t distribution
+  
   Zs.H0<-rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0,M),type = c("shifted", "Kshirsagar")) 
   Zs.H1 <- Zs.H0 + t.shift.mat
   pvals.H0<-2*pt(-abs(Zs.H0),df=t.df)
