@@ -9,7 +9,7 @@ output: github_document:
     #theme: cerulean
 ---
 
-# Loading data files
+# Set up
 
 ```{r}
 #this is validation template was created before we migrated power calculations to the pum package
@@ -17,96 +17,167 @@ library(yaml)
 library(knitr)
 library(kableExtra)
 library(PowerUpR)
+library(pum)
+library(plyr)
 
 #read in configs file
 configs <- yaml.load_file("configs.yaml")
 
 #set directory for reading in files
 fdir <- configs$fdir
-
-#files
-power.cor <- "Blocked_i1_2cM6n.j50J20MDES0.125_powerLIST.Rda"
-simpwr.cor <- "Blocked_i1_2cM3n.j100J20ICC0MDES0.125_S2000B10000_R2.10_R2.20_simpwrLIST.Rda"
+```
 
 
+# Load power calculation matrices from the simulations
 
-#load lists
-load(paste0(fdir, power.cor))
-load(paste0(fdir, simpwr.cor))
+```{r}
+simpwr0 <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125rho0_S2000B10000_R2.10_R2.20_simpwr.Rda"
+simpwr.2 <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125rho0.2_S2000B10000_R2.10_R2.20_simpwr.Rda"
+simpwr.5 <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125rho0.5_S2000B10000_R2.10_R2.20_simpwr.Rda"
+simpwr.8 <- "Blocked_i1_2cM6n.j100J20ICC0MDES0.125rho0.8_S2000B10000_R2.10_R2.20_simpwr.Rda"
 
-# display power calculation matrices
-power_mutl_storage[[1]]["filename"]
-power_mutl_storage[[1]]["obj"]
-    
-# display simulation matrices
-sim_power_storage[[1]]["simname"]
-sim_power_storage[[1]]["obj"]
+simpwr.cor0 = local(get(load(paste0(fdir, simpwr0))))
+simpwr.cor.2 = local(get(load(paste0(fdir, simpwr.2))))
+simpwr.cor.5 = local(get(load(paste0(fdir, simpwr.5))))
+simpwr.cor.8 = local(get(load(paste0(fdir, simpwr.8))))
+
+#add data frames to a list to process it altogether
+list_of_simpwr <- list(simpwr.cor0, simpwr.cor.2, simpwr.cor.5, simpwr.cor.8)
+
+#add a correlation column to the data files
+corrlist <- c(0, .2,.5,.8)
+mtplist <- c("rawp", "BF", "BH", "HO", "WY-SD")
+
+simpwr.c <- Map(cbind, list_of_simpwr, corr=corrlist)
+
+#set up function to get mtps into col
+rowtocolumn <- function(df){
+  df$mtp <- row.names(df)
+  return(df$mtp)
+}
+
+#add mtps to cols
+listmtps <- lapply(simpwr.c, rowtocolumn)
+simpwr.b <- mapply(cbind, simpwr.c, 'mtp' = listmtps, SIMPLIFY = F)
+
+#bind sim tables
+MCmethods <- ldply(simpwr.b, data.frame)
 
 ```
 
 
-# Verify power calculations and capture run times
+# Pull in our power calculations (via the pum package)
+```{r}
+#set parameters for function
+M <- 6
+MDES <- 0.125
+Ai <- 6
+J <- 20
+n.j <- 100
+p <- 0.5
+alpha <- 0.05
+numCovar.1 <- 0
+numCovar.2 <- 0
+R2.1 <- 0 
+R2.2 <- 0 
+ICC <- 0 
+mod.type <- 'c'
+omega <- 0
+tnum <- 10000
+snum <- 1000
+ncl <- 2
+updateProgress <- NULL
+sigma <- 0
 
-## Maybe different chunk for each design specification (e.g, constant, fixed, random effects)
+#generate matrices
 
-```{r chunk3_verifyPower}
-# Compare power estimates from our methods vs MC methods
-  # loop through correlations
+## NOTE: sigma is a matrix of row currently (line 232 on pump repo)
+
+#corr = 0
+power.corr0 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j, p=p,                alpha=alpha, numCovar.1=numCovar.1, numCovar.2 = numCovar.2,                R2.1=R2.1, R2.2=R2.2, ICC=ICC, mod.type = mod.type, 
+               sigma = sigma,
+               rho = 0, omega = omega, tnum = tnum, snum = snum, ncl = ncl,
+               updateProgress = updateProgress)
+
+#corr = 0.2
+power.corr0.2 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j,                    p=p, alpha=alpha, numCovar.1=numCovar.1, 
+                 numCovar.2 = numCovar.2,R2.1=R2.1, R2.2=R2.2, ICC=ICC,                     mod.type = mod.type, 
+                 sigma = sigma,
+                 rho = 0.2, omega = omega, tnum = tnum, snum = snum, 
+                 ncl = ncl, updateProgress = updateProgress)
+
+
+#corr = 0.5
+power.corr0.5 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j,                    p=p, alpha=alpha, numCovar.1=numCovar.1, 
+                 numCovar.2 = numCovar.2,R2.1=R2.1, R2.2=R2.2, ICC=ICC,                     mod.type = mod.type, 
+                 sigma = sigma,
+                 rho = 0.5, omega = omega, tnum = tnum, snum = snum, 
+                 ncl = ncl, updateProgress = updateProgress)
+  
+
+#corr = 0.8
+power.corr0.8 <- power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j,                    p=p, alpha=alpha, numCovar.1=numCovar.1, 
+                 numCovar.2 = numCovar.2,R2.1=R2.1, R2.2=R2.2, ICC=ICC,                     mod.type = mod.type, 
+                 sigma = sigma,
+                 rho = 0.8, omega = omega, tnum = tnum, snum = snum, 
+                 ncl = ncl, updateProgress = updateProgress)
+  
+#add data frames to a list to process it altogether
+list_of_power <- list(power.corr0, power.corr0.2, power.corr0.5, power.corr0.8)
 
 #add a correlation column to the data files
-corr <- c(0, .2,.5,.8)
+power.c <- Map(cbind, list_of_power, corr=corrlist)
 
-#power_mult_storage
-if(length( power_mutl_storage) == length(corr)){
-  
-  idx <- 1
-  
-  while(idx <= length(corr)){
-    
-    power_mutl_storage[[idx]]$obj <-  cbind(power_mutl_storage[[idx]]$obj, correlation = rep(corr[idx], nrow( power_mutl_storage[[idx]]$obj)))
-    power_mutl_storage[[idx]]$obj <-  cbind(power_mutl_storage[[idx]]$obj, adjname = c("rawp", "BF","HO", "BH", "WY-SS", "WY-SD"))
-    
-    idx <- idx+1
-  }
-} else {
-  print("Error length of power mult storage different than correlation parameter")
-}
+#add mtps to cols
+listmtps.p <- lapply(power.c, rowtocolumn)
+power.b <- mapply(cbind, power.c, 'mtp' = listmtps.p, SIMPLIFY = F)
 
-#sim_power_storage
-if(length( sim_power_storage) == length(corr)){
-  
-  idx <- 1
-  
-  while(idx <= length(corr)){
-    
-    sim_power_storage[[idx]]$obj <-  cbind(sim_power_storage[[idx]]$obj, correlation = rep(corr[idx], nrow( sim_power_storage[[idx]]$obj)))
-    sim_power_storage[[idx]]$obj <-  cbind(sim_power_storage[[idx]]$obj, adjname = c("rawp", "BF", "BH", "HO", "WY-SD"))
-    
-    idx <- idx+1
-  }
-} else {
-  print("Error length of sim_power_storage different than correlation parameter")
-}
+#bind list of tables into one dataframe
+ourmethods <- ldply(power.b, data.frame)
 
-#bind list of data files
-ourmethods <- as.data.frame(rbind(power_mutl_storage[[1]]$obj, power_mutl_storage[[2]]$obj, power_mutl_storage[[3]]$obj, power_mutl_storage[[4]]$obj))
-MCmethods <- as.data.frame(rbind(sim_power_storage[[1]]$obj, sim_power_storage[[2]]$obj, sim_power_storage[[3]]$obj, sim_power_storage[[4]]$obj))
+```
 
-ourmethods<- ourmethods[, c("indiv", "min1", "min2", "min3", "min4", "complete", "correlation", "adjname")]
-MCmethods<- MCmethods[, c("D1indiv", "min", "1/3", "1/2", "2/3", "full", "correlation", "adjname")]
 
+
+# Create a table like the appendix table in the report : Verify power calculations against MC methods
+```{r chunk3_verifyPower}
+#manipulate data frames to make a combined table
+
+#subset cols
+ourmethods<- ourmethods[, c("indiv", "min1", "min2", "min3", "min4", "complete", "corr", "mtp")]
+MCmethods<- MCmethods[, c("D1indiv", "min", "X1.3", "X1.2", "X2.3", "full", "corr", "mtp")]
+
+#append a prefix
 colnames(ourmethods) <- paste("method", colnames(ourmethods), sep = "_")
 colnames(MCmethods) <- paste("sim", colnames(MCmethods), sep = "_")
 
+#rename sim mtps for merge
+MCmethods$newsim_mtp<- ifelse(MCmethods$sim_mtp == "Bonferroni", "BF",
+                       ifelse(MCmethods$sim_mtp == "Holm", "HO", 
+                       ifelse(MCmethods$sim_mtp == "WY", "WY-SD", as.character(MCmethods$sim_mtp))))        
+                              
+MCmethods$sim_mtp <- MCmethods$newsim_mtp
+
+MCmethods$newsim_mtp <- NULL
+
 #merge methods and sim tables
-validtable <- merge(ourmethods, MCmethods, by.x = c("method_adjname", "method_correlation"), by.y = c("sim_adjname", "sim_correlation"), all = TRUE) 
+validtable <- merge(ourmethods, MCmethods, by.x = c("method_mtp", "method_corr"), by.y = c("sim_mtp", "sim_corr"), all = TRUE) 
 
-#reorder/subset columns and obs
-validtable$method_adjname <- ordered(validtable$method_adjname, c("rawp", "BF", "HO", "BH", "WY-SD", "WY-SS"))
-validtable <- validtable[order(validtable$method_adjname),]
+#reorder columns and obs
+##NOTE: We do not have WY-SS for simulations - we are currently keeping the matrices as they are and Kristin is going back to add WY-SS to the MC code
 
-validtable <- validtable[, c("method_adjname", "method_correlation", "method_indiv", "sim_D1indiv", "method_min1", "sim_min", "method_min2",
+validtable$method_mtp <- ordered(validtable$method_mtp, c("rawp", "BF", "HO", "BH", "WY-SD", "WY-SS"))
+validtable <- validtable[order(validtable$method_mtp),]
+
+#rename cols
+names(validtable)[names(validtable) == 'sim_X1.3'] <- 'sim_1/3'
+names(validtable)[names(validtable) == 'sim_X1.2'] <- 'sim_1/2'
+names(validtable)[names(validtable) == 'sim_X2.3'] <- 'sim_2/3'
+
+#reorder cols
+validtable <- validtable[, c("method_mtp", "method_corr", "method_indiv", "sim_D1indiv", "method_min1", "sim_min", "method_min2",
                              "sim_1/3", "method_min4", "sim_2/3", "method_complete", "sim_full")]
+
 
 ##create validation table our methods vs MC Sim
 
@@ -125,7 +196,6 @@ validtable.s <- sapply(validtable.s, FUN = as.numeric.factor)
 #round values in the table
 validtable.s <- round(validtable.s, 2)
 
-
 #display table
 kable(validtable.s, caption = "MTP Used and Correlations") %>%
   kable_styling("striped") %>%
@@ -140,18 +210,36 @@ kable(validtable.s, caption = "MTP Used and Correlations") %>%
 
 ```
 
+Are these topics still relevant?
+-capture run times?
+
+## Maybe different chunk for each design specification (e.g, constant, fixed, random effects)
+
+
 ```{r verifyPowerUp}
 # for M=1, look up in Power-Up
 
   #app to generate power can be found here https://metinbulus.shinyapps.io/powerupr/
     #power from PowerUp! app: 0.1662404
 
-#extract power estimate using PowerUp! package -  what is n? unclear
-powerUp<- power.bira2c1(es=.125, alpha=.05, two.tailed=TRUE, p=.50, g1=0, r21=0, n=50, J=20)
+#extract power estimate using PowerUp! package
+powerUp<- power.bira2c1(es=.125, alpha=.05, two.tailed=TRUE, p=.50, g1=numCovar.1, r21=0, n=50, J=20)
 powerUp.M1 <- powerUp$power
 
+
+## Q FOR ZH/KP: What is the diff bt looking at indiv power and M=1?
+#run power with M=1 from our package  - DOESNT RUN
+#reset rho and sigma?
+power.M1 <- power.blockedRCT.2(M=1, MDES=MDES, Ai=1, J=J, n.j=n.j, p=p,                alpha=alpha, numCovar.1=numCovar.1, numCovar.2 = numCovar.2,                R2.1=R2.1, R2.2=R2.2, ICC=ICC, mod.type = mod.type, 
+               sigma = sigma,
+               rho = 0, omega = omega, tnum = tnum, snum = snum, ncl = ncl,
+               updateProgress = updateProgress)
+
+
+####OLD - SEE Q from above:
+
 #extract M=1 power from our methods
-power.M1 <- validtable[which(validtable$method_adjname =="rawp" & validtable$method_correlation == "0"), "method_indiv"]
+power.M1 <- validtable[which(validtable$method_mtp =="rawp" & validtable$method_corr == "0"), "method_indiv"]
 power.M1 <- as.numeric(levels(power.M1))[power.M1]
   
 # create table of results and check for if within TBD margin of error
@@ -165,15 +253,25 @@ powerUpvalidtable
 # Verify MDES calculations and capture run times
 
 ```{r chunk4_verifyMDES}
+#set margin of error 
+me <- 0.01
 
-# Specify power estimates that match those obtained in chunk3_verifyPower (grab from final table/matrix) and corresponding sample size - and check that returned MDES is correct
+####ASK ZH: Where is the rho (correlation) parameter for MDES calc? How do I switch out the correlation? Is it sigma?
+  ##generate power for indiv, BH, corr = 0
+  ## is numFalse the same as Ai?
 
-#generate MDES - code has lots of warnings/errors - unfinished?
-#MDES.blockedRCT.2(M=M, numFalse = M, J=50, n.j=20, power=0.80, power.definition = "min2", MTP = "BF", marginError = 0.005,
-#                          p=0.5, alpha=0.05, numCovar.1=0, numCovar.2=0, R2.1=0, R2.2=0, ICC=0, 
-#                          mod.type="constant", sigma=sigma, omega=NULL,
-#                          tnum = 10000, snum=2, ncl=24)
+## cor = 0
+#indiv, BH
+test.MDES <- MDES.blockedRCT.2(M = M, numFalse = M, Ai_mdes = M, J = J, n.j = n.j, power = power.corr0["BH", "indiv"], power.definition = "indiv", MTP = "BH", marginError = 0.05, p = p, alpha = 0.05, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = mod.type, sigma = sigma, omega = omega,tnum = tnum, snum = snum, ncl = ncl, updateProgress = updateProgress)
 
+test.MDES[1] < (MDES + me) & test.MDES[1] > (MDES - me)
+
+
+##ASK ZH: What are the categories for diff power.definition?
+#min1, HO
+test.MDES <- MDES.blockedRCT.2(M = M, numFalse = M, Ai_mdes = M, J = J, n.j = n.j, power = power.corr0["HO", "min1"], power.definition = "min1", MTP = "HO", marginError = 0.05, p = p, alpha = 0.05, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = mod.type, omega = omega,tnum = tnum, snum = snum, ncl = ncl, updateProgress = updateProgress)
+
+test.MDES[1] < (MDES + me) & test.MDES[1] > (MDES - me)
 
 ```
 
