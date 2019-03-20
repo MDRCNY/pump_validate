@@ -1,11 +1,10 @@
-###########################################################################
-#  FUNCTIONS FOR EC-METHODS: calculating p-vals, power  		              #
-#												                                                  #
-#	Contents: 	make.dummies; make.model; get.pval; get.rawp		            #
-#							get.output, get.adjp, get.rejects					                  #
-###########################################################################
-#dir <- getwd()
-#source(paste0(dir,"/gen.blocked.data.r"))
+# Functions for estimating statistical power by Monte Carlo simulations, 
+# relying on data generation done by gen.data_blocked_i1_2() in gen.data_blocked_i1_2.R
+
+#	Contents: 	make.dummies; make.model; get.pval; get.rawp		            
+#							get.output; get.adjp; get.rejects; est.power					                  
+
+
 ###########################################################################
 #	Function: make.dummies		Inputs:	dat, clusterby, n.j, J	              #
 #		a dataset (dat), 								                                      #
@@ -27,8 +26,9 @@ make.dummies <- function(dat, clusterby, n.j, J){
   return(list("dnames"=dummies, "fixdat"=lmedat.fixed))
 }
 
+
 ###########################################################################
-#	Function: make.model	Inputs:dat,dummies,funct	                        #
+#  Function: make.model	Inputs:dat,dummies,funct	                        #
 #		a reshaped dataset (dat)-->data for one m 			                      #
 #		dummies, string of dummy names in formula, if function needs          #
 #		funct, the model type to use as string				                        #
@@ -37,21 +37,21 @@ make.dummies <- function(dat, clusterby, n.j, J){
 #	Notes: dummies can be output of make.dummies $dnames			              #
 ###########################################################################
 
-# make.model <- function(dat, dummies, funct){
-#   if (funct == 'fixfastLm') {
-#     form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+", dummies))
-#     mod <- fastLm(form, data=dat)
-#   } else {
-#     if (funct == 'fixlmer') { 
-#       form <- as.formula("D~Treat.ij+Covar.j+Covar.ij+(1|block.id)")
-#     }
-#     else if (funct == 'random') {
-#       form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+(Treat.ij|block.id)"))   
-#     }
-#     suppressMessages(mod <- lmer(form, data=dat))
-#   }
-#   return(mod)
-# }
+make.model <- function(dat, dummies, funct){
+    if (funct == 'constant') {
+      form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+", dummies))
+      mod <- fastLm(form, data=dat)
+    }
+    if (funct == 'fixed') { 
+      form <- as.formula("D~Treat.ij+Covar.j+Covar.ij+(1|block.id)")
+      mod <- lmer(form, data=dat)
+    }
+    if (funct == 'random') {
+      form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+(Treat.ij|block.id)"))   
+      suppressMessages(mod <- lmer(form, data=dat))
+      }
+    return(mod)
+}
 
 ###########################################################################
 #	Function: get.pval 	Inputs: mod						                              #
@@ -111,37 +111,7 @@ get.rawt <- function(mdat, funct, n.j, J) {
   return(rawt)
 }
 
-# get.rawp <- function(mdat, funct, n.j, J) {
-#   if (funct == "fixed") {
-#     mdums = lapply(mdat, function(m) make.dummies(m, "block.id", n.j, J))
-#     mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, funct))
-#   }
-#   if (funct == "random") {mods = lapply(mdat, function(m) make.model(m, NULL, funct))}
-#   #mods is a list of m models
-#   rawp = sapply(mods, function(x) get.pval(x))
-#   return(rawp)
-# }
 
-
-###########################################################################
-#  Function: make.samples	Inputs: inputs for gen.blocked.data, funct, S   #
-#		parameters for gen.blocked data                                       #
-#		funct, a string "random", "fixfastLm", "fixlmer"				              #
-#		S, number of samples                                                	#
-#												                                                  #
-# Calls: gen.blocked.data                                                 #
-#	Outputs: list of S datasets                 				                    #
-#	Notes: checks that inputs are properly specified              	        #
-###########################################################################
-
-# make.samples <- function(M,DMDES,n.j,J,rho.0,rho.1,theta,ICC,alpha, Gamma.00,sig.sq, p.j.range, R2.1, R2.2, check, omega, funct, S) {
-#   #many of these inputs need to be vectors of length M, check this and break if not true:
-#   stopifnot(length(MDES)==M, length(Gamma.00)==M, length(sig.sq)==M, length(omega)==M|omega==NULL, length(R2.1)==M, length(R2.2)==M, length(ICC)==M)
-#   #if the model is fixed effects, then ICC, R2.2 equal 0 and omega equals null, this checks that for all M:
-#   if(funct=="fixed") {stopifnot(R2.2==0, ICC==0, omega==NULL)}
-#   #if everything above is ok, generate s datasets, return a list length S with each entry a dataset
-#   samples <- lapply(1:S, function(x) gen.blocked.data(M,DMDES,n.j,J,rho.0,rho.1,theta,ICC,alpha, Gamma.00,sig.sq, p.j.range, R2.1, R2.2, check, omega))
-# }
 
 ###########################################################################
 #  Function: makelist.samp  Inputs:   M, samp                             #
@@ -167,65 +137,44 @@ makelist.samp <-function(M, samp) {
 
 ###########################################################################
 #	Function: est.power			
-#   Inputs: procs, funct, S, B, gen.blocked.data                            #
-#		  procs, a vector of strings for adjustment procedures		 	            #
-#		  funct, a string "random", "fixfastLm", or "fixlmer"                   #
-#     S, number of samples for power calc                                   #
-#     B, number of permutations for WY                                      #
-#     all other inputs for gen.blocked.data                                 #
 #												                                                  #
-# Calls:  get.adjp, get.rejects, gen.blocked.data, makelist.samp,         #
-#         get.rawp                                                        #
-#	Outputs:  a matrix of power calculations                                #
-#	Notes: 	                              		                              #
+# input: 
+#   procs: a vector of strings for adjustment procedures
+#   M: number of tests/domains/outcomes
+#   MDES: desired minimum detectable effect size, number 
+#   n.j: number of observations per block 
+#   J: number of blocks
+#   rho.0_lev1: MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment
+#   rho.0_lev2: MxM matrix of correlations for Level 2 residuals in models of outcomes under no treatment
+#   rho.1_lev2: MxM matrix of correlations for Level 2 effects        
+#   theta: MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2 effects 
+#   ICC: a number, intraclass correlation; 0 if fixed model 
+#   alpha: the significance level, 0.05 usually 
+#   Gamma.00: grand mean outcome w/o treat, held 0, vector length M
+#   sig.sq: vector length M, held at 1 for now
+#   p.j.range: vector of minimum and maximum probabilities of being assigned to treatment, across all sites
+#   R2.1: R squared for mth level 1 outcome by mth level 1 covar  
+#   R2.2: R squared for mth level 2 outcome by mth level 1 covar  
+#   check: 
+#   omega: effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M
+#   funct: a string "random", "fixfastLm", or "fixlmer" 
+#   S: number of samples for power calc      
+#   ncl: number of clusters set at 24 because that is the max cpus on datalab
+#   B: number of permutations for WY       
+#   maxT: 
+#   all other inputs for gen.blocked.data      
+# Calls:  get.adjp, get.rejects, gen.blocked.data, makelist.samp,         
+#         get.rawp                                                        
+#	Outputs:  a matrix of power calculations                                
 ###########################################################################
 
 est.power <- function(procs, M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,theta,ICC,alpha, Gamma.00,sig.sq, p.j.range, R2.1, R2.2, check, omega, funct, S, ncl, B, maxT) {
-  # function that __________________________
-  #
-  # input: 
-  #   procs: a vector of strings for adjustment procedures
-  #   M: number of tests/domains/outcomes
-  #   DDMDES: desired minimum detectable effect size, number 
-  #   n.j: number of observations per block 
-  #   J: number of blocks
-  #   rho.0_lev1: MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment
-  #   rho.0_lev2: MxM matrix of correlations for Level 2 residuals in models of outcomes under no treatment
-  #   rho.1_lev2: MxM matrix of correlations for Level 2 effects        
-  #   theta: MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2 effects 
-  #   ICC: a number, intraclass correlation; 0 if fixed model 
-  #   alpha: the significance level, 0.05 usually 
-  #   Gamma.00: grand mean outcome w/o treat, held 0, vector length M
-  #   sig.sq: vector length M, held at 1 for now
-  #   p.j.range: vector of minimum and maximum probabilities of being assigned to treatment, across all sites
-  #   R2.1: R squared for mth level 1 outcome by mth level 1 covar  
-  #   R2.2: R squared for mth level 2 outcome by mth level 1 covar  
-  #   check: 
-  #   omega: effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M
-  #   funct: a string "random", "fixfastLm", or "fixlmer" 
-  #   S: number of samples for power calc      
-  #   ncl: number of clusters set at 24 because that is the max cpus on datalab
-  #   B: number of permutations for WY       
-  #   maxT: 
-  #   all other inputs for gen.blocked.data      
-  #
-  #
-  # calls: gen.blocked.data, makelist.samp, get.adjp, get.rejects, get.rawp
-  #
-  # output: matrix of power calculations
-  #
-  # NOTE:
-  
-  
-  
+ 
   if (M==1) {
     print("Multiple testing corrections are not needed when M=1")
     procs <- NULL
   }
-#   if (funct=="random" & any(grepl("WY", procs))) {
-#     print("Adjust.WY code not currently set up for random effects models")
-#     procs<-procs[-grep("WY", procs)]
-#   }
+
   power.results <- matrix(NA, nrow=(length(procs)+1), ncol=M+5)
   colnames(power.results) = c(paste0("D", 1:M, "indiv"), "min", "1/3", "1/2","2/3", "full")
   rownames(power.results) = c("rawp", procs)
@@ -243,7 +192,7 @@ est.power <- function(procs, M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,the
   for (s in 1:S) {
     t1<-Sys.time()
     if (s%%px==0){print(paste0("Now processing sample ", s, " of ", S))}
-    samp <- gen.blocked.data(M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,theta,ICC,alpha,Gamma.00,sig.sq,p.j.range,R2.1,R2.2,check,omega)
+    samp <- gen.data_blocked_i1_2(M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,theta,ICC,alpha,Gamma.00,sig.sq,p.j.range,R2.1,R2.2,check,omega)
     #if (s==1) print(c(sd(samp$D0.M1.ij),sd(samp$D.M1.ij)))
     mdat <- makelist.samp(M, samp) #list length M
     rawp <- get.rawp(mdat, funct, n.j, J) #vector length M
@@ -295,9 +244,6 @@ est.power <- function(procs, M,DMDES,n.j,J,rho.0_lev1, rho.0_lev2,rho.1_lev2,the
 
 get.adjp <- function(rawp, rawt, proc, alpha, B, ncl, mdat, maxT) {
   if(proc=="WY"){
-    #adjust.WY<-function(data, B, subgroup, which.mult, incl.covar, rawp, ncl, clustered, clusterby, funct)
-    #print(paste0("working on ", proc, " with ", B, " permutations"))
-    #adjust.wy needs rawp as a vector for all m of a single sample
     tw1 <- Sys.time()
     adjp.proc <- adjust.WY(data=mdat, B=B, rawp=rawp, rawt=rawt, ncl=ncl, clustered=TRUE, clusterby='block.id', funct, maxT)[,"WY"]
     tw2 <- Sys.time()
