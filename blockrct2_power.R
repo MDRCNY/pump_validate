@@ -207,7 +207,7 @@ df <- function(J,n.j,numCovar.1) {
 
 power.blockedRCT.2 <- function(M, MDES, Ai, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
-                             mod.type, sigma = 0, omega = NULL,
+                             mod.type, sigma = 0, omega = NULL, rho,
                              tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
   
   # Error handling when user put in actual effect number that is greater than the total number of outcomes
@@ -226,7 +226,7 @@ power.blockedRCT.2 <- function(M, MDES, Ai, J, n.j,
   MDES <- c(MDES, noeffect)
   
   # Setting a default Sigma up
-  sigma <- matrix(0.99, M, M)
+  sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
   # number of false nulls (i.e they are really not nulls)
@@ -413,11 +413,11 @@ midpoint <- function(lower,upper) {
 
 MDES.blockedRCT.2 <- function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                            mod.type, sigma, omega,
+                            mod.type, sigma, omega,rho =0.99,
                             tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
   
   # Setting up Sigma values
-  sigma <- matrix(0.99, M, M)
+  sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
   # Checks on what we are estimating, sample size
