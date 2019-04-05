@@ -19,6 +19,7 @@ library(kableExtra)
 library(PowerUpR)
 #library(pum)
 library(plyr)
+library(rio)
 source(file = "../Power-Under-Multiplicity/blockrct2_power.R")
 
 #read in configs file
@@ -70,7 +71,7 @@ MCmethods <- ldply(simpwr.b, data.frame)
 ```
 
 
-# Pull in our power calculations (via the pum package)
+# Pull in power calculations (via the pum package)
 ```{r}
 #set parameters for function
 M <- 6
@@ -108,26 +109,17 @@ power.corr0.2 <- gen.powerobj(0.2)
 power.corr0.5 <- gen.powerobj(0.5)
 power.corr0.8 <- gen.powerobj(0.8)
 
-#save these files 
-save(power.corr0, power.corr0.2, power.corr0.5, power.corr0.8, file = "power_corr_ds.RData")
+#save these files so we dont have to rerun (power matrices take 10 min to run 4)
+#export(power.corr0, "power_corr0.rds")
+#export(power.corr0.2, "power_corr02.rds")
+#export(power.corr0.5, "power_corr05.rds")
+#export(power.corr0.8, "power_corr08.rds")
 
-power_corr_ds<- load("power_corr_ds.RData")
-
-
-write.table(power.corr0, "power_corr0.csv", row.names=FALSE, col.names = TRUE)
-t0<- read.table("power_corr0.csv")
-
-
-saveRDS(power.corr0, "power_corr0.rds")
-saveRDS(power.corr0.2, file = "power_corr02.rds")
-saveRDS(power.corr0.5, file = "power_corr05.rds")
-saveRDS(power.corr0.8, file = "power_corr08.rds")
-
-power.corr0.m<- load("power_corr0.rds")
-power.corr0.2.m<- load("power_corr02.rda")
-power.corr0.5.m<- load("power_corr05.rda")
-power.corr0.8<- load("power_corr08.rda")
-
+#import files
+#power.corr0<- import("power_corr0.rds")
+#power.corr0.2<- import("power_corr02.rds")
+#power.corr0.5<- import("power_corr05.rds")
+#power.corr0.8<- import("power_corr08.rds")
 
 
 #can further functionalize - wrap function call in loop
