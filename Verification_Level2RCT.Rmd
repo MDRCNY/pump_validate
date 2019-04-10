@@ -89,6 +89,7 @@ ICC <- 0
 mod.type <- 'c'
 omega <- 0
 tnum <- 10000
+#snum <-  500
 snum <- 2000
 ncl <- 2
 updateProgress <- NULL
@@ -269,7 +270,7 @@ MDEStest(power.corr0, "BH", "indiv", 0)
 MDEStest(power.corr0, "HO", "indiv", 0)
 
 
-MDEStest(power.corr0, "BH", "min1", 0)
+MDEStest(power.corr0, "BH", "min1", 0) #FALSE
 MDEStest(power.corr0, "BF", "min1", 0)
 MDEStest(power.corr0, "HO", "min1", 0)
 
