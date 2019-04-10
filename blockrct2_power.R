@@ -511,7 +511,7 @@ MDES.blockedRCT.2 <- function(M, numFalse,Ai_mdes, J, n.j, power, power.definiti
     # Function to calculate the target power to check in with the pre-specified power in the loop
     runpower <- power.blockedRCT.2(M = M, MDES = try.MDES, Ai = Ai_mdes, J = J, n.j = n.j,
                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
-                                   mod.type = mod.type, sigma = sigma, omega = omega,
+                                   mod.type = mod.type, sigma = sigma, omega = omega, rho,
                                    tnum = tnum, snum = snum, ncl = ncl)
     
     # Pull out the power value corresponding to the MTP and definition of power

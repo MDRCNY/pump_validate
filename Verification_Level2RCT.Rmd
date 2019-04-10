@@ -96,18 +96,18 @@ sigma <- 0 ## NOTE: sigma is a matrix of row currently (line 232 on pump repo)
 
 
 #generate power calculations for different correlations
-gen.powerobj <- function(corr){
+#gen.powerobj <- function(corr){
 
-power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j, p=p,                alpha=alpha, numCovar.1=numCovar.1, numCovar.2 = numCovar.2, R2.1=R2.1,     R2.2=R2.2, ICC=ICC, mod.type = mod.type, 
-               sigma = sigma,
-               rho = corr, omega = omega, tnum = tnum, snum = snum, ncl = ncl,
-               updateProgress = updateProgress)
-}
+#power.blockedRCT.2(M=M, MDES=MDES, Ai=Ai, J=J, n.j=n.j, p=p,                alpha=alpha, numCovar.1=numCovar.1, numCovar.2 = numCovar.2, R2.1=R2.1,     R2.2=R2.2, ICC=ICC, mod.type = mod.type, 
+#               sigma = sigma,
+#               rho = corr, omega = omega, tnum = tnum, snum = snum, ncl = ncl,
+#               updateProgress = updateProgress)
+#}
 
-power.corr0 <- gen.powerobj(0)
-power.corr0.2 <- gen.powerobj(0.2)
-power.corr0.5 <- gen.powerobj(0.5)
-power.corr0.8 <- gen.powerobj(0.8)
+#power.corr0 <- gen.powerobj(0)
+#power.corr0.2 <- gen.powerobj(0.2)
+#power.corr0.5 <- gen.powerobj(0.5)
+#power.corr0.8 <- gen.powerobj(0.8)
 
 #save these files so we dont have to rerun (power matrices take 10 min to run 4)
 #export(power.corr0, "power_corr0.rds")
@@ -116,10 +116,10 @@ power.corr0.8 <- gen.powerobj(0.8)
 #export(power.corr0.8, "power_corr08.rds")
 
 #import files
-#power.corr0<- import("power_corr0.rds")
-#power.corr0.2<- import("power_corr02.rds")
-#power.corr0.5<- import("power_corr05.rds")
-#power.corr0.8<- import("power_corr08.rds")
+power.corr0<- import("power_corr0.rds")
+power.corr0.2<- import("power_corr02.rds")
+power.corr0.5<- import("power_corr05.rds")
+power.corr0.8<- import("power_corr08.rds")
 
 
 #can further functionalize - wrap function call in loop
@@ -198,14 +198,11 @@ rownames(validtable) <- c(1:24)
 #subset the table to only the columns we care about
 validtable.s <- validtable[, 2:12]
 
-#convert columns from ordered factor to numeric (for rounding)
-str(validtable)
-
-as.numeric.factor <- function(x) {as.numeric(levels(x))[x]}
-validtable.s <- sapply(validtable.s, FUN = as.numeric.factor)
+#convert columns to numeric (for rounding)
+validtable.s <- apply(validtable.s, 2, as.numeric)
 
 #round values in the table
-validtable.s <- round(validtable.s, 2)
+validtable.s <- round(validtable.s, 3)
 
 #display table
 kable(validtable.s, caption = "MTP Used and Correlations") %>%
@@ -236,7 +233,7 @@ powerUp.M1 <- powerUp$power
 
 #extract M=1 power from our methods
 power.M1 <- validtable[which(validtable$method_mtp =="rawp" & validtable$method_corr == "0"), "method_indiv"]
-power.M1 <- as.numeric(levels(power.M1))[power.M1]
+#power.M1 <- as.numeric(levels(power.M1))[power.M1]
   
 #check if our power results are within the margin of error of the powerUp results
 powerUp$power < (power.M1 + me) & powerUp$power > (power.M1 - me)
@@ -269,9 +266,14 @@ MDEStest <- function(powerds, mtpn, defn, corr){
 }
 
 MDEStest(power.corr0, "BH", "indiv", 0)
+MDEStest(power.corr0, "HO", "indiv", 0)
+
+
 MDEStest(power.corr0, "BH", "min1", 0)
 MDEStest(power.corr0, "BF", "min1", 0)
 MDEStest(power.corr0, "HO", "min1", 0)
+
+
 
 MDEStest(power.corr0, "BH", "min4", 0)
 MDEStest(power.corr0, "BF", "min4", 0)
