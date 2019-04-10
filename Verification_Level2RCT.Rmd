@@ -117,10 +117,11 @@ sigma <- 0 ## NOTE: sigma is a matrix of row currently (line 232 on pump repo)
 #export(power.corr0.8, "power_corr08.rds")
 
 #import files
-power.corr0<- import("power_corr0.rds")
-power.corr0.2<- import("power_corr02.rds")
-power.corr0.5<- import("power_corr05.rds")
-power.corr0.8<- import("power_corr08.rds")
+
+power.corr0<- import("I:\\Multiplicity\\git\\power_corr0.rds")
+power.corr0.2<- import("I:\\Multiplicity\\git\\power_corr02.rds")
+power.corr0.5<- import("I:\\Multiplicity\\git\\power_corr05.rds")
+power.corr0.8<- import("I:\\Multiplicity\\git\\power_corr08.rds")
 
 
 #can further functionalize - wrap function call in loop
