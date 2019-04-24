@@ -538,6 +538,10 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
     if(target.power > power - marginError & target.power < power + marginError){
       
+      print("Break-off: Target power ", target.power)
+      print("Break-off: power ", power)
+      print("Break-off: margin of Error ", marginError)
+      
       FBoolean <- target.power > power - marginError
       SBoolean <- target.power < power + marginError
       
