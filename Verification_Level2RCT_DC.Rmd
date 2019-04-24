@@ -17,10 +17,10 @@ library(yaml)
 library(knitr)
 library(kableExtra)
 library(PowerUpR)
-library(pum)
+#library(pum)
 library(plyr)
 library(rio)
-#source(file = "../Power-Under-Multiplicity/blockrct2_power.R")
+source("blockrct2_power.R")
 
 #read in configs file
 configs <- yaml.load_file("configs.yaml")
@@ -130,9 +130,6 @@ power.corr0.8<- import("I:\\Multiplicity\\git\\power_corr08.rds")
 #  power.corr0 <- gen.powerobj(c)
   
 #}    
-
-
-
   
 #add data frames to a list to process it altogether
 list_of_power <- list(power.corr0, power.corr0.2, power.corr0.5, power.corr0.8)
@@ -146,7 +143,6 @@ power.b <- mapply(cbind, power.c, 'mtp' = listmtps.p, SIMPLIFY = F)
 
 #bind list of tables into one dataframe
 ourmethods <- ldply(power.b, data.frame)
-
 ```
 
 
@@ -216,7 +212,6 @@ kable(validtable.s, caption = "MTP Used and Correlations") %>%
   group_rows("Westfall-Young (step-down)", 17, 20) %>%
   group_rows("Westfall-Young (single-step)", 21, 24)
 
-
 ```
 
 Are these topics still relevant?
@@ -259,20 +254,20 @@ powerUpvalidtable
 #set up a function to automate some of this- under construction
 MDEStest <- function(powerds, mtpn, defn, corr){
   
-  test.MDES <- MDES.blockedRCT.2(M = M, numFalse = M, Ai_mdes = M, J = J, n.j = n.j, power = powerds[mtpn, defn], power.definition = defn, MTP = mtpn, marginError = 0.05, p = p, alpha = 0.05, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = mod.type, sigma = sigma, rho=corr, omega = omega,tnum = tnum, snum = snum, ncl = ncl, updateProgress = updateProgress)
+  test.MDES <- MDES.blockedRCT.2(M = M, numFalse = M, Ai_mdes = M, J = J, n.j = n.j, power = powerds[mtpn, defn], power.definition = defn, MTP = mtpn, marginError = 0.05, p = p, alpha = 0.05, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, rho = corr, mod.type = mod.type, sigma = sigma, omega = omega,tnum = tnum, snum = snum, ncl = ncl, updateProgress = updateProgress)
  
- print(test.MDES)
+ #print(test.MDES)
   
  bool <- test.MDES[1] < (MDES + me) & test.MDES[1] > (MDES - me)
  return(list(bool, test.MDES))
 }
 
 MDEStest(power.corr0, "BH", "indiv", 0) #TRUE
-MDEStest(power.corr0, "HO", "indiv", 0) #FALSE
+
+
 MDEStest(power.corr0, "BF", "indiv", 0) #Verification template format is off. 
 
-
-MDEStest(power.corr0, "BH", "min1", 0) #FALSE
+MDEStest(power.corr0, "BH", "min1", 0)  #FALSE
 MDEStest(power.corr0, "BF", "min1", 0)
 MDEStest(power.corr0, "HO", "min1", 0)
 

@@ -277,7 +277,6 @@ Here compared to test case 2, we increase the number of samples to **1000**. The
 * snum = 1000
 * power.definition = indiv
 
-
 ```{r}
 MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL, rho = 0.99,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
