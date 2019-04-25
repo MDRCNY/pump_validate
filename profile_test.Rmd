@@ -206,6 +206,20 @@ Number of clusters is back to 2 but, the sample number for Westfall-Young is dou
 power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 1000, updateProgress = NULL)
 ```
 
+### Test case 8 for Power using initial specifications before going into the MDES function
+
+```{r}
+power.blockedRCT.2(M = 6, MDES = 0.125, Ai = 6, J = 20, n.j = 100, p = 0.5, alpha = 0.05, numCovar.1 = 0, numCovar.2 = 0, R2.1 = 0, R2.2 = 0, tnum = 10000, snum = 2000, mod.type = c, ncl = 2, sigma = 0, omega = NULL)
+```
+
+### Test case 9 for Power using specifications put into the power function
+
+```{r}
+power.blockedRCT.2(M = 6, MDES = 0.5, Ai = 6, J = 20, n.j = 100, p = 0.5, alpha = 0.05, numCovar.1 = 0, numCovar.2 = 0, R2.1 = 0, R2.2 = 0, tnum = 10000, snum = 2000, mod.type = c, ncl = 2, sigma = 0, omega = NULL)
+```
+
+
+
 ## Summary for MDES speed profiles for BH
 
 MDES test for BH works within reasonable time around 30 seconds for **individual and 1-minimal** power. However, for complete power, we have not been able to find a satisfactory MDES even after increasing the iterations to 45. We have used up to 4GB of RAM to estimate an optimal MDES to no avaial. 
@@ -694,5 +708,17 @@ end <- Sys.time()
 elapsed <- end-start
 print(elapsed)
 ```
+
+```{r}
+#Testing service
+dat <- data.frame(c(4,3,5,1,2), c("Z", "A", "C", "B", "E"))
+colnames(dat) <- c("num", "letter")
+head(dat)
+dat <- dat[order(-dat$num),]
+head(dat)
+```
+
+
+
 
 

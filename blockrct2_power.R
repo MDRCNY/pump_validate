@@ -518,14 +518,34 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     print(paste0("Trying MDES of ",round(try.MDES,4)," ... ") )
     
     # Function to calculate the target power to check in with the pre-specified power in the loop
+    
+    print(paste0("Parameters going into the power function call within MDES"))
+    print(paste0("M ", M))
+    print(paste0("MDES ", try.MDES))
+    print(paste0("Ai ", Ai_mdes))
+    print(paste0("J ", J))
+    print(paste0("n.j ", n.j))
+    print(paste0("p ", p))
+    print(paste0("alpha ", alpha))
+    print(paste0("numCovar.1 ", numCovar.1))
+    print(paste0("numCovar.2 ", 0))
+    print(paste0("R2.1 ", R2.1))
+    print(paste0("R2.2 ", R2.2))
+    print(paste0("ICC ", ICC))
+    print(paste0("tnum ", tnum))
+    print(paste0("snum ", snum))
+    print(paste0("ncl ", ncl))
+    
     runpower <- power.blockedRCT.2(M = M, MDES = try.MDES, Ai = Ai_mdes, J = J, n.j = n.j,
                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                    mod.type = mod.type, sigma = sigma, omega = omega,
                                    tnum = tnum, snum = snum, ncl = ncl)
     
     # Pull out the power value corresponding to the MTP and definition of power
+    print("We are printing the whole power table")
+    print(runpower)
     target.power <- runpower[MTP,power.definition]
-    print(paste0("Updated target power", target.power))
+    print(paste0("Updated target power ", target.power))
     
     # Displaying the progress of mdes calculation via target power
     if (is.function(updateProgress)) {
@@ -538,9 +558,9 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
     if(target.power > power - marginError & target.power < power + marginError){
       
-      print("Break-off: Target power ", target.power)
-      print("Break-off: power ", power)
-      print("Break-off: margin of Error ", marginError)
+      print(paste("Break-off: Target power ", target.power))
+      print(paste("Break-off: power ", power))
+      print(paste("Break-off: margin of Error ", marginError))
       
       FBoolean <- target.power > power - marginError
       SBoolean <- target.power < power + marginError
