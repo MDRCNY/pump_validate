@@ -7,10 +7,11 @@ output: pdf_document
 ## Loading the blockrct2_power.R file
 
 ```{r}
-source("blockrct2_power.R")
+#source("blockrct2_power.R")
 #library(pum)
-#source("blockrct2_power_rcpp.R")
+source("../blockrct2_power_rcpp.R")
 ```
+
 ## Parameters for testing power function en masse
 
 The initial conditions for power are set as below. These are initial conditions set of a vector of length 5 that would allow us to use expand grid to test out all different combinations of scenarios.
