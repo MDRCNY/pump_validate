@@ -7,8 +7,9 @@ output: pdf_document
 ## Loading the blockrct2_power.R file
 
 ```{r}
-#source("blockrct2_power.R")
-library(pum)
+source("blockrct2_power.R")
+#library(pum)
+#source("blockrct2_power_rcpp.R")
 ```
 ## Parameters for testing power function en masse
 
@@ -60,7 +61,15 @@ The majority of the time is spent on apply function using multtest's built in fu
 * snum = 10
 * updateProgress = NULL
 
+**Test cases have been modified to include both the original R flavor of the power function and the Rcpp flavor of the power function.**
+
 ```{r}
+source("blockrct2_power.R")
+power.blockedRCT.2(M = 5, MDES = 0.125, Ai = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
+```
+
+```{r}
+source("blockrct2_power_rcpp.R")
 power.blockedRCT.2(M = 5, MDES = 0.125, Ai = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
 ```
 
@@ -203,8 +212,17 @@ Number of clusters is back to 2 but, the sample number for Westfall-Young is dou
 * updateProgress = NULL
 
 ```{r}
+source("blockrct2_power.R")
 power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 1000, updateProgress = NULL)
 ```
+
+```{r}
+source("blockrct2_power_rcpp.R")
+power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 1000, updateProgress = NULL)
+```
+
+
+
 
 ## Summary for MDES speed profiles for BH
 
@@ -689,7 +707,11 @@ For the sixth test case of Westfall-Young Single Step, we are starting right off
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 10, Ai_mdes = 10, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 10, Ai_mdes = 10, J = 10, n.j = 100, 
+                                             power = 0.80, power.definition = "complete", MTP = "WY-SS", 
+                                             marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, 
+                                             numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, 
+                                             mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.complete.1000)
 end <- Sys.time()
 elapsed <- end-start

@@ -1,62 +1,12 @@
+# Load the Rcpp library
+library(Rcpp)
+
 # the if statement checks if we have a grab.pval function. If not, pull it from utils.R file.
 if(!exists("grab.pval", mode = "function")) source("utils.R")
+if(!exists("compRawtSs", mode = "function")) sourceCpp("Rcpp/wysinglestepdep.cpp")
 
-#' Helper function for Westfall Young Single Step
-#'
-#' The  function  comp.rawt.SS is  needed  to  implement  the  Westfall-Young single-step multiple
-#' testing procedure (MTP). It operates on one row of null test statistics.
-#'
-#' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
-#' @param abs.Zs.H1.1samp One sample of raw statistics
-#' @param oo Order matrix of test statistics in descending order (Only used in Step Down)
-#'
-#' @return returns a vector of 1s and 0s with length of M outcomes
-#'
-#'
-comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
-  
-  # getting the number of M outcomes from 1 row of H0
-  M <- length(abs.Zs.H0.1row)
-  # creating an empty vector of length M to save boolean values
-  maxt <- rep(NA, M)
-  
-  for (m in 1:M) {
-    
-    # comparing the maximum of null test values of M outcomes to each of the alternative test raw sample values
-    # saving each M boolean in maxt vector
-    maxt[m] <- max(abs.Zs.H0.1row) > abs.Zs.H1.1samp[m]
-  }
-  return(as.integer(maxt))
-}
-
-#' Helper Functions for WestFallYoung Step down
-#'
-#' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
-#' @param abs.Zs.H1.1samp One sample of raw statistics
-#' @param oo Order matrix of test statistics in descending order
-#' @return returns a vector of 1s and 0s with lengths of M outcomes
-#' @export
-#'
-comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
-  
-  # getting M number of outcomes from 1 row of statistics
-  M <- length(abs.Zs.H0.1row)
-  # creating an empty vector of length M to save boolean values
-  maxt <- rep(NA, M)
-  # saving the null test statistics
-  nullt.oo <- abs.Zs.H0.1row[oo]
-  # saving the raw test statistics under H1
-  rawt.oo <- abs.Zs.H1.1samp[oo]
-  # saving the first boolean by comparing the max of null values with the first of raw test statistics
-  maxt[1] <- max(nullt.oo) > rawt.oo[1]
-  
-  # Step-down comparison where the next max of null values is compared to the next raw test statistics
-  for (h in 2:M) {
-    maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]
-  } # end of for loop
-  
-  return(as.integer(maxt))
-}
+#Compiling the single step function to be absolutely sure
+sourceCpp("Rcpp/wysinglestepdep.cpp")
 
 #' WestFallYoung Single Step Adjustment Function
 #'
@@ -80,9 +30,9 @@ adjust.allsamps.WYSS <- function(snum,abs.Zs.H0,abs.Zs.H1) {
   adjp.WY<-matrix(NA,snum,ncol(abs.Zs.H0))
   # looping through all the samples of raw test statistics under the alternative hypothesis
   doWY<-for (s in 1:snum) {
-    
+    #apply(X = h0.mat, MARGIN = 1, FUN = compRawtSs, absZsH11samp = h1.mat[1,])
     # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
-    ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp=abs.Zs.H1[s,]))
+    ind.B<-t(apply(abs.Zs.H0, MARGIN = 1, FUN = compRawtSs, absZsH11samp=abs.Zs.H1[s,]))
     # calculating the p-value for each sample
     adjp.WY[s,]<-colMeans(ind.B)
     
@@ -114,7 +64,7 @@ adjust.allsamps.WYSD <- function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   # leveraging snow to run multiple cores for foreach loops
   doParallel::registerDoParallel(cl)
   # registering the comp.rawt.SD function in global enivronment of each node
-  parallel::clusterExport(cl=cl, list("comp.rawt.SD"))
+  parallel::clusterExport(cl=cl, list("compRawtSd"))
   # getting M number of outcomes vector
   M <- ncol(abs.Zs.H0)
   # setting up the matrix to save the adjusted p values
@@ -127,7 +77,7 @@ adjust.allsamps.WYSD <- function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   s = 1:snum
   doWY <- foreach::foreach(s= 1:snum, .combine=rbind) %dopar% {
     # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
-    ind.B <- t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
+    ind.B <- t(apply(abs.Zs.H0, 1, compRawtSd, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
     pi.p.m <- colMeans(ind.B)
     
     # enforcing monotonicity
@@ -205,9 +155,9 @@ df <- function(J,n.j,numCovar.1) {
 #' @export
 
 power.blockedRCT.2 <- function(M, MDES, Ai, J, n.j,
-                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
-                             mod.type, sigma = 0, omega = NULL,
-                             tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
+                               p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
+                               mod.type, sigma = 0, omega = NULL,
+                               tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
   
   # Error handling when user put in actual effect number that is greater than the total number of outcomes
   if( Ai > M){
@@ -411,9 +361,9 @@ midpoint <- function(lower,upper) {
 #' @export
 
 MDES.blockedRCT.2 <- function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
-                            p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                            mod.type, sigma, omega,
-                            tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
+                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
+                              mod.type, sigma, omega,
+                              tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
   
   # Setting up Sigma values
   sigma <- matrix(0.99, M, M)
@@ -421,7 +371,7 @@ MDES.blockedRCT.2 <- function(M, numFalse,Ai_mdes, J, n.j, power, power.definiti
   
   # Checks on what we are estimating, sample size
   print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
-
+  
   # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
   # if (MTP=="WY-SD" | MTP == "WY-SS" & snum < 1000){
   #   print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
@@ -682,7 +632,7 @@ SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p,
 #' @export
 
 SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
-                          ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
+                            ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
   
   # SET UP #
   sigma <- matrix(0.99, M, M)
