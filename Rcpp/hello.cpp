@@ -8,16 +8,16 @@ void hello()
 }
 
 //[[Rcpp::export]]
-List pack_boxes(int n,NumericVector p) {
+List pack_boxes(int n, NumericVector p) {
   
-  // n is the number of steps to simulate
-  // p the probability of the item weights
+  // n is the number of items to simulate
+  // p the probability weight of each of the item draws
   
   Function sample = Environment("package:base")["sample"];
   
-  // Sample item weights
-  int w = p.size();
-  IntegerVector item = sample(w,n, true, p);
+  // Sampling the item weights
+  int w = p.size(); // Count of the sample
+  IntegerVector item = sample(w,n, true, p); // sampling the item weights
   
   // Initialize loop variables
   IntegerVector weight(n); // Vector to hold weight of boxes
@@ -43,9 +43,9 @@ List pack_boxes(int n,NumericVector p) {
   } // simulating weights of items and boxing things up // end of for loop
   
   return List::create(
-    _["item"] = item, 
-    _["weight"] = weight, 
-    _["first"] = first[seq(0, n_boxes -1)]
+    _["item_weight"] = item, 
+    _["box_holding_weight"] = weight, 
+    _["total_number_of_boxes"] = first[seq(0, n_boxes -1)]
   );
 
 } // end of function

@@ -2,8 +2,8 @@
 library(Rcpp)
 
 # the if statement checks if we have a grab.pval function. If not, pull it from utils.R file.
-if(!exists("grab.pval", mode = "function")) source("utils.R")
-if(!exists("compRawtSs", mode = "function")) sourceCpp("Rcpp/wysinglestepdep.cpp")
+# if(!exists("grab.pval", mode = "function")) source("Methods/utils.R")
+# if(!exists("compRawtSs", mode = "function")) sourceCpp("Rcpp/wysinglestepdep.cpp")
 
 #Compiling the single step function to be absolutely sure
 sourceCpp("Rcpp/wysinglestepdep.cpp")
