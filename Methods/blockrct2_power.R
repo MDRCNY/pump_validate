@@ -1,5 +1,5 @@
 # the if statement checks if we have a grab.pval function. If not, pull it from utils.R file.
-if(!exists("grab.pval", mode = "function")) source("utils.R")
+if(!exists("grab.pval", mode = "function")) source("Methods/utils.R")
 
 #' Helper function for Westfall Young Single Step
 #'

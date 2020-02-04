@@ -1,14 +1,23 @@
 library("Rcpp")
 sourceCpp("Rcpp/hello.cpp") # hello source function
 sourceCpp("Rcpp/singlestep.cpp") # westfallyoung single step source function
-source("blockrct2_power.R") # For counter-checking answers
+source("Methods/blockrct2_power.R") # For counter-checking answers
 
+
+##################
+# Rcpp test code
+#################
 
 # Testing the Hello World Function
 hello()
 
-# Testing the pack box function
-pack_boxes(10, c(0, 0.7, 0.2, 0.1))
+# Number of Boxes needed to pack with Item Weight/Box Holding Weight
+pack_boxes(3, c(0, 0.7, 0.2, 0.1))
+
+# Number of Boxes needed to pack with Item Weight/Box Holding Weight
+pack_boxes(4, c(0, 0.7, 0.2, 0.1))
+
+
 
 # Testing the Compare WestFall Young Single Step Helper Function
 

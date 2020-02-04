@@ -7,11 +7,10 @@ output: pdf_document
 ## Loading the blockrct2_power.R file
 
 ```{r}
-source("../Rcpp/blockrct2_power_rcpp.R")
+#source("Methods/blockrct2_power.R")
 #library(pum)
+source("Rcpp/blockrct2_power_rcpp.R")
 ```
-
-
 ## Parameters for testing power function en masse
 
 The initial conditions for power are set as below. These are initial conditions set of a vector of length 5 that would allow us to use expand grid to test out all different combinations of scenarios.
@@ -65,12 +64,12 @@ The majority of the time is spent on apply function using multtest's built in fu
 **Test cases have been modified to include both the original R flavor of the power function and the Rcpp flavor of the power function.**
 
 ```{r}
-source("blockrct2_power.R")
-power.blockedRCT.2(M = 5, MDES = 0.125, Ai = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
+#source("blockrct2_power.R")
+#power.blockedRCT.2(M = 5, MDES = 0.125, Ai = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = #0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
 ```
 
 ```{r}
-source("blockrct2_power_rcpp.R")
+#source("blockrct2_power_rcpp.R")
 power.blockedRCT.2(M = 5, MDES = 0.125, Ai = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
 ```
 
