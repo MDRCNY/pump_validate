@@ -25,13 +25,14 @@ source("http://bioconductor.org/biocLite.R")
 biocLite("multtest")
 library(multtest)
 
-source("gen.blocked.data.R")
-source("adjust.WY.R")
-source("functions.R")
+source("Simulations/gen.data_blocked_i1_2.R")
+source("Simulations/adjust.WY.R")
+#source("functions.R")
+source("Simulations/powerMCS_blocked_i1_2.R")
 
 #funct object needs to be assigned before sourcing "make.model.R"
 funct<-"fixfastLm"; mod.type<-"fixed"
-source("make.model.R")
+source("Simulations/make.model.R")
 
 #function to check time lapse
 devtools::install_github("collectivemedia/tictoc")
