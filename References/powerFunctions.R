@@ -1,4 +1,16 @@
+#' ---
+#' title: "Power Under Multiplicity Functions"
+#' author: "Kristin Porter"
+#' date: "`r format(Sys.time(), '%B %d, %Y')`"
+#' output: html_notebook
+#' ---
+#' 
+#' ## Functions for Computing Power for Westfall-Young
+#' 
+#' This function operates on one row of null test statistics. It compares $max_{1 \leq l \leq M} {T_l}$ to $|t_m|$ for all $m$.  
+#' 
 ## ------------------------------------------------------------------------
+
 comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
   M<-length(abs.Zs.H0.1row)
   maxt <- rep(NA, M)
@@ -6,6 +18,12 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
   return(as.integer(maxt))
 }
 
+#' 
+#' 
+#' This function operates on each row of null test statistics. It first orders the test statistics such that $t_{s_1} \geq t_{s_2} \geq \dots \geq t_{s_M}$, and then compares $max{|T_{s_1}|,\dots,|T_{s_m}|}$ to $|t_{s_1}|$, $max{|T_{s_2}|,\dots,|T_{s_m}|}$ to $|t_{s_2}|$ and so on, until one compares $max{|T_{s_m}|}$ to ${t_{s_m}$. 
+#'     
+#' In this function, $abs.Zs.H0.1row$ is one row of test statistics under the joint null hypothesis; $abs.Zs.H1.1samp$ are the raw test statistics when the null is false, for one simulated sample, and oo is the ordering of these raw test statistics.  
+#' 
 ## ------------------------------------------------------------------------
 comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
   M<-length(abs.Zs.H0.1row)
@@ -17,6 +35,11 @@ comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
   return(as.integer(maxt))
 }
 
+#' 
+#' In adjust.allsamps.WYSS, we do this multiple times, where snum is number of samples do compute WY pvals to estimate WY power. Here, 
+#'     # ind.B is a matrix of whether ordered absolute pvalue was greater than ordered null test statistics
+#'     # pi.p.m # adjusted pvalues before enforcing monotonicity
+#' 
 ## ------------------------------------------------------------------------
 adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
   adjp.WY<-matrix(NA,snum,ncol(abs.Zs.H0))
@@ -27,6 +50,7 @@ adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
   return(adjp.WY)
 }
 
+#' 
 ## ------------------------------------------------------------------------
 adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix) {
   cl <- makeCluster(ncl)
@@ -48,17 +72,49 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix) {
   stopCluster(cl)
 }
 
+#' 
+#' ## Helper functions
+#' 
+#' Recall that $t(m)$ has a $t$-distribution with mean $MDES(m)/Q(m)$, where 
+#' $$ Q(m) = \sqrt{ \frac{(1-R^2(m))}{p(1-p)Jn_j} } $$
+#' 
 ## ------------------------------------------------------------------------
 t.mean.H1<-function(MDES,J,n.j,R2.1,p) { MDES * sqrt(p*(1-p)*J*n.j) / sqrt(1-R2.1) }
 
+#' 
+#' $t(m)$ also has degrees of freedom, $df = Jn_j - J - g^*(m)-1$, where $g^*(m)$ is the toal number of baseline covariates included in the model for the $m^th$ outcome, including the block indicators so that $g^*(m)=J+k(m)$.
+#' 
 ## ------------------------------------------------------------------------
 df<-function(J,n.j,numCovar.1) {J*n.j - J - numCovar.1 - 1}
 
+#' 
+#' 
+#'  *power.blocked.RCT.2: for 2 level blocked RCT*
+#'     # estimates power, MDES or sample size (either number of blocks or number of units per block)
+#'     # for either constant, fixed or random effects
+#' 
+#'     # M is the number of hypothesis tests (outcomes)
+#'     # MDES = vector of MDES's of length M - This is to specify the minimum detectable effect size
+#'     # J = number of blocks
+#'     # n.j = units per block
+#'     # p = the proportion of samples that are assigned the treatment
+#'     # alpha = significance level
+#'     # numCovar.1 = number of Level 1 covariates (not including block dummies)
+#'     # numCovar.2 = number of Level 2 covariates
+#'     # R2.1 = a vector of R^2 for level 1 variables
+#'     # R2.2 = a vector of R^2 for level 2 variables
+#'     # ICC = intraclass correlation
+#'     # omega =
+#'     # sigma = correlation matrix for correlations between test statistics
+#'     # mod. type = "c" for constant effects, "f" for fixed effects, "r" for random effects
+#'     # tnum = number of test statistics (samples) for all procedures other than WY & number of permutations for WY
+#'     # snum is number of samples for WY
+#' 
 ## ------------------------------------------------------------------------
 power.blockedRCT.2<-function(M, MDES, J, n.j,
-                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
+                             p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
                              mod.type, sigma, omega,
-                             tnum = 10000, snum=1000, ncl=2) {
+                             tnum, snum, ncl) {
 
 # load required packages
   require(MASS); require(mvtnorm); require(multtest); require(doParallel)
@@ -72,6 +128,8 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   t.shift.mat<-t(matrix(rep(t.shift,tnum),M,tnum)) # repeating shift.beta on every row
     
 # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
+# simulating student t distribution
+  
   Zs.H0<-rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0,M),type = c("shifted", "Kshirsagar")) 
   Zs.H1 <- Zs.H0 + t.shift.mat
   pvals.H0<-2*pt(-abs(Zs.H0),df=t.df)
@@ -139,31 +197,85 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   return(all.power.results)
 }
 
+#' 
 ## ----power.blockedRCT.2_Example, eval=TRUE, message=FALSE, warning=FALSE----
-  ncl<-2
-  rho<-0.5
-  M <- 3
+#create loop ID for list of power estimates with different correlations
+loop_idx <- 1
+
+#assign list object to save datafiles into a list
+power_mutl_storage <- list()
+
+#loop through different correlations
+for (rho in configs$rho) {
+  
+  design <- configs$design
+  ncl<-configs$ncl
+  M <- configs$M
   sigma<-matrix(rep(rho,M*M),nrow=M,ncol=M)
   diag(sigma)<-1
-  MDES<-c(rep(0.185,M))
-#  MDES<-c(rep(0.3,M*2/3),rep(0,M/3))
-  p <- 0.5
-  R2.1 <- 0
-  R2.2 <- 0
-  numCovar.1 <- 0
-  numCovar.2 <- 0
-  ICC <- 0
-  J <- 50
-  n.j <- 20
-  alpha = 0.05
-
-power.blockedRCT.2(M, MDES, J, n.j,
-                    p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
-                    mod.type = "constant", sigma, omega = NULL,
-                    tnum=10000, snum=2, ncl)
+  MDES<-c(rep(configs$MDES,M))
+# MDES<-c(rep(0.3,M*2/3),rep(0,M/3))
+  p <- configs$p
+  R2.1 <- configs$R2.1
+  R2.2 <- configs$R2.2
+  numCovar.1 <- configs$numCovar.1
+  numCovar.2 <- configs$numCovar.2
+  ICC <- configs$ICC
+  J <- configs$J
+  n.j <- configs$n.j
+  alpha = configs$alpha
+  tnum = configs$tnum
+  snum = configs$snum
+  mod.type = configs$mod.type
   
+  
+  #create file name
+  filname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "MDES", MDES[1], "rho", rho, "_power.Rda")
+  
+  #create list name
+  lname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "MDES", MDES[1], "_powerLIST.Rda")
+    
+  #run power calculation
+  power.mult <- power.blockedRCT.2(M, MDES, J, n.j,
+                      p, alpha, numCovar.1, numCovar.2, R2.1, R2.2, ICC, 
+                      mod.type, sigma, omega,
+                      tnum, snum, ncl)
+  
+  #add data files to list
+  power_mutl_storage[[loop_idx]] <- list()
+  power_mutl_storage[[loop_idx]][["filename"]] <- filname
+  power_mutl_storage[[loop_idx]][["obj"]] <- power.mult
+  
+  
+  #export separate data files
+  fpath<- paste0(fdir,filname)
+  save(power.mult, file=fpath)
+  loop_idx <- loop_idx + 1
+
+}
+
+#export the list of data files with different correlations for import into validation RMD
+lpath <- paste0(fdir, lname)
+save(power_mutl_storage, file= lpath)
 
 
+#' 
+#' First, for individual power, we can compute MDES easily for raw and BF: 
+#' 
+#' The critical value for rejecting the $m^{th}$ null hypotheses with a two-sided test, $c_(\alpha/2)(m)$, is the inverse of the t cumulative density function for the value of $\frac{\alpha}{2}$ since
+#' 	
+#' $\frac{alpha}{2} = Pr(t(m)>c_{(\frac{\alpha}{2})} |H0(m))$
+#' 	
+#' If alternatively, $ES(m)=$ a specified minimum detectable effect size (MDES), then $t(m)$ has a t-distribution with mean $\frac{MDES(m)},{Q(m)}$ and again degrees of freedom $df$. Therefore, the critical value for determining power for rejecting the $m^{th}$ null hypothesis, $c_{(1-\beta)}(m)$, is given by
+#' 	
+#' $c_{(1-??)}(m)=c_{\alpha\2)}-\frac{MDES(m)}{Q(m)}$.
+#' 
+#' 
+#' Then, power $(1-\beta)$ is the inverse of the cumulative density function (t-distributed with mean zero and df degrees of freedom) for the value of $c_{(1-\beta)}(m)$, or proportion of the area under this density function that lies to the right of $c_{(1-\beta)}$.
+#' 
+#' 
+#' 
+#' 
 ## ----MDESfun, message=FALSE, warning=FALSE-------------------------------
 
 MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
@@ -241,3 +353,7 @@ test <- MDES.blockedRCT.2(M=M, numFalse = M, J=50, n.j=20, power=0.80, power.def
 
 print(test)
 
+#' 
+#' NOTES:
+#'     # how do we optimize tnum and snum - can we provide margin of error? 
+#'     # how to handle MDES when numfalse not equal to M
