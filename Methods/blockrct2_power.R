@@ -1,5 +1,7 @@
+library(here) # For handling relative paths
+
 # the if statement checks if we have a grab.pval function. If not, pull it from utils.R file.
-if(!exists("grab.pval", mode = "function")) source("utils.R")
+if(!exists("grab.pval", mode = "function")) source(here("Methods", "utils.R"))
 
 #' Helper function for Westfall Young Single Step
 #'
@@ -589,7 +591,11 @@ MDES.blockedRCT.2 <- function(M, numFalse,Ai_mdes, J, n.j, power, power.definiti
 #' @return raw sample returns
 #' @export
 
-SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
+SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, 
+                                whichSS, MDES, power, p, 
+                                alpha, numCovar.1, numCovar.2=0, 
+                                R2.1, R2.2, ICC, mod.type, sigma, 
+                                omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
   
   
   i <- 0 # starting the iterator
@@ -678,15 +684,20 @@ SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p,
 #' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
 #' @param num.iter the number of iterations to look for the optimal sample size. The default is set at 20
 #' @param updateProgress a call back function for our internal use in our Shiny application
+#' @param rho correlation between outcomes when sigma is generated
 #'
 #' @return Sample number returns
 #' @export
 
-SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
-                          ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
+SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j, 
+                            J0, n.j0, MDES, power, power.definition, 
+                            MTP, marginError,p, alpha, numCovar.1, 
+                            numCovar.2=0, R2.1, R2.2,ICC,mod.type, 
+                            sigma = 0, rho = 0.99, omega,tnum = 10000, 
+                            snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
   
   # SET UP #
-  sigma <- matrix(0.99, M, M)
+  sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
   # indicator for which sample to compute. J is for blocks. n.j is for harmonic mean of samples within block
