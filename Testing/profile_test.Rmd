@@ -697,3 +697,91 @@ print(elapsed)
 ```
 
 
+### Test case 1 for Sample Size
+
+For test case 1 of Sample Size, we have
+
+* MTP = Bonferonni
+* Number_Of_Outcomes = 5
+* Number_Of_FalseNulls = 3
+* Type_of_Sample = Blocked_or_within_block
+* Number_of_Blocks = XX (We are providing starting values here?)
+* Number_of_Units_Per_Block = XX (We are providing starting values here?)
+* Alpha_Value = 0.05
+* Margin_of_Error = 0.05
+* Level_1_Covariate = 1
+* Level_1_R2 = 0.2
+* alpha_mdes = 0.05
+* Power_Value = 0.75
+* Power_Definition = Individual
+* Proportion_of_Treatment_Assignment = 0.75
+* MDEFS = 0.125
+
+```{r}
+test_case_1 <- SS.blockedRCT.2(M = 5, 
+                               numFalse = 5, 
+                               typesample = "J", 
+                               J = NULL, 
+                               n.j = 20, 
+                               J0 = 10, 
+                               n.j0 = NULL, 
+                               MDES = 0.125, # what if we have varying MDES, how would we handle the sample calculation?
+                               power = 0.8,
+                               power.definition = "indiv",
+                               MTP = "BF",
+                               marginError = 0.05,
+                               p = 0.5,
+                               alpha = 0.05,
+                               numCovar.1 = 1,
+                               numCovar.2 = 1,
+                               R2.1 = 0.2,
+                               R2.2 = 0.2
+                               )
+```
+
+### Test case 2 for Sample Size with Holms MTP
+
+For test case 1 of Sample Size, we have
+
+* MTP = Holms
+* Number_Of_Outcomes = 5
+* Number_Of_FalseNulls = 3
+* Type_of_Sample = Blocked_or_within_block
+* Number_of_Blocks = XX (We are providing starting values here?)
+* Number_of_Units_Per_Block = XX (We are providing starting values here?)
+* Alpha_Value = 0.05
+* Margin_of_Error = 0.05
+* Level_1_Covariate = 1
+* Level_1_R2 = 0.2
+* alpha_mdes = 0.05
+* Power_Value = 0.75
+* Power_Definition = Individual
+* Proportion_of_Treatment_Assignment = 0.75
+* MDEFS = 0.125
+
+```{r}
+test_case_2 <- SS.blockedRCT.2(M = 5, 
+                               numFalse = 5, 
+                               typesample = "J", 
+                               J = NULL, 
+                               n.j = 20, 
+                               J0 = 10, 
+                               n.j0 = NULL, 
+                               MDES = 0.125, # what if we have varying MDES, how would we handle the sample calculation?
+                               power = 0.8,
+                               power.definition = "indiv",
+                               MTP = "HO",
+                               marginError = 0.05,
+                               p = 0.5,
+                               alpha = 0.05,
+                               numCovar.1 = 1,
+                               numCovar.2 = 1,
+                               R2.1 = 0.2,
+                               R2.2 = 0.2,
+                               sigma = 0,
+                               omega = NULL,
+                               tnum = 10000,
+                               snum = 1000,
+                               rho = 0.99,
+                               num.iter = 20)
+```

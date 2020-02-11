@@ -842,7 +842,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #The Sample calculation function
-      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, typesample = input$typesample, J = input$J_sample, n.j = input$n.j_sample,J0 = 10, n.j0 = 10,MDES = input$MDES_sample, power=input$power_samples, power.definition = input$pdefn_sample, MTP=input$MTP_sample, marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
+      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, typesample = input$typesample, J = input$J_sample, 
+                              n.j = input$n.j_sample,J0 = 10, n.j0 = 10,MDES = input$MDES_sample, power=input$power_samples, 
+                              power.definition = input$pdefn_sample, MTP=input$MTP_sample, 
+                              marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
                               numCovar.1=input$numCovar.1_sample, numCovar.2=NULL, R2.1=input$R2.1_sample, R2.2=0, ICC=0,
                               mod.type="constant", omega=NULL,
                               tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
