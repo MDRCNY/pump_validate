@@ -476,7 +476,7 @@ ui <- fluidPage(
                   fluidRow(
                     
                      column(12,
-                            tableOutput("sample") # MDES part of a spinner
+                            tableOutput("sample") # Sample Table
                      ) # Full column
                     
                   ) #fluidRow for first half of the page
@@ -823,7 +823,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       #Creating a progress bar
       progress <- shiny::Progress$new()
-      progress$set(message = "Calculating MDES", value = 0)
+      progress$set(message = "Calculating Sample Size", value = 0)
       # Close the progress bar when this reactive expression is done (even if there is an error)
       on.exit(progress$close())
       
@@ -833,7 +833,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         if (is.null(value)){
           
           value <- progress$getValue()
-          value <- value + (progress$getMax() - value)/20
+          value <- value + (progress$getMax() - value)/40
           
         } # Progess bar in terms of values' increments
         

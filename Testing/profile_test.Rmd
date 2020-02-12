@@ -7,8 +7,8 @@ output: pdf_document
 ## Loading the blockrct2_power.R file
 
 ```{r}
-source("../Methods/blockrct2_power.R")
-#library(pum)
+#source("../Methods/blockrct2_power.R")
+library(pum)
 ```
 ## Parameters for testing power function en masse
 
@@ -874,6 +874,10 @@ test_case_4 <- SS.blockedRCT.2(M = 5,
                                snum = 1000,
                                rho = 0.99,
                                num.iter = 20)
+```
+
+```{r}
+print(test_case_4)
 ```
 
 For test case 5 of Sample Size, we have
