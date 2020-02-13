@@ -47,7 +47,7 @@ The majority of the time is spent on apply function using multtest's built in fu
 
 * M = 5
 * MDES = 0.125
-* Ai = 3
+* numFalse = 3
 * J = 10
 * n.j = 10
 * R2.1 = 0.5
@@ -61,7 +61,7 @@ The majority of the time is spent on apply function using multtest's built in fu
 * updateProgress = NULL
 
 ```{r}
-power.blockedRCT.2(M = 5, MDES = 0.125, Ai = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
+power.blockedRCT.2(M = 5, MDES = 0.125, numFalse = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
 ```
 
 ### Test case 2 for Power
@@ -71,7 +71,7 @@ Again, the majority of the time is spent on apply function using multtest's buil
 
 * M = 10
 * MDES = 0.125
-* Ai = 3
+* numFalse = 3
 * J = 10
 * n.j = 100
 * R2.1 = 0.5
@@ -85,7 +85,7 @@ Again, the majority of the time is spent on apply function using multtest's buil
 * updateProgress = NULL
 
 ```{r}
-power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
+power.blockedRCT.2(M = 10, MDES = 0.125, numFalse = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
 ```
 
 ### Test case 3 for Power
@@ -96,7 +96,7 @@ This leads to a significant increase in the computation time up to **22** second
 
 * M = 5
 * MDES = 0.125
-* Ai = 3
+* numFalse = 3
 * J = 10
 * n.j = 10
 * R2.1 = 0.5
@@ -110,7 +110,7 @@ This leads to a significant increase in the computation time up to **22** second
 * updateProgress = NULL
 
 ```{r}
-power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 100, updateProgress = NULL)
+power.blockedRCT.2(M = 10, MDES = 0.125, numFalse = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 100, updateProgress = NULL)
 ```
 
 ### Test case 4 for Power
@@ -119,7 +119,7 @@ In test case 4, we have increased some of the baseline parameters such as M, J a
 
 * M = 10
 * MDES = 0.125
-* Ai = 3
+* numFalse = 3
 * J = 50
 * n.j = 100
 * R2.1 = 0.5
@@ -133,7 +133,7 @@ In test case 4, we have increased some of the baseline parameters such as M, J a
 * updateProgress = NULL
 
 ```{r}
-power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 200, updateProgress = NULL)
+power.blockedRCT.2(M = 10, MDES = 0.125, numFalse = 3 , J = 10 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 200, updateProgress = NULL)
 ```
 
 
@@ -143,7 +143,7 @@ In test case 5, we have maintained the same parameters as before except the samp
 
 * M = 10
 * MDES = 0.125
-* Ai = 3
+* numFalse = 3
 * J = 50
 * n.j = 100
 * R2.1 = 0.5
@@ -157,7 +157,7 @@ In test case 5, we have maintained the same parameters as before except the samp
 * updateProgress = NULL
 
 ```{r}
-power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 500, updateProgress = NULL)
+power.blockedRCT.2(M = 10, MDES = 0.125, numFalse = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 500, updateProgress = NULL)
 ```
 
 ### Test case 6 for Power
@@ -166,7 +166,7 @@ In test case 6, we change the number of clusters used to run the power calculati
 
 * M = 10
 * MDES = 0.125
-* Ai = 3
+* numFalse = 3
 * J = 50
 * n.j = 100
 * R2.1 = 0.5
@@ -180,7 +180,7 @@ In test case 6, we change the number of clusters used to run the power calculati
 * updateProgress = NULL
 
 ```{r}
-power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 500, updateProgress = NULL)
+power.blockedRCT.2(M = 10, MDES = 0.125, numFalse = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 500, updateProgress = NULL)
 ```
 
 ### Test case 7 for Power
@@ -189,7 +189,7 @@ Number of clusters is back to 2 but, the sample number for Westfall-Young is dou
 
 * M = 10
 * MDES = 0.125
-* Ai = 3
+* numFalse = 3
 * J = 50
 * n.j = 100
 * R2.1 = 0.5
@@ -203,7 +203,7 @@ Number of clusters is back to 2 but, the sample number for Westfall-Young is dou
 * updateProgress = NULL
 
 ```{r}
-power.blockedRCT.2(M = 10, MDES = 0.125, Ai = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 1000, updateProgress = NULL)
+power.blockedRCT.2(M = 10, MDES = 0.125, numFalse = 3 , J = 50 , n.j = 100, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 1000, updateProgress = NULL)
 ```
 
 ## Summary for MDES speed profiles for BH

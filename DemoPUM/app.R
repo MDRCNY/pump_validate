@@ -97,7 +97,7 @@ ui <- fluidPage(
                    fluidRow(
 
                      column(10,
-                        numericInput("Aimpact", "Number of Outcomes with an expected non-zero effects", value = 3, min = 0, max = 10, step = 1)
+                        numericInput("numFalse", "Number of Outcomes with an expected non-zero effects", value = 3, min = 0, max = 10, step = 1)
                      ), # column for outcomes with actual effect size
                      
                      column(2,
@@ -503,7 +503,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   # power <- reactive({
   #   
-  #   power.blockedRCT.2(M = input$M, MDES = input$MDES, Ai = input$Aimpact, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
+  #   power.blockedRCT.2(M = input$M, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
   #                       numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10)
   #   
   # }) # reactive expression for power
@@ -535,7 +535,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #displaying based on the number of sample sizes
-      isolate(power.blockedRCT.2(M = input$M, MDES = input$MDES, Ai = input$Aimpact, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
+      isolate(power.blockedRCT.2(M = input$M, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
                                 numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = updateProgress))
       
     }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
