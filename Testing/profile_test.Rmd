@@ -216,7 +216,7 @@ In test case 1 for MDES of Benjamini Hocheberg, we have the baseline parameters 
 We have set the statistical power to be at 0.75 with the power definition set. The total computation time turns out to be at approximately **21.5** seconds.
 
 * M_mdes = 5
-* Aimpact_mdes = 3
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 10
 * power_mdes = 0.75
@@ -231,7 +231,7 @@ We have set the statistical power to be at 0.75 with the power definition set. T
 * power.definition = indiv
 
 ```{r}
-MDES.blockedRCT.2(M = 5, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 10, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", rho = 0.99, omega = NULL,tnum = 10000, snum = 10, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 5, numFalse = 5, J = 10, n.j = 10, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", rho = 0.99, omega = NULL,tnum = 10000, snum = 10, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 2 for MDES-BH-indiv speed profile
@@ -239,7 +239,7 @@ MDES.blockedRCT.2(M = 5, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 10, power = 0.
 Here we increase the harmoninc mean to 100. The elapsed time for computing MDES increases by 5 seconds to approximately **28** seconds.
 
 * M_mdes = 10
-* Aimpact_mdes = 3
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.75
@@ -255,7 +255,7 @@ Here we increase the harmoninc mean to 100. The elapsed time for computing MDES 
 
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 100, rho = 0.99, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 100, rho = 0.99, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 3 for MDES-BH-indiv speed profile
@@ -263,7 +263,7 @@ MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 
 Here compared to test case 2, we increase the number of samples to **1000**. The time elapsed increases by barely **1** second to **29.5** seconds.
 
 * M_mdes = 10
-* Aimpact_mdes = 3
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.75
@@ -279,7 +279,7 @@ Here compared to test case 2, we increase the number of samples to **1000**. The
 
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL, rho = 0.99,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, J = 10, n.j = 100, power = 0.75, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL, rho = 0.99,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 4 for MDES-BH-indiv speed profile
@@ -287,7 +287,7 @@ MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 
 Here compared to test 3, we decreased the statistical power to **0.5** from **0.75**. The time elapsed again inched up by approximately **1** seconds to **30** seconds.
 
 * M_mdes = 10
-* Aimpact_mdes = 3
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.5
@@ -303,7 +303,7 @@ Here compared to test 3, we decreased the statistical power to **0.5** from **0.
 
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 5 for MDES-BH-indiv speed profile
@@ -311,7 +311,7 @@ MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 
 Here compared to test 4, we increase the actual impact of MDES to 10 from 3. The time elapsed actually goes back down by 1.5 seconds to **28.5** seconds.
 
 * M_mdes = 10
-* Aimpact_mdes = 3
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.5
@@ -326,7 +326,7 @@ Here compared to test 4, we increase the actual impact of MDES to 10 from 3. The
 * power.definition = indiv
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000,rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, J = 10, n.j = 100, power = 0.5, power.definition = "indiv", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000,rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 
 ### Test case 6 for MDES-BH-indiv speed profile
@@ -334,7 +334,7 @@ MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 
 In this test case, changed the definition of power from individual to 1-minimal. The time elapsed to get an estimate of the MDES within the range is **37.5** seconds after **5** iterations of binary search. 
 
 * M_mdes = 10
-* Aimpact_mdes = 3
+* numFalse = 3
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.5
@@ -349,7 +349,7 @@ In this test case, changed the definition of power from individual to 1-minimal.
 * power.definition = min1
 
 ```{r}
-MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "min1", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+MDES.blockedRCT.2(M = 10, numFalse = 5, J = 10, n.j = 100, power = 0.5, power.definition = "min1", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 ### Test case 7-8-9 for MDES-BH-complete speed profile
 
@@ -357,7 +357,7 @@ In test case 7-8-9, we changed the definition of power from min1 (1-minimal powe
 A search for an optimal MDES at complete power is unsuccessful up to 45 iterations in both BF & BH.
 
 * M_mdes = 10
-* Aimpact_mdes = 3
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.5
@@ -372,7 +372,7 @@ A search for an optimal MDES at complete power is unsuccessful up to 45 iteratio
 * power.definition = complete
 
 ```{r}
-mdes.complete <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.5, power.definition = "complete", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", rho = 0.99, omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.complete <- MDES.blockedRCT.2(M = 10, numFalse = 5, J = 10, n.j = 100, power = 0.5, power.definition = "complete", MTP = "BH", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", rho = 0.99, omega = NULL,tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL)
 ```
 
 ## Summary for MDES speed profiles for HO
@@ -384,7 +384,7 @@ For Holms MTP, the case to find MDES under individual power and 1-minimal power 
 For the first test case of Holms, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 1,000 with the permutation size of 10,000. The power definition is for individual power. We reach to an optimal MDES in **5** iterations around **37.7** seconds.
 
 * M_mdes = 10
-* Aimpact_mdes = 10
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -400,7 +400,7 @@ For the first test case of Holms, we are starting right off with 10 blocks, a ha
 * power.definition = indiv
 
 ```{r}
-mdes.holm.indiv <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, rho = 0.99, updateProgress = NULL)
+mdes.holm.indiv <- MDES.blockedRCT.2(M = 10, numFalse = 5,J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, ncl = 2, rho = 0.99, updateProgress = NULL)
 print(mdes.holm.indiv)
 ```
 
@@ -409,7 +409,7 @@ print(mdes.holm.indiv)
 For the second test case of Holms, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 1,000 with the permutation size of 10,000. The power definition is for 1-minimal power.The total elapsed time is **41** seconds and we find the optimal MDES within 4 iterations.
 
 * M_mdes = 10
-* Aimpact_mdes = 10
+* numFalse = 10
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -424,7 +424,7 @@ For the second test case of Holms, we are starting right off with 10 blocks, a h
 * power.definition = min1
 
 ```{r}
-mdes.holm.min1 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "min1", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.holm.min1 <- MDES.blockedRCT.2(M = 10, numFalse = 5, J = 10, n.j = 100, power = 0.80, power.definition = "min1", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.holm.min1)
 ```
 
@@ -433,7 +433,7 @@ print(mdes.holm.min1)
 For the third test case of Holms, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 1,000 with the permutation size of 10,000. The power definition is for complete power.The total elapsed time is **4.38** minutes and we cannot find an optimal MDES after 45 iterations.
 
 * M_mdes = 10
-* Ai_mdes = 3
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -448,7 +448,7 @@ For the third test case of Holms, we are starting right off with 10 blocks, a ha
 * power.definition = complete
 
 ```{r}
-mdes.holm.complete.01 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.holm.complete.01 <- MDES.blockedRCT.2(M = 10, numFalse = 5,J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.holm.complete.01)
 ```
 
@@ -457,7 +457,7 @@ print(mdes.holm.complete.01)
 For the fourth test case of holms, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 1,000 with the permutation size of 10,000. The power definition is for complete power. We have readjusted the input parameters of **M**, **numFalse**, and **Ai_mdes** (the latter two which determines how many of the outcomes have actual effect to the same as the number of outcomes). We believe this will allow us to find the optimal MDES within a few iterations of search. It took **6** iterations and a total time of **23.54** minutes to get the desired results.
 
 * M_mdes = 10
-* Ai_mdes = 10
+* numFalse = 10
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -473,7 +473,7 @@ For the fourth test case of holms, we are starting right off with 10 blocks, a h
 
 ```{r}
 start <- Sys.time()
-mdes.holm.complete.02 <- MDES.blockedRCT.2(M = 10, numFalse = 10, Ai_mdes = 10, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, rho = 0.99, ncl = 2, updateProgress = NULL)
+mdes.holm.complete.02 <- MDES.blockedRCT.2(M = 10, numFalse = 10, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "HO", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 1000, rho = 0.99, ncl = 2, updateProgress = NULL)
 print(mdes.holm.complete.02)
 end <- Sys.time()
 elapsed <- end-start
@@ -487,7 +487,7 @@ print(elapsed)
 For the first test case of Westfall-Young Single Step, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 10 instead of 1,000 with the permutation size of 10,000. The power definition is for **individual** power. We have picked a sample size of 10 as we know it would take approximately 3 minutes for each call of Power on Westfall-Young Single Step with sample size of 1,000. With 10 samples, it took **11** iterations to get a satisfactory MDES which takes around **1.427** minutes. Approximately, **2.096** GB of memory is used up.
 
 * M_mdes = 10
-* Aimpact_mdes = 10
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -502,7 +502,7 @@ For the first test case of Westfall-Young Single Step, we are starting right off
 * power.definition = indiv
 
 ```{r}
-mdes.wyss.indiv.10 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 10, rho = 0.99, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.10 <- MDES.blockedRCT.2(M = 10, numFalse = 5, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 10, rho = 0.99, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.10)
 ```
 
@@ -511,7 +511,7 @@ print(mdes.wyss.indiv.10)
 For the first test case of Westfall-Young Single Step, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 10 instead of 1,000 with the permutation size of 10,000. The power definition is for **individual** power. We have doubled the sample size to be 20. This is to test whether we have enough memory for sample size of 20 for the number of iterations needed to get MDES. The number of iteration used up goes down to **5** from **11** with the total elapsed time being a whopping **57** seconds. The total memory used up is **1.5** GB so less than when it was for 10 samples but with more iterations.
 
 * M_mdes = 10
-* Aimpact_mdes = 10
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -526,7 +526,7 @@ For the first test case of Westfall-Young Single Step, we are starting right off
 * power.definition = indiv
 
 ```{r}
-mdes.wyss.indiv.20 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 20, rho = 0.99, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.20 <- MDES.blockedRCT.2(M = 10, numFalse = 5, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 20, rho = 0.99, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.100)
 ```
 
@@ -536,7 +536,7 @@ print(mdes.wyss.indiv.100)
 For the third test case of Westfall-Young Single Step, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 10 instead of 1,000 with the permutation size of 10,000. The power definition is for **individual** power. We have made the sample size to be 1,00 to see if there is any change in memory usage, elapsed time, iterations etc. The results are looking good with elapsed time being **2.42** minutes, with usage of **2GB** and a total of **5** iterations. Westfall-Young SD and Westfall-Young SS has taken the biggest share of time consumption for power calculation overtaking the multtest function for the other MTP adjustments.
 
 * M_mdes = 10
-* Aimpact_mdes = 10
+* numFalse = 10
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -551,7 +551,7 @@ For the third test case of Westfall-Young Single Step, we are starting right off
 * power.definition = indiv
 
 ```{r}
-mdes.wyss.indiv.100 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 100, rho = 0.99, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.100 <- MDES.blockedRCT.2(M = 10, numFalse = 10, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, snum = 100, rho = 0.99, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.100)
 ```
 ### Test case 4 for MDES-Westfall-Young Single Step-indiv speed profile
@@ -559,7 +559,7 @@ print(mdes.wyss.indiv.100)
 For the fourth test case of Westfall-Young Single Step, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 10 instead of 1,000 with the permutation size of 10,000. The power definition is for **individual** power. We have made the sample size to be 5,00 to see if there is any change in memory usage, elapsed time, iterations etc.It took **6** iterations to get the optimal result but pandocs run out of memory to get the exact minutes so, we will not have a detailed report. Rather, we re-run it for a clocked time. It took approximately **12** minutes and **2** GB to get the optimal MDES.
 
 * M_mdes = 10
-* Aimpact_mdes = 10
+* numFalse = 10
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -575,7 +575,7 @@ For the fourth test case of Westfall-Young Single Step, we are starting right of
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.indiv.500 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 500, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.500 <- MDES.blockedRCT.2(M = 10, numFalse = 10, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 500, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.500)
 end <- Sys.time()
 elapsed <- end-start
@@ -588,7 +588,7 @@ print(elapsed)
 For the fifth test case of Westfall-Young Single Step, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 10 instead of 1,000 with the permutation size of 10,000. The power definition is for **individual** power. We have made the sample size to be 1,000 as this is the standard we hope to achieve. It took **6** iterations of searching for the optimal MDES and a total of **23.2605** minutes to get the final results. The memory usage is definitely less than 4GB. The memory report is inconclusive as we do not have the pandoc report as usual.
 
 * M_mdes = 10
-* Aimpact_mdes = 10
+* numFalse = 10
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -604,7 +604,7 @@ For the fifth test case of Westfall-Young Single Step, we are starting right off
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.indiv.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.wyss.indiv.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 10, J = 10, n.j = 100, power = 0.80, power.definition = "indiv", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.indiv.1000)
 end <- Sys.time()
 elapsed <- end-start
@@ -616,7 +616,7 @@ print(elapsed)
 For the sixth test case of Westfall-Young Single Step, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 10 instead of 1,000 with the permutation size of 10,000. The power definition is for **min1** power. We have made the sample size to be 1,000 as this is the standard we hope to achieve. It took a total of **2** iterations and elapsed time of **10.25772** minutes.
 
 * M_mdes = 10
-* Aimpact_mdes = 10
+* numFalse = 10
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -632,7 +632,7 @@ For the sixth test case of Westfall-Young Single Step, we are starting right off
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.min1.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 5, Ai_mdes = 3, J = 10, n.j = 100, power = 0.80, power.definition = "min1", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.wyss.min1.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 10, J = 10, n.j = 100, power = 0.80, power.definition = "min1", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.min1.1000)
 end <- Sys.time()
 elapsed <- end-start
@@ -645,7 +645,7 @@ print(elapsed)
 For the sixth test case of Westfall-Young Single Step, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 10 instead of 1,000 with the permutation size of 10,000. The power definition is for **complete** power. We have pared down the outcomes to 5 with actual affects at 5 as well to see if we can hit an optimal complete power within the limitations of iterations we have set. The total amount of time it has taken to compute a MDES for complete power is **6.31368** minutes within **2** iterations. 
 
 * M_mdes = 5
-* Aimpact_mdes = 5
+* numFalse = 5
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -661,7 +661,7 @@ For the sixth test case of Westfall-Young Single Step, we are starting right off
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 5, numFalse = 5, Ai_mdes = 5, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 5, numFalse = 5, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.complete.1000)
 end <- Sys.time()
 elapsed <- end-start
@@ -673,7 +673,7 @@ print(elapsed)
 For the sixth test case of Westfall-Young Single Step, we are starting right off with 10 blocks, a harmonic mean of 100, a sample size of 10 instead of 1,000 with the permutation size of 10,000. The power definition is for **complete** power. We have increased the outcomes to 10 with actual affects at 10 as well to see if we can hit an optimal complete power within the limitations of iterations we have set. To compute complete power, it took **10.87** minutes and a total of **2** iterations. 
 
 * M_mdes = 10
-* Aimpact_mdes = 10
+* numFalse = 10
 * J_mdes = 10
 * n.j_mdes = 100
 * power_mdes = 0.80
@@ -689,7 +689,7 @@ For the sixth test case of Westfall-Young Single Step, we are starting right off
 
 ```{r}
 start <- Sys.time()
-mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 10, Ai_mdes = 10, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
+mdes.wyss.complete.1000 <- MDES.blockedRCT.2(M = 10, numFalse = 10, J = 10, n.j = 100, power = 0.80, power.definition = "complete", MTP = "WY-SS", marginError = 0.05, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL, R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", omega = NULL,tnum = 10000, rho = 0.99, snum = 1000, ncl = 2, updateProgress = NULL)
 print(mdes.wyss.complete.1000)
 end <- Sys.time()
 elapsed <- end-start

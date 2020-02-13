@@ -242,7 +242,7 @@ ui <- fluidPage(
               fluidRow(
                 
                 column(10,
-                       numericInput("Aimpact_mdes", "Number of Outcomes with an expected non-zero effects", value = 3, min = 0, max = 10, step = 1)
+                       numericInput("numFalse_mdes", "Number of Outcomes with an expected non-zero effects", value = 3, min = 0, max = 10, step = 1)
                 ), # column for outcomes with actual effect size
                 
                 column(2,
@@ -386,7 +386,7 @@ ui <- fluidPage(
                   fluidRow(
                     
                     column(10,
-                           numericInput("NumFalse_sample", "Number of False Nulls", value = 3, min = 0, max = 10, step = 1)
+                           numericInput("numFalse_sample", "Number of False Nulls", value = 3, min = 0, max = 10, step = 1)
                     ), # column for outcomes with actual effect size
                     
                     column(2,
@@ -661,7 +661,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   #mdes calculation reactive expression
   mdes <- reactive({
 
-     MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
+     MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$numFalse_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
                        mod.type="constant", omega=NULL,
                        tnum = 10000, snum=2, ncl=2, updateProgress)
 
@@ -693,7 +693,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #The MDES calculation function
-      isolate(MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$M_mdes, Ai_mdes = input$Aimpact_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
+      isolate(MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$numFalse_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
                         mod.type="constant", omega=NULL,
                         tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
       
@@ -842,7 +842,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #The Sample calculation function
-      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$NumFalse_sample, typesample = input$typesample, J = input$J_sample, 
+      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$numFalse_sample, typesample = input$typesample, J = input$J_sample, 
                               n.j = input$n.j_sample,J0 = 10, n.j0 = 10,MDES = input$MDES_sample, power=input$power_samples, 
                               power.definition = input$pdefn_sample, MTP=input$MTP_sample, 
                               marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
