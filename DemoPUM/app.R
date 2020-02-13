@@ -503,7 +503,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   # power <- reactive({
   #   
-  #   power.blockedRCT.2(M = input$M, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
+  #   power_blocked_i1_2c(M = input$M, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
   #                       numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10)
   #   
   # }) # reactive expression for power
@@ -535,7 +535,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #displaying based on the number of sample sizes
-      isolate(power.blockedRCT.2(M = input$M, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
+      isolate(power_blocked_i1_2c(M = input$M, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
                                 numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = updateProgress))
       
     }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
@@ -661,7 +661,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   #mdes calculation reactive expression
   mdes <- reactive({
 
-     MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$numFalse_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
+     mdes_blocked_i1_2c(M = input$M_mdes, numFalse = input$numFalse_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
                        mod.type="constant", omega=NULL,
                        tnum = 10000, snum=2, ncl=2, updateProgress)
 
@@ -693,7 +693,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #The MDES calculation function
-      isolate(MDES.blockedRCT.2(M = input$M_mdes, numFalse = input$numFalse_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
+      isolate(mdes_blocked_i1_2c(M = input$M_mdes, numFalse = input$numFalse_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
                         mod.type="constant", omega=NULL,
                         tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
       
@@ -842,7 +842,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #The Sample calculation function
-      isolate(SS.blockedRCT.2(M = input$M_sample, numFalse = input$numFalse_sample, typesample = input$typesample, J = input$J_sample, 
+      isolate(sample_blocked_i1_2c(M = input$M_sample, numFalse = input$numFalse_sample, typesample = input$typesample, J = input$J_sample, 
                               n.j = input$n.j_sample,J0 = 10, n.j0 = 10,MDES = input$MDES_sample, power=input$power_samples, 
                               power.definition = input$pdefn_sample, MTP=input$MTP_sample, 
                               marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
