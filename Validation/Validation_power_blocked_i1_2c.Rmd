@@ -1,0 +1,56 @@
+---
+title: "Validation_Level2_RCT_001"
+author: "Kristin Porter & Zarni Htet"
+output: github_document
+---
+
+### Libraries and Source Files
+
+```{r libaries}
+library(RcppEigen) # Linear algebra calculations
+library(snow)      # Parallelization and use of multiple clusters 
+library(lme4)      # Linear mixed effect models
+library(PowerUpR)  # Comparison with another package that has some limitations
+library(multtest)  # Multiple Testing Procedures package
+library(tictoc)    # For timing of the scripts
+library(here)      # For relative path sourcing
+```
+
+```{r sourcefiles}
+source(here::here("Validation/Simulations", "adjust.WY.R")) # MTP Westfall-Young
+source(here::here("Validation/Simulations", "gen_data_dist_2_levels.R")) # data generating functions for 2 level block and cluster
+source(here::here("Validation/Simulations", "power_mcs_2_levels.R")) # Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.
+```
+
+
+### Parameters for Monte Carlo Simulation Runs
+
+#### Subtitle: Type of Function we are validating
+
+```{r}
+
+```
+
+
+
+### Firing Up & Storing Results from Monte Carlo Simulation Runs
+
+```{r}
+
+```
+
+### Firing up & Storing Results from derived function
+
+```{r}
+
+```
+
+### Comparing results for validation
+
+```{r}
+
+```
+
+
+
+

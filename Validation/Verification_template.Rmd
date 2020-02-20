@@ -76,11 +76,46 @@ alpha = 0.05
 
 # ?? Verify error messages
 
-
 ```{r chunk4_verifyErrorsWarnings}
 
 # Pass in anticipated mistakes and show return of error messages/warnings?
 
 ```
+
+# Zarni's edits
+
+### Libraries and Source Files
+
+```{r}
+#
+```
+
+### Parameters for Monte Carlo Simulation Runs
+
+#### Subtitle: Type of Function we are validating
+
+```{r}
+
+```
+
+### Firing Up & Storing Results from Monte Carlo Simulation Runs
+
+```{r}
+
+```
+
+### Firing up & Storing Results from derived function
+
+```{r}
+
+```
+
+### Comparing results for validation
+
+```{r}
+
+```
+
+
 
 
