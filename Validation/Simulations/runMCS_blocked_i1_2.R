@@ -1,0 +1,151 @@
+#' ---
+#' title: "Monte Carlo Simulation Code"
+#' author: "Kristin Porter and Deni Chen"
+#' date: "`r format(Sys.time(), '%B %d, %Y')`"
+#' output: html_notebook
+#' ---
+#' 
+#' This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
+#' 
+#' 
+#' Clear everything from memory
+## ----clear_memory--------------------------------------------------------
+rm(list=ls())
+
+#' 
+#' Set up: install and load libraries and source functions
+## ----source--------------------------------------------------------------
+#source("libraries.install.R")
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(RcppEigen, snow, lme4,PowerUpR)
+
+library(RcppEigen)
+library(snow)
+library(lme4)
+library(PowerUpR)
+
+source("http://bioconductor.org/biocLite.R")
+biocLite("multtest")
+library(multtest)
+
+source("gen.data_blocked_i1_2.R")
+source("powerMCS_blocked_i1_2.R")
+source("adjust.WY.R")
+
+#funct object needs to be assigned before sourcing "make.model.R"
+funct<-"fixfastLm"; mod.type<-"fixed"
+
+#function to check time lapse
+devtools::install_github("collectivemedia/tictoc")
+library(tictoc)
+
+#' Specify parameters
+#' * rho         = Spearman's correlation determines the strength and direction of the monotonic relationship between two variables rather than the                 strength and direction of the linear relationship between your two variables (Pearson's correlation)    
+#' * ncl         = number of clusters set at 24 because that is the max cpus on datalab
+#' * procs       = a vector of strings for adjustment procedures
+#' * M           = number of tests/domains/outcomes
+#' * MDES        = minimum detectable effect size, vector length M 
+#' * p.j.range   = vector of minimum and maximum probabilities of being assigned to treatment, across all sites
+#' * S           = number of samples for power calc
+#' * B           = number of permutations for WY
+#' * J           = number of blocks
+#' * n.j         = number of observations per block 
+#' * theta       = MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2 effects 
+#' * omega       = effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M
+#' * Gamma.00    = grand mean outcome w/o treat, held 0, vector length M 
+#' * sig.sq      = vector length M, held at 1 for now
+#' * alpha       = the significance level, 0.05 usually 
+#' * ICC         = a number, intraclass correlation; 0 if fixed model  
+#' * R2.1        = R squared for mth level 1 outcome by mth level 1 covar          
+#' * R2.2        = R squared for mth level 2 outcome by mth level 1 covar          
+#' * rho.0_lev1  = MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment                   
+#' * rho.0_lev2  = MxM matrix of correlations for Level 2 residuals in models of outcomes under no treatment                   
+#' * rho.1_lev2  = MxM matrix of correlations for Level 2 effects        
+#' * DDMDES      = desired minimum detectable effect size, number 
+#' 
+#' 
+#' 
+## ----specifications------------------------------------------------------
+#loop through different correlations (like Table C.3 in Appendix of paper)
+
+#create loop ID for list of power estimates with different correlations
+loop_idx <- 1
+
+#assign list object to save datafiles into a list
+sim_power_storage <- list()
+
+#loop through different correlations
+for (rho in c(0,0.2,0.5,0.8)) {
+
+  #rho<-0
+  ncl<-8
+  
+  procs<-c("Bonferroni", "BH", "Holm","WY") 
+  design <- c("Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r", "Blocked_i1_3r", "Blocked_i1_4r")
+  M<-2
+  MDES<-rep(0.125, M)
+  p.j.range<-c(0.5,0.5)
+  S=2000
+  B=10000
+  J=20;n.j=100
+  theta<-matrix(0,M,M); diag(theta)<-0; omega <- rep(0,M)
+  Gamma.00<-rep(0,M);sig.sq<-rep(1,M); alpha<-0.05
+  ICC<-rep(0, M); R2.2<-rep(0,M); R2.1<-rep(0, M)
+  rho <- 0.5
+  
+  rho.0_lev1<-matrix(rho,M,M); diag(rho.0_lev1)<-1 
+  rho.0_lev2<-matrix(rho,M,M); diag(rho.0_lev2)<-1
+  rho.1_lev2<-matrix(rho,M,M); diag(rho.1_lev2)<-1
+
+  #create file name
+  simname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B,   "_R2.1", R2.1[1],"_R2.2",R2.2[1], "_simpwr.Rda")
+  
+  #create list name
+  lname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "_S", S, "B", B, "_R2.1",        R2.1[1],"_R2.2",R2.2[1], "_simpwrLIST.Rda")
+      
+
+  #simulate and run power calculations
+  simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
+                    rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
+                    alpha=alpha, Gamma.00=Gamma.00, sig.sq=sig.sq, p.j.range=p.j.range, 
+                    R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S,
+                    ncl=ncl, B=B,maxT=FALSE) 
+  toc()
+  
+  # check against PowerUp
+  power.up <- power.bira2c1(es=MDES[1],alpha,two.tailed=TRUE,p=mean(p.j.range),g1=1,r21=R2.1[1],n=n.j,J=J)
+  # If TRUE, then raw individual power matches estimate from Power-Up.
+  
+  me <- 0.05
+  power.up$power < (simpwr["rawp","D1indiv"] + me) & power.up$power > (simpwr["rawp","D1indiv"] - me)
+  
+
+  #add data files to list
+  sim_power_storage[[loop_idx]] <- list()
+  sim_power_storage[[loop_idx]][["simname"]] <- simname
+  sim_power_storage[[loop_idx]][["obj"]] <- simpwr
+  
+  
+  #export separate data files - for Domino to run and then pull down
+#  fdir <- "I:/Multiplicity/datafiles/"
+#  fname<- paste0(fdir,simname)
+#  save(simpwr, file=fname)
+  save(simpwr, file=simname)
+  loop_idx <- loop_idx + 1
+
+}
+
+#export the list of data files with different correlations for import into validation RMD
+#lpath <- paste0(fdir, lname)
+#save(sim_power_storage, file= lpath)
+save(sim_power_storage, file= lname)
+
+
+#' 
+#' 
+#' Make replica of this RMD into an R Script (.R file to be sourced into another pgm)
+## ----create_RMD----------------------------------------------------------
+library(knitr)
+purl("MonteCarloSimulation.Rmd", output = "MonteCarloSimulation.R", documentation = 2)
+
