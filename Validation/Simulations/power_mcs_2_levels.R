@@ -1,5 +1,7 @@
+# Library
+library(here)
 # Sourcing from data generating functions
-source("gen_data_dist_2_levels.R")
+source(here::here("Validation/Simulations", "gen_data_dist_2_levels.R"))
 
 ###########################################################################
 #  Function: make.model	Inputs:dat,dummies      	                        #

@@ -1,25 +1,24 @@
 #' ---
 #' title: "Monte Carlo Simulation Code"
-#' author: "Kristin Porter and Deni Chen"
+#' author: "Kristin Porter and Zarni Htet"
 #' date: "`r format(Sys.time(), '%B %d, %Y')`"
 #' output: html_notebook
 #' ---
 #' 
-#' This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
+#' This code generates the Monte Carlo simulations for validating methods in the paper (table C.3) and 
+#' calls items from I:\Multiplicity\Archive\Domino Copy\ECmethods\R.
 #' 
 #' 
-#' Clear everything from memory
-## ----clear_memory--------------------------------------------------------
+# Clear everything from memory
 rm(list=ls())
 
-#' 
-#' Set up: install and load libraries and source functions
-## ----source--------------------------------------------------------------
-#source("libraries.install.R")
+if (!require(c("RcppEigen", "snow", "lme4", "PowerUpR", "here"))) {
+    
+  install.packages(c("RcppEigen", "snow", "lme4", "PowerUpR", "here"))
 
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(RcppEigen, snow, lme4,PowerUpR,here)
+} # if statement
 
+# Loading the libraries from CRAN
 library(RcppEigen)
 library(snow)
 library(lme4)
@@ -27,10 +26,14 @@ library(PowerUpR)
 library(here)
 
 
-source("http://bioconductor.org/biocLite.R")
-biocLite("multtest")
+# Installing and Loading Libraries from Bioconductor package
+if (!requireNamespace("BiocManager", quietly = TRUE)){
+  install.packages("BiocManager")
+}
+# BiocManager::install("multtest")
 library(multtest)
 
+# Sourcing the custom functions to run the simulations
 source(here::here("Validation/Simulations", "gen_data_dist_2_levels.R"))
 source(here::here("Validation/Simulations", "powerMCS_blocked_i1_2.R"))
 source(here::here("Validation/Simulations", "adjust.WY.R"))
@@ -103,22 +106,22 @@ for (rho in c(0,0.2,0.5,0.8)) {
   rho.1_lev2<-matrix(rho,M,M); diag(rho.1_lev2)<-1
   
   #create file name
-  simname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B,   "_R2.1", R2.1[1],"_R2.2",R2.2[1], "_simpwr.Rda")
+  simname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "rho", rho, "_S", S, "B", B, "_R2.1", R2.1[1],"_R2.2",R2.2[1], "_simpwr.Rda")
   
   #create list name
-  lname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "_S", S, "B", B, "_R2.1",        R2.1[1],"_R2.2",R2.2[1], "_simpwrLIST.Rda")
+  lname<-paste0(design[1], "M", M, "n.j", n.j, "J", J, "ICC", ICC[1], "MDES", MDES[1], "_S", S, "B", B, "_R2.1", R2.1[1],"_R2.2",R2.2[1], "_simpwrLIST.Rda")
   
   
   #simulate and run power calculations
-  simpwr<-est.power(procs=procs, M=M, DMDES=MDES, n.j=n.j, J=J, rho.0_lev1=rho.0_lev1, 
-                    rho.0_lev2=rho.0_lev2, rho.1_lev2=rho.1_lev2, theta=theta, ICC=ICC, 
-                    alpha=alpha, Gamma.00=Gamma.00, sig.sq=sig.sq, p.j.range=p.j.range, 
-                    R2.1=R2.1, R2.2=R2.2, check=FALSE, omega=omega, funct=mod.type, S=S,
-                    ncl=ncl, B=B,maxT=FALSE) 
+  simpwr <- est.power(procs = procs, M = M, DMDES = MDES, n.j = n.j, J = J, rho.0_lev1 = rho.0_lev1, 
+                      rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, theta = theta, ICC = ICC, 
+                      alpha = alpha, Gamma.00 = Gamma.00, sig.sq = sig.sq, p.j.range = p.j.range, 
+                      R2.1 = R2.1, R2.2 = R2.2, check = FALSE, omega = omega, funct = mod.type, S = S,
+                      ncl = ncl, B = B,maxT = FALSE) 
   toc()
   
   # check against PowerUp
-  power.up <- power.bira2c1(es=MDES[1],alpha,two.tailed=TRUE,p=mean(p.j.range),g1=1,r21=R2.1[1],n=n.j,J=J)
+  power.up <- power.bira2c1(es = MDES[1],alpha,two.tailed = TRUE,p = mean(p.j.range),g1 = 1,r21 = R2.1[1],n = n.j,J = J)
   # If TRUE, then raw individual power matches estimate from Power-Up.
   
   me <- 0.05
