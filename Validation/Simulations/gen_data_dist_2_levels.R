@@ -88,7 +88,9 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
   
   # within each site generate potential outcomes under no treatment (D0.ij), back out baseline covar (X.ij), assign to treatment or control group (Treat.ij)
   # and generate impacts (B.ij)
-  assign('p.j',runif(J,p.j.range[1],p.j.range[2]), envir=.GlobalEnv) #this creates the variable p.j from p.j.range and assigns it to the global environment for later use
+  #this creates the variable p.j from p.j.range and assigns it to the global environment for later use
+  assign('p.j',runif(J,p.j.range[1],p.j.range[2]), envir=.GlobalEnv) 
+  
   for (j in 1:J) {
     
     wj<-which(D0.ij[,"cluster.id"]==j)
@@ -161,7 +163,8 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
   
   #save and name simulated data output
   output.temp <- data.frame(D0.ij,D1.ij,D.ij,Treat.ij,X.ij,cluster.id = 0)
-  output <- merge(output.temp,X.j,by = "block.id")
+  
+  output <- merge(output.temp,X.j,by = "cluster.id")
   
   #  filename = paste0("gendata_M", M,"_MDES", MDES, "_J", J, "_nj", n.j, "_ICC", ICC, "_rho", rho, ".csv")
   
@@ -197,8 +200,11 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
     
     # estimated ICC from lme
     require(nlme)
-    lme.dat<-groupedData(D0.M1.ij~1|cluster.id,data=output)
-    lme.test<-lme(lme.dat)
+    
+    browser()
+    
+    lme.dat <- nlme::groupedData(D0.M1.ij~1|cluster.id,data=output)
+    lme.test<-nlme::lme(lme.dat)
     varests <- as.numeric(VarCorr(lme.test)[,"Variance"])  # vector of variance estimates
     varests
     ICC.calc <- varests[1]/sum(varests)
@@ -235,7 +241,7 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
 
 simple_c2_2r <- function( M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
                           rho.1_lev2, theta, ICC, alpha, Gamma.00,
-                          p.j.range=NULL, p.j, R2.1, R2.2, omega, check) {
+                          p.j, R2.1, R2.2, omega, check) {
   
   require(MASS)
   
@@ -398,6 +404,7 @@ simple_c2_2r <- function( M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
     
     # estimated ICC from lme
     require(nlme)
+    browser()
     lme.dat <- groupedData(D0.M1.ij~1|cluster.id,data=output)
     lme.test <- lme(lme.dat)
     varests <- as.numeric(VarCorr(lme.test)[,"Variance"])  # vector of variance estimates

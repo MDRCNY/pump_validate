@@ -48,6 +48,7 @@ make.model<-function(dat, dummies, design) {
 ###########################################################################
 
 make.dummies <- function(dat, clusterby, n.j, J){
+  
   block.rep<-matrix(data=rep(dat[,clusterby],n.j),
                     nrow=length(dat[,clusterby]),ncol=J)
   colnum<-seq(1:J)
@@ -68,6 +69,7 @@ make.dummies <- function(dat, clusterby, n.j, J){
 ###########################################################################
 
 get.pval.Level1 <- function(mod) {
+  
   if(class(mod)=="lmerMod") {
     pval <-(1-pnorm(abs(summary(mod)$coefficients["Treat.ij","t value"])))*2
   }
@@ -78,6 +80,7 @@ get.pval.Level1 <- function(mod) {
 }
 
 get.tstat.Level1 <- function(mod) {
+  
   if(class(mod)=="lmerMod") {
     tstat <-summary(mod)$coefficients["Treat.ij","t value"]
   } 
@@ -88,6 +91,7 @@ get.tstat.Level1 <- function(mod) {
 }
 
 get.pval.Level2 <- function(mod) {
+  
   if(class(mod)=="lmerMod") {
     pval <-(1-pnorm(abs(summary(mod)$coefficients["Treat.j","t value"])))*2
   }
@@ -98,6 +102,7 @@ get.pval.Level2 <- function(mod) {
 }
 
 get.tstat.Level2 <- function(mod) {
+  
   if(class(mod)=="lmerMod") {
     tstat <-summary(mod)$coefficients["Treat.j","t value"]
   } 
@@ -119,6 +124,7 @@ get.tstat.Level2 <- function(mod) {
 ###########################################################################
 
 get.rawp <- function(mdat, design, n.j, J) {
+  
   if (design %in% c("Blocked_i1_2c","Blocked_i1_2f")) { 
     mdums = lapply(mdat, function(m) make.dummies(m, "block.id", n.j, J))
     mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
@@ -136,6 +142,7 @@ get.rawp <- function(mdat, design, n.j, J) {
 }
 
 get.rawt <- function(mdat, design, n.j, J) {
+  
   if (design %in% c("Blocked_i1_2c","Blocked_i1_2f")) {     
     mdums = lapply(mdat, function(m) make.dummies(m, "block.id", n.j, J))
     mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
@@ -191,6 +198,7 @@ makelist.samp <-function(M, samp, design) {
 ###########################################################################
 
 get.adjp <- function(rawp, rawt, proc, alpha, B, ncl, mdat, maxT) {
+  
   if(proc=="WY"){
     #adjust.WY<-function(data, B, subgroup, which.mult, incl.covar, rawp, ncl, clustered, clusterby, design)
     #print(paste0("working on ", proc, " with ", B, " permutations"))
@@ -222,40 +230,37 @@ get.rejects <- function(adjp, alpha) {
   rejects <- 1*(adjp<alpha)
 }
 
+#  Funtion to estimate statistical power after multiple hypothesis testing has been done
+#
+#' @param procs multiple testing procedures to compute power for 
+#' @param S number of samples to generate
+#' @param ncl number of clusters for parallel computing
+#' @param B number of samples of Westfall-Young
+#' @param maxT ?
+#' @param M number of tests/domains/outcomes 
+#' @param MDES minimum detectable effect size, vector length M
+#' @param n.j number of observations per block 
+#' @param J number of blocks 
+#' @param rho.0_lev1 MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment 
+#' @param rho.0_lev2 MxM matrix of correlations for Level 2 residuals in models of outcomes under no treatment 
+#' @param rho.1_lev2 MxM matrix of correlations for Level 2 effects 
+#' @param theta MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2 effects
+#' @param ICC a number, intraclass correlation; 0 if fixed model 
+#' @param alpha the significance level, 0.05 usually
+#' @param Gamma.00 grand mean outcome w/o treat, held 0, vector length M 
+#' @param p.j.range vector of minimum and maximum probabilities of being assigned to treatment, across all sites 
+#' @param p.j probability of being assigned to treatment when no blocking 
+#' @param R2.1 R squared for mth level 1 outcome by mth level 1 covar 
+#' @param R2.2 R squared for mth level 2 outcome by mth level 1 covar
+#' @param omega effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M
+#' @param check boolean indicating whether to conduct checks
+#' @param design RCT design (see list/naming convention)
 
-#' EstimatePowerWithSimulation
-#' 
-#' Inputs
-#' * procs       = multiple testing procedures to compute power for
-#' * design      = RCT design (see list/naming convention)
-#' * S           = number of samples to generate
-#' * ncl         = number of clusters for parallel computing
-#' * B           = number of samples of Westfall-Young
-#' * maxT        = ?
-#' * M           = number of tests/domains/outcomes
-#' * MDES        = minimum detectable effect size, vector length M 
-#' * n.j         = number of observations per block 
-#' * J           = number of blocks
-#' * rho.0_lev1  = MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment                   
-#' * rho.0_lev2  = MxM matrix of correlations for Level 2 residuals in models of outcomes under no treatment                   
-#' * rho.1_lev2  = MxM matrix of correlations for Level 2 effects        
-#' * theta       = MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2 effects 
-#' * ICC         = a number, intraclass correlation; 0 if fixed model  
-#' * alpha       = the significance level, 0.05 usually 
-#' * Gamma.00    = grand mean outcome w/o treat, held 0, vector length M 
-#' * p.j.range   = vector of minimum and maximum probabilities of being assigned to treatment, across all sites
-#' * p.j         = probability of being assigned to treatment when no blocking
-#' * R2.1        = R squared for mth level 1 outcome by mth level 1 covar          
-#' * R2.2        = R squared for mth level 2 outcome by mth level 1 covar          
-#' * omega       = effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M
-#' * check       = boolean indicating whether to conduct checks
-#' 
-#' 
 est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
                           M ,MDES ,n.j ,J ,rho.0_lev1 ,
                           rho.0_lev2 ,rho.1_lev2 ,theta ,ICC ,
                           alpha ,Gamma.00 ,p.j.range , p.j ,
-                          R2.1 ,R2.2 ,omega ,check ) {
+                          R2.1 ,R2.2 ,omega ,check, design) {
   
   if (M == 1) {
     print("Multiple testing corrections are not needed when M=1")
@@ -287,7 +292,7 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
       
       samp <- blocked_i1_2 (M = M ,MDES = MDES ,n.j = n.j ,J = J ,rho.0_lev1 = rho.0_lev1 ,
                             rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,ICC = ICC ,alpha = alpha ,
-                            Gamma.00 = Gamma.00 ,p.j.range = p.j.range ,p.j = NULL ,R2.1 = R2.1 ,
+                            Gamma.00 = Gamma.00 ,p.j.range = p.j.range  ,R2.1 = R2.1 ,
                             R2.2 = R2.2 ,check = check ,omega = omega)
     }
     
@@ -295,7 +300,7 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
       
       samp <- simple_c2_2r (M = M ,MDES = MDES,n.j = n.j ,J = J,rho.0_lev1 = rho.0_lev1 ,
                             rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,
-                            ICC = ICC ,alpha = alpha,Gamma.00 = Gamma.00 , p.j.range = NULL ,
+                            ICC = ICC ,alpha = alpha,Gamma.00 = Gamma.00 , p.j.range = p.j.range ,
                             p.j = p.j ,R2.1 = R2.1 ,R2.2 = R2.2 ,check = check ,omega = omega)
     }
     
@@ -352,5 +357,6 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
   }
   CI.lower.power <- power.results - 1.96 * (se.power)
   CI.upper.power <- power.results + 1.96 * (se.power)
+  
   return(list(power.results,CI.lower.power,CI.upper.power))
 }
