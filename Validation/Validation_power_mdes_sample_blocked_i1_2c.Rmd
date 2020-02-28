@@ -81,6 +81,161 @@ toc()
 
 ```
 
+## MDES function validation
+
+We are testing the MDES function by putting in the parameters of the simulated power function and checking if we receive an MDES estimation within range.
+
+
+```{r}
+# Loading our pum library
+library(pum)
+```
+
+* M = 6
+* MDES = 0.125
+* numFalse = 6
+* J = 20
+* n.j = 100
+* R2.1 = 0.5
+* p = 0.5
+* alpha = 0.05
+* numCovar.1 = 5
+* numCovar.2 = NULL
+* rho = 0.5
+* tnum = 10000
+* snum = 2000
+* updateProgress = NULL
+
+```{r}
+tic()
+power_M6_MDES0125 <- pum::power_blocked_i1_2c(M = 6, MDES = 0.125, numFalse = 6, J = 20, n.j = 100, 
+                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
+toc()
+print(power_M6_MDES0125)
+```
+
+```{r}
+tic()
+mdes_0125_bonf <- pum::mdes_blocked_i1_2c(M = 6, numFalse = 6,J = 20, n.j = 100, power = 0.9053167,
+                                          power.definition = "indiv", MTP = "BF", marginError = 0.05,
+                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
+                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 2000, ncl = 8)
+toc()
+print(mdes_0125_bonf)
+```
+
+```{r}
+tic()
+mdes_0125_bh <- pum::mdes_blocked_i1_2c(M = 6, numFalse = 6,J = 20, n.j = 100, power = 0.9730000,
+                                          power.definition = "indiv", MTP = "BH", marginError = 0.05,
+                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
+                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 2000, ncl = 8)
+toc()
+print(mdes_0125_bh)
+```
+
+```{r}
+tic()
+mdes_0125_holms <- pum::mdes_blocked_i1_2c(M = 6, numFalse = 6,J = 20, n.j = 100, power = 0.9593667,
+                                          power.definition = "indiv", MTP = "HO", marginError = 0.05,
+                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
+                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 2000, ncl = 8)
+toc()
+print(mdes_0125_holms)
+```
+
+## Sample Function Validation
+
+We are testing the MDES function by putting in the parameters of the simulated power function and checking if we receive an MDES estimation within range.
+
+```{r}
+# Loading our pum library
+library(pum)
+```
+
+* M = 6
+* MDES = 0.125
+* numFalse = 6
+* J = 20
+* n.j = 100
+* R2.1 = 0.5
+* p = 0.5
+* alpha = 0.05
+* numCovar.1 = 5
+* numCovar.2 = NULL
+* rho = 0.5
+* tnum = 10000
+* snum = 2000
+* updateProgress = NULL
+
+```{r}
+tic()
+power_M6_sample100 <- pum::power_blocked_i1_2c(M = 6, MDES = 0.125, numFalse = 6, J = 20, n.j = 100, 
+                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
+toc()
+print(power_M6_sample100)
+```
+
+
+```{r}
+sample_BF_J_20 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "J", J = NULL, n.j = 100, 
+                                    J0 = 10, n.j0 = NULL, MDES = 0.125, power = 0.9064167 ,
+                                    power.definition = "indiv", MTP = "BF", marginError = 0.05,
+                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
+                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
+print(sample_BF_J_20)
+```
+
+```{r}
+sample_BF_nj_100 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "n.j", J = 20, n.j = NULL, 
+                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = 0.9064167 ,
+                                    power.definition = "indiv", MTP = "BF", marginError = 0.05,
+                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
+                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
+print(sample_BF_nj_100)
+```
+
+
+```{r}
+sample_BH_J_20 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "J", J = NULL, n.j = 100, 
+                                    J0 = 10, n.j0 = NULL, MDES = 0.125, power = 0.9717167 ,
+                                    power.definition = "indiv", MTP = "BH", marginError = 0.05,
+                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
+                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
+print(sample_BH_J_20)
+```
+
+```{r}
+sample_BH_nj_100 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "n.j", J = 20, n.j = NULL, 
+                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = 0.9717167 ,
+                                    power.definition = "indiv", MTP = "BH", marginError = 0.05,
+                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
+                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
+print(sample_BH_nj_100)
+```
+
+```{r}
+sample_HO_J_20 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "J", J = NULL, n.j = 100, 
+                                    J0 = 10, n.j0 = NULL, MDES = 0.125, power = 0.9575333 ,
+                                    power.definition = "indiv", MTP = "HO", marginError = 0.05,
+                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
+                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
+print(sample_HO_J_20)
+```
+
+```{r}
+sample_HO_nj_100 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "n.j", J = 20, n.j = NULL, 
+                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = 0.9575333 ,
+                                    power.definition = "indiv", MTP = "BH", marginError = 0.05,
+                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
+                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
+print(sample_HO_nj_100)
+```
 
 
 

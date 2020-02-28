@@ -1,3 +1,8 @@
+################################
+# Loading Libraries
+################################
+library(nlme)
+
 #' 2-Level Blocked Individual RCT (constant, fixed and random effects)
 #' 
 #' Treatment assignment happens at level 1
@@ -69,7 +74,7 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
   # Prepare block-level covar so have for all obs
   X.j <- as.data.frame(X.j)
   X.j[,M + 1] <- 1:J
-  colnames(X.j) <- c(paste0("X",1:M,".j"),"cluster.id")
+  colnames(X.j) <- c(paste0("X",1:M,".j"),"block.id")
   
   ## Level 1 (n.j individuals in each of J blocks)
   
@@ -78,8 +83,8 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
   
   # set up empty matrices & vectors
   D0.ij <- matrix(NA, nrow=(n.j*J),ncol=M+1)
-  colnames(D0.ij) <- c(paste0("D0.M",1:M,".ij"),"cluster.id")
-  D0.ij[,"cluster.id"] <- rep(1:J,each=n.j)
+  colnames(D0.ij) <- c(paste0("D0.M",1:M,".ij"),"block.id")
+  D0.ij[,"block.id"] <- rep(1:J,each=n.j)
   D.ij <- D1.ij <- X.ij <- as.matrix(D0.ij[,1:M])
   colnames(D1.ij) <- paste0("D1.M",1:M,".ij")
   colnames(D.ij) <- paste0("D.M",1:M,".ij")
@@ -93,7 +98,7 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
   
   for (j in 1:J) {
     
-    wj<-which(D0.ij[,"cluster.id"]==j)
+    wj<-which(D0.ij[,"block.id"]==j)
     
     # Generate error term r.ij
     # Create cov matrix for potential outcomes under no treatment - note resid var same for all clusters but can vary by domain/outcome
@@ -162,9 +167,9 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
   X.ij <- cbind(X.ij, incX.ij)
   
   #save and name simulated data output
-  output.temp <- data.frame(D0.ij,D1.ij,D.ij,Treat.ij,X.ij,cluster.id = 0)
+  output.temp <- data.frame(D0.ij,D1.ij,D.ij,Treat.ij,X.ij,block.id = 0)
   
-  output <- merge(output.temp,X.j,by = "cluster.id")
+  output <- merge(output.temp,X.j,by = "block.id")
   
   #  filename = paste0("gendata_M", M,"_MDES", MDES, "_J", J, "_nj", n.j, "_ICC", ICC, "_rho", rho, ".csv")
   
@@ -190,21 +195,19 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
     #cor(output[output$cluster.id==j,c("D.M1.ij","D.M2.ij")])
     
     # compute block-level means from indiv-level measures
-    agg.clustermean <- aggregate(output,by = list(output$cluster.id),FUN = "mean")
+    agg.blockmean <- aggregate(output,by = list(output$block.id),FUN = "mean")
     
     # variances of block-level outcomes under no treatment
-    apply(agg.clustermean,2,var)
+    apply(agg.blockmean,2,var)
     
     # check of effects
-    apply(agg.clustermean[,paste0("D1.M",1:M,".ij")]-agg.clustermean[,paste0("D0.M",1:M,".ij")],2,mean)
+    apply(agg.blockmean[,paste0("D1.M",1:M,".ij")]-agg.blockmean[,paste0("D0.M",1:M,".ij")],2,mean)
     
     # estimated ICC from lme
-    require(nlme)
-    
+
     browser()
-    
-    lme.dat <- nlme::groupedData(D0.M1.ij~1|cluster.id,data=output)
-    lme.test<-nlme::lme(lme.dat)
+    lme.dat <- groupedData(D0.M1.ij~1|block.id,data=output)
+    lme.test<- lme(lme.dat)
     varests <- as.numeric(VarCorr(lme.test)[,"Variance"])  # vector of variance estimates
     varests
     ICC.calc <- varests[1]/sum(varests)

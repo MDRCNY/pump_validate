@@ -61,7 +61,7 @@ The majority of the time is spent on apply function using multtest's built in fu
 * updateProgress = NULL
 
 ```{r}
-power_blocked_i1_2c(M = 5, MDES = 0.125, numFalse = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = NULL)
+power_blocked_i1_2c(M = 5, MDES = 0.125, numFalse = 3 , J = 10 , n.j = 10, R2.1 = 0.5 , p = 0.5 , alpha = 0.05 , numCovar.1 = 5 , numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 100, updateProgress = NULL)
 ```
 
 ### Test case 2 for Power
