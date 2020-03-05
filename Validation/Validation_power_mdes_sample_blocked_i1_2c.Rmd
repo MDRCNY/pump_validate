@@ -109,7 +109,7 @@ library(pum)
 
 ```{r}
 tic()
-power_M6_MDES0125 <- pum::power_blocked_i1_2c(M = 6, MDES = 0.125, numFalse = 6, J = 20, n.j = 100, 
+power_M6_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "BH", MDES = 0.125, numFalse = 3, J = 20, n.j = 100, 
                          R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
                          rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
 toc()

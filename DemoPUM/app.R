@@ -66,7 +66,8 @@ ui <- fluidPage(
                    fluidRow(
                     column(10,
                       div(style = "display: inline-block, vertical-align:top;", selectInput("MTP", "Which MTP do you plan to use?", 
-                               choices = list("Bonferroni" = "BF", "Holm" = "HO", "Westfall-Young" = "WY","Benjamini-Hochberg" = "BH"))) # select input buttons div
+                               choices = list("Bonferroni" = "Bonferroni", "Holm" = "Holm", "Benjamini-Hochberg" = "BH", 
+                                              "Westfall-Young-Single-Step" = "WY-SS", "Westfall-Young-Step-Down" = "WY-SD"))) # select input buttons div
                     ), # column for inputs
 
                     column(2, 
@@ -535,7 +536,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       } # End of Callback Progress Function
       
       #displaying based on the number of sample sizes
-      isolate(power_blocked_i1_2c(M = input$M, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
+      
+      isolate(power_blocked_i1_2c(M = input$M, MTP = input$MTP, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
                                 numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = updateProgress))
       
     }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
