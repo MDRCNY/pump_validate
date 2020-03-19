@@ -109,18 +109,36 @@ library(pum)
 
 ```{r}
 tic()
-power_M6_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "BH", MDES = 0.125, numFalse = 3, J = 20, n.j = 100, 
+power_M3_BF_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "Bonferroni", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
                          R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
                          rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
 toc()
-print(power_M6_MDES0125)
+print(power_M3_BF_MDES0125)
+```
+
+```{r}
+tic()
+power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "BH", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
+                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
+toc()
+print(power_M3_BH_MDES0125)
+```
+
+```{r}
+tic()
+power_M3_HO_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "HO", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
+                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
+toc()
+print(power_M3_HO_MDES0125)
 ```
 
 ### MDES for Individual Power is working
 
 ```{r}
 tic()
-mdes_0125_bonf_indiv <- pum::mdes_blocked_i1_2c(M = 6, numFalse = 6,J = 20, n.j = 100, power = 0.9053167,
+mdes_0125_bonf_indiv <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_BF_MDES0125["BF", "indiv"],
                                           power.definition = "indiv", MTP = "BF", marginError = 0.05,
                                           p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
                                           R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
@@ -131,32 +149,18 @@ print(mdes_0125_bonf_indiv)
 
 ```{r}
 tic()
-mdes_0125_bh_indiv <- pum::mdes_blocked_i1_2c(M = 6, numFalse = 6,J = 20, n.j = 100, power = 0.9730000,
+mdes_0125_bh_indiv <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_BH_MDES0125["BH", "indiv"],
                                           power.definition = "indiv", MTP = "BH", marginError = 0.05,
                                           p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
                                           R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
-                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 2000, ncl = 8)
+                                          rho = 0.5, omega = NULL,tnum = 1000, snum = 500, ncl = 8)
 toc()
 print(mdes_0125_bh_indiv)
 ```
 
 ```{r}
 tic()
-mdes_0125_holms_indiv <- pum::mdes_blocked_i1_2c(M = 6, numFalse = 6,J = 20, n.j = 100, power = 0.9593667,
-                                          power.definition = "indiv", MTP = "HO", marginError = 0.05,
-                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
-                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 2000, ncl = 8)
-toc()
-print(mdes_0125_holms_indiv)
-```
-
-
-### Non-Individual Power for MDES is NOT working
-
-```{r}
-tic()
-mdes_0125_holms_indiv1 <- pum::mdes_blocked_i1_2c(M = 6, numFalse = 6,J = 20, n.j = 100, power = 0.9603,
+mdes_0125_holms_indiv1 <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_HO_MDES0125["HO", "indiv1"],
                                           power.definition = "indiv1", MTP = "HO", marginError = 0.05,
                                           p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
                                           R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
@@ -165,16 +169,31 @@ toc()
 print(mdes_0125_holms_indiv1)
 ```
 
+
+### Non-Individual Power for MDES is NOT working
+
 ```{r}
 tic()
-mdes_0125_holms_min1 <- pum::mdes_blocked_i1_2c(M = 6, numFalse = 6,J = 20, n.j = 100, power = 0.9962,
+mdes_0125_holms_min1 <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_HO_MDES0125["HO","min1"],
                                           power.definition = "min1", MTP = "HO", marginError = 0.05,
                                           p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
                                           R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
-                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 2000, ncl = 8)
+                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 1000, ncl = 8)
 toc()
 print(mdes_0125_holms_min1)
 ```
+
+```{r}
+tic()
+mdes_0125_bh_min1 <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_BH_MDES0125["BH", "min1"],
+                                          power.definition = "min1", MTP = "BH", marginError = 0.05,
+                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
+                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 1000, ncl = 8)
+toc()
+print(mdes_0125_bh_min1)
+```
+
 
 ## Sample Function Validation
 
