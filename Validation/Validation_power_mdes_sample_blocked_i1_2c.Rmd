@@ -204,31 +204,6 @@ We are testing the MDES function by putting in the parameters of the simulated p
 library(pum)
 ```
 
-* M = 6
-* MDES = 0.125
-* numFalse = 6
-* J = 20
-* n.j = 100
-* R2.1 = 0.5
-* p = 0.5
-* alpha = 0.05
-* numCovar.1 = 5
-* numCovar.2 = NULL
-* rho = 0.5
-* tnum = 10000
-* snum = 2000
-* updateProgress = NULL
-
-```{r}
-tic()
-power_M6_sample100 <- pum::power_blocked_i1_2c(M = 6, MDES = 0.125, numFalse = 6, J = 20, n.j = 100, 
-                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
-toc()
-print(power_M6_sample100)
-```
-
-
 ```{r}
 sample_BF_J_20 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "J", J = NULL, n.j = 100, 
                                     J0 = 10, n.j0 = NULL, MDES = 0.125, power = 0.9064167 ,
@@ -239,49 +214,67 @@ print(sample_BF_J_20)
 ```
 
 ```{r}
-sample_BF_nj_100 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "n.j", J = 20, n.j = NULL, 
-                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = 0.9064167 ,
-                                    power.definition = "indiv", MTP = "BF", marginError = 0.05,
+tic()
+power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "BH", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
+                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
+toc()
+print(power_M3_BH_MDES0125)
+```
+
+```{r}
+tic()
+power_M3_HO_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "HO", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
+                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
+toc()
+print(power_M3_HO_MDES0125)
+```
+
+```{r}
+tic()
+power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "BH", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
+                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
+                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
+toc()
+print(power_M3_BH_MDES0125)
+```
+
+```{r}
+sample_BH_indiv_nj_50 <- sample_blocked_i1_2c(M = 3, numFalse = 3, MTP = "BH", typesample = "n.j", J = 20, n.j = NULL, 
+                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = power_M3_BH_MDES0125["BH", "indiv"] ,
+                                    power.definition = "indiv", marginError = 0.05,
                                     p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
                                     R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_BF_nj_100)
+print(sample_BH_nj_50)
 ```
 
 
 ```{r}
-sample_BH_J_20 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "J", J = NULL, n.j = 100, 
-                                    J0 = 10, n.j0 = NULL, MDES = 0.125, power = 0.9717167 ,
-                                    power.definition = "indiv", MTP = "BH", marginError = 0.05,
+sample_BH_min1_J_20 <- sample_blocked_i1_2c(M = 3, numFalse = 3, typesample = "J", J = NULL, n.j = 50, 
+                                    J0 = 10, n.j0 = NULL, MDES = 0.125, power = power_M3_BH_MDES0125["BH", "min1"] ,
+                                    power.definition = "min1", MTP = "BH", marginError = 0.05,
                                     p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
                                     R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_BH_J_20)
+print(sample_BH_min1_J_20)
 ```
 
 ```{r}
-sample_BH_nj_100 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "n.j", J = 20, n.j = NULL, 
-                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = 0.9717167 ,
-                                    power.definition = "indiv", MTP = "BH", marginError = 0.05,
-                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
-                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_BH_nj_100)
-```
-
-```{r}
-sample_HO_J_20 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "J", J = NULL, n.j = 100, 
-                                    J0 = 10, n.j0 = NULL, MDES = 0.125, power = 0.9575333 ,
+sample_HO_J_20_indiv <- sample_blocked_i1_2c(M = 3, numFalse = 3, typesample = "J", J = NULL, n.j = 50, 
+                                    J0 = 10, n.j0 = NULL, MDES = 0.125, power = power_M3_HO_MDES0125["HO", "indiv"] ,
                                     power.definition = "indiv", MTP = "HO", marginError = 0.05,
                                     p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
                                     R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_HO_J_20)
+print(sample_HO_J_20_indiv)
 ```
 
 ```{r}
-sample_HO_nj_100 <- sample_blocked_i1_2c(M = 6, numFalse = 6, typesample = "n.j", J = 20, n.j = NULL, 
-                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = 0.9575333 ,
+sample_HO_nj_50_indiv <- sample_blocked_i1_2c(M = 3, numFalse = 3, typesample = "n.j", J = 20, n.j = NULL, 
+                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = power_M3_HO_MDES0125["HO", "indiv"] ,
                                     power.definition = "indiv", MTP = "HO", marginError = 0.05,
                                     p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
                                     R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_HO_nj_100)
+print(sample_HO_nj_50_indiv)
 ```
 
 
