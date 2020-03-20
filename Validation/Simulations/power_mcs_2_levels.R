@@ -173,6 +173,9 @@ get.rawt <- function(mdat, design, n.j, J) {
 
 makelist.samp <-function(M, samp, design) {
   #a list length M for a sample of data, each entry is a dataset for a single domain
+  
+  browser()
+  
   mdat <- lapply(1:M, function(m) samp[,c("block.id", "cluster.id","Treat.ij", "Treat.j",grep(as.character(m), names(samp), value=TRUE))])
   
   mdat.rn <- lapply(mdat, function(x)  
@@ -303,6 +306,8 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
                             ICC = ICC ,alpha = alpha,Gamma.00 = Gamma.00 , p.j.range = p.j.range ,
                             p.j = p.j ,R2.1 = R2.1 ,R2.2 = R2.2 ,check = check ,omega = omega)
     }
+    
+    browser()
     
     mdat <- makelist.samp(M, samp, design) #list length M
     rawp <- get.rawp(mdat, design, n.j, J) #vector length M

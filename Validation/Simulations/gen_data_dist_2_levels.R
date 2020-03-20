@@ -205,13 +205,14 @@ blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
     
     # estimated ICC from lme
 
-    browser()
-    lme.dat <- groupedData(D0.M1.ij~1|block.id,data=output)
-    lme.test<- lme(lme.dat)
-    varests <- as.numeric(VarCorr(lme.test)[,"Variance"])  # vector of variance estimates
-    varests
-    ICC.calc <- varests[1]/sum(varests)
-    ICC.calc
+    # browser()
+    # lme.dat <- groupedData(D0.M1.ij~1|block.id,data=output)
+    # lme.test<- lme(lme.dat)
+    # varests <- as.numeric(VarCorr(lme.test)[,"Variance"])  # vector of variance estimates
+    # varests
+    # 
+    # ICC.calc <- varests[1]/sum(varests)
+    # ICC.calc
   }
   
   return(output)
@@ -406,7 +407,7 @@ simple_c2_2r <- function( M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
     apply(agg.clustermean[,paste0("D1.M",1:M,".ij")] - agg.clustermean[,paste0("D0.M",1:M,".ij")],2,mean)
     
     # estimated ICC from lme
-    require(nlme)
+    # require(nlme)
     browser()
     lme.dat <- groupedData(D0.M1.ij~1|cluster.id,data=output)
     lme.test <- lme(lme.dat)
