@@ -174,21 +174,31 @@ get.rawt <- function(mdat, design, n.j, J) {
 makelist.samp <-function(M, samp, design) {
   #a list length M for a sample of data, each entry is a dataset for a single domain
   
-  browser()
   
-  mdat <- lapply(1:M, function(m) samp[,c("block.id", "cluster.id","Treat.ij", "Treat.j",grep(as.character(m), names(samp), value=TRUE))])
-  
-  mdat.rn <- lapply(mdat, function(x)  
-    data.frame(D=x[,grep("D.M", names(x), value=TRUE)], #outcome
-               Covar.j = x[,grep("X[0-9].j", names(x), value=TRUE)], #site level covariate
-               Covar.ij = x[,grep("X[0-9].ij", names(x), value=TRUE)], #individual level covariate
-               Treat.ij = x[,"Treat.ij"],
-               Treat.j = x[,"Treat.j"],
-               block.id = x[,"block.id"],
-               cluster.id = x[,"cluster.id"]))
-  return(mdat.rn)
-}
-
+  if (design %in% c("Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r")) {
+    mdat <- lapply(1:M, function(m) samp[,c("block.id","Treat.ij",grep(as.character(m), names(samp), value=TRUE))])
+    mdat.rn <- lapply(mdat, function(x)  
+      data.frame(D=x[,grep("D.M", names(x), value=TRUE)], #outcome
+                 Covar.j = x[,grep("X[0-9].j", names(x), value=TRUE)], #site level covariate
+                 Covar.ij = x[,grep("X[0-9].ij", names(x), value=TRUE)], #individual level covariate
+                 Treat.ij = x[,"Treat.ij"],
+                 block.id = x[,"block.id"]))
+    return(mdat.rn)
+    
+  } else if (design %in% c("Simple_c2_2r")){
+    
+    mdat <- lapply(1:M, function(m) samp[,c("cluster.id","Treat.ij", "Treat.j",grep(as.character(m), names(samp), value=TRUE))])
+    
+    mdat.rn <- lapply(mdat, function(x)  
+      data.frame(D=x[,grep("D.M", names(x), value=TRUE)], #outcome
+                 Covar.j = x[,grep("X[0-9].j", names(x), value=TRUE)], #site level covariate
+                 Covar.ij = x[,grep("X[0-9].ij", names(x), value=TRUE)], #individual level covariate
+                 Treat.ij = x[,"Treat.ij"],
+                 Treat.j = x[,"Treat.j"],
+                 cluster.id = x[,"cluster.id"]))
+    return(mdat.rn)
+  } # for cluster random effect
+} #makelist.sample
 
 
 
@@ -306,8 +316,6 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
                             ICC = ICC ,alpha = alpha,Gamma.00 = Gamma.00 , p.j.range = p.j.range ,
                             p.j = p.j ,R2.1 = R2.1 ,R2.2 = R2.2 ,check = check ,omega = omega)
     }
-    
-    browser()
     
     mdat <- makelist.samp(M, samp, design) #list length M
     rawp <- get.rawp(mdat, design, n.j, J) #vector length M

@@ -408,7 +408,6 @@ simple_c2_2r <- function( M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
     
     # estimated ICC from lme
     # require(nlme)
-    browser()
     lme.dat <- groupedData(D0.M1.ij~1|cluster.id,data=output)
     lme.test <- lme(lme.dat)
     varests <- as.numeric(VarCorr(lme.test)[,"Variance"])  # vector of variance estimates

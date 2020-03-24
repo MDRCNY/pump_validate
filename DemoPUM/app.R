@@ -848,9 +848,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
                               n.j = input$n.j_sample,J0 = 10, n.j0 = 10,MDES = input$MDES_sample, power=input$power_samples, 
                               power.definition = input$pdefn_sample, MTP=input$MTP_sample, 
                               marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
-                              numCovar.1=input$numCovar.1_sample, numCovar.2=NULL, R2.1=input$R2.1_sample, R2.2=0, ICC=0,
-                              mod.type="constant", omega=NULL,
-                              tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
+                              numCovar.1 = input$numCovar.1_sample, numCovar.2 = NULL, R2.1 = input$R2.1_sample, R2.2 = 0, ICC = 0,
+                              mod.type = "constant", omega = NULL,
+                              tnum = 10000, snum = 2000, ncl = 8, updateProgress = updateProgress)) #data table that is isolated
       
     }) # end of isolate. We do not want 
   }) # Sample calculation
@@ -859,4 +859,17 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+# sample_BH_indiv_nj_50 <- sample_blocked_i1_2c(M = 3, numFalse = 3, MTP = "BH", typesample = "n.j", J = 20, n.j = NULL, 
+#                                              J0 = NULL, n.j0 = 50, MDES = 0.125, power = power_M3_BH_MDES0125["BH", "indiv"] ,
+#                                              power.definition = "indiv", marginError = 0.05,
+#                                              p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
+#                                              R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
+# print(sample_BH_indiv_nj_50)
+
+
+
+
+
+
 

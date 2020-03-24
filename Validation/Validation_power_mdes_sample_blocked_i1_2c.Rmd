@@ -246,7 +246,7 @@ sample_BH_indiv_nj_50 <- sample_blocked_i1_2c(M = 3, numFalse = 3, MTP = "BH", t
                                     power.definition = "indiv", marginError = 0.05,
                                     p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
                                     R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_BH_nj_50)
+print(sample_BH_indiv_nj_50)
 ```
 
 
@@ -270,7 +270,7 @@ print(sample_HO_J_20_indiv)
 
 ```{r}
 sample_HO_nj_50_indiv <- sample_blocked_i1_2c(M = 3, numFalse = 3, typesample = "n.j", J = 20, n.j = NULL, 
-                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = power_M3_HO_MDES0125["HO", "indiv"] ,
+                                    J0 = NULL, n.j0 = 10, MDES = 0.125, power = power_M3_HO_MDES0125["HO", "indiv"] ,
                                     power.definition = "indiv", MTP = "HO", marginError = 0.05,
                                     p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
                                     R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
