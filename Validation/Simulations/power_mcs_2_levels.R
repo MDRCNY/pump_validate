@@ -177,12 +177,13 @@ makelist.samp <-function(M, samp, design) {
   
   if (design %in% c("Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r")) {
     mdat <- lapply(1:M, function(m) samp[,c("block.id","Treat.ij",grep(as.character(m), names(samp), value=TRUE))])
-    mdat.rn <- lapply(mdat, function(x)  
-      data.frame(D=x[,grep("D.M", names(x), value=TRUE)], #outcome
-                 Covar.j = x[,grep("X[0-9].j", names(x), value=TRUE)], #site level covariate
-                 Covar.ij = x[,grep("X[0-9].ij", names(x), value=TRUE)], #individual level covariate
+    mdat.rn <- lapply(mdat, function(x)
+      data.frame(D = x[,grep("D.M", names(x), value=TRUE)], #outcome
+                 Covar.j = x[,grep("^X[0-9].j", names(x), value=TRUE)], #site level covariate
+                 Covar.ij = x[,grep("^X[0-9].ij", names(x), value=TRUE)], #individual level covariate
                  Treat.ij = x[,"Treat.ij"],
                  block.id = x[,"block.id"]))
+    
     return(mdat.rn)
     
   } else if (design %in% c("Simple_c2_2r")){
@@ -217,7 +218,7 @@ get.adjp <- function(rawp, rawt, proc, alpha, B, ncl, mdat, maxT) {
     #print(paste0("working on ", proc, " with ", B, " permutations"))
     #adjust.wy needs rawp as a vector for all m of a single sample
     tw1 <- Sys.time()
-    adjp.proc <- adjust.WY(data=mdat, B=B, rawp=rawp, rawt=rawt, ncl=ncl, clustered=TRUE, clusterby='block.id', design, maxT)[,"WY"]
+    adjp.proc <- adjust.WY(data=mdat, B=B, rawp=rawp, rawt=rawt, ncl=ncl, clustered=TRUE, blockby='block.id', design, maxT)[,"WY"]
     tw2 <- Sys.time()
     # print(difftime(tw2, tw1))
   }

@@ -1,5 +1,11 @@
+# Library
+library(here)
+# Sourcing from data generating functions
+source(here::here("Validation/Simulations", "power_mcs_2_levels.R"))
+
 # This script contains functions for carrying out Westfall-Young step-down corrections
 # Last - updated March 7, 2019, Kristin Porter
+# Last - edited March 23, 2020, Zarni Htet
 
 ### resamp.by.block function to help resample for fixed cases
 resamp.by.block<-function(...) {
@@ -8,17 +14,24 @@ resamp.by.block<-function(...) {
   sample(tc,replace=FALSE)  
 }
 
-
-### perm.regs: performs regressions with permuted treatment indicator
-
-# permT = matrix with n.j * J rows and B columns, contains all permutations of treatment indicator
-# data = data for all M domains
-# blockby = blocking variable 
-# funct = "constant", "fixed" or "random"
-# maxT = TRUE if using maxT procedures, otherwise minp
-# n.j = individuals per block (assume same for all)
-# J = number of blocks
-perm.regs <- function(permT,data,blockby,funct,maxT,n.j,J) {
+#' Performs regression with permuted treatment indicator
+#'
+#' @param permT matrix with n.j * J rows and B columns, contains all permutations of treatment indicator
+#' @param data data for all M domains
+#' @param design the particular RCT design for an experiment
+#' @param blockby blocking variable 
+#' @param funct "constant", "fixed" or "random` "
+#' @param maxT TRUE if using maxT procedures, otsrdfghjkl;'
+#' szxcvbn m,./12347890-=herwise minp
+#' @param n.j individuals per block (assume same for all)
+#' @param J number of blocks 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+perm.regs <- function(permT,data,design,blockby,funct,maxT,n.j,J) {
+  
   outpt<-numeric(length(data))
   M<-length(data)
   for (m in 1:M) {
@@ -27,18 +40,36 @@ perm.regs <- function(permT,data,blockby,funct,maxT,n.j,J) {
     Mdata$Treat.ij <- permT
     mdum <- make.dummies(Mdata,blockby=blockby,n.j=n.j,J=J) # took this out of perm.reg so doing just once
     fit <- make.model(mdum$fixdat, mdum$dnames, funct)
-    ifelse(maxT,outpt[m]<-get.tstat(fit),outpt[m]<-get.pval(fit))
+    
+    if (design == "Blocked_i1_2c" | design == "Blocked_i1_2f" | design == "Blocked_i1_2r") {
+      
+      ifelse(maxT,outpt[m] <- get.tstat.Level1(fit),outpt[m] <- get.pval.Level1(fit))
+    
+    } else if (design == "Simple_c2_2r"){
+      
+      ifelse(maxT,outpt[m] <- get.tstat.Level2(fit),outpt[m] <- get.pval.Level2(fit))
+      
+    }
+      
     }
   return(outpt)
 }
 
-### comp.rawp: makes nullp and rawp comparisons and returns indicators
-# nullprow: row of p-values
-# rawp: raw p-values
-# r.m.r: vector of indices of rawp in order
-# The length of nullprow, rawp, and r.m.r are the same. This function is performed on each row of nullp.mat
-
+#' Comp.rawp: makes nullp and rawp comparisons and returns indicators
+#'
+#' The length of nullprow, rawp, and r.m.r are the same. This function is performed on each row of nullp.mat
+#'
+#' @param nullprow row of p-values
+#' @param rawp raw p-values
+#' @param r.m.r vector of indices of rawp in order
+#'
+#' @return
+#' @export
+#'
+#' @examples
 comp.rawp <- function(nullprow, rawp, r.m.r) {
+  
+  
   num.test <- length(nullprow)
   minp <- rep(NA, num.test)
   minp[1] <- min(nullprow[r.m.r]) < rawp[r.m.r][1]
@@ -47,7 +78,19 @@ comp.rawp <- function(nullprow, rawp, r.m.r) {
   }
   return(as.integer(minp))
 }
+
+#' Comp.rawt: makes nullp and rawt comparisons and returns indicators
+#'
+#' @param nullptrow row of p-values
+#' @param rawt raw t-values
+#' @param r.m.r vector of indices of rawp in order
+#'
+#' @return
+#' @export
+#'
+#' @examples
 comp.rawt <- function(nullptrow, rawt, r.m.r) {
+  
   num.test <- length(nullptrow)
   maxt <- rep(NA, num.test)
   maxt[1] <- max(abs(nullptrow)[r.m.r]) > abs(rawt)[r.m.r][1]
@@ -56,8 +99,8 @@ comp.rawt <- function(nullptrow, rawt, r.m.r) {
   }
   return(as.integer(maxt))
 }
-#call to adjust.WY from get.adjp
-#adjust.WY(data=mdat, B=B, subgroup=NULL, which.mult="pooled", incl.covar=TRUE, rawp=rawp, ncl=ncl, clustered=TRUE, blockby='block.id', funct)
+
+
 # adjust.WY: does WY adjustments for a single sample in parallel
 
 # data        A list of length M. Each element in the list is a data frame holding the m'th data set
@@ -65,11 +108,33 @@ comp.rawt <- function(nullptrow, rawt, r.m.r) {
 # rawp        Vector of length M of the raw p-values
 # rawt        Vector of lenght M of the raw test statistics
 # ncl         Number of clusters for parallel processing
-# clustered   True if 
+# clustered   True if we are handling a cluster design
 # blockby   Variable that designates the clusters
 # funct       
 
-adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, blockby, funct, maxT) {
+#' Adjust.WY: does WY adjustments for a single sample in parallel
+#' 
+#' Call to adjust.WY from get.adjp
+#' adjust.WY(data=mdat, B=B, subgroup=NULL, which.mult="pooled", 
+#' incl.covar=TRUE, rawp=rawp, ncl=ncl, clustered=TRUE, blockby='block.id', funct)
+#' 
+#' @param data A list of length M. Each element in the list is a data frame holding the m'th data set
+#' @param B Number of permutations
+#' @param rawp Vector of length M of the raw p-values
+#' @param rawt Vector of lenght M of the raw test statistics
+#' @param ncl Number of clusters for parallel processing
+#' @param clustered True if we are handling a cluster design
+#' @param blockby Variable that designates the clusters or blocks?
+#' @param design randomized control design of interest: block 2 level, cluster
+#' @param funct 
+#' @param maxT 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' 
+adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, blockby, design, funct, maxT) {
   
   # get number of tests
   ntests <- length(data)
@@ -85,14 +150,16 @@ adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, blockby, funct, maxT) {
   }
   
   cl <- makeSOCKcluster(rep("localhost", ncl))
-  clusterExport(cl, list("perm.regs", "data", "clustered", "blockby", "funct", "make.dummies", "make.model", "get.tstat", "get.pval", "p.j", "resamp.by.block", "fastLm", "lmer"), envir=environment())
+  clusterExport(cl, list("perm.regs", "data", "clustered", "blockby", "funct", "make.dummies", "make.model", 
+                         "get.tstat.Level1", "get.tstat.Level2", "get.pstat.Level1", "get.pstat.Level2", 
+                         "resamp.by.block", "fastLm", "lmer"), envir=environment())
   
   #print these to see what is assigned
   print(cl)
   print(ncl)
   
   # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
-  nullpt <- parApply(cl,permT,2,perm.regs,data=data,blockby=blockby,funct=funct,maxT=maxT,n.j=n.j,J=J)   # revised KP
+  nullpt <- parApply(cl,permT,2,perm.regs,data = data,blockby = blockby,funct = funct,maxT = maxT,n.j = n.j,J = J, design = design)   # revised KP
   
   stopCluster(cl)
   

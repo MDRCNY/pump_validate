@@ -17,7 +17,7 @@ library(here)      # For relative path sourcing
 library(pum)       # For Power Under Multiplicity Package
 ```
   
-```{r sourcefiles}
+```{r sourcefiles, warnings = FALSE, message = FALSE}
 source(here::here("Validation/Simulations", "adjust.WY.R")) # MTP Westfall-Young
 source(here::here("Validation/Simulations", "gen_data_dist_2_levels.R")) # data generating functions for 2 level block and cluster
 source(here::here("Validation/Simulations", "power_mcs_2_levels.R")) # Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.
@@ -62,7 +62,7 @@ check <- TRUE #done
 
 ```{r}
 tic()
-validate_power_blocked_i1_2c(rho = rho, ncl = ncl, procs = procs, design = design, M = M, MDES = MDES,
+ validate_power_blocked_i1_2c(rho = rho, ncl = ncl, procs = procs, design = design, M = M, MDES = MDES,
                              p.j.range = p.j.range, p.j = p.j, S = S, B = B, J = J, 
                              n.j = n.j, theta = theta, omega = omega, Gamma.00 = Gamma.00, sig.sq = sig.sq,
                              alpha = alpha, ICC = ICC, R2.2 = R2.2, R2.1 = R2.1, maxT = maxT, rho.0_lev1 = rho.0_lev1,
