@@ -39,18 +39,18 @@ make.model<-function(dat, dummies, design) {
   return(mod)
 }
 
-###########################################################################
-#	Function: make.dummies		Inputs:	dat, clusterby, n.j, J	              #
-#		a dataset (dat), 								                                      #
-#		a column name as a string to cluster by (clusterby), 		              #
-#		n.j, and J 									                                          #
-#	Outputs: dummies (column names), lmedat.fixed (data.frame)		          #
-###########################################################################
+######################################################################################
+#	Function: make.dummies		Inputs:	dat, clusterby, n.j, J	              
+#		a dataset (dat), 								                                      
+#		a column name as a string to cluster by (clusterby), ZH: Can this be blockby?    #
+#		n.j, and J 									                                                     #
+#	Outputs: dummies (column names), lmedat.fixed (data.frame)		                     #
+######################################################################################
 
-make.dummies <- function(dat, clusterby, n.j, J){
+make.dummies <- function(dat, blockby, n.j, J){
   
-  block.rep<-matrix(data=rep(dat[,clusterby],n.j),
-                    nrow=length(dat[,clusterby]),ncol=J)
+  block.rep<-matrix(data=rep(dat[,blockby],n.j),
+                    nrow=length(dat[,blockby]),ncol=J)
   colnum<-seq(1:J)
   block.dum.fn<-function(...) {1*(...==colnum)}
   block.dum<-t(apply(block.rep,1,block.dum.fn))
@@ -132,6 +132,7 @@ get.rawp <- function(mdat, design, n.j, J) {
   }
   if (design == "Blocked_i1_2r") {
     mods = lapply(mdat, function(m) make.model(m,NULL,design))
+    rawp = sapply(mods, function(x) get.pval.Level1(x))
   }
   if (design == "Simple_c2_2r") {
     mods = lapply(mdat, function(m) make.model(m,NULL, design))
@@ -218,7 +219,7 @@ get.adjp <- function(rawp, rawt, proc, alpha, B, ncl, mdat, maxT) {
     #print(paste0("working on ", proc, " with ", B, " permutations"))
     #adjust.wy needs rawp as a vector for all m of a single sample
     tw1 <- Sys.time()
-    adjp.proc <- adjust.WY(data=mdat, B=B, rawp=rawp, rawt=rawt, ncl=ncl, clustered=TRUE, blockby='block.id', design, maxT)[,"WY"]
+    adjp.proc <- adjust.WY(data=mdat, B=B, rawp=rawp, rawt=rawt, ncl=ncl, clustered=TRUE, blockby='block.id', design, maxT = maxT)[,"WY"]
     tw2 <- Sys.time()
     # print(difftime(tw2, tw1))
   }
@@ -247,10 +248,10 @@ get.rejects <- function(adjp, alpha) {
 #  Funtion to estimate statistical power after multiple hypothesis testing has been done
 #
 #' @param procs multiple testing procedures to compute power for 
+#'
 #' @param S number of samples to generate
 #' @param ncl number of clusters for parallel computing
 #' @param B number of samples of Westfall-Young
-#' @param maxT ?
 #' @param M number of tests/domains/outcomes 
 #' @param MDES minimum detectable effect size, vector length M
 #' @param n.j number of observations per block 
@@ -268,6 +269,7 @@ get.rejects <- function(adjp, alpha) {
 #' @param R2.2 R squared for mth level 2 outcome by mth level 1 covar
 #' @param omega effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M
 #' @param check boolean indicating whether to conduct checks
+#' @param maxT 
 #' @param design RCT design (see list/naming convention)
 
 est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
@@ -298,31 +300,36 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
   rawt.all <- matrix(NA,S,M)
   # begin loop through all samples to be generated
   for (s in 1:S) {
+    
     t1 <- Sys.time()
     if (s %% px==0){ print(paste0("Now processing sample ", s, " of ", S))}
     
-    # generate sample based on design
-    if (design %in% c("Blocked_i1_2c","Blocked_i1_2f","Blocked_i1_2r")) {
+    for (d in design){
       
-      samp <- blocked_i1_2 (M = M ,MDES = MDES ,n.j = n.j ,J = J ,rho.0_lev1 = rho.0_lev1 ,
-                            rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,ICC = ICC ,alpha = alpha ,
-                            Gamma.00 = Gamma.00 ,p.j.range = p.j.range  ,R2.1 = R2.1 ,
-                            R2.2 = R2.2 ,check = check ,omega = omega)
-    }
-    
-    if (design %in% c("Simple_c2_2r")) {
+      # generate sample based on design
+      if (d %in% c("Blocked_i1_2c","Blocked_i1_2f","Blocked_i1_2r")) {
+        
+        samp <- blocked_i1_2 (M = M ,MDES = MDES ,n.j = n.j ,J = J ,rho.0_lev1 = rho.0_lev1 ,
+                              rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,ICC = ICC ,alpha = alpha ,
+                              Gamma.00 = Gamma.00 ,p.j.range = p.j.range  ,R2.1 = R2.1 ,
+                              R2.2 = R2.2 ,check = check ,omega = omega)
+      }
       
-      samp <- simple_c2_2r (M = M ,MDES = MDES,n.j = n.j ,J = J,rho.0_lev1 = rho.0_lev1 ,
-                            rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,
-                            ICC = ICC ,alpha = alpha,Gamma.00 = Gamma.00 , p.j.range = p.j.range ,
-                            p.j = p.j ,R2.1 = R2.1 ,R2.2 = R2.2 ,check = check ,omega = omega)
-    }
+      if (d %in% c("Simple_c2_2r")) {
+        
+        samp <- simple_c2_2r (M = M ,MDES = MDES,n.j = n.j ,J = J,rho.0_lev1 = rho.0_lev1 ,
+                              rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,
+                              ICC = ICC ,alpha = alpha,Gamma.00 = Gamma.00 , p.j.range = p.j.range ,
+                              p.j = p.j ,R2.1 = R2.1 ,R2.2 = R2.2 ,check = check ,omega = omega)
+      }
+      
+      mdat <- makelist.samp(M, samp, design = d) #list length M
+      rawp <- get.rawp(mdat, design = d, n.j, J) #vector length M
+      rawt <- get.rawt(mdat, design = d, n.j, J) #vector length M
+      rawt.all[s,] <- rawt
     
-    mdat <- makelist.samp(M, samp, design) #list length M
-    rawp <- get.rawp(mdat, design, n.j, J) #vector length M
-    rawt <- get.rawt(mdat, design, n.j, J) #vector length M
-    rawt.all[s,] <- rawt
-    
+    } # popping through design  
+      
     for (p in 1:(length(procs) + 1)) {
       if (p == 1) {
         pvals <-rawp
@@ -330,7 +337,7 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
       } else {
         t11 <- Sys.time()
         proc <- procs[p-1]
-        pvals <- get.adjp(rawp, rawt, proc, alpha, B, ncl, mdat, maxT)
+        pvals <- get.adjp(rawp, rawt, proc, alpha, B, ncl, mdat, maxT = maxT)
         t21 <- Sys.time()
         if (s == 1) {print(paste("One sample of ", proc, " took ", t21 - t11))}
       }

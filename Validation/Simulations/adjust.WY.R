@@ -18,11 +18,9 @@ resamp.by.block<-function(...) {
 #'
 #' @param permT matrix with n.j * J rows and B columns, contains all permutations of treatment indicator
 #' @param data data for all M domains
-#' @param design the particular RCT design for an experiment
+#' @param design the particular RCT design for an experiment: "Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r","Simple_c2_2r"
 #' @param blockby blocking variable 
-#' @param funct "constant", "fixed" or "random` "
-#' @param maxT TRUE if using maxT procedures, otsrdfghjkl;'
-#' szxcvbn m,./12347890-=herwise minp
+#' @param maxT TRUE if using maxT procedures
 #' @param n.j individuals per block (assume same for all)
 #' @param J number of blocks 
 #'
@@ -30,7 +28,7 @@ resamp.by.block<-function(...) {
 #' @export
 #'
 #' @examples
-perm.regs <- function(permT,data,design,blockby,funct,maxT,n.j,J) {
+perm.regs <- function(permT,data,design,blockby,maxT,n.j,J) {
   
   outpt<-numeric(length(data))
   M<-length(data)
@@ -38,8 +36,8 @@ perm.regs <- function(permT,data,design,blockby,funct,maxT,n.j,J) {
     # Mdata is a dataset for one domain (m) for one sample
     Mdata<-data[[m]]
     Mdata$Treat.ij <- permT
-    mdum <- make.dummies(Mdata,blockby=blockby,n.j=n.j,J=J) # took this out of perm.reg so doing just once
-    fit <- make.model(mdum$fixdat, mdum$dnames, funct)
+    mdum <- make.dummies(Mdata,blockby = blockby,n.j=n.j,J=J) # took this out of perm.reg so doing just once
+    fit <- make.model(mdum$fixdat, mdum$dnames, design)
     
     if (design == "Blocked_i1_2c" | design == "Blocked_i1_2f" | design == "Blocked_i1_2r") {
       
@@ -109,8 +107,7 @@ comp.rawt <- function(nullptrow, rawt, r.m.r) {
 # rawt        Vector of lenght M of the raw test statistics
 # ncl         Number of clusters for parallel processing
 # clustered   True if we are handling a cluster design
-# blockby   Variable that designates the clusters
-# funct       
+# blockby     Variable that designates the clusters
 
 #' Adjust.WY: does WY adjustments for a single sample in parallel
 #' 
@@ -125,16 +122,15 @@ comp.rawt <- function(nullptrow, rawt, r.m.r) {
 #' @param ncl Number of clusters for parallel processing
 #' @param clustered True if we are handling a cluster design
 #' @param blockby Variable that designates the clusters or blocks?
-#' @param design randomized control design of interest: block 2 level, cluster
-#' @param funct 
-#' @param maxT 
+#' @param design the particular RCT design for an experiment: "Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r","Simple_c2_2r"
+#' @param maxT whether to adjust based on ordered rawp values or ordered rawT values
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #' 
-adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, blockby, design, funct, maxT) {
+adjust.WY <- function(data, B, rawp, rawt, ncl, clustered, blockby, design, maxT) {
   
   # get number of tests
   ntests <- length(data)
@@ -150,8 +146,8 @@ adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, blockby, design, funct,
   }
   
   cl <- makeSOCKcluster(rep("localhost", ncl))
-  clusterExport(cl, list("perm.regs", "data", "clustered", "blockby", "funct", "make.dummies", "make.model", 
-                         "get.tstat.Level1", "get.tstat.Level2", "get.pstat.Level1", "get.pstat.Level2", 
+  clusterExport(cl, list("perm.regs", "data", "clustered", "blockby", "make.dummies", "make.model", 
+                         "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2", 
                          "resamp.by.block", "fastLm", "lmer"), envir=environment())
   
   #print these to see what is assigned
@@ -159,7 +155,9 @@ adjust.WY<-function(data, B, rawp, rawt, ncl, clustered, blockby, design, funct,
   print(ncl)
   
   # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
-  nullpt <- parApply(cl,permT,2,perm.regs,data = data,blockby = blockby,funct = funct,maxT = maxT,n.j = n.j,J = J, design = design)   # revised KP
+  #permT,data,design,blockby,maxT,n.j,J
+  nullpt <- parallel::parApply(cl,permT,2,perm.regs,data = data, maxT = maxT,blockby = blockby,
+                     n.j = n.j,J = J, design = design)   # revised KP
   
   stopCluster(cl)
   
