@@ -14,6 +14,7 @@ library(PowerUpR) # for checking with another power estimation function
 library(here) # for relative file paths
 library(tictoc) # for timing
 library(pum) # for checking with the new methods
+library(dplyr) # for combing data frames
 
 
 # Installing and Loading Libraries from Bioconductor package
@@ -105,14 +106,55 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
   # Power_Up_Standard_Error
   power_up_results$se <- power_up_results$parms$es/power_up_results$ncp
   
-  # Building a Table to compare our Raw Results and PowerUp
+  ######################
+  # PUMP methods value #
+  ######################
+  
+
+  iterator = 0
+  for (p in procs){
+    
+    # adding iterators for appending data frames       
+    
+      browser()
+      
+      pum_results <- pum::power_blocked_i1_2c(M = M, MTP = p, MDES = MDES, numFalse = M, J = J, n.j = n.j, 
+                               p = p.j.range[1], alpha = alpha, numCovar.1 = 0, numCovar.2 = 0,
+                               R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, sigma = NULL,rho = rho, omega = NULL,
+                               tnum = B, snum = S, ncl = ncl)
+      
+      # Converting from Matrix to data frame with MTP column name
+      pum_results <- data.frame(pum_results)
+      
+    if (iterator == 0){
+      
+      pum_combined_results <- pum_results
+      
+    }else{
+      
+      browser()
+      pum_combined_results <- dplyr::bind_rows(pum_combined_results, pum_results[2,])
+      
+    }
+      
+      
+    iterator = iterator + 1  
+      
+  }
+    
+    # adding rownames to the pum_combined_results table
+  
+    rownames(pum_combined_results) <- c("rawp", procs)
   
   browser()
+  ########################################
+  # Compare Results Table                #
+  ########################################
   compare_results <- data.frame("indiv_sim" = simpwr$adjusted_power[,"D1indiv"],
                                 "indiv_method" = power_up_results$power,
                                 "indiv_sim_lower_ci" = simpwr$ci_lower[,"D1indiv"],
                                 "indiv_method_se" = power_up_results$se,
                                 "indiv_sim_upper_ci" = simpwr$ci_upper[,"D1indiv"]
                                 )
-  
+  browser()
 } # validate_power_blocked_i1_2cfr
