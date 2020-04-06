@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1579647872909.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2372677016",
+    "id" : "20D8BEF8",
+    "lastKnownWriteTime" : 1579290745,
+    "last_content_update" : 1579290745,
+    "path" : "~/Projects/Power-Under-Multiplicity/Rcpp/hello.cpp",
+    "project_path" : "Rcpp/hello.cpp",
+    "properties" : {
+        "cursorPosition" : "26,67",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "cpp"
+}

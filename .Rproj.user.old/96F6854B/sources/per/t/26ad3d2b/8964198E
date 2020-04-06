@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1580254160487.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "810524787",
+    "id" : "8964198E",
+    "lastKnownWriteTime" : 1579814715,
+    "last_content_update" : 1580254181696,
+    "path" : "~/Projects/Power-Under-Multiplicity/Verification/Verification_Level2RCT.Rmd",
+    "project_path" : "Verification/Verification_Level2RCT.Rmd",
+    "properties" : {
+        "cursorPosition" : "37,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

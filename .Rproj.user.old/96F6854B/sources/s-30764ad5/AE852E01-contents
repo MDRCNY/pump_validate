@@ -67,19 +67,28 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
                                          ICC,R2.2,R2.1,maxT,rho.0_lev1,rho.0_lev2,
                                          rho.1_lev2,check, storage_path, validation_name) {
   
-  ##################### 
-  # Simulation Values #
-  #####################
-
-  tic("Simulation of Two Level Constant Effects")
-
+  tic()
+  #create loop ID for list of power estimates with different correlations
+  loop_idx <- 1
+  
   #margin of error being 0.05
   me <- 0.05
   
-      rho.0_lev1 <- matrix(rho,M,M); diag(rho.0_lev1) <- 1 #done
-      rho.0_lev2 <- matrix(rho,M,M); diag(rho.0_lev2) <- 1 #done
-      rho.1_lev2 <- matrix(rho,M,M); diag(rho.1_lev2) <- 1 #done
+  #assign list object to save datafiles into a list
+  sim_power_results <- list()
+  
+  for (r in rho) {
     
+    # Insert rho to values to residuals
+    
+      rho.0_lev1 <- matrix(r,M,M); diag(rho.0_lev1) <- 1 #done
+      rho.0_lev2 <- matrix(r,M,M); diag(rho.0_lev2) <- 1 #done
+      rho.1_lev2 <- matrix(r,M,M); diag(rho.1_lev2) <- 1 #done
+    
+    # Name of the simulation
+      
+      simname <- paste(design, "rho_value", r, sep = "_")
+      
     # simulate and run power calculations
     # replace with est_power_sim function here along with some changes in parameter.
 
@@ -90,29 +99,26 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
                               p.j = p.j, R2.1 = R2.1, R2.2 = R2.2, omega = omega, check = check,
                               design = design)
     
+    #add data files to list
+    
+    sim_power_results[[loop_idx]] <- list()
+    sim_power_results[[loop_idx]][["simname"]] <- simname
+    sim_power_results[[loop_idx]][["results"]] <- simpwr
+    
+    # check against PowerUp
+    power.up <- power.bira2c1(es = MDES[1],alpha,two.tailed = TRUE,p = mean(p.j.range),g1 = 1,r21 = R2.1[1],n = n.j,J = J)
+    # If TRUE, then raw individual power matches estimate from Power-Up.
+    
+    #Browser to check the results
+    
+    power.up$power < (simpwr["rawp","D1indiv"] + me) & power.up$power > (simpwr["rawp","D1indiv"] - me)
+    
+    loop_idx <- loop_idx + 1
+    
+  }
+  
   toc(log = TRUE)
+  saveRDS(sim_power_results, file = here("Validation/data", paste0(validation_name,"_",S,
+                                                                   "_", "samples", "_", "results",".RDS"))) 
   
-  # saveRDS(sim_power_results, file = here("Validation/data", paste0(validation_name,"_",S,
-  #                                                                 "_", "samples", "_", "results",".RDS"))) 
-  
-  ###################
-  # Power Up Values #
-  ###################
-  
-  # Power_Up_Results calculation
-  power_up_results <- power.bira2c1(es = MDES[1],alpha,two.tailed = TRUE,p = mean(p.j.range),g1 = 1,r21 = R2.1[1],n = n.j,J = J)
-  
-  # Power_Up_Standard_Error
-  power_up_results$se <- power_up_results$parms$es/power_up_results$ncp
-  
-  # Building a Table to compare our Raw Results and PowerUp
-  
-  browser()
-  compare_results <- data.frame("indiv_sim" = simpwr$adjusted_power[,"D1indiv"],
-                                "indiv_method" = power_up_results$power,
-                                "indiv_sim_lower_ci" = simpwr$ci_lower[,"D1indiv"],
-                                "indiv_method_se" = power_up_results$se,
-                                "indiv_sim_upper_ci" = simpwr$ci_upper[,"D1indiv"]
-                                )
-  
-} # validate_power_blocked_i1_2cfr
+}

@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1585164016036.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1176422395",
+    "id" : "568D76F9",
+    "lastKnownWriteTime" : 1585359843,
+    "last_content_update" : 1585359843714,
+    "path" : "~/Projects/Power-Under-Multiplicity/Validation/Simulations/adjust.WY.R",
+    "project_path" : "Validation/Simulations/adjust.WY.R",
+    "properties" : {
+        "cursorPosition" : "152,2",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 3,
+    "source_on_save" : true,
+    "source_window" : "",
+    "type" : "r_source"
+}

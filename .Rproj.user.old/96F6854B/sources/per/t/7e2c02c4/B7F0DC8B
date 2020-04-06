@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1580158885925.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3916392779",
+    "id" : "B7F0DC8B",
+    "lastKnownWriteTime" : 1579287558,
+    "last_content_update" : 1579287558,
+    "path" : "~/Projects/Power-Under-Multiplicity/Simulations/powerMCS_blocked_i1_2.R",
+    "project_path" : "Simulations/powerMCS_blocked_i1_2.R",
+    "properties" : {
+        "cursorPosition" : "195,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

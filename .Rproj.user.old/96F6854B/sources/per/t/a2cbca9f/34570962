@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1584739189426.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1625984381",
+    "id" : "34570962",
+    "lastKnownWriteTime" : 1585776616,
+    "last_content_update" : 1585776616114,
+    "path" : "~/Projects/Power-Under-Multiplicity/Validation/Simulations/power_mcs_2_levels.R",
+    "project_path" : "Validation/Simulations/power_mcs_2_levels.R",
+    "properties" : {
+        "cursorPosition" : "286,53",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 3,
+    "source_on_save" : true,
+    "source_window" : "",
+    "type" : "r_source"
+}

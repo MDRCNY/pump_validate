@@ -1,0 +1,4 @@
+"0","source(here::here(""Validation/Simulations"", ""adjust.WY.R"")) # MTP Westfall-Young"
+"0","source(here::here(""Validation/Simulations"", ""gen_data_dist_2_levels.R"")) # data generating functions for 2 level block and cluster"
+"0","source(here::here(""Validation/Simulations"", ""power_mcs_2_levels.R"")) # Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power."
+"0","source(here::here(""Validation/Simulations"", ""validate_power_mdes_sample_blocked_i1_2c.R"")) # "

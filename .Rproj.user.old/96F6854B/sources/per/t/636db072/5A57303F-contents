@@ -6,7 +6,7 @@ output: github_document
 
 ### Libraries and Source Files
 
-```{r libraries, warnings = FALSE, message = FALSE}
+```{r libaries, warnings = FALSE, message = FALSE}
 library(RcppEigen) # Linear algebra calculations
 library(snow)      # Parallelization and use of multiple clusters 
 library(lme4)      # Linear mixed effect models
@@ -24,46 +24,49 @@ source(here::here("Validation/Simulations", "power_mcs_2_levels.R")) # Estimate 
 source(here::here("Validation/Simulations", "validate_power_mdes_sample_blocked_i1_2c.R")) # 
 ```
 
-### 2 Level Constant Effect Comparison for Raw Power with PowerUp
 
-```{r constant_effect_power_up_comparison}
-rho <- c(0.5)
+### Parameters for Monte Carlo Simulation Runs
+
+#### Validating
+
+```{r validation_parameter_specifications}
+rho <- c(0,0.2,0.5,0.8)
 ncl <-2 #done
 procs <- c("Bonferroni", "BH", "Holm","WY") #done
-design <- c("Blocked_i1_2c") #done
-M <- 3 #done
+design <- c("Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r") #done
+M <- 2 #done
 MDES <- rep(0.125, M) #done
-S = 2 #done
-B = 2 #done
+p.j.range <- c(0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5) #done
+p.j <- 0.5 #done
+S = 2000 #done
+B = 10000 #done
 J = 20 # done
 n.j = 100 #done
-p.j.range <- rep(0.5,J) #done
-p.j <- 0.5 #done
 theta <- matrix(0,M,M) #done 
 diag(theta) <- 0 # done
 omega <- rep(0,M) #done
 Gamma.00 <- rep(0,M) #done
 sig.sq <- rep(1,M)
 alpha <- 0.05 #done
-ICC <- rep(0.25, M) #done
+ICC <- rep(0, M) #done
 R2.2 <- rep(0,M) #done 
 R2.1 <- rep(0, M) #done
 maxT <- FALSE #done
+rho.0_lev1<-matrix(rho,M,M); diag(rho.0_lev1) <- 1 #done
+rho.0_lev2<-matrix(rho,M,M); diag(rho.0_lev2) <- 1 #done
+rho.1_lev2<-matrix(rho,M,M); diag(rho.1_lev2) <- 1 #done
 check <- TRUE #done
-storage_path <- "./Validation/data"
-validation_name <- "Blocked_i1_2c"
 ```
 
 ### Firing Up & Storing Results from Monte Carlo Simulation Runs
 
 ```{r}
-tic("validating_two_level_block_constant_effect")
-#Change naming conventions later.
-validate_power_blocked_i1_2cfr(rho = rho, ncl = ncl, procs = procs, design = design, M = M, MDES = MDES,
-                                 p.j.range = p.j.range, p.j = p.j, S = S, B = B, J = J, 
-                                 n.j = n.j, theta = theta, omega = omega, Gamma.00 = Gamma.00, sig.sq = sig.sq,
-                                 alpha = alpha, ICC = ICC, R2.2 = R2.2, R2.1 = R2.1, maxT = maxT, rho.0_lev1 = rho.0_lev1,
-                                 rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, check = check, storage_path = storage_path, validation_name = validation_name)
+tic()
+ validate_power_blocked_i1_2c(rho = rho, ncl = ncl, procs = procs, design = design, M = M, MDES = MDES,
+                             p.j.range = p.j.range, p.j = p.j, S = S, B = B, J = J, 
+                             n.j = n.j, theta = theta, omega = omega, Gamma.00 = Gamma.00, sig.sq = sig.sq,
+                             alpha = alpha, ICC = ICC, R2.2 = R2.2, R2.1 = R2.1, maxT = maxT, rho.0_lev1 = rho.0_lev1,
+                             rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, check = check)
 toc()     
 ```
 
@@ -89,7 +92,7 @@ We are testing the MDES function by putting in the parameters of the simulated p
 library(pum)
 ```
 
-* M = 3
+* M = 6
 * MDES = 0.125
 * numFalse = 6
 * J = 20

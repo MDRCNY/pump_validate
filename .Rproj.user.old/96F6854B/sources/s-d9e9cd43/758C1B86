@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1577736889235.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "758C1B86",
+    "lastKnownWriteTime" : 1577217738,
+    "last_content_update" : 1577217738,
+    "path" : "~/Projects/Power-Under-Multiplicity/adjust.WY.R",
+    "project_path" : "adjust.WY.R",
+    "properties" : {
+        "cursorPosition" : "0,2",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1578001950387.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2628384438",
+    "id" : "DA335873",
+    "lastKnownWriteTime" : 1578001762,
+    "last_content_update" : 1578001762,
+    "path" : "~/Projects/Power-Under-Multiplicity/blockrct2_power_rcpp.R",
+    "project_path" : "blockrct2_power_rcpp.R",
+    "properties" : {
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

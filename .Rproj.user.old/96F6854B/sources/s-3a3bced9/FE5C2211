@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1578002225648.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3957087431",
+    "id" : "FE5C2211",
+    "lastKnownWriteTime" : 1578001762,
+    "last_content_update" : 1578001762,
+    "path" : "~/Projects/Power-Under-Multiplicity/Rcpp/singlestep.cpp",
+    "project_path" : "Rcpp/singlestep.cpp",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "cpp"
+}

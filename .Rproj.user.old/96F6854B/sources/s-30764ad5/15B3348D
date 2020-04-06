@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1584730945416.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "15B3348D",
+    "lastKnownWriteTime" : 1584991845,
+    "last_content_update" : 1584991845010,
+    "path" : "~/Projects/Power-Under-Multiplicity/Validation/Simulations/gen_data_dist_2_levels.R",
+    "project_path" : "Validation/Simulations/gen_data_dist_2_levels.R",
+    "properties" : {
+        "cursorPosition" : "3,13",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,10 @@
+{
+    "dialog-state" : {
+        "caseSensitive" : false,
+        "filePatterns" : [
+        ],
+        "path" : "~/Projects/Power-Under-Multiplicity",
+        "query" : "ICC.calc",
+        "regex" : false
+    }
+}

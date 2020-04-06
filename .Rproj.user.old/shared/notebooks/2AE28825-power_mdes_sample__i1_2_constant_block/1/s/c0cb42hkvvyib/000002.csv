@@ -1,0 +1,8 @@
+"0","library(RcppEigen) # Linear algebra calculations"
+"0","library(snow)      # Parallelization and use of multiple clusters "
+"0","library(lme4)      # Linear mixed effect models"
+"0","library(PowerUpR)  # Comparison with another package that has some limitations"
+"0","library(multtest)  # Multiple Testing Procedures package"
+"0","library(tictoc)    # For timing of the scripts"
+"0","library(here)      # For relative path sourcing"
+"0","library(pum)       # For Power Under Multiplicity Package"

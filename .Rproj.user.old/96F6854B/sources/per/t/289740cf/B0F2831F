@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1580254200094.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1404022159",
+    "id" : "B0F2831F",
+    "lastKnownWriteTime" : 1579287558,
+    "last_content_update" : 1579287558,
+    "path" : "~/Projects/Power-Under-Multiplicity/Admin/configs.yaml",
+    "project_path" : "Admin/configs.yaml",
+    "properties" : {
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "yaml"
+}

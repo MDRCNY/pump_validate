@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1579298797428.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3712299265",
+    "id" : "65043BB4",
+    "lastKnownWriteTime" : 1577217738,
+    "last_content_update" : 1577217738,
+    "path" : "~/Projects/Power-Under-Multiplicity/DemoPUM/app.R",
+    "project_path" : "DemoPUM/app.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
