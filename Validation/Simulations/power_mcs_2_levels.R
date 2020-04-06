@@ -379,5 +379,9 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
   CI.lower.power <- power.results - 1.96 * (se.power)
   CI.upper.power <- power.results + 1.96 * (se.power)
   
-  return(list(power.results,CI.lower.power,CI.upper.power))
+  adj_power <- list(power.results, CI.lower.power, CI.upper.power)
+  names(adj_power) <- c("adjusted_power", "ci_lower", "ci_upper")
+  
+  return(adj_power)
+  
 }

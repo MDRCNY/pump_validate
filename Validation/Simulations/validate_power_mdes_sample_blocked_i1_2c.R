@@ -13,6 +13,7 @@ library(lme4) # for modeling
 library(PowerUpR) # for checking with another power estimation function
 library(here) # for relative file paths
 library(tictoc) # for timing
+library(pum) # for checking with the new methods
 
 
 # Installing and Loading Libraries from Bioconductor package
@@ -22,10 +23,6 @@ if (!requireNamespace("BiocManager", quietly = TRUE)){
 
 # BiocManager::install("multtest")
 library(multtest)
-
-# Sourcing the custom functions to run the simulations
-#source(here::here("Validation/Simulations", "gen_data_dist_2_levels.R"))
-#source(here::here("Validation/Simulations", "power_mcs_2_levels"))
 source(here::here("Validation/Simulations", "adjust.WY.R"))
 
 #function to check time lapse
@@ -65,57 +62,63 @@ source(here::here("Validation/Simulations", "adjust.WY.R"))
 #' @export
 #'
 #' @examples
-validate_power_blocked_i1_2c <- function(rho,ncl,procs,design,M,MDES,p.j.range,p.j,S,  
+validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range,p.j,S,  
                                          B,J,n.j,theta,omega,Gamma.00,sig.sq,alpha,
                                          ICC,R2.2,R2.1,maxT,rho.0_lev1,rho.0_lev2,
-                                         rho.1_lev2,check) {
+                                         rho.1_lev2,check, storage_path, validation_name) {
   
   tic()
   #create loop ID for list of power estimates with different correlations
   loop_idx <- 1
   
-  #assign list object to save datafiles into a list
-  sim_power_storage <- list()
+  #margin of error being 0.05
+  me <- 0.05
   
-  for (rho in rho) {
+  #assign list object to save datafiles into a list
+  sim_power_results <- list()
+  
+  for (r in rho) {
     
+    # Insert rho to values to residuals
+    
+      rho.0_lev1 <- matrix(r,M,M); diag(rho.0_lev1) <- 1 #done
+      rho.0_lev2 <- matrix(r,M,M); diag(rho.0_lev2) <- 1 #done
+      rho.1_lev2 <- matrix(r,M,M); diag(rho.1_lev2) <- 1 #done
+    
+    # Name of the simulation
+      
+      simname <- paste(design, "rho_value", r, sep = "_")
+      
     # simulate and run power calculations
     # replace with est_power_sim function here along with some changes in parameter.
-    
+
     simpwr <- est_power_sim(procs = procs, S = S, ncl = ncl, B = B, maxT = FALSE, 
                               M = M, MDES = MDES, n.j = n.j, J = J, rho.0_lev1 = rho.0_lev1,
                               rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, theta = theta,
                               ICC = ICC, alpha = alpha, Gamma.00 = Gamma.00, p.j.range = p.j.range, 
                               p.j = p.j, R2.1 = R2.1, R2.2 = R2.2, omega = omega, check = check,
                               design = design)
-                            
+    
+    #add data files to list
+    
+    sim_power_results[[loop_idx]] <- list()
+    sim_power_results[[loop_idx]][["simname"]] <- simname
+    sim_power_results[[loop_idx]][["results"]] <- simpwr
+    
     # check against PowerUp
     power.up <- power.bira2c1(es = MDES[1],alpha,two.tailed = TRUE,p = mean(p.j.range),g1 = 1,r21 = R2.1[1],n = n.j,J = J)
     # If TRUE, then raw individual power matches estimate from Power-Up.
     
-    me <- 0.05
-    power.up$power < (simpwr["rawp","D1indiv"] + me) & power.up$power > (simpwr["rawp","D1indiv"] - me)
+    #Browser to check the results
     
+    # power.up$power < (simpwr["rawp","D1indiv"] + me) & power.up$power > (simpwr["rawp","D1indiv"] - me)
     
-    #add data files to list
-    sim_power_storage[[loop_idx]] <- list()
-    sim_power_storage[[loop_idx]][["simname"]] <- simname
-    sim_power_storage[[loop_idx]][["obj"]] <- simpwr
-    
-    #export separate data files - for Domino to run and then pull down
-    #  fdir <- "I:/Multiplicity/datafiles/"
-    #  fname<- paste0(fdir,simname)
-    #  save(simpwr, file=fname)
-    save(simpwr, file=simname)
     loop_idx <- loop_idx + 1
     
   }
   
   toc(log = TRUE)
+  saveRDS(sim_power_results, file = here("Validation/data", paste0(validation_name,"_",S,
+                                                                   "_", "samples", "_", "results",".RDS"))) 
   
-  #export the list of data files with different correlations for import into validation RMD
-  #lpath <- paste0(fdir, lname)
-  #save(sim_power_storage, file= lpath)
-  save(sim_power_storage, file= lname)
-
 }
