@@ -249,9 +249,9 @@ get.rejects <- function(adjp, alpha) {
 #
 #' @param procs multiple testing procedures to compute power for 
 #'
-#' @param S number of samples to generate
+#' @param S number of samples to generate for Monte Carlo Simulations
 #' @param ncl number of clusters for parallel computing
-#' @param B number of samples of Westfall-Young
+#' @param B number of samples of Westfall-Young, this translates to snum in our new method(the number of samples for Westfall-Young. The default is set at 1,000.)
 #' @param M number of tests/domains/outcomes 
 #' @param MDES minimum detectable effect size, vector length M
 #' @param n.j number of observations per block 

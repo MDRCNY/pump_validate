@@ -41,8 +41,8 @@ source(here::here("Validation/Simulations", "adjust.WY.R"))
 #' @param MDES minimum detectable effect size, vector length M
 #' @param p.j.range vector of minimum and maximum probabilities of being assigned to treatment, across all sites 
 #' @param p.j probability of being assigned to treatment when no blocking 
-#' @param S number of samples to generate
-#' @param B number of samples of Westfall-Young
+#' @param S number of samples to generate for Monte Carlo Simulations
+#' @param B number of samples of Westfall-Young, this translates to snum in our new method(the number of samples for Westfall-Young. The default is set at 1,000.)
 #' @param J number of blocks
 #' @param n.j number of observations per block
 #' @param theta MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2
@@ -58,20 +58,31 @@ source(here::here("Validation/Simulations", "adjust.WY.R"))
 #' @param rho.0_lev2 MxM matrix of correlations for Level 2 residuals in models of outcomes under no treatment
 #' @param rho.1_lev2 MxM matrix of correlations for Level 2 effects
 #' @param check ?
+#' @param tnum the number of test statistics (samples) for all procedures other than 
+#' Westfall-Young & number of permutations for WY. The default is set at 10,000
+#' @param storage_path 
+#' @param validation_name 
+#' @param runSim 
+#' @param runPump 
 #'
 #' @return a whole series of power data files for validation
 #' @export
 #'
 #' @examples
 validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range,p.j,S,  
-                                         B,J,n.j,theta,omega,Gamma.00,sig.sq,alpha,
-                                         ICC,R2.2,R2.1,maxT,rho.0_lev1,rho.0_lev2,
-                                         rho.1_lev2,check, storage_path, validation_name) {
+                                             B,tnum,J,n.j,theta,omega,Gamma.00,sig.sq,alpha,
+                                             ICC,R2.2,R2.1,maxT,rho.0_lev1,rho.0_lev2,
+                                             rho.1_lev2,check, storage_path, validation_name,
+                                             runSim, runPump) {
+  
+  
+  # To be used as a variable in file saving!
+  R2_1 <- R2.1[1]
   
   ##################### 
   # Simulation Values #
   #####################
-
+  
   tic("Simulation of Two Level Constant Effects")
 
   #margin of error being 0.05
@@ -84,6 +95,8 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
     # simulate and run power calculations
     # replace with est_power_sim function here along with some changes in parameter.
 
+  if(runSim == TRUE){
+    
     simpwr <- est_power_sim(procs = procs, S = S, ncl = ncl, B = B, maxT = FALSE, 
                               M = M, MDES = MDES, n.j = n.j, J = J, rho.0_lev1 = rho.0_lev1,
                               rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, theta = theta,
@@ -91,10 +104,20 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
                               p.j = p.j, R2.1 = R2.1, R2.2 = R2.2, omega = omega, check = check,
                               design = design)
     
-  toc(log = TRUE)
-  
-  # saveRDS(sim_power_results, file = here("Validation/data", paste0(validation_name,"_",S,
-  #                                                                 "_", "samples", "_", "results",".RDS"))) 
+    toc(log = TRUE)
+    
+    saveRDS(simpwr, file = here("Validation/data", paste0(validation_name,"_",S,
+                                                          "_", "samples", "_", rho, "_rho_", 
+                                                          R2_1,"_R_Squared_","simulaton_results",".RDS")))     
+
+  } else {
+    
+    simulation_results <- paste0(paste0(validation_name,"_",S,
+                                        "_", "samples", "_", rho, "_rho_", 
+                                        R2_1,"_R_Squared_","simulaton_results",".RDS"))
+    
+    simpwr <- readRDS(file = here::here("Validation/data",simulation_results))
+  }
   
   ###################
   # Power Up Values #
@@ -105,56 +128,97 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
   
   # Power_Up_Standard_Error
   power_up_results$se <- power_up_results$parms$es/power_up_results$ncp
+  power_up_results$lower_ci <- power_up_results$power - (1.96 * power_up_results$se)
+  power_up_results$upper_ci <- power_up_results$power + (1.96 * power_up_results$se)
   
   ######################
   # PUMP methods value #
   ######################
   
-
-  iterator = 0
-  for (p in procs){
+  if(runPump == TRUE){
     
-    # adding iterators for appending data frames       
+    iterator = 0
     
-      browser()
+    for (MTP in procs){
       
-      pum_results <- pum::power_blocked_i1_2c(M = M, MTP = p, MDES = MDES, numFalse = M, J = J, n.j = n.j, 
-                               p = p.j.range[1], alpha = alpha, numCovar.1 = 0, numCovar.2 = 0,
-                               R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, sigma = NULL,rho = rho, omega = NULL,
-                               tnum = B, snum = S, ncl = ncl)
+      # adding iterators for appending data frames       
       
-      # Converting from Matrix to data frame with MTP column name
-      pum_results <- data.frame(pum_results)
-      
-    if (iterator == 0){
-      
-      pum_combined_results <- pum_results
-      
-    }else{
-      
-      browser()
-      pum_combined_results <- dplyr::bind_rows(pum_combined_results, pum_results[2,])
-      
+        pum_results <- pum::power_blocked_i1_2c(M = M, MTP = MTP, MDES = MDES, numFalse = M, J = J, n.j = n.j, 
+                                 p = p.j.range[1], alpha = alpha, numCovar.1 = 0, numCovar.2 = 0,
+                                 R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, sigma = NULL,rho = rho, omega = NULL,
+                                 tnum = tnum, snum = B, ncl = ncl)
+        
+        pum_results <- data.frame(pum_results)
+        
+      if (iterator == 0){
+        
+        pum_combined_results <- pum_results
+        
+      }else{
+    
+        pum_combined_results <- dplyr::bind_rows(pum_combined_results, pum_results[2,])
+        
+      }
+        
+        
+      iterator = iterator + 1  
+        
     }
+    
+      # adding rownames to the pum_combined_results table
+      rownames(pum_combined_results) <- c("rawp", procs)
       
-      
-    iterator = iterator + 1  
-      
+      saveRDS(pum_combined_results, file = here::here("Validation/data", paste0(validation_name,"_",S,
+                                                                                "_", "samples", "_", rho, "_rho_",
+                                                                                R2_1,"_R_Squared_",
+                                                                                "pump_results",".RDS")))
+  }else{
+    
+      pump_results <-paste0(validation_name,"_",S,
+                            "_", "samples", "_", rho, "_rho_",
+                            R2_1,"_R_Squared_",
+                            "pump_results",".RDS")     
+      pum_combined_results <- readRDS(file = here::here("Validation/data", pump_results))
   }
     
-    # adding rownames to the pum_combined_results table
   
-    rownames(pum_combined_results) <- c("rawp", procs)
-  
-  browser()
   ########################################
   # Compare Results Table                #
   ########################################
-  compare_results <- data.frame("indiv_sim" = simpwr$adjusted_power[,"D1indiv"],
-                                "indiv_method" = power_up_results$power,
-                                "indiv_sim_lower_ci" = simpwr$ci_lower[,"D1indiv"],
-                                "indiv_method_se" = power_up_results$se,
-                                "indiv_sim_upper_ci" = simpwr$ci_upper[,"D1indiv"]
+  compare_results <- data.frame("pump_indiv" = pum_combined_results[,"indiv"],
+                                "sim_indiv" = simpwr$adjusted_power[,"D1indiv"],
+                                "sim_indiv_lower_ci" = simpwr$ci_lower[,"D1indiv"],
+                                "sim_indiv_upper_ci" = simpwr$ci_upper[,"D1indiv"],
+                                "powerup_indiv" = power_up_results$power,
+                                "powerup_indiv_lower_ci" = power_up_results$lower_ci,
+                                "powerup_indiv_upper_ci" = power_up_results$upper_ci,
+                                "pump_min1" = pum_combined_results[,"min1"],
+                                "sim_min1" = simpwr$adjusted_power[,"1/3"],
+                                "sim_min1_lower_ci" = simpwr$ci_lower[,"1/3"],
+                                "sim_min1_upper_ci" = simpwr$ci_upper[,"1/3"],
+                                "pump_min2" = pum_combined_results[,"min2"],
+                                "sim_min2" = simpwr$adjusted_power[,"2/3"],
+                                "sim_min2_lower_ci" = simpwr$ci_lower[,"2/3"],
+                                "sim_min2_upper_ci" = simpwr$ci_upper[,"2/3"],
+                                "pump_complete" = pum_combined_results[,"complete"],
+                                "sim_complete" = simpwr$adjusted_power[,"full"],
+                                "sim_complete_lower_ci" = simpwr$ci_lower[,"full"],
+                                "sim_complete_upper_ci" = simpwr$ci_upper[,"full"]
                                 )
-  browser()
+  
+  # Setting NAs for the power definitions that do not need adjustment
+  compare_results$powerup_indiv[2:4] <- NA
+  compare_results$powerup_indiv_lower_ci[2:4] <- NA
+  compare_results$powerup_indiv_upper_ci[2:4] <- NA
+  compare_results$pump_complete[2:4] <- NA
+  compare_results$sim_complete[2:4] <- NA
+  compare_results$sim_complete_lower_ci[2:4] <- NA
+  compare_results$sim_complete_upper_ci[2:4] <- NA
+  
+  saveRDS(compare_results, file = here::here("Validation/data", paste0(validation_name,"_",S,
+                                                                      "_", "samples", "_", rho, "_rho_",
+                                                                      R2_1,"_R_Squared_",
+                                                                      "comparison_results",".RDS")))
+  return(compare_results)
+  
 } # validate_power_blocked_i1_2cfr

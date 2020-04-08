@@ -29,56 +29,49 @@ source(here::here("Validation/Simulations", "validate_power_mdes_sample_blocked_
 
 ```{r constant_effect_power_up_comparison}
 rho <- c(0.5)
-ncl <-2 #done
-procs <- c("Bonferroni", "BH", "Holm") #done
-design <- c("Blocked_i1_2c") #done
-M <- 3 #done
-MDES <- rep(0.125, M) #done
-S = 2 #done
-B = 2 #done
-J = 20 # done
-n.j = 100 #done
-p.j <- 0.5 #done
-p.j.range <- rep(0.5,J) #done
-theta <- matrix(0,M,M) #done 
-diag(theta) <- 0 # done
-omega <- rep(0,M) #done
-Gamma.00 <- rep(0,M) #done
+ncl <-2 
+procs <- c("Bonferroni", "BH", "Holm") 
+design <- c("Blocked_i1_2c")
+M <- 3 
+MDES <- rep(0.125, M) 
+S = 2000 # (Number of samples for Monte Carlo Simulation)
+B = 2 # (Number of samples for WestFall-Young. The equivalent is snum in our new method)
+tnum = 10000 #The number of test statistics (samples) for all procedures other than Westfall-Young. The default is set at 10000
+J = 20 
+n.j = 100 
+p.j <- 0.5 
+p.j.range <- rep(0.5,J) 
+theta <- matrix(0,M,M) 
+diag(theta) <- 0 
+omega <- rep(0,M) 
+Gamma.00 <- rep(0,M) 
 sig.sq <- rep(1,M)
-alpha <- 0.05 #done
-ICC <- rep(0.25, M) #done
-R2.2 <- rep(0,M) #done 
-R2.1 <- rep(0, M) #done
-maxT <- FALSE #done
-check <- TRUE #done
+alpha <- 0.05 
+ICC <- rep(0.25, M) 
+R2.2 <- rep(0,M)  
+R2.1 <- rep(0, M) 
+maxT <- FALSE 
+check <- TRUE 
 storage_path <- "./Validation/data"
 validation_name <- "Blocked_i1_2c"
+runSim <- TRUE
+runPump <- TRUE
 ```
 
 ### Firing Up & Storing Results from Monte Carlo Simulation Runs
 
 ```{r}
 tic("validating_two_level_block_constant_effect")
-#Change naming conventions later.
-validate_power_blocked_i1_2cfr(rho = rho, ncl = ncl, procs = procs, design = design, M = M, MDES = MDES,
-                                 p.j = p.j,p.j.range = p.j.range, S = S, B = B, J = J, 
-                                 n.j = n.j, theta = theta, omega = omega, Gamma.00 = Gamma.00, sig.sq = sig.sq,
-                                 alpha = alpha, ICC = ICC, R2.2 = R2.2, R2.1 = R2.1, maxT = maxT, rho.0_lev1 = rho.0_lev1,
-                                 rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, check = check, storage_path = storage_path, validation_name = validation_name)
-toc()     
+blocked_i1_2c_compare_results <- validate_power_blocked_i1_2cfr(rho = rho, ncl = ncl, procs = procs, design = design, M = M, MDES = MDES,
+                                                                   p.j = p.j,p.j.range = p.j.range, S = S, B = B, tnum = tnum, J = J, 
+                                                                   n.j = n.j, theta = theta, omega = omega, Gamma.00 = Gamma.00, sig.sq = sig.sq,
+                                                                   alpha = alpha, ICC = ICC, R2.2 = R2.2, R2.1 = R2.1, maxT = maxT, rho.0_lev1 = rho.0_lev1,
+                                                                   rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, check = check, storage_path = storage_path, validation_name = validation_name, runSim = runSim, runPump = runPump)
+toc(log = TRUE)
+print(blocked_i1_2c_compare_results)
+View(blocked_i1_2c_compare_results)
 ```
 
-### Firing up & Storing Results from derived function
-
-```{r}
-
-```
-
-### Comparing results for validation
-
-```{r}
-
-```
 
 ## MDES function validation
 

@@ -131,11 +131,17 @@ ui <- fluidPage(
                    
                    fluidRow(
                      
-                     column(12,
+                     column(6,
                         
                         numericInput("R2.1", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
                             
-                    ) # R square for level 1
+                    ), # R square for level 1
+                    
+                     column(6,
+                           
+                           numericInput("numCovar.1", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
+                           
+                    )# Number of Level 1 Covariates
       
                    ), # column correlation btw tests & intraclass correlation!
                    
@@ -158,7 +164,7 @@ ui <- fluidPage(
                 fluidRow(
                   column(12,
                          
-                    numericInput("numCovar.1", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
+                    numericInput("rho_test", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
                   
                   ) # Number of Level 1 covariates
         
@@ -538,7 +544,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       #displaying based on the number of sample sizes
       
       isolate(power_blocked_i1_2c(M = input$M, MTP = input$MTP, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
-                                numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = updateProgress))
+                                numCovar.1 = input$numCovar.1, rho = input$rho_test, 
+                                numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10, updateProgress = updateProgress))
       
     }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
     
