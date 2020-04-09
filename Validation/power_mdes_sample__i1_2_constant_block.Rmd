@@ -27,6 +27,9 @@ source(here::here("Validation/Simulations", "validate_power_mdes_sample_blocked_
 
 ### 2 Level Constant Effect Comparison for Raw Power with PowerUp
 
+* ICC needs to be zero for constant and fixed effets
+
+
 ```{r constant_effect_power_up_comparison}
 rho <- c(0.5)
 ncl <-2 
@@ -47,11 +50,11 @@ omega <- rep(0,M)
 Gamma.00 <- rep(0,M) 
 sig.sq <- rep(1,M)
 alpha <- 0.05 
-ICC <- rep(0.25, M) 
+ICC <- rep(0, M) 
 R2.2 <- rep(0,M)  
 R2.1 <- rep(0, M) 
 maxT <- FALSE 
-check <- TRUE 
+check <- FALSE #usually for checking the code. Do not need to  
 storage_path <- "./Validation/data"
 validation_name <- "Blocked_i1_2c"
 runSim <- TRUE
