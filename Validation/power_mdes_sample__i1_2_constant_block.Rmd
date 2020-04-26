@@ -1,7 +1,24 @@
 ---
 title: "Validate_power_mdes_sample_blocked_i1_2c"
 author: "Kristin Porter & Zarni Htet"
-output: github_document
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    fig_caption: yes
+    fig_height: 8
+    fig_width: 10
+    highlight: monochrome
+    theme: spacelab
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+  github_document:
+    df_print: paged
+    fig_caption: yes
+    fig_height: 8
+    fig_width: 10
+    toc: yes
 ---
 
 ### Libraries and Source Files
@@ -72,14 +89,13 @@ blocked_i1_2c_compare_results <- validate_power_blocked_i1_2cfr(rho = rho, ncl =
                                                                    rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, check = check, storage_path = storage_path, validation_name = validation_name, runSim = runSim, runPump = runPump)
 toc(log = TRUE)
 print(blocked_i1_2c_compare_results)
-View(blocked_i1_2c_compare_results)
+#View(blocked_i1_2c_compare_results)
 ```
 
 
 ## MDES function validation
 
 We are testing the MDES function by putting in the parameters of the simulated power function and checking if we receive an MDES estimation within range.
-
 
 ```{r}
 # Loading our pum library
