@@ -20,8 +20,13 @@ output:
     fig_width: 10
     toc: yes
 ---
+# Purpose
 
-### Libraries and Source Files
+This document lays out validation steps & results for estimating statistical power, minimum detectable effect size (MDES) and sample size for 2-Level Block RCT with constant effects experimental design. We compare results of the derived methods against Monte Carlo Simulations & the PowerUp R package on power, mdes and sample size. The methods are derived by Kristin Porter as outlined in the paper/s here (Add reference section). 
+
+### Set Up
+
+In this section, we set up the required R packages and source files to run the rest of the Validation document.
 
 ```{r libraries, warnings = FALSE, message = FALSE}
 library(RcppEigen) # Linear algebra calculations
@@ -34,18 +39,25 @@ library(here)      # For relative path sourcing
 library(pum)       # For Power Under Multiplicity Package
 library(dplyr)     # For combining different dataframes
 ```
-  
-```{r sourcefiles, warnings = FALSE, message = FALSE}
+
+```{r scriptFiles, warnings = FALSE, message = FALSE}
 source(here::here("Validation/Simulations", "adjust.WY.R")) # MTP Westfall-Young
 source(here::here("Validation/Simulations", "gen_data_dist_2_levels.R")) # data generating functions for 2 level block and cluster
 source(here::here("Validation/Simulations", "power_mcs_2_levels.R")) # Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.
-source(here::here("Validation/Simulations", "validate_power_mdes_sample_blocked_i1_2c.R")) # 
+source(here::here("Validation/Simulations", "validate_power_mdes_sample_blocked_i1_2c.R")) # Wrapping and creating 
 ```
+
+## Power Validation
+
+
+
+
+
+
 
 ### 2 Level Constant Effect Comparison for Raw Power with PowerUp
 
 * ICC needs to be zero for constant and fixed effets
-
 
 ```{r constant_effect_power_up_comparison}
 rho <- c(0.5)

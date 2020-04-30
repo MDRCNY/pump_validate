@@ -164,7 +164,6 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
       iterator = iterator + 1  
         
     }
-    
       # adding rownames to the pum_combined_results table
       rownames(pum_combined_results) <- c("rawp", procs)
       
@@ -181,35 +180,34 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
       pum_combined_results <- readRDS(file = here::here("Validation/data", pump_results))
   }
     
-  
   ########################################
   # Compare Results Table                #
   ########################################
   compare_results <- data.frame("pump_indiv" = pum_combined_results[,"indiv"],
                                 "sim_indiv" = simpwr$adjusted_power[,"D1indiv"],
-                                "sim_indiv_lower_ci" = simpwr$ci_lower[,"D1indiv"],
-                                "sim_indiv_upper_ci" = simpwr$ci_upper[,"D1indiv"],
+                                #"sim_indiv_lower_ci" = simpwr$ci_lower[,"D1indiv"],
+                                #"sim_indiv_upper_ci" = simpwr$ci_upper[,"D1indiv"],
                                 "powerup_indiv" = power_up_results$power,
-                                "powerup_indiv_lower_ci" = power_up_results$lower_ci,
-                                "powerup_indiv_upper_ci" = power_up_results$upper_ci,
+                                #"powerup_indiv_lower_ci" = power_up_results$lower_ci,
+                                #"powerup_indiv_upper_ci" = power_up_results$upper_ci,
                                 "pump_min1" = pum_combined_results[,"min1"],
                                 "sim_min1" = simpwr$adjusted_power[,"1/3"],
-                                "sim_min1_lower_ci" = simpwr$ci_lower[,"1/3"],
-                                "sim_min1_upper_ci" = simpwr$ci_upper[,"1/3"],
+                                #"sim_min1_lower_ci" = simpwr$ci_lower[,"1/3"],
+                                #"sim_min1_upper_ci" = simpwr$ci_upper[,"1/3"],
                                 "pump_min2" = pum_combined_results[,"min2"],
                                 "sim_min2" = simpwr$adjusted_power[,"2/3"],
-                                "sim_min2_lower_ci" = simpwr$ci_lower[,"2/3"],
-                                "sim_min2_upper_ci" = simpwr$ci_upper[,"2/3"],
+                                #"sim_min2_lower_ci" = simpwr$ci_lower[,"2/3"],
+                                #"sim_min2_upper_ci" = simpwr$ci_upper[,"2/3"],
                                 "pump_complete" = pum_combined_results[,"complete"],
                                 "sim_complete" = simpwr$adjusted_power[,"full"],
-                                "sim_complete_lower_ci" = simpwr$ci_lower[,"full"],
-                                "sim_complete_upper_ci" = simpwr$ci_upper[,"full"]
+                                #"sim_complete_lower_ci" = simpwr$ci_lower[,"full"],
+                                #"sim_complete_upper_ci" = simpwr$ci_upper[,"full"]
                                 )
   
   # Setting NAs for the power definitions that do not need adjustment
   compare_results$powerup_indiv[2:4] <- NA
-  compare_results$powerup_indiv_lower_ci[2:4] <- NA
-  compare_results$powerup_indiv_upper_ci[2:4] <- NA
+  # compare_results$powerup_indiv_lower_ci[2:4] <- NA
+  # compare_results$powerup_indiv_upper_ci[2:4] <- NA
   compare_results$pump_complete[2:4] <- NA
   compare_results$sim_complete[2:4] <- NA
   compare_results$sim_complete_lower_ci[2:4] <- NA
