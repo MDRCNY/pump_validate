@@ -15,6 +15,7 @@ library(here) # for relative file paths
 library(tictoc) # for timing
 library(pum) # for checking with the new methods
 library(dplyr) # for combing data frames
+library(tibble) # a modern take on data frames
 
 
 # Installing and Loading Libraries from Bioconductor package
@@ -47,23 +48,23 @@ source(here::here("Validation/Simulations", "adjust.WY.R"))
 #' @param n.j number of observations per block
 #' @param theta MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2
 #' @param omega effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M
-#' @param Gamma.00 grand mean outcome w/o treat, held 0, vector length M
+#' @param Gamma.00 grand mean outcome w/o treat, held 0, vector length M. 
 #' @param sig.sq vector length M, held at 1 for now
 #' @param alpha the significance level, 0.05 usually
 #' @param ICC a number, intraclass correlation; 0 if fixed model
-#' @param R2.2 R squared for mth level 1 outcome by mth level 1 covar
-#' @param R2.1 R squared for mth level 2 outcome by mth level 1 covar
+#' @param R2.2 R squared for mth level 2 outcome by mth level 2 covar
+#' @param R2.1 R squared for mth level 1 outcome by mth level 1 covar
 #' @param maxT ?
 #' @param rho.0_lev1 MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment  
 #' @param rho.0_lev2 MxM matrix of correlations for Level 2 residuals in models of outcomes under no treatment
 #' @param rho.1_lev2 MxM matrix of correlations for Level 2 effects
-#' @param check ?
+#' @param check checking to see if intermeidate outputs are as expected.
 #' @param tnum the number of test statistics (samples) for all procedures other than 
 #' Westfall-Young & number of permutations for WY. The default is set at 10,000
-#' @param storage_path 
-#' @param validation_name 
-#' @param runSim 
-#' @param runPump 
+#' @param storage_path file path to store the validation results 
+#' @param validation_name name of the validation file
+#' @param runSim if TRUE, we will re-run the simluation. if FALSE, we will pull previous run result.
+#' @param runPump if TRUE, we will run method from our package. if FALSE, we will pull previous run result.
 #'
 #' @return a whole series of power data files for validation
 #' @export
@@ -185,23 +186,13 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
   ########################################
   compare_results <- data.frame("pump_indiv" = pum_combined_results[,"indiv"],
                                 "sim_indiv" = simpwr$adjusted_power[,"D1indiv"],
-                                #"sim_indiv_lower_ci" = simpwr$ci_lower[,"D1indiv"],
-                                #"sim_indiv_upper_ci" = simpwr$ci_upper[,"D1indiv"],
                                 "powerup_indiv" = power_up_results$power,
-                                #"powerup_indiv_lower_ci" = power_up_results$lower_ci,
-                                #"powerup_indiv_upper_ci" = power_up_results$upper_ci,
                                 "pump_min1" = pum_combined_results[,"min1"],
                                 "sim_min1" = simpwr$adjusted_power[,"1/3"],
-                                #"sim_min1_lower_ci" = simpwr$ci_lower[,"1/3"],
-                                #"sim_min1_upper_ci" = simpwr$ci_upper[,"1/3"],
                                 "pump_min2" = pum_combined_results[,"min2"],
                                 "sim_min2" = simpwr$adjusted_power[,"2/3"],
-                                #"sim_min2_lower_ci" = simpwr$ci_lower[,"2/3"],
-                                #"sim_min2_upper_ci" = simpwr$ci_upper[,"2/3"],
                                 "pump_complete" = pum_combined_results[,"complete"],
-                                "sim_complete" = simpwr$adjusted_power[,"full"],
-                                #"sim_complete_lower_ci" = simpwr$ci_lower[,"full"],
-                                #"sim_complete_upper_ci" = simpwr$ci_upper[,"full"]
+                                "sim_complete" = simpwr$adjusted_power[,"full"]
                                 )
   
   # Setting NAs for the power definitions that do not need adjustment
@@ -210,8 +201,12 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
   # compare_results$powerup_indiv_upper_ci[2:4] <- NA
   compare_results$pump_complete[2:4] <- NA
   compare_results$sim_complete[2:4] <- NA
-  compare_results$sim_complete_lower_ci[2:4] <- NA
-  compare_results$sim_complete_upper_ci[2:4] <- NA
+  # compare_results$sim_complete_lower_ci[2:4] <- NA
+  # compare_results$sim_complete_upper_ci[2:4] <- NA
+  
+  # Giving Rownames a column header
+  compare_results <- compare_results %>% 
+                        tibble::rownames_to_column(var = "MTP")
   
   saveRDS(compare_results, file = here::here("Validation/data", paste0(validation_name,"_",S,
                                                                       "_", "samples", "_", rho, "_rho_",
