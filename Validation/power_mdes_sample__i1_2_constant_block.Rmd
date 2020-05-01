@@ -58,7 +58,7 @@ Each subsection of the power validation below is a variation of correlation betw
 * procs: _multiple adjustment procedures such as Bonferroni, Benjamini-Hocheberg, Holms_
 * M: _number of outcomes_
 * MDES: _minimum detectable effect size_
-* rho: _spearman correlation between outcomes_
+* rho: _spearman correlation (monotonic (not necessarily linear) relationship) between outcomes_
 * ncl: _number of clusters to run parallel computation on your machine/server_
 * S: _number of samples for Monte Carlo Simulation of Power Estimation_ 
 * B: _number of samples for WestFall-Young MTP. The equivalent is snum in our method_
@@ -123,44 +123,65 @@ blocked_i1_2c_compare_results <- validate_power_blocked_i1_2cfr(rho = rho, ncl =
                                                                    n.j = n.j, theta = theta, omega = omega, Gamma.00 = Gamma.00, sig.sq = sig.sq,
                                                                    alpha = alpha, ICC = ICC, R2.2 = R2.2, R2.1 = R2.1, maxT = maxT, rho.0_lev1 = rho.0_lev1,
                                                                    rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, check = check, storage_path = storage_path, validation_name = validation_name, runSim = runSim, runPump = runPump)
-toc(log = TRUE)
+toc(log = FALSE)
 pander::pandoc.table(blocked_i1_2c_compare_results, paste0("PowerSimulation_", "rho_", rho,"_falseNull_",M), 
                      style = "rmarkdown", split.tables = 90)
 ```
 
-
 ## MDES validation
 
-We are testing the MDES function by putting in the parameters of the simulated power function and checking if we receive an MDES estimation within range.
+In this section, we validate the derived minimum detectable effect size function across different __MTP__ (Bonferroni, Benjamini-Hocheberg and Holms) and __power definition (individual and minimum_1).__  The validation is carried out by generating power values for the specific __MTP__ and __power__ definitions for a specific __MDES__. Then, we supply the generated estimate __power__ as an input parameter to see if the specified __MDES__ is returned.
 
-```{r}
-# Loading our pum library
-library(pum)
+Below, we have listed out input parameter setting that generated power values that would be input parameters for our derived MDES function.
+
+```{r mdesCommonInputs, message = FALSE,warning = FALSE}
+M <- 3
+MDES <- 0.125
+numFalse <- 3
+J <- 20
+n.j <- 100
+R2.1 <- 0.5
+R2.2 <- 0
+p <- 0.5
+alpha <- 0.05
+numCovar.1 <- 5
+numCovar.2 <- NULL
+rho <- 0.5
+tnum <- 10000
+snum <- 2000
+updateProgress <- NULL
+marginError <- 0.05
+ICC <- 0
+omega <- NULL
 ```
 
-* M = 3
-* MDES = 0.125
-* numFalse = 6
-* J = 20
-* n.j = 100
-* R2.1 = 0.5
-* p = 0.5
-* alpha = 0.05
-* numCovar.1 = 5
-* numCovar.2 = NULL
-* rho = 0.5
-* tnum = 10000
-* snum = 2000
-* updateProgress = NULL
+### MDES Bonferroni Validation
 
 ```{r}
-tic()
-power_M3_BF_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "Bonferroni", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
-                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
-toc()
-print(power_M3_BF_MDES0125)
+power_M3_BF_MDES0125[power_M3_BF_MDES0125$MTP ]
 ```
+
+
+
+```{r powerMdesBonf}
+# Power generation with specifications
+power_M3_BF_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "Bonferroni", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
+                         R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                         rho = rho,tnum = tnum, snum = snum, ncl = 8)
+power_M3_BF_MDES0125 <- as.data.frame(power_M3_BF_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_BF_MDES0125, style = "rmarkdown", split.tables = 90)
+```
+
+```{r mdesBonfIndiv}
+mdes_0125_bonf_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, power = power_M3_BF_MDES0125["BF",    "indiv"],
+                                          power.definition = "indiv", MTP = "BF", marginError = marginError,
+                                          p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                          R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                          rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+```
+
+
 
 ```{r}
 tic()
@@ -182,16 +203,7 @@ print(power_M3_HO_MDES0125)
 
 ### MDES for Individual Power is working
 
-```{r}
-tic()
-mdes_0125_bonf_indiv <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_BF_MDES0125["BF", "indiv"],
-                                          power.definition = "indiv", MTP = "BF", marginError = 0.05,
-                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
-                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 2000, ncl = 8)
-toc()
-print(mdes_0125_bonf_indiv)
-```
+
 
 ```{r}
 tic()
