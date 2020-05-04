@@ -302,7 +302,7 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
   for (s in 1:S) {
     
     t1 <- Sys.time()
-    if (s %% px==0){ print(paste0("Now processing sample ", s, " of ", S))}
+    if (s %% px==0){ message(paste0("Now processing sample ", s, " of ", S))}
     
     for (d in design){
       
@@ -339,14 +339,14 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
         proc <- procs[p-1]
         pvals <- get.adjp(rawp, rawt, proc, alpha, B, ncl, mdat, maxT = maxT)
         t21 <- Sys.time()
-        if (s == 1) {print(paste("One sample of ", proc, " took ", t21 - t11))}
+        if (s == 1) {message(paste("One sample of ", proc, " took ", t21 - t11))}
       }
       adjp.proc[s,,proc] = pvals
     }
     
     t2 <- Sys.time()
-    if (s == 1) {print(paste("Expected time diff of", (t2 - t1) * S, "and expected finish at", t1 + (t2 - t1) * S,"for S =", S, sep =" "))}
-    else if (s %% px == 0) {print(difftime(t2, t1))}
+    if (s == 1) {message(paste("Expected time diff of", (t2 - t1) * S, "and expected finish at", t1 + (t2 - t1) * S,"for S =", S, sep =" "))}
+    else if (s %% px == 0) {message(difftime(t2, t1))}
   } # end loop through samples
   
   for (p in 1:(length(procs) + 1)) {

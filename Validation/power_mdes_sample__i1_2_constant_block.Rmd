@@ -46,53 +46,56 @@ source(here::here("Validation/Simulations", "adjust.WY.R")) # MTP Westfall-Young
 source(here::here("Validation/Simulations", "gen_data_dist_2_levels.R")) # data generating functions for 2 level block and cluster
 source(here::here("Validation/Simulations", "power_mcs_2_levels.R")) # Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.
 source(here::here("Validation/Simulations", "validate_power_mdes_sample_blocked_i1_2c.R")) # Wrapping and creating 
+source(here::here("Validation/Simulations", "misc.R")) # For coloring texts and other purposes
 ```
 
-## Power Validation
+# Power Validation
 
 In this section, we validate power results for different definitions of power, __minimum__, __individual__ and __complete__ for three multiple adjustment multiple methods, __Bonferroni__, __Benjamini Hocheberg__ and __Holm__.
 
 Each subsection of the power validation below is a variation of correlation between outcomes, __rho__ & the ratio of __false nulls__ in M outcomes. Below is a brief of our input parameters. For more details, please refer to the paper here [Insert Later].
 
-* design: _the research design of interest: blocked_i1_2c, blocked_i1_2f, blocked_i1_2r_ 
-* procs: _multiple adjustment procedures such as Bonferroni, Benjamini-Hocheberg, Holms_
-* M: _number of outcomes_
-* MDES: _minimum detectable effect size_
-* rho: _spearman correlation (monotonic (not necessarily linear) relationship) between outcomes_
-* ncl: _number of clusters to run parallel computation on your machine/server_
-* S: _number of samples for Monte Carlo Simulation of Power Estimation_ 
-* B: _number of samples for WestFall-Young MTP. The equivalent is snum in our method_
-* tnum: _number of test statistics (samples) for all procedures other than West-Fall Young. The default is set at 10,000_
-* J: _number of blocks_ 
-* n.j: _number of samples within a block_
-* p.j: _probability of being assigned to treatment when no blocking_ 
-* p.j.range: _vector of minimum and maximum probabilities of being assigned to treatment, across all sites_
-* theta: _MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2_
-* omega: _effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M_
-* Gamma.00: _grand mean outcome w/o treat, held 0, vector length M_
-* sig.sq: _vector length M, held at 1 for no_
-* alpha: _the significance level, 0.05 usually_
-* ICC: _a number, intraclass correlation; 0 if fixed model_
-* R2.2: _a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)_
-* R2.1: _a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)_
-* maxT: _?_
-* check: _checking to see if intermeidate outputs are as expected_
-* storage_path: _file path to store the validation results_
-* validation_name: _name of the validation file_
-* runSim: _if TRUE, we will re-run the simluation. if FALSE, we will pull previous run result_
-* runPump: _if TRUE, we will run method from our package. if FALSE, we will pull previous run result_
+* **design**: _the research design of interest: blocked_i1_2c, blocked_i1_2f, blocked_i1_2r_ 
+* **procs**: _multiple adjustment procedures such as Bonferroni, Benjamini-Hocheberg, Holms_
+* **M**: _number of outcomes_
+* **MDES**: _minimum detectable effect size_
+* **rho**: _spearman correlation (monotonic (not necessarily linear) relationship) between outcomes_
+* **ncl**: _number of clusters to run parallel computation on your machine/server_
+* **S**: _number of samples for Monte Carlo Simulation of Power Estimation_ 
+* **B**: _number of samples for WestFall-Young MTP. The equivalent is snum in our method_
+* **tnum**: _number of test statistics (samples) for all procedures other than West-Fall Young. The default is set at 10,000_
+* **J**: _number of blocks_ 
+* **n.j**: _number of samples within a block_
+* **p.j**: _probability of being assigned to treatment when no blocking_ 
+* **p.j.range**: _vector of minimum and maximum probabilities of being assigned to treatment, across all sites_
+* **theta**: _MxM matrix of correlations between residuals in Level 2 model outcomes under no treatment and Level 2_
+* **omega**: _effect size variability, between 0 and 1, 0 if no variation in effects across blocks, vector length M_
+* **Gamma.00**: _grand mean outcome w/o treat, held 0, vector length M_
+* **sig.sq**: _vector length M, held at 1 for no_
+* **alpha**: _the significance level, 0.05 usually_
+* **ICC**: _a number, intraclass correlation; 0 if fixed model_
+* **R2.2**: _a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)_
+* **R2.1**: _a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)_
+* **maxT**: _?_
+* **check**: _checking to see if intermeidate outputs are as expected_
+* **storage_path**: _file path to store the validation results_
+* **validation_name**: _name of the validation file_
+* **runSim**: _if TRUE, we will re-run the simluation. if FALSE, we will pull previous run result_
+* **runPump**: _if TRUE, we will run method from our package. if FALSE, we will pull previous run result_
 
-### rho = 0.0 & numFalseNulls = M
+### rho = 0.5 
 
-```{r rho0.0numFalseMSpecs, warning = FALSE, message = FALSE }
+#### numFalseNulls = M
+
+```{r rho0.5numFalseMSpecs, warning = FALSE, message = FALSE}
 # ICC needs to be zero for constant and fixed effets
 design <- c("Blocked_i1_2c")
 procs <- c("Bonferroni", "BH", "Holm") 
 M <- 3 
 MDES <- rep(0.125, M) 
-rho <- c(0.0)
+rho <- c(0.5)
 ncl <-2 
-S = 2000 # Number of samples for Monte Carlo Simulation.
+S = 2 # Number of samples for Monte Carlo Simulation.
 B = 2 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
 tnum = 10000 # Number of test statistics (samples) for all procedures other than Westfall-Young. The default is set at 10,000.
 J = 20 
@@ -116,19 +119,26 @@ runSim <- TRUE
 runPump <- TRUE
 ```
 
-```{r rho0.0numFalseMRun}
-tic("validating_two_level_block_constant_effect")
-blocked_i1_2c_compare_results <- validate_power_blocked_i1_2cfr(rho = rho, ncl = ncl, procs = procs, design = design, M = M, MDES = MDES,
-                                                                   p.j = p.j,p.j.range = p.j.range, S = S, B = B, tnum = tnum, J = J, 
-                                                                   n.j = n.j, theta = theta, omega = omega, Gamma.00 = Gamma.00, sig.sq = sig.sq,
-                                                                   alpha = alpha, ICC = ICC, R2.2 = R2.2, R2.1 = R2.1, maxT = maxT, rho.0_lev1 = rho.0_lev1,
-                                                                   rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, check = check, storage_path = storage_path, validation_name = validation_name, runSim = runSim, runPump = runPump)
-toc(log = FALSE)
+`r colorize("Individual Statistical power is estimated to be around 0.8. Please check the table below estimations for other definitions of statistical power. Across all power defiinitions, estimation results across the __PUMP__ package, __Monte Carlo Simulation__ results and __PowerUp__ package are about the same as detailed below.", "green")`
+
+```{r rho0.5numFalseMRun, warning = FALSE, message = FALSE}
+blocked_i1_2c_compare_results <- validate_power_blocked_i1_2cfr(rho = rho, ncl = ncl, procs = procs, design = design, 
+                                                                M = M, MDES = MDES,
+                                                                p.j = p.j,p.j.range = p.j.range, S = S, B = B, 
+                                                                tnum = tnum, J = J, 
+                                                                n.j = n.j, theta = theta, omega = omega, 
+                                                                Gamma.00 = Gamma.00, sig.sq = sig.sq,
+                                                                alpha = alpha, ICC = ICC, R2.2 = R2.2, R2.1 = R2.1, 
+                                                                maxT = maxT, rho.0_lev1 = rho.0_lev1,
+                                                                rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, 
+                                                                check = check, storage_path = storage_path, 
+                                                                validation_name = validation_name, runSim = runSim, 
+                                                                runPump = runPump)
 pander::pandoc.table(blocked_i1_2c_compare_results, paste0("PowerSimulation_", "rho_", rho,"_falseNull_",M), 
-                     style = "rmarkdown", split.tables = 90)
+                     style = "grid", split.tables = 90)
 ```
 
-## MDES validation
+# MDES validation
 
 In this section, we validate the derived minimum detectable effect size function across different __MTP__ (Bonferroni, Benjamini-Hocheberg and Holms) and __power definition (individual and minimum_1).__  The validation is carried out by generating power values for the specific __MTP__ and __power__ definitions for a specific __MDES__. Then, we supply the generated estimate __power__ as an input parameter to see if the specified __MDES__ is returned.
 
@@ -155,166 +165,219 @@ ICC <- 0
 omega <- NULL
 ```
 
-### MDES Bonferroni Validation
-
-```{r}
-power_M3_BF_MDES0125[power_M3_BF_MDES0125$MTP ]
-```
-
-
+### BF Validation
 
 ```{r powerMdesBonf}
 # Power generation with specifications
-power_M3_BF_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "Bonferroni", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
-                         R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
-                         rho = rho,tnum = tnum, snum = snum, ncl = 8)
+power_M3_BF_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "Bonferroni", MDES = MDES, 
+                                                 numFalse = numFalse, J = J, n.j = n.j, 
+                                                 R2.1 = R2.1, p = p, alpha = alpha, 
+                                                 numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                 rho = rho,tnum = tnum, snum = snum, ncl = 8)
 power_M3_BF_MDES0125 <- as.data.frame(power_M3_BF_MDES0125) %>%
                             tibble::rownames_to_column(var = "MTP")
-pander::pandoc.table(power_M3_BF_MDES0125, style = "rmarkdown", split.tables = 90)
+pander::pandoc.table(power_M3_BF_MDES0125, style = "grid", split.tables = 90)
 ```
+
+#### Individual Power
 
 ```{r mdesBonfIndiv}
-mdes_0125_bonf_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, power = power_M3_BF_MDES0125[which(power_M3_BF_MDES0125$MTP == "BF"), "indiv"],
-                                          power.definition = "indiv", MTP = "BF", marginError = marginError,
-                                          p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
-                                          R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
-                                          rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_bonf_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
+                                                power = power_M3_BF_MDES0125[which(power_M3_BF_MDES0125$MTP == "BF"), "indiv"],
+                                                power.definition = "indiv", MTP = "BF", marginError = marginError,
+                                                p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                                rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_bonf_indiv <- as.data.frame(mdes_0125_bonf_indiv) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(mdes_0125_bonf_indiv, style = "grid", split.tables = 90)
 ```
 
+### BH Validation
 
+```{r powerMdesBH}
+power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "BH", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
+                                                  R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, 
+                                                  numCovar.2 = numCovar.2,
+                                                  rho = rho,tnum = tnum, snum = snum, ncl = ncl)
+power_M3_BH_MDES0125 <- as.data.frame(power_M3_BH_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_BH_MDES0125, style = "grid", split.tables = 90)
+```
+#### Individual Power
 
-```{r}
-tic()
-power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "BH", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
-                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
-toc()
-print(power_M3_BH_MDES0125)
+```{r mdesBHIndiv}
+mdes_0125_bh_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse, J = J, n.j = n.j, 
+                                              power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "indiv"],
+                                              power.definition = "indiv", MTP = "BH", marginError = marginError,
+                                              p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                              R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                              rho = rho, omega = omega, tnum = tnum, snum = snum, ncl = ncl)
+pander::pandoc.table(mdes_0125_bh_indiv, style = "grid")
 ```
 
-```{r}
-tic()
-power_M3_HO_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "HO", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
-                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
-toc()
-print(power_M3_HO_MDES0125)
+#### Minimum Power
+
+```{r mdesBHMin1}
+mdes_0125_bh_min1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse, J = J, n.j = n.j, 
+                                              power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "min1"],
+                                              power.definition = "min1", MTP = "BH", marginError = marginError,
+                                              p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                              R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                              rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+pander::pandoc.table(mdes_0125_bh_min1, style = "grid")
 ```
 
-### MDES for Individual Power is working
+### HO Validation
 
-
-
-```{r}
-tic()
-mdes_0125_bh_indiv <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_BH_MDES0125["BH", "indiv"],
-                                          power.definition = "indiv", MTP = "BH", marginError = 0.05,
-                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
-                                          rho = 0.5, omega = NULL,tnum = 1000, snum = 500, ncl = 8)
-toc()
-pander::pandoc.table(mdes_0125_bh_indiv, style = "rmarkdown")
+```{r powerMdesHO}
+power_M3_HO_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "HO", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
+                                                  R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, 
+                                                  numCovar.2 = numCovar.2,
+                                                  rho = rho,tnum = tnum, snum = snum, ncl = ncl)
+power_M3_HO_MDES0125 <- as.data.frame(power_M3_HO_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_HO_MDES0125, style = "grid", split.tables = 90)
 ```
 
-```{r}
-tic()
-mdes_0125_holms_indiv1 <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_HO_MDES0125["HO", "indiv1"],
-                                          power.definition = "indiv1", MTP = "HO", marginError = 0.05,
-                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
-                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 2000, ncl = 8)
-toc()
-print(mdes_0125_holms_indiv1)
+#### Individual Power
+
+```{r mdesHOIndiv}
+mdes_0125_holms_indiv1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
+                                                  power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "indiv"],
+                                                  power.definition = "indiv", MTP = "HO", marginError = marginError,
+                                                  p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                  R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                                  rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+pander::pandoc.table(mdes_0125_holms_indiv1, style = "grid")
 ```
 
+#### Minimum Power
 
-### Non-Individual Power for MDES is Working Now
-
-```{r}
-tic()
-mdes_0125_holms_min1 <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_HO_MDES0125["HO","min1"],
-                                          power.definition = "min1", MTP = "HO", marginError = 0.05,
-                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
-                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 1000, ncl = 8)
-toc()
-print(mdes_0125_holms_min1)
+```{r mdesHOMin1}
+mdes_0125_holms_min1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
+                                                power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "min1"],
+                                                power.definition = "min1", MTP = "HO", marginError = marginError,
+                                                p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                                rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+pander::pandoc.table(mdes_0125_holms_min1, style = "grid")
 ```
 
-```{r}
-tic()
-mdes_0125_bh_min1 <- pum::mdes_blocked_i1_2c(M = 3, numFalse = 3,J = 20, n.j = 50, power = power_M3_BH_MDES0125["BH", "min1"],
-                                          power.definition = "min1", MTP = "BH", marginError = 0.05,
-                                          p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                                          R2.1 = 0.5, R2.2 = 0, ICC = 0, mod.type = "constant", 
-                                          rho = 0.5, omega = NULL,tnum = 10000, snum = 1000, ncl = 8)
-toc()
-print(mdes_0125_bh_min1)
+# Sample Validation
+
+In this section, we validate the derived sample function. The sample function is expected to return either the __number of blocks__ or the __number of samples within the block__. Like in MDES, we validate by first generating power for a specific MTP with the block and within block sample size being specified. Then, we have the function return us either the __number of blocks__ or the __number of samples within block__ by inputting the estimated statistical power. If it returns what we originally specify to estimate statistical power then the sample function is working as it should. 
+
+A few new input parameters are needed to test the sampling function.
+
+* J: _the number of blocks (set to NULL if you do not want to estimate this one)_
+* n.j: _the harmonic mean of blocks (set to NULL if you do not want to estimate this one)_
+* J0: _the initial value for the sample number of blocks. The default is set at 10_
+* n.j0: _the initial value for the harmonic mean for the number of samples within block. The default is set at 10_
+
+Below, we have listed out input parameter setting that generated power values that would be input parameters for our derived sample function.
+
+```{r sampleCommonInputs, message = FALSE,warning = FALSE}
+M <- 3
+MDES <- 0.125
+numFalse <- 3
+J <- 20
+n.j <- 100
+R2.1 <- 0.5
+R2.2 <- 0
+p <- 0.5
+alpha <- 0.05
+numCovar.1 <- 5
+numCovar.2 <- NULL
+rho <- 0.5
+tnum <- 10000
+snum <- 2000
+updateProgress <- NULL
+marginError <- 0.05
+ICC <- 0
+omega <- NULL
 ```
 
+### BH Validation
 
-## Sample Function Validation
-
-We are testing the MDES function by putting in the parameters of the simulated power function and checking if we receive an MDES estimation within range.
-
-```{r}
-# Loading our pum library
-library(pum)
+```{r powerSampleBH}
+power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "BH", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
+                                                  R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, 
+                                                  numCovar.2 = numCovar.2,
+                                                  rho = rho,tnum = tnum, snum = snum, ncl = ncl)
+power_M3_BH_MDES0125 <- as.data.frame(power_M3_BH_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_BH_MDES0125, style = "grid", split.tables = 90)
 ```
 
-```{r}
-tic()
-power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "BH", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
-                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
-toc()
-print(power_M3_BH_MDES0125)
+#### Indivdiual Power
+
+##### Within Block
+
+```{r BHWithinBlock}
+sample_BH_indiv_nj_100 <- pum::sample_blocked_i1_2c(M = M, numFalse = numFalse, MTP = "BH", typesample = "n.j", J = J, 
+                                                   n.j = NULL, J0 = NULL, n.j0 = 50, MDES = MDES, 
+                                                   power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "indiv"] ,
+                                                   power.definition = "indiv", 
+                                                   marginError = marginError, p = p,alpha = alpha,
+                                                   numCovar.1 = numCovar.1,numCovar.2 = numCovar.2,
+                                                   R2.1 = R2.1,tnum = tnum, snum = snum, ncl = ncl)
+pander::pandoc.table(sample_BH_indiv_nj_100, style = "grid")
 ```
 
-```{r}
-sample_BH_indiv_nj_50 <- sample_blocked_i1_2c(M = 3, numFalse = 3, MTP = "BH", typesample = "n.j", J = 20, n.j = NULL, 
-                                    J0 = NULL, n.j0 = 50, MDES = 0.125, power = power_M3_BH_MDES0125["BH", "indiv"] ,
-                                    power.definition = "indiv", marginError = 0.05,
-                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
-                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_BH_indiv_nj_50)
+#### Minimum Power
+
+##### For Blocks
+
+```{r BHForBlocks}
+sample_BH_min1_J_20 <- sample_blocked_i1_2c(M = M, numFalse = numFalse, typesample = "J", J = NULL, n.j = 100, 
+                                            J0 = 10, n.j0 = NULL, MDES = MDES, 
+                                            power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "min1"] ,
+                                            power.definition = "min1", MTP = "BH", marginError = marginError,
+                                            p = p,alpha = alpha,numCovar.1 = numCovar.1,numCovar.2 = numCovar.2,
+                                            R2.1 = R2.1,tnum = tnum, snum = snum, ncl = ncl)
+pander::pandoc.table(sample_BH_min1_J_20, style = "grid")
 ```
 
-```{r}
-sample_BH_min1_J_20 <- sample_blocked_i1_2c(M = 3, numFalse = 3, typesample = "J", J = NULL, n.j = 50, 
-                                    J0 = 10, n.j0 = NULL, MDES = 0.125, power = power_M3_BH_MDES0125["BH", "min1"] ,
-                                    power.definition = "min1", MTP = "BH", marginError = 0.05,
-                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
-                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_BH_min1_J_20)
+### HO Validation
+
+```{r powerSampleHO}
+power_M3_HO_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "HO", MDES = MDES, numFalse = numFalse, 
+                                                 J = J, n.j = n.j, 
+                                                 R2.1 = R2.1, p = p, alpha = alpha, 
+                                                 numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                 rho = rho,tnum = tnum, snum =snum, ncl = ncl)
+power_M3_HO_MDES0125 <- as.data.frame(power_M3_HO_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_HO_MDES0125, style = "grid", split.tables = 90)
 ```
 
-```{r}
-tic()
-power_M3_HO_MDES0125 <- pum::power_blocked_i1_2c(M = 3, MTP = "HO", MDES = 0.125, numFalse = 3, J = 20, n.j = 50, 
-                         R2.1 = 0.5, p = 0.5, alpha = 0.05, numCovar.1 = 5, numCovar.2 = NULL,
-                         rho = 0.5,tnum = 10000, snum =2000, ncl = 8)
-toc()
-print(power_M3_HO_MDES0125)
+#### Indivdiual Power
+
+##### Within Blocks
+
+```{r HOWithinBlocks}
+sample_HO_nj_100_indiv <- sample_blocked_i1_2c(M = M, numFalse = numFalse, typesample = "n.j", J = 20, n.j = NULL, 
+                                              J0 = NULL, n.j0 = 10, MDES = MDES, 
+                                              power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "indiv"] ,
+                                              power.definition = "indiv", MTP = "HO", marginError = marginError,
+                                              p = p,alpha = alpha,numCovar.1 = numCovar.1,numCovar.2 = numCovar.2,
+                                              R2.1 = R2.1,tnum = tnum, snum = snum, ncl = ncl)
+print(sample_HO_nj_100_indiv)
 ```
 
-```{r}
-sample_HO_J_20_indiv <- sample_blocked_i1_2c(M = 3, numFalse = 3, typesample = "J", J = NULL, n.j = 50, 
-                                    J0 = 10, n.j0 = NULL, MDES = 0.125, power = power_M3_HO_MDES0125["HO", "indiv"] ,
-                                    power.definition = "indiv", MTP = "HO", marginError = 0.05,
-                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
-                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_HO_J_20_indiv)
-```
+#### Minimum Power
 
-```{r}
-sample_HO_nj_50_indiv <- sample_blocked_i1_2c(M = 3, numFalse = 3, typesample = "n.j", J = 20, n.j = NULL, 
-                                    J0 = NULL, n.j0 = 10, MDES = 0.125, power = power_M3_HO_MDES0125["HO", "indiv"] ,
-                                    power.definition = "indiv", MTP = "HO", marginError = 0.05,
-                                    p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
-                                    R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-print(sample_HO_nj_50_indiv)
-```
+##### For Block
 
+```{r HOForBlock}
+sample_HO_J_20_indiv <- sample_blocked_i1_2c(M = M, numFalse = numFalse, typesample = "J", J = NULL, n.j = 100, 
+                                             J0 = 10, n.j0 = NULL, MDES = 0.125, 
+                                             power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "min1"] ,
+                                             power.definition = "min1", MTP = "HO", marginError = marginError,
+                                             p = p,alpha = alpha,numCovar.1 = numCovar.1,numCovar.2 = numCovar.2,
+                                             R2.1 = R2.1,tnum = tnum, snum = snum, ncl = ncl)
+pander::pandoc.table(sample_HO_J_20_indiv, style = "grid")
+```
 
 
