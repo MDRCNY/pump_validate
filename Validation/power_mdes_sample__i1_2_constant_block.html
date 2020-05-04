@@ -2996,7 +2996,7 @@ div.tocify {
 <a class="sourceLine" id="cb3-5" data-line-number="5">MDES &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="fl">0.125</span>, M) </a>
 <a class="sourceLine" id="cb3-6" data-line-number="6">rho &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.5</span>)</a>
 <a class="sourceLine" id="cb3-7" data-line-number="7">ncl &lt;-<span class="dv">2</span> </a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">S =<span class="st"> </span><span class="dv">2</span> <span class="co"># Number of samples for Monte Carlo Simulation.</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8">S =<span class="st"> </span><span class="dv">2000</span> <span class="co"># Number of samples for Monte Carlo Simulation.</span></a>
 <a class="sourceLine" id="cb3-9" data-line-number="9">B =<span class="st"> </span><span class="dv">2</span> <span class="co"># Number of samples for WestFall-Young. The equivalent is snum in our new method.</span></a>
 <a class="sourceLine" id="cb3-10" data-line-number="10">tnum =<span class="st"> </span><span class="dv">10000</span> <span class="co"># Number of test statistics (samples) for all procedures other than Westfall-Young. The default is set at 10,000.</span></a>
 <a class="sourceLine" id="cb3-11" data-line-number="11">J =<span class="st"> </span><span class="dv">20</span> </a>
@@ -3031,7 +3031,7 @@ div.tocify {
 <a class="sourceLine" id="cb4-10" data-line-number="10">                                                                <span class="dt">check =</span> check, <span class="dt">storage_path =</span> storage_path, </a>
 <a class="sourceLine" id="cb4-11" data-line-number="11">                                                                <span class="dt">validation_name =</span> validation_name, <span class="dt">runSim =</span> runSim, </a>
 <a class="sourceLine" id="cb4-12" data-line-number="12">                                                                <span class="dt">runPump =</span> runPump)</a></code></pre></div>
-<pre><code>## Simulation of Two Level Constant Effects: 0.72 sec elapsed
+<pre><code>## Simulation of Two Level Constant Effects: 176.66 sec elapsed
 ## 
 ## Statistical power: 
 ## --------------------------------------- 
@@ -3049,13 +3049,13 @@ div.tocify {
 ## +------------+------------+-----------+---------------+-----------+----------+
 ## |    MTP     | pump_indiv | sim_indiv | powerup_indiv | pump_min1 | sim_min1 |
 ## +============+============+===========+===============+===========+==========+
-## |    rawp    |   0.7959   |     1     |    0.7978     |  0.9479   |    1     |
+## |    rawp    |   0.7936   |   0.806   |    0.7978     |  0.9452   |  0.9525  |
 ## +------------+------------+-----------+---------------+-----------+----------+
-## | Bonferroni |   0.655    |     1     |      NA       |  0.8711   |    1     |
+## | Bonferroni |   0.6517   |   0.656   |      NA       |   0.865   |  0.876   |
 ## +------------+------------+-----------+---------------+-----------+----------+
-## |     BH     |   0.7653   |     1     |      NA       |  0.8909   |    1     |
+## |     BH     |   0.7624   |   0.767   |      NA       |  0.8857   |   0.89   |
 ## +------------+------------+-----------+---------------+-----------+----------+
-## |    Holm    |   0.7267   |     1     |      NA       |  0.8685   |    1     |
+## |    Holm    |   0.7311   |   0.739   |      NA       |  0.8704   |  0.876   |
 ## +------------+------------+-----------+---------------+-----------+----------+
 ## 
 ## Table: PowerSimulation_rho_0.5_falseNull_3 (continued below)
@@ -3065,13 +3065,13 @@ div.tocify {
 ## +-----------+----------+---------------+--------------+
 ## | pump_min2 | sim_min2 | pump_complete | sim_complete |
 ## +===========+==========+===============+==============+
-## |  0.8302   |    1     |    0.6097     |     0.5      |
+## |  0.8328   |  0.849   |    0.6029     |    0.6235    |
 ## +-----------+----------+---------------+--------------+
-## |  0.6794   |    1     |      NA       |      NA      |
+## |  0.6781   |  0.6875  |      NA       |      NA      |
 ## +-----------+----------+---------------+--------------+
-## |  0.7947   |    1     |      NA       |      NA      |
+## |  0.7932   |  0.795   |      NA       |      NA      |
 ## +-----------+----------+---------------+--------------+
-## |  0.7327   |    1     |      NA       |      NA      |
+## |  0.7395   |  0.7455  |      NA       |      NA      |
 ## +-----------+----------+---------------+--------------+</code></pre>
 </div>
 </div>
@@ -3114,9 +3114,9 @@ div.tocify {
 ## +------+--------+--------+--------+--------+--------+--------+----------+
 ## | MTP  | indiv  | indiv1 | indiv2 | indiv3 |  min1  |  min2  | complete |
 ## +======+========+========+========+========+========+========+==========+
-## | rawp | 0.9759 | 0.9748 | 0.9783 | 0.9745 | 0.998  | 0.9887 |  0.9409  |
+## | rawp | 0.9744 | 0.9733 | 0.9755 | 0.9745 | 0.9976 | 0.9885 |  0.9372  |
 ## +------+--------+--------+--------+--------+--------+--------+----------+
-## |  BF  | 0.9385 | 0.9381 | 0.9425 | 0.9348 | 0.9913 | 0.964  |  0.9409  |
+## |  BF  | 0.939  | 0.9381 | 0.9384 | 0.9404 | 0.9912 | 0.9636 |  0.9372  |
 ## +------+--------+--------+--------+--------+--------+--------+----------+</code></pre>
 <div id="individual-power" class="section level4">
 <h4>Individual Power</h4>
@@ -3126,7 +3126,7 @@ div.tocify {
 <a class="sourceLine" id="cb11-4" data-line-number="4">                                                <span class="dt">p =</span> p, <span class="dt">alpha =</span> alpha, <span class="dt">numCovar.1 =</span> numCovar<span class="fl">.1</span>, <span class="dt">numCovar.2 =</span> numCovar<span class="fl">.2</span>,</a>
 <a class="sourceLine" id="cb11-5" data-line-number="5">                                                <span class="dt">R2.1 =</span> R2<span class="fl">.1</span>, <span class="dt">R2.2 =</span> R2<span class="fl">.2</span>, <span class="dt">ICC =</span> ICC, <span class="dt">mod.type =</span> <span class="st">&quot;constant&quot;</span>, </a>
 <a class="sourceLine" id="cb11-6" data-line-number="6">                                                <span class="dt">rho =</span> rho, <span class="dt">omega =</span> omega,<span class="dt">tnum =</span> tnum, <span class="dt">snum =</span> snum, <span class="dt">ncl =</span> ncl)</a></code></pre></div>
-<pre><code>## [1] &quot;Estimating MDES for target  indiv power of  0.9385&quot;</code></pre>
+<pre><code>## [1] &quot;Estimating MDES for target  indiv power of  0.939&quot;</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">mdes_<span class="dv">0125</span>_bonf_indiv &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(mdes_<span class="dv">0125</span>_bonf_indiv) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">                            </span>tibble<span class="op">::</span><span class="kw">rownames_to_column</span>(<span class="dt">var =</span> <span class="st">&quot;MTP&quot;</span>)</a>
 <a class="sourceLine" id="cb13-3" data-line-number="3">pander<span class="op">::</span><span class="kw">pandoc.table</span>(mdes_<span class="dv">0125</span>_bonf_indiv, <span class="dt">style =</span> <span class="st">&quot;grid&quot;</span>, <span class="dt">split.tables =</span> <span class="dv">90</span>)</a></code></pre></div>
@@ -3135,7 +3135,7 @@ div.tocify {
 ## +-------------------+------------------+-------------+
 ## |        MTP        | BF adjusted MDES | indiv power |
 ## +===================+==================+=============+
-## | c.MDES.BF..power. |      0.1246      |   0.9385    |
+## | c.MDES.BF..power. |      0.1247      |    0.939    |
 ## +-------------------+------------------+-------------+</code></pre>
 </div>
 </div>
@@ -3153,9 +3153,9 @@ div.tocify {
 ## +------+--------+--------+--------+--------+--------+--------+----------+
 ## | MTP  | indiv  | indiv1 | indiv2 | indiv3 |  min1  |  min2  | complete |
 ## +======+========+========+========+========+========+========+==========+
-## | rawp | 0.9744 | 0.974  | 0.9748 | 0.9744 | 0.9987 | 0.9894 |  0.9351  |
+## | rawp | 0.9766 | 0.9776 | 0.9765 | 0.9757 | 0.9984 | 0.989  |  0.9424  |
 ## +------+--------+--------+--------+--------+--------+--------+----------+
-## |  BH  | 0.9708 | 0.9692 | 0.9719 | 0.9714 | 0.9946 | 0.9828 |  0.9351  |
+## |  BH  | 0.9729 | 0.9746 | 0.973  | 0.9712 | 0.9938 | 0.9826 |  0.9424  |
 ## +------+--------+--------+--------+--------+--------+--------+----------+</code></pre>
 <div id="individual-power-1" class="section level4">
 <h4>Individual Power</h4>
@@ -3165,14 +3165,14 @@ div.tocify {
 <a class="sourceLine" id="cb17-4" data-line-number="4">                                              <span class="dt">p =</span> p, <span class="dt">alpha =</span> alpha, <span class="dt">numCovar.1 =</span> numCovar<span class="fl">.1</span>, <span class="dt">numCovar.2 =</span> numCovar<span class="fl">.2</span>,</a>
 <a class="sourceLine" id="cb17-5" data-line-number="5">                                              <span class="dt">R2.1 =</span> R2<span class="fl">.1</span>, <span class="dt">R2.2 =</span> R2<span class="fl">.2</span>, <span class="dt">ICC =</span> ICC, <span class="dt">mod.type =</span> <span class="st">&quot;constant&quot;</span>, </a>
 <a class="sourceLine" id="cb17-6" data-line-number="6">                                              <span class="dt">rho =</span> rho, <span class="dt">omega =</span> omega, <span class="dt">tnum =</span> tnum, <span class="dt">snum =</span> snum, <span class="dt">ncl =</span> ncl)</a></code></pre></div>
-<pre><code>## [1] &quot;Estimating MDES for target  indiv power of  0.9708&quot;</code></pre>
+<pre><code>## [1] &quot;Estimating MDES for target  indiv power of  0.9729&quot;</code></pre>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">pander<span class="op">::</span><span class="kw">pandoc.table</span>(mdes_<span class="dv">0125</span>_bh_indiv, <span class="dt">style =</span> <span class="st">&quot;grid&quot;</span>)</a></code></pre></div>
 <pre><code>## 
 ## 
 ## +------------------+-------------+
 ## | BH adjusted MDES | indiv power |
 ## +==================+=============+
-## |      0.1288      |   0.9812    |
+## |      0.1298      |   0.9805    |
 ## +------------------+-------------+</code></pre>
 </div>
 <div id="minimum-power" class="section level4">
@@ -3183,7 +3183,7 @@ div.tocify {
 <a class="sourceLine" id="cb21-4" data-line-number="4">                                              <span class="dt">p =</span> p, <span class="dt">alpha =</span> alpha, <span class="dt">numCovar.1 =</span> numCovar<span class="fl">.1</span>, <span class="dt">numCovar.2 =</span> numCovar<span class="fl">.2</span>,</a>
 <a class="sourceLine" id="cb21-5" data-line-number="5">                                              <span class="dt">R2.1 =</span> R2<span class="fl">.1</span>, <span class="dt">R2.2 =</span> R2<span class="fl">.2</span>, <span class="dt">ICC =</span> ICC, <span class="dt">mod.type =</span> <span class="st">&quot;constant&quot;</span>, </a>
 <a class="sourceLine" id="cb21-6" data-line-number="6">                                              <span class="dt">rho =</span> rho, <span class="dt">omega =</span> omega,<span class="dt">tnum =</span> tnum, <span class="dt">snum =</span> snum, <span class="dt">ncl =</span> ncl)</a></code></pre></div>
-<pre><code>## [1] &quot;Estimating MDES for target  min1 power of  0.9946&quot;</code></pre>
+<pre><code>## [1] &quot;Estimating MDES for target  min1 power of  0.9938&quot;</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">pander<span class="op">::</span><span class="kw">pandoc.table</span>(mdes_<span class="dv">0125</span>_bh_min1, <span class="dt">style =</span> <span class="st">&quot;grid&quot;</span>)</a></code></pre></div>
 <pre><code>## 
 ## 
@@ -3208,9 +3208,9 @@ div.tocify {
 ## +------+--------+--------+--------+--------+--------+--------+----------+
 ## | MTP  | indiv  | indiv1 | indiv2 | indiv3 |  min1  |  min2  | complete |
 ## +======+========+========+========+========+========+========+==========+
-## | rawp | 0.9777 | 0.977  | 0.9787 | 0.9773 | 0.9982 | 0.9905 |  0.9443  |
+## | rawp | 0.9771 | 0.978  | 0.9768 | 0.9765 | 0.9986 | 0.9917 |  0.941   |
 ## +------+--------+--------+--------+--------+--------+--------+----------+
-## |  HO  | 0.9704 | 0.9683 | 0.9721 | 0.9709 | 0.9924 | 0.9784 |  0.9443  |
+## |  HO  | 0.9706 | 0.9709 | 0.9712 | 0.9696 | 0.9945 | 0.9794 |  0.941   |
 ## +------+--------+--------+--------+--------+--------+--------+----------+</code></pre>
 <div id="individual-power-2" class="section level4">
 <h4>Individual Power</h4>
@@ -3220,14 +3220,14 @@ div.tocify {
 <a class="sourceLine" id="cb27-4" data-line-number="4">                                                  <span class="dt">p =</span> p, <span class="dt">alpha =</span> alpha, <span class="dt">numCovar.1 =</span> numCovar<span class="fl">.1</span>, <span class="dt">numCovar.2 =</span> numCovar<span class="fl">.2</span>,</a>
 <a class="sourceLine" id="cb27-5" data-line-number="5">                                                  <span class="dt">R2.1 =</span> R2<span class="fl">.1</span>, <span class="dt">R2.2 =</span> R2<span class="fl">.2</span>, <span class="dt">ICC =</span> ICC, <span class="dt">mod.type =</span> <span class="st">&quot;constant&quot;</span>, </a>
 <a class="sourceLine" id="cb27-6" data-line-number="6">                                                  <span class="dt">rho =</span> rho, <span class="dt">omega =</span> omega,<span class="dt">tnum =</span> tnum, <span class="dt">snum =</span> snum, <span class="dt">ncl =</span> ncl)</a></code></pre></div>
-<pre><code>## [1] &quot;Estimating MDES for target  indiv power of  0.9704&quot;</code></pre>
+<pre><code>## [1] &quot;Estimating MDES for target  indiv power of  0.9706&quot;</code></pre>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">pander<span class="op">::</span><span class="kw">pandoc.table</span>(mdes_<span class="dv">0125</span>_holms_indiv1, <span class="dt">style =</span> <span class="st">&quot;grid&quot;</span>)</a></code></pre></div>
 <pre><code>## 
 ## 
 ## +------------------+-------------+
 ## | HO adjusted MDES | indiv power |
 ## +==================+=============+
-## |      0.1286      |   0.9774    |
+## |      0.1287      |   0.9766    |
 ## +------------------+-------------+</code></pre>
 </div>
 <div id="minimum-power-1" class="section level4">
@@ -3238,7 +3238,7 @@ div.tocify {
 <a class="sourceLine" id="cb31-4" data-line-number="4">                                                <span class="dt">p =</span> p, <span class="dt">alpha =</span> alpha, <span class="dt">numCovar.1 =</span> numCovar<span class="fl">.1</span>, <span class="dt">numCovar.2 =</span> numCovar<span class="fl">.2</span>,</a>
 <a class="sourceLine" id="cb31-5" data-line-number="5">                                                <span class="dt">R2.1 =</span> R2<span class="fl">.1</span>, <span class="dt">R2.2 =</span> R2<span class="fl">.2</span>, <span class="dt">ICC =</span> ICC, <span class="dt">mod.type =</span> <span class="st">&quot;constant&quot;</span>, </a>
 <a class="sourceLine" id="cb31-6" data-line-number="6">                                                <span class="dt">rho =</span> rho, <span class="dt">omega =</span> omega,<span class="dt">tnum =</span> tnum, <span class="dt">snum =</span> snum, <span class="dt">ncl =</span> ncl)</a></code></pre></div>
-<pre><code>## [1] &quot;Estimating MDES for target  min1 power of  0.9924&quot;</code></pre>
+<pre><code>## [1] &quot;Estimating MDES for target  min1 power of  0.9945&quot;</code></pre>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">pander<span class="op">::</span><span class="kw">pandoc.table</span>(mdes_<span class="dv">0125</span>_holms_min1, <span class="dt">style =</span> <span class="st">&quot;grid&quot;</span>)</a></code></pre></div>
 <pre><code>## 
 ## 
@@ -3293,9 +3293,9 @@ div.tocify {
 ## +------+--------+--------+--------+--------+--------+--------+----------+
 ## | MTP  | indiv  | indiv1 | indiv2 | indiv3 |  min1  |  min2  | complete |
 ## +======+========+========+========+========+========+========+==========+
-## | rawp | 0.976  | 0.9771 | 0.9748 | 0.9762 | 0.9987 | 0.9905 |  0.9389  |
+## | rawp | 0.9767 | 0.9783 | 0.9764 | 0.9754 | 0.9992 | 0.9903 |  0.9406  |
 ## +------+--------+--------+--------+--------+--------+--------+----------+
-## |  BH  | 0.9727 | 0.9737 | 0.9719 | 0.9726 | 0.9943 | 0.985  |  0.9389  |
+## |  BH  | 0.9735 | 0.9746 | 0.9731 | 0.9728 | 0.9954 | 0.9845 |  0.9406  |
 ## +------+--------+--------+--------+--------+--------+--------+----------+</code></pre>
 <div id="indivdiual-power" class="section level4">
 <h4>Indivdiual Power</h4>
@@ -3314,7 +3314,7 @@ div.tocify {
 ## +-------------+---------------+-------------+--------------+
 ## | Type of MTP | Type of Power | Sample Size | Target Power |
 ## +=============+===============+=============+==============+
-## |     BH      |     indiv     |     108     |    0.9814    |
+## |     BH      |     indiv     |     109     |    0.9809    |
 ## +-------------+---------------+-------------+--------------+</code></pre>
 </div>
 </div>
@@ -3334,7 +3334,7 @@ div.tocify {
 ## +-------------+---------------+-------------+--------------+
 ## | Type of MTP | Type of Power | Sample Size | Target Power |
 ## +=============+===============+=============+==============+
-## |     BH      |     min1      |     24      |    0.9859    |
+## |     BH      |     min1      |     24      |    0.9894    |
 ## +-------------+---------------+-------------+--------------+</code></pre>
 </div>
 </div>
@@ -3354,9 +3354,9 @@ div.tocify {
 ## +------+--------+--------+--------+--------+--------+--------+----------+
 ## | MTP  | indiv  | indiv1 | indiv2 | indiv3 |  min1  |  min2  | complete |
 ## +======+========+========+========+========+========+========+==========+
-## | rawp | 0.9775 | 0.9771 | 0.976  | 0.9793 | 0.9987 | 0.9904 |  0.9433  |
+## | rawp | 0.9784 | 0.9768 | 0.978  | 0.9805 | 0.9987 | 0.9898 |  0.9468  |
 ## +------+--------+--------+--------+--------+--------+--------+----------+
-## |  HO  | 0.9702 | 0.9699 | 0.9689 | 0.9719 | 0.9948 | 0.9769 |  0.9433  |
+## |  HO  | 0.9712 | 0.9699 | 0.9711 | 0.9727 | 0.9929 | 0.9769 |  0.9468  |
 ## +------+--------+--------+--------+--------+--------+--------+----------+</code></pre>
 <div id="indivdiual-power-1" class="section level4">
 <h4>Indivdiual Power</h4>
@@ -3370,7 +3370,7 @@ div.tocify {
 <a class="sourceLine" id="cb44-6" data-line-number="6">                                              <span class="dt">R2.1 =</span> R2<span class="fl">.1</span>,<span class="dt">tnum =</span> tnum, <span class="dt">snum =</span> snum, <span class="dt">ncl =</span> ncl)</a>
 <a class="sourceLine" id="cb44-7" data-line-number="7"><span class="kw">print</span>(sample_HO_nj_<span class="dv">100</span>_indiv)</a></code></pre></div>
 <pre><code>##   Type of MTP Type of Power Sample Size Target Power
-## 1          HO         indiv         106    0.9630333</code></pre>
+## 1          HO         indiv         107        0.966</code></pre>
 </div>
 </div>
 <div id="minimum-power-3" class="section level4">
@@ -3389,7 +3389,7 @@ div.tocify {
 ## +-------------+---------------+-------------+--------------+
 ## | Type of MTP | Type of Power | Sample Size | Target Power |
 ## +=============+===============+=============+==============+
-## |     HO      |     min1      |     24      |    0.9771    |
+## |     HO      |     min1      |     23      |    0.9717    |
 ## +-------------+---------------+-------------+--------------+</code></pre>
 </div>
 </div>
