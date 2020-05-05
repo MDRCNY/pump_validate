@@ -168,12 +168,349 @@ Below is a brief description of input parameters for the __mdes__ function from 
 * **ncl**: _ncl the number of clusters to use for parallel processing. The default is set at 2._
 * **updateProgress**: _this is the progress bar function that will be passed to the main MDES calculation function._
 
+## Power: 0.65 - 0.87
 
-## High Power Values
+Below, we have input parameters of number of outcomes, minimum detectable effect size, statistical power, significance level that would estimate a high statistical power value of above __0.65__ to __1.00__ for different definitions of power. This estimated power value is used as an input to the mdes function where we validate if the _returned_ __mdes__ value is close to the __mdes__ value that was inputted to provide the estimated power.
 
-Below, we have input parameters of number of outcomes, minimum detectable effect size, statistical power, significance level that would estimate a high statistical power value of above __0.95__ to __1__ for different definitions of power. This estimated power value is used as an input to validate if the returned __mdes__ value is close to the value that was inputted to provide the estimated power.
+```{r mdesCommonInputs02, message = FALSE,warning = FALSE}
+M <- 3
+MDES <- 0.125
+numFalse <- 3
+J <- 20
+n.j <- 50
+R2.1 <- 0.5
+R2.2 <- 0
+p <- 0.5
+alpha <- 0.05
+numCovar.1 <- 5
+numCovar.2 <- NULL
+rho <- 0.5
+tnum <- 10000
+snum <- 2000
+updateProgress <- NULL
+marginError <- 0.05
+ICC <- 0
+omega <- NULL
+```
 
-```{r mdesCommonInputs, message = FALSE,warning = FALSE}
+### BF Validation
+
+In this section, we are estimating statistical powers to be inputted to the mdes function.
+
+```{r powerMdesBonf02}
+# Power generation with specifications
+power_M3_BF_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "Bonferroni", MDES = MDES, 
+                                                 numFalse = numFalse, J = J, n.j = n.j, 
+                                                 R2.1 = R2.1, p = p, alpha = alpha, 
+                                                 numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                 rho = rho,tnum = tnum, snum = snum, ncl = 8)
+power_M3_BF_MDES0125 <- as.data.frame(power_M3_BF_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_BF_MDES0125, style = "grid", split.tables = 90, caption = "Estimated Power Values as inputs to derived MDES function")
+```
+
+#### Individual Power
+
+`r colorize("The Bonferroni __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the specified targetted power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesBonfIndiv02}
+mdes_0125_bonf_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
+                                                power = power_M3_BF_MDES0125[which(power_M3_BF_MDES0125$MTP == "BF"), "indiv"],
+                                                power.definition = "indiv", MTP = "BF", marginError = marginError,
+                                                p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                                rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_bonf_indiv <- as.data.frame(mdes_0125_bonf_indiv) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_bonf_indiv$MTP <- "Bonferroni"
+mdes_0125_bonf_indiv$TargettedMDES <- MDES
+colnames(mdes_0125_bonf_indiv)[4] <- "Targetted MDES"
+mdes_0125_bonf_indiv <- mdes_0125_bonf_indiv[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_bonf_indiv, style = "grid", split.tables = 90)
+```
+
+### BH Validation
+
+In this section, we are estimating statistical powers to be inputted to the mdes function.
+
+```{r powerMdesBH02}
+power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "BH", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
+                                                  R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, 
+                                                  numCovar.2 = numCovar.2,
+                                                  rho = rho,tnum = tnum, snum = snum, ncl = ncl)
+power_M3_BH_MDES0125 <- as.data.frame(power_M3_BH_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_BH_MDES0125, style = "grid", split.tables = 90)
+```
+#### Individual Power
+
+`r colorize("The Benjamini Hocheberg __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the __targetted__ individual power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesBHIndiv02}
+mdes_0125_bh_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse, J = J, n.j = n.j, 
+                                              power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "indiv"],
+                                              power.definition = "indiv", MTP = "BH", marginError = marginError,
+                                              p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                              R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                              rho = rho, omega = omega, tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_bh_indiv <- as.data.frame(mdes_0125_bh_indiv) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_bh_indiv$MTP <- "Benjamini_Hocheberg"
+mdes_0125_bh_indiv$TargettedMDES <- MDES
+colnames(mdes_0125_bh_indiv)[4] <- "Targetted MDES"
+mdes_0125_bh_indiv <- mdes_0125_bh_indiv[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_bh_indiv, style = "grid", split.tables = 90)
+
+```
+
+#### Minimum Power
+
+`r colorize("The Benjamini Hocheberg __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the targetted min power. The __adjusted MDES__ is estimated at the __corresponding__ minimum power in the table below. The __corresponding__ minimum power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesBHMin102}
+mdes_0125_bh_min1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse, J = J, n.j = n.j, 
+                                              power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "min1"],
+                                              power.definition = "min1", MTP = "BH", marginError = marginError,
+                                              p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                              R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                              rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_bh_min1 <- as.data.frame(mdes_0125_bh_min1) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_bh_min1$MTP <- "Benjamini_Hocheberg"
+mdes_0125_bh_min1$TargettedMDES <- MDES
+colnames(mdes_0125_bh_min1)[4] <- "Targetted MDES"
+mdes_0125_bh_min1 <- mdes_0125_bh_min1[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_bh_min1, style = "grid", split.tables = 90)
+```
+
+### HO Validation
+
+In this section, we are estimating statistical powers to be inputted to the mdes function.
+
+```{r powerMdesHO02}
+power_M3_HO_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "HO", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
+                                                  R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, 
+                                                  numCovar.2 = numCovar.2,
+                                                  rho = rho,tnum = tnum, snum = snum, ncl = ncl)
+power_M3_HO_MDES0125 <- as.data.frame(power_M3_HO_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_HO_MDES0125, style = "grid", split.tables = 90)
+```
+
+#### Individual Power
+
+`r colorize("The Holms __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the targetted individual power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesHOIndiv02}
+mdes_0125_holms_indiv1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
+                                                  power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "indiv"],
+                                                  power.definition = "indiv", MTP = "HO", marginError = marginError,
+                                                  p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                  R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                                  rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_holms_indiv1 <- as.data.frame(mdes_0125_holms_indiv1) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_holms_indiv1$MTP <- "Benjamini_Hocheberg"
+mdes_0125_holms_indiv1$TargettedMDES <- MDES
+colnames(mdes_0125_holms_indiv1)[4] <- "Targetted MDES"
+mdes_0125_holms_indiv1 <- mdes_0125_holms_indiv1[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_holms_indiv1, style = "grid", split.tables = 90)
+```
+
+#### Minimum Power
+
+`r colorize("The Holms __adjusted MDES__ and the __Target MDES__ are way off for the specified minimal power. The specified minimal power is at 1 or too close to 1 that the estimated adjusted minimum detectable effect size would be correspondingly __high__.", "red")`
+
+```{r mdesHOMin102}
+mdes_0125_holms_min1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
+                                                power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "min1"],
+                                                power.definition = "min1", MTP = "HO", marginError = marginError,
+                                                p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                                rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_holms_min1 <- as.data.frame(mdes_0125_holms_min1) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_holms_min1$MTP <- "Benjamini_Hocheberg"
+mdes_0125_holms_min1$TargettedMDES <- MDES
+colnames(mdes_0125_holms_min1)[4] <- "Targetted MDES"
+mdes_0125_holms_min1 <- mdes_0125_holms_min1[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_holms_min1, style = "grid", split.tables = 90)
+```
+
+## Power: 0.84 - 1
+
+Below, we have input parameters of number of outcomes, minimum detectable effect size, statistical power, significance level that would estimate a moderately high statistical power value of above __0.84__ to __1__ for different definitions of power. This estimated power value is used as an input to the mdes function where we validate if the _returned_ __mdes__ value is close to the __mdes__ value that was inputted to provide the estimated power.
+
+```{r mdesCommonInputs03, message = FALSE,warning = FALSE}
+M <- 3
+MDES <- 0.125
+numFalse <- 3
+J <- 20
+n.j <- 75
+R2.1 <- 0.5
+R2.2 <- 0
+p <- 0.5
+alpha <- 0.05
+numCovar.1 <- 5
+numCovar.2 <- NULL
+rho <- 0.5
+tnum <- 10000
+snum <- 2000
+updateProgress <- NULL
+marginError <- 0.05
+ICC <- 0
+omega <- NULL
+```
+
+### BF Validation
+
+In this section, we are estimating statistical powers to be inputted to the mdes function.
+
+```{r powerMdesBonf03}
+# Power generation with specifications
+power_M3_BF_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "Bonferroni", MDES = MDES, 
+                                                 numFalse = numFalse, J = J, n.j = n.j, 
+                                                 R2.1 = R2.1, p = p, alpha = alpha, 
+                                                 numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                 rho = rho,tnum = tnum, snum = snum, ncl = 8)
+power_M3_BF_MDES0125 <- as.data.frame(power_M3_BF_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_BF_MDES0125, style = "grid", split.tables = 90, caption = "Estimated Power Values as inputs to derived MDES function")
+```
+
+#### Individual Power
+
+`r colorize("The Bonferroni __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the target individual power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesBonfIndiv03}
+mdes_0125_bonf_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
+                                                power = power_M3_BF_MDES0125[which(power_M3_BF_MDES0125$MTP == "BF"), "indiv"],
+                                                power.definition = "indiv", MTP = "BF", marginError = marginError,
+                                                p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                                rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_bonf_indiv <- as.data.frame(mdes_0125_bonf_indiv) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_bonf_indiv$MTP <- "Bonferroni"
+mdes_0125_bonf_indiv$TargettedMDES <- MDES
+colnames(mdes_0125_bonf_indiv)[4] <- "Targetted MDES"
+mdes_0125_bonf_indiv <- mdes_0125_bonf_indiv[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_bonf_indiv, style = "grid", split.tables = 90)
+```
+
+### BH Validation
+
+In this section, we are estimating statistical powers to be inputted to the mdes function.
+
+```{r powerMdesBH03}
+power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "BH", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
+                                                  R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, 
+                                                  numCovar.2 = numCovar.2,
+                                                  rho = rho,tnum = tnum, snum = snum, ncl = ncl)
+power_M3_BH_MDES0125 <- as.data.frame(power_M3_BH_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_BH_MDES0125, style = "grid", split.tables = 90)
+```
+#### Individual Power
+
+`r colorize("The Benjamini Hocheberg __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the target individual power.The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesBHIndiv03}
+mdes_0125_bh_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse, J = J, n.j = n.j, 
+                                              power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "indiv"],
+                                              power.definition = "indiv", MTP = "BH", marginError = marginError,
+                                              p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                              R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                              rho = rho, omega = omega, tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_bh_indiv <- as.data.frame(mdes_0125_bh_indiv) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_bh_indiv$MTP <- "Benjamini_Hocheberg"
+mdes_0125_bh_indiv$TargettedMDES <- MDES
+colnames(mdes_0125_bh_indiv)[4] <- "Targetted MDES"
+mdes_0125_bh_indiv <- mdes_0125_bh_indiv[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_bh_indiv, style = "grid", split.tables = 90)
+
+```
+
+#### Minimum Power
+
+`r colorize("The Benjamini Hocheberg __adjusted MDES__ and the __Target MDES__ are way off for the specified minimal power. The specified minimal power is at 1 or too close to 1 that the estimated adjusted minimum detectable effect size would be correspondingly __high__.", "red")`
+
+```{r mdesBHMin103}
+mdes_0125_bh_min1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse, J = J, n.j = n.j, 
+                                              power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "min1"],
+                                              power.definition = "min1", MTP = "BH", marginError = marginError,
+                                              p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                              R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                              rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_bh_min1 <- as.data.frame(mdes_0125_bh_min1) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_bh_min1$MTP <- "Benjamini_Hocheberg"
+mdes_0125_bh_min1$TargettedMDES <- MDES
+colnames(mdes_0125_bh_min1)[4] <- "Targetted MDES"
+mdes_0125_bh_min1 <- mdes_0125_bh_min1[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_bh_min1, style = "grid", split.tables = 90)
+```
+
+### HO Validation
+
+In this section, we are estimating statistical powers to be inputted to the mdes function.
+
+```{r powerMdesHO03}
+power_M3_HO_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "HO", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
+                                                  R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, 
+                                                  numCovar.2 = numCovar.2,
+                                                  rho = rho,tnum = tnum, snum = snum, ncl = ncl)
+power_M3_HO_MDES0125 <- as.data.frame(power_M3_HO_MDES0125) %>%
+                            tibble::rownames_to_column(var = "MTP")
+pander::pandoc.table(power_M3_HO_MDES0125, style = "grid", split.tables = 90)
+```
+
+#### Individual Power
+
+`r colorize("The Holms __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the target individual power.The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesHOIndiv03}
+mdes_0125_holms_indiv1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
+                                                  power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "indiv"],
+                                                  power.definition = "indiv", MTP = "HO", marginError = marginError,
+                                                  p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                  R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                                  rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_holms_indiv1 <- as.data.frame(mdes_0125_holms_indiv1) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_holms_indiv1$MTP <- "Benjamini_Hocheberg"
+mdes_0125_holms_indiv1$TargettedMDES <- MDES
+colnames(mdes_0125_holms_indiv1)[4] <- "Targetted MDES"
+mdes_0125_holms_indiv1 <- mdes_0125_holms_indiv1[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_holms_indiv1, style = "grid", split.tables = 90)
+```
+
+#### Minimum Power
+
+`r colorize("The Holms __adjusted MDES__ and the __Target MDES__ are way off for the specified minimal power. The specified minimal power is at 1 or too close to 1 that the estimated adjusted minimum detectable effect size would be correspondingly __high__.", "red")`
+
+```{r mdesHOMin103}
+mdes_0125_holms_min1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
+                                                power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "min1"],
+                                                power.definition = "min1", MTP = "HO", marginError = marginError,
+                                                p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                                                R2.1 = R2.1, R2.2 = R2.2, ICC = ICC, mod.type = "constant", 
+                                                rho = rho, omega = omega,tnum = tnum, snum = snum, ncl = ncl)
+mdes_0125_holms_min1 <- as.data.frame(mdes_0125_holms_min1) %>%
+                            tibble::rownames_to_column(var = "MTP")
+mdes_0125_holms_min1$MTP <- "Benjamini_Hocheberg"
+mdes_0125_holms_min1$TargettedMDES <- MDES
+colnames(mdes_0125_holms_min1)[4] <- "Targetted MDES"
+mdes_0125_holms_min1 <- mdes_0125_holms_min1[, c(1,2,4,3)]
+pander::pandoc.table(mdes_0125_holms_min1, style = "grid", split.tables = 90)
+```
+
+## Power: 0.93 - 1
+
+Below, we have input parameters of number of outcomes, minimum detectable effect size, statistical power, significance level that would estimate a high statistical power value of above __0.93__ to __1__ for different definitions of power. This estimated power value is used as an input to the mdes function where we validate if the _returned_ __mdes__ value is close to the __mdes__ value that was inputted to provide the estimated power.
+
+```{r mdesCommonInputs04, message = FALSE,warning = FALSE}
 M <- 3
 MDES <- 0.125
 numFalse <- 3
@@ -196,7 +533,9 @@ omega <- NULL
 
 ### BF Validation
 
-```{r powerMdesBonf}
+In this section, we are estimating statistical powers to be inputted to the mdes function.
+
+```{r powerMdesBonf04}
 # Power generation with specifications
 power_M3_BF_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "Bonferroni", MDES = MDES, 
                                                  numFalse = numFalse, J = J, n.j = n.j, 
@@ -210,7 +549,9 @@ pander::pandoc.table(power_M3_BF_MDES0125, style = "grid", split.tables = 90, ca
 
 #### Individual Power
 
-```{r mdesBonfIndiv}
+`r colorize("The Bonferroni __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the target individual power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesBonfIndiv04}
 mdes_0125_bonf_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
                                                 power = power_M3_BF_MDES0125[which(power_M3_BF_MDES0125$MTP == "BF"), "indiv"],
                                                 power.definition = "indiv", MTP = "BF", marginError = marginError,
@@ -228,7 +569,9 @@ pander::pandoc.table(mdes_0125_bonf_indiv, style = "grid", split.tables = 90)
 
 ### BH Validation
 
-```{r powerMdesBH}
+In this section, we are estimating statistical powers to be inputted to the mdes function.
+
+```{r powerMdesBH04}
 power_M3_BH_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "BH", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
                                                   R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, 
                                                   numCovar.2 = numCovar.2,
@@ -239,7 +582,9 @@ pander::pandoc.table(power_M3_BH_MDES0125, style = "grid", split.tables = 90)
 ```
 #### Individual Power
 
-```{r mdesBHIndiv}
+`r colorize("The Benjamini Hocheberg __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the target individual power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesBHIndiv04}
 mdes_0125_bh_indiv <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse, J = J, n.j = n.j, 
                                               power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "indiv"],
                                               power.definition = "indiv", MTP = "BH", marginError = marginError,
@@ -258,7 +603,9 @@ pander::pandoc.table(mdes_0125_bh_indiv, style = "grid", split.tables = 90)
 
 #### Minimum Power
 
-```{r mdesBHMin1}
+`r colorize("The Benjamini Hocheberg __adjusted MDES__ and the __Target MDES__ are way off for the specified minimal power. The specified minimal power is at 1 or too close to 1 that the estimated adjusted minimum detectable effect size would be correspondingly __high__.", "red")`
+
+```{r mdesBHMin104}
 mdes_0125_bh_min1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse, J = J, n.j = n.j, 
                                               power = power_M3_BH_MDES0125[which(power_M3_BH_MDES0125$MTP == "BH"), "min1"],
                                               power.definition = "min1", MTP = "BH", marginError = marginError,
@@ -276,7 +623,9 @@ pander::pandoc.table(mdes_0125_bh_min1, style = "grid", split.tables = 90)
 
 ### HO Validation
 
-```{r powerMdesHO}
+In this section, we are estimating statistical powers to be inputted to the mdes function.
+
+```{r powerMdesHO04}
 power_M3_HO_MDES0125 <- pum::power_blocked_i1_2c(M = M, MTP = "HO", MDES = MDES, numFalse = numFalse, J = J, n.j = n.j, 
                                                   R2.1 = R2.1, p = p, alpha = alpha, numCovar.1 = numCovar.1, 
                                                   numCovar.2 = numCovar.2,
@@ -288,7 +637,9 @@ pander::pandoc.table(power_M3_HO_MDES0125, style = "grid", split.tables = 90)
 
 #### Individual Power
 
-```{r mdesHOIndiv}
+`r colorize("The Holms __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the target individual power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+
+```{r mdesHOIndiv04}
 mdes_0125_holms_indiv1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
                                                   power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "indiv"],
                                                   power.definition = "indiv", MTP = "HO", marginError = marginError,
@@ -306,7 +657,9 @@ pander::pandoc.table(mdes_0125_holms_indiv1, style = "grid", split.tables = 90)
 
 #### Minimum Power
 
-```{r mdesHOMin1}
+`r colorize("The Holms __adjusted MDES__ and the __Target MDES__ are way off for the specified minimal power. The specified minimal power is at 1 or too close to 1 that the estimated adjusted minimum detectable effect size would be correspondingly __high__.", "red")`
+
+```{r mdesHOMin104}
 mdes_0125_holms_min1 <- pum::mdes_blocked_i1_2c(M = M, numFalse = numFalse,J = J, n.j = n.j, 
                                                 power = power_M3_HO_MDES0125[which(power_M3_HO_MDES0125$MTP == "HO"), "min1"],
                                                 power.definition = "min1", MTP = "HO", marginError = marginError,
