@@ -26,6 +26,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE)){
 # BiocManager::install("multtest")
 library(multtest)
 source(here::here("Validation/Simulations", "adjust.WY.R"))
+source(here::here("Validation/Simulations", "misc.R"))
 
 #function to check time lapse
 
@@ -78,14 +79,12 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
   
   
   # To be used as a variable in file saving!
-  R2_1 <- R2.1[1]
+  #R2_1 <- R2.1[1]
   
   ##################### 
   # Simulation Values #
   #####################
   
-  tic("Simulation of Two Level Constant Effects")
-
   #margin of error being 0.05
   me <- 0.05
   
@@ -105,11 +104,9 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
                               p.j = p.j, R2.1 = R2.1, R2.2 = R2.2, omega = omega, check = check,
                               design = design)
     
-    toc(log = TRUE)
-    
     saveRDS(simpwr, file = here("Validation/data", paste0(validation_name,"_",S,
                                                           "_", "samples", "_", rho, "_rho_", 
-                                                          R2_1,"_R_Squared_","simulaton_results",".RDS")))     
+                                                          R2.1,"_R_Squared_","simulaton_results",".RDS")))     
 
   } else {
     
@@ -125,8 +122,8 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
   ###################
   
   # Power_Up_Results calculation
-  power_up_results <- power.bira2c1(es = MDES[1],alpha,two.tailed = TRUE,p = mean(p.j.range),g1 = 1,r21 = R2.1[1],n = n.j,J = J)
-  
+  power_up_results <- quiet(power.bira2c1(es = MDES[1],alpha,two.tailed = TRUE,
+                                                     p = mean(p.j.range),g1 = 1,r21 = R2.1[1],n = n.j,J = J))
   # Power_Up_Standard_Error
   power_up_results$se <- power_up_results$parms$es/power_up_results$ncp
   power_up_results$lower_ci <- power_up_results$power - (1.96 * power_up_results$se)
@@ -170,7 +167,7 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
       
       saveRDS(pum_combined_results, file = here::here("Validation/data", paste0(validation_name,"_",S,
                                                                                 "_", "samples", "_", rho, "_rho_",
-                                                                                R2_1,"_R_Squared_",
+                                                                                R2.1,"_R_Squared_",
                                                                                 "pump_results",".RDS")))
   }else{
     
@@ -184,33 +181,33 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
   ########################################
   # Compare Results Table                #
   ########################################
-  compare_results <- data.frame("pump_indiv" = pum_combined_results[,"indiv"],
+  compare_results <- data.frame("pum_indiv" = pum_combined_results[,"indiv"],
                                 "sim_indiv" = simpwr$adjusted_power[,"D1indiv"],
-                                "powerup_indiv" = power_up_results$power,
-                                "pump_min1" = pum_combined_results[,"min1"],
+                                "pup_indiv" = power_up_results$power,
+                                "pum_min1" = pum_combined_results[,"min1"],
                                 "sim_min1" = simpwr$adjusted_power[,"1/3"],
-                                "pump_min2" = pum_combined_results[,"min2"],
+                                "pum_min2" = pum_combined_results[,"min2"],
                                 "sim_min2" = simpwr$adjusted_power[,"2/3"],
-                                "pump_complete" = pum_combined_results[,"complete"],
-                                "sim_complete" = simpwr$adjusted_power[,"full"]
+                                "pum_comp" = pum_combined_results[,"complete"],
+                                "sim_comp" = simpwr$adjusted_power[,"full"]
                                 )
   
   # Setting NAs for the power definitions that do not need adjustment
-  compare_results$powerup_indiv[2:4] <- NA
+  compare_results$pup_indiv[2:4] <- NA
   # compare_results$powerup_indiv_lower_ci[2:4] <- NA
   # compare_results$powerup_indiv_upper_ci[2:4] <- NA
-  compare_results$pump_complete[2:4] <- NA
-  compare_results$sim_complete[2:4] <- NA
+  compare_results$pup_comp[2:4] <- NA
+  compare_results$sim_comp[2:4] <- NA
   # compare_results$sim_complete_lower_ci[2:4] <- NA
   # compare_results$sim_complete_upper_ci[2:4] <- NA
   
   # Giving Rownames a column header
   compare_results <- compare_results %>% 
                         tibble::rownames_to_column(var = "MTP")
-  
+  compare_results <- round_df(compare_results,2) # Rounding the data frames
   saveRDS(compare_results, file = here::here("Validation/data", paste0(validation_name,"_",S,
                                                                       "_", "samples", "_", rho, "_rho_",
-                                                                      R2_1,"_R_Squared_",
+                                                                      R2.1,"_R_Squared_",
                                                                       "comparison_results",".RDS")))
   return(compare_results)
   
