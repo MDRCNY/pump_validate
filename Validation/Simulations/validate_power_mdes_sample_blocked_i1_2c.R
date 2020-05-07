@@ -77,9 +77,21 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
                                              rho.1_lev2,check, storage_path, validation_name,
                                              runSim, runPump) {
   
+  ######################################################
+  # Variable setting for saving files
+  ######################################################
   
-  # To be used as a variable in file saving!
-  #R2_1 <- R2.1[1]
+  # R-Squared for level 1 covariates
+  R2_1 <- paste(R2.1, collapse = '')
+  R2_1 <- stringr::str_remove_all(R2_1, "\\.")
+
+  # rho: correlation between outcomes
+  rho_1 <- paste(rho, collapse = '')
+  rho_1 <- stringr::str_remove_all(rho_1, "\\.")
+  
+  # MDES: minimum detectable effect size
+  mdes_1 <- paste(MDES, collapse = '')
+  mdes_1 <- stringr::str_remove_all(mdes_1, "\\.")
   
   ##################### 
   # Simulation Values #
@@ -105,14 +117,18 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
                               design = design)
     
     saveRDS(simpwr, file = here("Validation/data", paste0(validation_name,"_",S,
-                                                          "_", "samples", "_", rho, "_rho_", 
-                                                          R2.1,"_R_Squared_","simulaton_results",".RDS")))     
+                                                          "_", "simsamples", "_", M, "_", "M","_", mdes_1,"_",
+                                                          "MDES", "_", J, "_", "J", "_", n.j, "_", "nj","_",
+                                                           rho_1, "_rho_", R2_1,"_R_Squared_",
+                                                          "simulaton_results",".RDS")))     
 
   } else {
     
-    simulation_results <- paste0(paste0(validation_name,"_",S,
-                                        "_", "samples", "_", rho, "_rho_", 
-                                        R2_1,"_R_Squared_","simulaton_results",".RDS"))
+    simulation_results <- paste0(validation_name,"_",S,
+                                        "_", "simsamples", "_", M, "_", "M","_", mdes_1,"_",
+                                        "MDES", "_", J, "_", "J", "_", n.j, "_", "nj","_",
+                                        rho_1, "_rho_", R2_1,"_R_Squared_",
+                                        "simulaton_results",".RDS")
     
     simpwr <- readRDS(file = here::here("Validation/data",simulation_results))
   }
@@ -164,15 +180,21 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
     }
       # adding rownames to the pum_combined_results table
       rownames(pum_combined_results) <- c("rawp", procs)
-      
+    
       saveRDS(pum_combined_results, file = here::here("Validation/data", paste0(validation_name,"_",S,
-                                                                                "_", "samples", "_", rho, "_rho_",
-                                                                                R2.1,"_R_Squared_",
+                                                                                "_", "simsamples", "_", M, "_", "M", "_",
+                                                                                mdes_1, "_", "MDES", "_", J, "_",
+                                                                                "J", "_", n.j, "_", "nj", "_",
+                                                                                rho_1, "_rho_",
+                                                                                R2_1,"_R_Squared_",
                                                                                 "pump_results",".RDS")))
   }else{
     
-      pump_results <-paste0(validation_name,"_",S,
-                            "_", "samples", "_", rho, "_rho_",
+      pump_results <- paste0(validation_name,"_",S,
+                            "_", "simsamples", "_", M, "_", "M", "_",
+                            mdes_1, "_", "MDES", "_", J, "_",
+                            "J", "_", n.j, "_", "nj", "_",
+                            rho_1, "_rho_",
                             R2_1,"_R_Squared_",
                             "pump_results",".RDS")     
       pum_combined_results <- readRDS(file = here::here("Validation/data", pump_results))
@@ -205,10 +227,12 @@ validate_power_blocked_i1_2cfr <- function(rho,ncl,procs,design,M,MDES,p.j.range
   compare_results <- compare_results %>% 
                         tibble::rownames_to_column(var = "MTP")
   compare_results <- round_df(compare_results,2) # Rounding the data frames
+  
   saveRDS(compare_results, file = here::here("Validation/data", paste0(validation_name,"_",S,
-                                                                      "_", "samples", "_", rho, "_rho_",
-                                                                      R2.1,"_R_Squared_",
-                                                                      "comparison_results",".RDS")))
+                                                                       "_", "simsamples", "_", M, "_", "M","_", mdes_1,"_",
+                                                                       "MDES", "_", J, "_", "J", "_", n.j, "_", "nj","_",
+                                                                       rho_1, "_rho_", R2_1,"_R_Squared_",
+                                                                       "comparison_results",".RDS")))
   return(compare_results)
   
 } # validate_power_blocked_i1_2cfr
