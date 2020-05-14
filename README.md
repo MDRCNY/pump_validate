@@ -11,7 +11,7 @@ The read me is a guide for our colleagues at Harvard to _hopefully_ easily navig
           * gen_simple_c2_2r.R
           * EstimatePowerWithSimulation.R
           * adjust.WY.R
-          * Folder:MarkdownHelpers: _IGNORE_ (Background Functions to help generate markdown report)
+          * (MarkdownHelpers): _IGNORE_ (Background Functions to help generate markdown report)
           
 _Remaining folders and their content:_ 
 _Note: If you run into getting the right packages, please let me know._ 
