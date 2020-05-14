@@ -45,8 +45,8 @@ library(pander)    # For good table format
 source(here::here("Validation/Simulations", "adjust.WY.R")) # MTP Westfall-Young
 source(here::here("Validation/Simulations", "gen_blocked_i1_2.R")) # data generating functions for 2 level block and cluster
 source(here::here("Validation/Simulations", "EstimatePowerWithSimulation.R")) # Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.
-source(here::here("Validation/Simulations", "validate_power_mdes_sample_blocked_i1_2c.R")) # Wrapping and creating 
-source(here::here("Validation/Simulations", "misc.R")) # For coloring texts and other purposes
+source(here::here("Validation/Simulations/MarkdownHelpers", "validate_power_mdes_sample_blocked_i1_2c.R")) # Wrapping and creating 
+source(here::here("Validation/Simulations/MarkdownHelpers", "misc.R")) # For coloring texts and other purposes
 ```
 
 # Power Validation

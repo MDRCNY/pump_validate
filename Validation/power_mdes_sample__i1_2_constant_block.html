@@ -2946,10 +2946,10 @@ div.tocify {
 <a class="sourceLine" id="cb1-9" data-line-number="9"><span class="kw">library</span>(dplyr)     <span class="co"># For combining different dataframes</span></a>
 <a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw">library</span>(pander)    <span class="co"># For good table format</span></a></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;adjust.WY.R&quot;</span>)) <span class="co"># MTP Westfall-Young</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;gen_data_dist_2_levels.R&quot;</span>)) <span class="co"># data generating functions for 2 level block and cluster</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;power_mcs_2_levels.R&quot;</span>)) <span class="co"># Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;validate_power_mdes_sample_blocked_i1_2c.R&quot;</span>)) <span class="co"># Wrapping and creating </span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;misc.R&quot;</span>)) <span class="co"># For coloring texts and other purposes</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;gen_blocked_i1_2.R&quot;</span>)) <span class="co"># data generating functions for 2 level block and cluster</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;EstimatePowerWithSimulation.R&quot;</span>)) <span class="co"># Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations/MarkdownHelpers&quot;</span>, <span class="st">&quot;validate_power_mdes_sample_blocked_i1_2c.R&quot;</span>)) <span class="co"># Wrapping and creating </span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations/MarkdownHelpers&quot;</span>, <span class="st">&quot;misc.R&quot;</span>)) <span class="co"># For coloring texts and other purposes</span></a></code></pre></div>
 </div>
 </div>
 <div id="power-validation" class="section level1">
@@ -3010,13 +3010,13 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |    0.8    |    0.8    |    0.8    |   0.96   |   0.94   |   0.84   |   0.84   |
+## |    rawp    |    0.8    |   0.81    |    0.8    |   0.95   |   0.95   |   0.84   |   0.84   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.66    |   0.66    |    NA     |   0.88   |   0.87   |   0.69   |   0.68   |
+## | Bonferroni |   0.66    |   0.67    |    NA     |   0.87   |   0.88   |   0.69   |   0.69   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.77    |   0.76    |    NA     |   0.89   |   0.89   |   0.79   |   0.79   |
+## |     BH     |   0.76    |   0.78    |    NA     |   0.89   |   0.9    |   0.79   |   0.8    |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.73    |   0.74    |    NA     |   0.87   |   0.87   |   0.74   |   0.74   |
+## |    Holm    |   0.73    |   0.75    |    NA     |   0.87   |   0.88   |   0.74   |   0.75   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: PowerSimulation_rho_0.5_falseNull_3 (continued below)
@@ -3026,24 +3026,24 @@ div.tocify {
 ## +----------+----------+----------+
 ## | pum_comp | sim_comp | pup_comp |
 ## +==========+==========+==========+
-## |   0.61   |   0.61   |    NA    |
-## +----------+----------+----------+
-## |   0.61   |    NA    |    NA    |
+## |   0.62   |   0.63   |    NA    |
 ## +----------+----------+----------+
 ## |   0.62   |    NA    |    NA    |
+## +----------+----------+----------+
+## |   0.6    |    NA    |    NA    |
 ## +----------+----------+----------+
 ## |   0.61   |    NA    |    NA    |
 ## +----------+----------+----------+</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">print</span>(blocked_i1_2c_compare_results)</a></code></pre></div>
 <pre><code>##          MTP pum_indiv sim_indiv pup_indiv pum_min1 sim_min1 pum_min2 sim_min2
-## 1       rawp      0.80      0.80       0.8     0.96     0.94     0.84     0.84
-## 2 Bonferroni      0.66      0.66        NA     0.88     0.87     0.69     0.68
-## 3         BH      0.77      0.76        NA     0.89     0.89     0.79     0.79
-## 4       Holm      0.73      0.74        NA     0.87     0.87     0.74     0.74
+## 1       rawp      0.80      0.81       0.8     0.95     0.95     0.84     0.84
+## 2 Bonferroni      0.66      0.67        NA     0.87     0.88     0.69     0.69
+## 3         BH      0.76      0.78        NA     0.89     0.90     0.79     0.80
+## 4       Holm      0.73      0.75        NA     0.87     0.88     0.74     0.75
 ##   pum_comp sim_comp pup_comp
-## 1     0.61     0.61       NA
-## 2     0.61       NA       NA
-## 3     0.62       NA       NA
+## 1     0.62     0.63       NA
+## 2     0.62       NA       NA
+## 3     0.60       NA       NA
 ## 4     0.61       NA       NA</code></pre>
 </div>
 <div id="n.j-75-m-3-numfalse-m-j-20-rho-0.5-0.5-0.5-mdes-0.125-0.125-0.125-r2-000" class="section level3">
@@ -3099,13 +3099,13 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |   0.68    |   0.67    |   0.68    |   0.89   |   0.88   |   0.7    |   0.71   |
+## |    rawp    |   0.68    |   0.67    |   0.68    |   0.88   |   0.89   |   0.7    |   0.7    |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.51    |   0.52    |    NA     |   0.76   |   0.76   |   0.51   |   0.51   |
+## | Bonferroni |   0.51    |    0.5    |    NA     |   0.75   |   0.76   |   0.51   |   0.5    |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |     BH     |   0.62    |   0.62    |    NA     |   0.78   |   0.78   |   0.64   |   0.64   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.59    |   0.59    |    NA     |   0.76   |   0.76   |   0.58   |   0.58   |
+## |    Holm    |   0.58    |   0.58    |    NA     |   0.75   |   0.76   |   0.57   |   0.57   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: PowerSimulation_rho_0.5_falseNull_3 (continued below)
@@ -3115,9 +3115,9 @@ div.tocify {
 ## +----------+----------+----------+
 ## | pum_comp | sim_comp | pup_comp |
 ## +==========+==========+==========+
-## |   0.43   |   0.44   |    NA    |
+## |   0.44   |   0.43   |    NA    |
 ## +----------+----------+----------+
-## |   0.43   |    NA    |    NA    |
+## |   0.44   |    NA    |    NA    |
 ## +----------+----------+----------+
 ## |   0.44   |    NA    |    NA    |
 ## +----------+----------+----------+
@@ -3177,13 +3177,13 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |   0.51    |    0.5    |   0.51    |   0.76   |   0.76   |   0.51   |   0.5    |
+## |    rawp    |   0.51    |    0.5    |   0.51    |   0.75   |   0.76   |   0.51   |   0.5    |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.34    |   0.33    |    NA     |   0.58   |   0.57   |   0.31   |   0.3    |
+## | Bonferroni |   0.34    |   0.34    |    NA     |   0.58   |   0.58   |   0.31   |   0.31   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.43    |   0.42    |    NA     |   0.61   |   0.59   |   0.44   |   0.43   |
+## |     BH     |   0.44    |   0.42    |    NA     |   0.61   |   0.6    |   0.45   |   0.43   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.39    |   0.38    |    NA     |   0.58   |   0.57   |   0.37   |   0.36   |
+## |    Holm    |    0.4    |   0.39    |    NA     |   0.59   |   0.58   |   0.38   |   0.36   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: PowerSimulation_rho_0.5_falseNull_3 (continued below)
@@ -3242,9 +3242,9 @@ div.tocify {
 ## +=====================+===============+================+===========================+
 ## |     Bonferroni      |    0.1256     |     0.125      |           0.34            |
 ## +---------------------+---------------+----------------+---------------------------+
-## | Benjamini_Hocheberg |    0.1267     |     0.125      |          0.4367           |
+## | Benjamini_Hocheberg |    0.1283     |     0.125      |           0.456           |
 ## +---------------------+---------------+----------------+---------------------------+
-## |        Holms        |    0.1202     |     0.125      |           0.359           |
+## |        Holms        |    0.1219     |     0.125      |          0.3677           |
 ## +---------------------+---------------+----------------+---------------------------+
 ## 
 ## Table: Table continues below
@@ -3256,9 +3256,9 @@ div.tocify {
 ## +=======================+
 ## |         0.34          |
 ## +-----------------------+
-## |         0.43          |
+## |         0.44          |
 ## +-----------------------+
-## |         0.39          |
+## |          0.4          |
 ## +-----------------------+</code></pre>
 </div>
 </div>

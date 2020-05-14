@@ -1,7 +1,7 @@
 # Library
 library(here)
 # Sourcing from data generating functions
-source(here::here("Validation/Simulations", "power_mcs_2_levels.R"))
+source(here::here("Validation/Simulations", "EstimatePowerWithSimulation.R"))
 
 # This script contains functions for carrying out Westfall-Young step-down corrections
 # Last - updated March 7, 2019, Kristin Porter
