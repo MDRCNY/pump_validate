@@ -14,6 +14,8 @@ The read me is a guide for our colleagues at Harvard to _hopefully_ easily navig
           * Folder:MarkdownHelpers: _IGNORE_ (Background Functions to help generate markdown report)
           
 _Remaining folders and their content:_ 
+_Note: If you run into getting the right packages, please let me know._ 
+
 * __Admin__: _IGNORE_
 * __DemoPUM__: RShiny Code. R Shiny is launched from here.
 * __Domino__: _IGNORE_
