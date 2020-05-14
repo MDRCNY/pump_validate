@@ -30,7 +30,7 @@ library(nlme)
 #'
 #' @examples
 
-blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2, 
+gen_blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2, 
                          rho.1_lev2, theta, ICC, alpha, Gamma.00, 
                          p.j.range, R2.1, R2.2, omega, check) {
   

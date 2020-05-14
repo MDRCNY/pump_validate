@@ -309,7 +309,7 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
       # generate sample based on design
       if (d %in% c("Blocked_i1_2c","Blocked_i1_2f","Blocked_i1_2r")) {
         
-        samp <- blocked_i1_2 (M = M ,MDES = MDES ,n.j = n.j ,J = J ,rho.0_lev1 = rho.0_lev1 ,
+        samp <- gen_blocked_i1_2 (M = M ,MDES = MDES ,n.j = n.j ,J = J ,rho.0_lev1 = rho.0_lev1 ,
                               rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,ICC = ICC ,alpha = alpha ,
                               Gamma.00 = Gamma.00 ,p.j.range = p.j.range  ,R2.1 = R2.1 ,
                               R2.2 = R2.2 ,check = check ,omega = omega)
@@ -317,7 +317,7 @@ est_power_sim <- function(procs ,S ,ncl ,B ,maxT=FALSE ,
       
       if (d %in% c("Simple_c2_2r")) {
         
-        samp <- simple_c2_2r (M = M ,MDES = MDES,n.j = n.j ,J = J,rho.0_lev1 = rho.0_lev1 ,
+        samp <- gen_simple_c2_2r (M = M ,MDES = MDES,n.j = n.j ,J = J,rho.0_lev1 = rho.0_lev1 ,
                               rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,
                               ICC = ICC ,alpha = alpha,Gamma.00 = Gamma.00 , p.j.range = p.j.range ,
                               p.j = p.j ,R2.1 = R2.1 ,R2.2 = R2.2 ,check = check ,omega = omega)
