@@ -7,10 +7,10 @@ The read me is a guide for our colleagues at Harvard to _hopefully_ easily navig
 
 * __Validation__: _Monte Carlo Simulation Code is here_
      * __Simulations:__ 
-          * gen_blocked_i1_2.R: Data generating distributions for the specified design 
-          * gen_simple_c2_2r.R: Data generating distributions for the specified design
-          * EstimatePowerWithSimulation.R: Estimating power with Monte Carlo Simulations
-          * adjust.WY.R : Westfall-Young adjustment function
+          * __gen_blocked_i1_2.R__: Data generating distributions for the specified design 
+          * __gen_simple_c2_2r.R__: Data generating distributions for the specified design
+          * __EstimatePowerWithSimulation.R__: Estimating power with Monte Carlo Simulations
+          * __adjust.WY.R__ : Westfall-Young adjustment function
           * (MarkdownHelpers): _IGNORE_ (Background Functions to help generate validation markdown report)
 * __Methods__: Derived Methods. __mdes__ function is under __blocked_i1_2cfr.R__ Section to be __updated__ next week. Parallel function exist in R package. 
      * __blocked_i1_2cfr.R__  : derived method for 2-level blocked RCT. Refer to program map excel for details
