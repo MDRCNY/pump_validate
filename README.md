@@ -17,7 +17,7 @@ The read me is a guide for our colleagues at Harvard to _hopefully_ easily navig
      * __blocked_i1_2cfr.R__  : derived method for 2-level blocked RCT. Refer to program map excel for details
      * __utils.R__ : helper function for __blocked_i1_2cfr.R__
      * __TwoLevelBlockedTreatmentLevel1.Rmd__ : Old code. _IGNORE_
-* __Admin__: _Program_Map.xlsx is here._
+* __Admin__: _Program_Map.xlsx is here. Please ignore the rest!_
 
 _Remaining folders and their content:_ 
 _Note: If you run into getting the right packages, please let me know._ 
