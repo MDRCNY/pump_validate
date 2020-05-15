@@ -12,6 +12,7 @@ The read me is a guide for our colleagues at Harvard to _hopefully_ easily navig
           * __EstimatePowerWithSimulation.R__: Estimating power with Monte Carlo Simulations
           * __adjust.WY.R__ : Westfall-Young adjustment function
           * (MarkdownHelpers): _IGNORE_ (Background Functions to help generate validation markdown report)
+      * __Validate_power_mdes_sample_i1_2_constant_block.Rmd__: Validate template to compare results btw pump package, powerup and MonteCarlo Simulations (Under Development/Editing format)
 * __Methods__: Derived Methods. __mdes__ function is under __blocked_i1_2cfr.R__ Section to be __updated__ next week. Parallel function exist in R package. 
      * __blocked_i1_2cfr.R__  : derived method for 2-level blocked RCT. Refer to program map excel for details
      * __utils.R__ : helper function for __blocked_i1_2cfr.R__
