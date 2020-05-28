@@ -1,0 +1,154 @@
+---
+title: "Sample Estimation for Rachel Rosen"
+author: "Kristin Porter & Zarni Htet"
+output:
+  html_document:
+    code_folding: hide
+    df_print: paged
+    fig_caption: yes
+    fig_height: 8
+    fig_width: 10
+    highlight: monochrome
+    theme: spacelab
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+  github_document:
+    df_print: paged
+    fig_caption: yes
+    fig_height: 8
+    fig_width: 10
+    toc: yes
+---
+# Notes
+
+Below is a series of notes taken to help with implementation of results for Rachel Rosen. 
+
+### Specifications from Rachel
+
+* M = 6
+* Number of covariates = 2-3 (somewhat confused with 1.0NRA tab in PowerUp application?)
+* Number of blocks = 35-38 (i.e number of schools, right?)
+* Treatment to Control Ratio = 60/40
+* R-squared = c(0.35, 0.5, 0.7)
+
+### What Rachel asked?
+
+* Estimated sample size for __within group/block__ (i.e for each of the school?)
+     * Varies by R-squared
+     * Varies by __2__ MDES
+     * Varies by attrition rate (i.e we only need to estimate with no attrition and from that number we divide by percentage of remaining)
+     
+* Confused with 45% male sub-group powering? Is it another group that we have to factor into account
+
+### Specification Questions for Kristin/Rachel?
+
+* FalseNull is same as M = Outcomes? 6/6 : 3/6
+* What is the expected power? **0.8**?
+* What is the definition of power? Individual power? cfor power (run everything). For sample size; run indiv
+* What is the __correlation__ or __rho__ between outcomes? --> c(0.8, 0.7)
+* The 40 covariates she mentioned are level 1 covariates, right?
+* How do we want to set the **alpha** value? 0.05 (Confirm by initial replication)
+* How do we want to set the **margin of error**? 0.05 ()
+* ICC: Blank right?
+* mod.type: constant
+* omega: blank
+
+### Next step
+
+Run for 1 scenario with known conditions __this evening__ to see if the functions are working as they should with all the benchmarks.
+
+# Implementation
+
+```{r loadLibrary, warning = FALSE, message = FALSE}
+library(pum)
+library(kableExtra)
+library(knitr)
+```
+
+```{r RachelBaseSpecifications, warning = FALSE, message = FALSE}
+M <- 6
+numFalse <- 6
+mdes <- 0.22
+alpha <- 0.05
+MTP <- c("WY-SD")
+MDES <- 0.22
+J <- 1
+n.j <- 441
+p <- 0.6
+alpha <- 0.05
+numCovar.1 <- 40
+R2.1 <- 0.35
+mod.type <- "c"
+rho <- 0.8
+```
+
+```{r RachelBaseRun, warning = FALSE, message = FALSE}
+base_results <- pum::power_blocked_i1_2c(M = M , MTP = MTP, MDES = MDES, numFalse = numFalse,
+                                    J = J, n.j = n.j, p = p, alpha = alpha, numCovar.1 = numCovar.1,
+                                    R2.1 = R2.1, mod.type = "c", rho = rho)
+
+# create a table in the markdown that is easy to follow for each variable
+kable(base_results) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed","responsive"))
+
+```
+
+```{r RachelBaseSampleSpecifications, message = FALSE, warning = FALSE}
+J <- 1
+JO <- NULL
+typesample <- "n.j"
+n.j <- NULL
+n.j0 <- 10
+MTP <- "rawp"
+power <- 0.8
+power.definition <- "indiv"
+marginError <- 0.05
+```
+
+```{r}
+sample_HO_nj_50_indiv <- pum::sample_blocked_i1_2c(M = M, numFalse = numFalse, typesample = "n.j", J = 1, n.j = NULL, 
+                                    J0 = NULL, n.j0 = 1000, MDES = MDES, power = power ,
+                                    power.definition = power.definition, MTP = MTP, marginError = 0.05,
+                                    p = p ,alpha = 0.05,numCovar.1 = 40,numCovar.2 = 0,
+                                    R2.1 = R2.1,tnum = 10000, snum = 2000, ncl = 8)
+print(sample_HO_nj_50_indiv)
+```
+
+```{r RachelBaseSampleSpecifications, message = FALSE, warning = FALSE}
+J <- 1
+JO <- NULL
+typesample <- "n.j"
+n.j <- NULL
+n.j0 <- 10
+MTP <- "WY-SD"
+power <- 0.8
+power.definition <- "indiv"
+marginError <- 0.05
+```
+
+
+```{r}
+sample_HO_nj_50_indiv <- pum::sample_blocked_i1_2c(M = M, numFalse = numFalse, typesample = "n.j", J = 1, n.j = NULL, 
+                                    J0 = NULL, n.j0 = 1000, MDES = MDES, power = power ,
+                                    power.definition = power.definition, MTP = MTP, marginError = 0.05,
+                                    p = p ,alpha = 0.05,numCovar.1 = 40,numCovar.2 = 0,
+                                    R2.1 = R2.1,tnum = 10000, snum = 2000, ncl = 8)
+print(sample_HO_nj_50_indiv)
+````
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
