@@ -28,6 +28,12 @@ This document lays out validation steps & results for estimating statistical pow
 
 In this section, we set up the required R packages and source files to run the rest of the Validation document.
 
+```{r knit.options}
+# by default, all code chunks will cache their results
+# unless the code changes
+knitr::opts_chunk$set(cache = TRUE)
+```
+
 ```{r libraries, warnings = FALSE, message = FALSE}
 library(RcppEigen) # Linear algebra calculations
 library(snow)      # Parallelization and use of multiple clusters 
@@ -338,6 +344,10 @@ mdes_0125_holms_indiv <- mdes_0125_holms_indiv[, c(1,2,4,3,5)]
 ```
 
 ```{r mdesCombined01, message = FALSE}
+# make names consistent
+names(mdes_0125_bonf_indiv) = names(mdes_0125_bh_indiv) = names(mdes_0125_holms_indiv) = 
+  c()
+
 mdes_0125_indiv_combined <- rbind(mdes_0125_bonf_indiv, mdes_0125_bh_indiv)
 mdes_0125_indiv_combined <- rbind(mdes_0125_indiv_combined, mdes_0125_holms_indiv)
 pander::pandoc.table(mdes_0125_indiv_combined, style = "grid", split.tables = 90)
