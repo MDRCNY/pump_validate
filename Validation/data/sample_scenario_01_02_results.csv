@@ -1,0 +1,27 @@
+"Scenario I: M = 6, numFalse = 6 (Assumed all outcomes have actual impacts)",,,,,,,"Scenario II: M = 6, numFalse = 3 (Only half of the outcomes have actual impacts)",,,,,,
+MTP,MDES,rho,R2,Estimated_Sample_Size,Type_of_Power,Corresponding_Power,MTP,MDES,rho,R2,Estimated_Sample_Size,Type_of_Power,Corresponding_Power
+Raw,0.22,0.8,0.35,441,Indivdual,0.8,Raw,0.22,0.8,0.35,441,Indivdual,0.8
+WY-SD,0.22,0.8,0.35,531,indiv,0.7984,WY-SD,0.22,0.8,0.35,576,indiv,0.805066667
+Raw,0.22,0.8,0.5,340,Indivdual,0.8,Raw,0.22,0.8,0.5,340,Indivdual,0.8
+WY-SD,0.22,0.8,0.5,410,indiv,0.790866667,WY-SD,0.22,0.8,0.5,456,indiv,0.795866667
+Raw,0.22,0.8,0.7,205,Indivdual,0.8,Raw,0.22,0.8,0.7,205,Indivdual,0.8
+WY-SD,0.22,0.8,0.7,247,indiv,0.7924,WY-SD,0.22,0.8,0.7,268,indiv,0.800133333
+Raw,0.22,0.7,0.35,441,Indivdual,0.8,Raw,0.22,0.7,0.35,441,Indivdual,0.8
+WY-SD,0.22,0.7,0.35,539,indiv,0.8,WY-SD,0.22,0.7,0.35,591,indiv,0.7984
+Raw,0.22,0.7,0.5,340,Indivdual,0.8,Raw,0.22,0.7,0.5,340,Indivdual,0.8
+WY-SD,0.22,0.7,0.5,410,indiv,0.795266667,WY-SD,0.22,0.7,0.5,456,indiv,0.7976
+Raw,0.22,0.7,0.7,205,Indivdual,0.8,Raw,0.22,0.7,0.7,205,Indivdual,0.8
+WY-SD,0.22,0.7,0.7,254,indiv,0.797066667,WY-SD,0.22,0.7,0.7,275,indiv,0.802666667
+Raw,0.19,0.8,0.35,591,Indivdual,0.8,Raw,0.19,0.8,0.35,591,Indivdual,0.8
+WY-SD,0.19,0.8,0.35,712,indiv,0.791266667,WY-SD,0.19,0.8,0.35,792,indiv,0.798133333
+Raw,0.19,0.8,0.5,455,Indivdual,0.8,Raw,0.19,0.8,0.5,455,Indivdual,0.8
+WY-SD,0.19,0.8,0.5,540,indiv,0.792133333,WY-SD,0.19,0.8,0.5,579,indiv,0.793733333
+Raw,0.19,0.8,0.7,274,Indivdual,0.8,Raw,0.19,0.8,0.7,274,Indivdual,0.8
+WY-SD,0.19,0.8,0.7,330,indiv,0.800466667,WY-SD,0.19,0.8,0.7,368,indiv,0.792266667
+Raw,0.19,0.7,0.35,591,Indivdual,0.8,Raw,0.19,0.7,0.35,591,Indivdual,0.8
+WY-SD,0.19,0.7,0.35,712,indiv,0.793666667,WY-SD,0.19,0.7,0.35,812,indiv,0.809866667
+Raw,0.19,0.7,0.5,455,Indivdual,0.8,Raw,0.19,0.7,0.5,455,Indivdual,0.8
+WY-SD,0.19,0.7,0.5,579,indiv,0.8088,WY-SD,0.19,0.7,0.5,641,indiv,0.804666667
+Raw,0.19,0.7,0.5,455,Indivdual,0.8,Raw,0.19,0.7,0.7,274,Indivdual,0.8
+WY-SD,0.19,0.7,0.7,330,indiv,0.799333333,WY-SD,0.19,0.7,0.7,368,indiv,0.798933333
+,,,,,,,,,,,,,

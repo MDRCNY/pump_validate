@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 .ini
+.DS_Store
+Validation/data/*.RDS
+*cache*
