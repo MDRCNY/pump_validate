@@ -1,5 +1,5 @@
 #' Colorize function
-#'  
+#'
 #' To modify color of the text in an html output.
 #'
 #' @param x input text string
@@ -10,33 +10,33 @@
 #'
 #' @examples
 colorize <- function(x, color) {
-  
+
   if (knitr::is_latex_output()) {
     sprintf("\\textcolor{%s}{%s}", color, x)
   } else if (knitr::is_html_output()) {
-    sprintf("<span style='color: %s;'>%s</span>", color, 
+    sprintf("<span style='color: %s;'>%s</span>", color,
             x)
   } else x
 }
 
 
 #' Function to hide print console statements
-#' 
+#'
 #' Others' function would have built-in print statements to
 #' console that we would like to hide from our markdowns.
-#' 
+#'
 #' @param x Others' functions
 #'
 #' @return
 #' @export
 #'
 #' @examples
-quiet <- function(x) { 
-  
-  sink(tempfile()) 
-  on.exit(sink()) 
-  invisible(force(x)) 
-} 
+quiet <- function(x) {
+
+  sink(tempfile())
+  on.exit(sink())
+  invisible(force(x))
+}
 
 #' Round a data frame's numeric vectors by specified decimal place
 #'
@@ -48,9 +48,9 @@ quiet <- function(x) {
 #'
 #' @examples
 round_df <- function(x, digits) {
-  
+
   # round all numeric variables
-  # x: data frame 
+  # x: data frame
   # digits: number of digits to round
   numeric_columns <- sapply(x, mode) == 'numeric'
   x[numeric_columns] <-  round(x[numeric_columns], digits)
@@ -58,3 +58,21 @@ round_df <- function(x, digits) {
 }
 
 
+
+# generate correlation matrix when rho is fixed
+gen.corr.matrix = function(M, rho.scalar)
+{
+  rho.matrix = diag(M) + rho.scalar * matrix(1, M, M) - rho.scalar * diag(M)
+  return(rho.matrix)
+}
+
+# generate covariance matrix
+gen.cov.matrix = function(D, var1.vec, var2.vec, rho.matrix) {
+  Sigma <- matrix(NA, D, D)
+  for(k in 1:D) {
+    for(l in 1:D) {
+      Sigma[k,l] = rho.matrix[k,l] * sqrt(var1.vec[k]) * sqrt(var2.vec[l])
+    }
+  }
+  return(Sigma)
+}
