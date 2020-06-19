@@ -1,8 +1,44 @@
-.Rproj.user
-.Rhistory
+## R Outout data and storage files
 .RData
 .Ruserdata
 .ini
 .DS_Store
 Validation/data/*.RDS
+Validation/data/*.csv
+Validation/data/
 *cache*
+
+## Added in another repo. Don't remember for which use.
+inst/doc
+
+## Sourced from Github Repo
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rproj.user/
+*.Rproj
+*.Rproj.user
+.Rproj.user
+
+# knitr and R markdown default cache directories
+/*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+.Rproj.user
