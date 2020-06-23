@@ -31,29 +31,35 @@ In this section, we set up the required R packages and source files to run the r
 ```{r knit.options}
 # by default, all code chunks will cache their results
 # unless the code changes
-knitr::opts_chunk$set(cache = FALSE)
+knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE)
 ```
 
-```{r libraries, warnings = FALSE, message = FALSE}
-library(RcppEigen) # Linear algebra calculations
-library(snow)      # Parallelization and use of multiple clusters 
-library(lme4)      # Linear mixed effect models
-library(PowerUpR)  # Comparison with another package that has some limitations
-library(multtest)  # Multiple Testing Procedures package
-library(tictoc)    # For timing of the scripts
-library(here)      # For relative path sourcing
-library(pum)       # For Power Under Multiplicity Package
+```{r libraries}
 library(dplyr)     # For combining different dataframes
+library(here)      # For relative path sourcing
+library(lme4)      # Linear mixed effect models
+library(MASS)
+library(multtest)  # Multiple Testing Procedures package
+library(nlme)
 library(pander)    # For good table format
+library(PowerUpR)  # Comparison with another package that has some limitations
+library(pum)       # For Power Under Multiplicity Package
+library(RcppEigen) # Linear algebra calculations
+library(snow)      # Parallelization and use of multiple clusters
+library(tictoc)    # For timing of the scripts
 ```
 
-```{r scriptFiles, warnings = FALSE, message = FALSE}
-source(here::here("Validation/Simulations", "adjust.WY.R")) # MTP Westfall-Young
-source(here::here("Validation/Simulations", "gen_blocked_i1_2.R")) # data generating functions for 2 level block and cluster
-source(here::here("Validation/Simulations", "gen_data.R")) # data generating functions for 2 level block and cluster
-source(here::here("Validation/Simulations", "EstimatePowerWithSimulation.R")) # Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.
-source(here::here("Validation/Simulations/MarkdownHelpers", "validate_power_mdes_sample_blocked_i1_2c.R")) # Wrapping and creating 
-source(here::here("Validation/Simulations/MarkdownHelpers", "misc.R")) # For coloring texts and other purposes
+```{r scriptFiles}
+ # MTP Westfall-Young
+source(here::here("Validation/Simulations", "adjust_WY.R"))
+# data generating function
+source(here::here("Validation/Simulations", "gen_data.R"))
+# Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.
+source(here::here("Validation/Simulations", "estimate_power_with_simulation.R"))
+# Wrapping and creating 
+source(here::here("Validation/Simulations", "validate_power_mdes_sample_blocked_i1_2c.R"))
+# For coloring texts and other purposes
+source(here::here("Validation/Simulations", "misc.R")) 
 ```
 
 # Power Validation
@@ -66,17 +72,12 @@ Each subsection of the power validation below is a variation of correlation betw
 
 If you are previewing this in html, please click on the code section to review more detailed parameters.
 
-```{r rho0.5numFalseMSpecs01, warning = FALSE, message = FALSE}
+```{r rho0.5numFalseMSpecs01}
 # ICC needs to be zero for constant and fixed effets
 design <- c("Blocked_i1_2c")
-procs <- c("Bonferroni", "BH", "Holm") 
-M <- 3 
+M <- 3
 MDES <- rep(0.125, M) 
 rho <- c(0.5)
-ncl <-2 
-S = 2000 # Number of samples for Monte Carlo Simulation.
-B = 2 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
-tnum = 10000 # Number of test statistics (samples) for all procedures other than Westfall-Young. The default is set at 10,000.
 J = 20 
 n.j = 100 
 p.j <- 0.5 
@@ -85,104 +86,114 @@ theta <- matrix(0,M,M)
 diag(theta) <- 0 
 omega <- rep(0,M) 
 Gamma.00 <- rep(0,M) 
-sig.sq <- rep(1,M)
-alpha <- 0.05 
 ICC <- rep(0, M) 
 R2.2 <- rep(0,M)  
 R2.1 <- rep(0,M) 
-maxT <- FALSE 
-check <- FALSE # Usually for checking the code. Do not need to  
-storage_path <- "./Validation/data"
-validation_name <- "Blocked_i1_2c"
-runSim <- TRUE
-runPump <- TRUE
 ```
 
 ```{r}
-# generate model parameters list to feed into simulations
-# base parameters
-M = 3
-xi.scalar = delta.scalar = gamma.scalar = 1
-tau0.sq.scalar = tau1.sq.scalar = eta0.sq.scalar = eta1.sq.scalar = 1
-rho.D.scalar = rho.w.scalar = rho.z.scalar = 0
-rho.X.scalar = rho.u.scalar = rho.v.scalar = 0
-rho.C.scalar = rho.r.scalar = 0
-
-n.jk = 10
-J = 4
-K = 2
-N = n.jk * J
-
-S.j = rep(NA, N)
-start.index = 1
-end.index = n.jk
-for(j in 1:J)
-{
-  S.j[start.index:end.index] = j
-  start.index = end.index + 1
-  end.index = end.index + n.jk
-}
-
-S.k = rep(NA, N)
-start.index = 1
-n.k = N/K
-end.index = n.k
-for(k in 1:K)
-{
-  S.k[start.index:end.index] = k
-  start.index = end.index + 1
-  end.index = end.index + n.k
-}
-
-model.params.list = list()
-
-model.params.list[['M']]        = M
-model.params.list[['Xi0']]      = 0
-model.params.list[['Xi1']]      = 1
-
-model.params.list[['S.j']]      = S.j
-model.params.list[['S.k']]      = S.k
-
-model.params.list[['xi']]       = rep(xi.scalar, M)
-model.params.list[['rho.D']]    = gen.corr.matrix(M, rho.D.scalar)
-model.params.list[['eta0.sq']]  = rep(eta0.sq.scalar, M)
-model.params.list[['eta1.sq']]  = rep(eta1.sq.scalar, M)
-model.params.list[['rho.w']]    = gen.corr.matrix(M, rho.w.scalar)
-model.params.list[['rho.z']]    = gen.corr.matrix(M, rho.z.scalar)
-model.params.list[['theta.wz']] = matrix(0, M, M)
-
-model.params.list[['delta']]    = rep(delta.scalar, M)
-model.params.list[['rho.X']]    = gen.corr.matrix(M, rho.X.scalar)
-model.params.list[['tau0.sq']]  = rep(tau0.sq.scalar, M)
-model.params.list[['tau1.sq']]  = rep(tau1.sq.scalar, M)
-model.params.list[['rho.u']]    = gen.corr.matrix(M, rho.u.scalar)
-model.params.list[['rho.v']]    = gen.corr.matrix(M, rho.v.scalar)
-model.params.list[['theta.uv']] = matrix(0, M, M)
-
-model.params.list[['gamma']]    = rep(gamma.scalar, M)
-model.params.list[['rho.C']]    = gen.corr.matrix(M, rho.C.scalar)
-model.params.list[['rho.r']]    = gen.corr.matrix(M, rho.r.scalar)
+# generate simulation parameters list to feed into simulations
+sim.params.list = list(
+    S = 10           # Number of samples for Monte Carlo Simulation
+  , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
+  , maxT = FALSE     # ?
+  , alpha = 0.05     # significance level
+  , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
+  , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
+  , procs = c("Bonferroni", "BH", "Holm")
+  , runSim = TRUE    # if TRUE, we will re-run the simluation. if FALSE, we will pull previous run result.
+  , runPump = TRUE  # if TRUE, we will run method from our package. if FALSE, we will pull previous run result.
+  , check = FALSE    # run checks such as printing out quantities
+)
 ```
+
+```{r}
+
+M <- 3
+# create simple simulation setup, although this can generalize to be as complicated as you want!
+# assuming equal sized schools in equal sized districts, generate
+# school and district assignments S.j and S.k
+assignment.vecs <- gen_simple_assignments(J = 20, K = 2, n.jk = 100)
+
+##### covariates
+rho.D.scalar <- rho.X.scalar <- rho.C.scalar <- 0.5
+rho.D <- gen.corr.matrix(M, rho.D.scalar)
+rho.X <- gen.corr.matrix(M, rho.X.scalar)
+rho.C <- gen.corr.matrix(M, rho.C.scalar)
+xi.scalar <- delta.scalar <- gamma.scalar <- 1
+xi <- rep(xi.scalar, M) 
+delta <- rep(delta.scalar, M) 
+gamma <- rep(gamma.scalar, M) 
+
+##### random effects and impacts
+rho.w.scalar <- rho.z.scalar <- 0.5
+rho.u.scalar <- rho.v.scalar <- 0.5
+rho.r.scalar <- 0.5
+rho.w <- gen.corr.matrix(M, rho.w.scalar)
+rho.z <- gen.corr.matrix(M, rho.z.scalar)
+rho.u <- gen.corr.matrix(M, rho.u.scalar)
+rho.v <- gen.corr.matrix(M, rho.v.scalar)
+rho.r <- gen.corr.matrix(M, rho.r.scalar)
+
+theta.wz <- theta.uv <- matrix(0, M, M)
+
+eta0.sq.scalar <- eta1.sq.scalar <- 1
+eta0.sq <- rep(eta0.sq.scalar, M)
+eta1.sq <- rep(eta1.sq.scalar, M)
+
+tau0.sq.scalar <- tau1.sq.scalar <- 1
+tau0.sq <- rep(tau0.sq.scalar, M)
+tau1.sq <- rep(tau1.sq.scalar, M)
+
+# generate simulation parameters list to feed into simulations
+model.params.list <- list(
+  M = 3
+  , S.j = assignment.vecs[['S.j']]
+  , S.k = assignment.vecs[['S.k']]
+  ################################################## level 3
+  , Xi0 = 0                                        # scalar grand mean outcome under no treatment
+  , Xi1 = 1                                        # scalar grand mean impact
+  , xi = xi                                        # M-vector of coefficient of district covariates
+  , rho.D = rho.D                                  # MxM correlation matrix of district covariates
+  , eta0.sq = eta0.sq                              # M-vector of variances of district random effects
+  , eta1.sq = eta1.sq                              # M-vector of variances of district impacts
+  , rho.w = rho.w                                  # MxM matrix of correlations for district random effects
+  , rho.z = rho.z                                  # MxM matrix of correlations for district impacts
+  , theta.wz = theta.wz                            # MxM matrix of correlations between district random effects and impacts
+  ################################################## level 2
+  , delta = delta                                  # M-vector of coefficients of school covariates
+  , rho.X = rho.X                                  # MxM correlation matrix of school covariates
+  , tau0.sq = tau0.sq                              # M-vector of variances of school random effects
+  , tau1.sq = tau1.sq                              # M-vector of variances of school impacts
+  , rho.u = rho.u                                  # MxM matrix of correlations for school random effects
+  , rho.v = rho.v                                  # MxM matrix of correlations for school impacts
+  , theta.uv = theta.uv                            # MxM matrix of correlations between school random effects and impacts
+  ################################################## level 1
+  , gamma = gamma                                  # M-vector of coefficients of individual covariates
+  , rho.C = rho.C                                  # MxM correlation matrix of individual covariates
+  , rho.r = rho.r                                  # MxM matrix of correlations for individual residuals 
+)
+
+user.params.list <- model.params.list
+user.params.list[['MDES']] <- rep(0.125, M)
+user.params.list[['R2.1']] <- rep(0, M)
+user.params.list[['rho']] <- 0.5
+```
+
+
 
 `r colorize("Individual Statistical power is estimated to be around 0.8. Please check the table below for estimations of other definitions of statistical power. Across all power definitions, estimation results across the __PUMP__ package, __Monte Carlo Simulation__ results and __PowerUp__ package are about the same as detailed below.", "green")`
 
 `r colorize("We will be adding Westfall-Young step down adjustment later on.", "red")`
 
-```{r rho0.5numFalseMRun01, warning = FALSE, message = FALSE}
-blocked_i1_2c_compare_results <- validate_power_blocked_i1_2cfr(rho = rho, ncl = ncl, procs = procs, design = design,
-                                                                M = M, MDES = MDES,
-                                                                p.j = p.j,p.j.range = p.j.range, S = S, B = B, 
-                                                                tnum = tnum, J = J, 
-                                                                n.j = n.j, theta = theta, omega = omega, 
-                                                                Gamma.00 = Gamma.00, sig.sq = sig.sq,
-                                                                alpha = alpha, ICC = ICC, R2.2 = R2.2, R2.1 = R2.1, 
-                                                                maxT = maxT, rho.0_lev1 = rho.0_lev1,
-                                                                rho.0_lev2 = rho.0_lev2, rho.1_lev2 = rho.1_lev2, 
-                                                                check = check, storage_path = storage_path, 
-                                                                validation_name = validation_name, runSim = runSim, 
-                                                                runPump = runPump, model.params.list)
-
-pander::pandoc.table(blocked_i1_2c_compare_results, paste0("PowerSimulation_", "rho_", rho,"_falseNull_",M), 
-                     style = "grid", split.tables = 100)
-print(blocked_i1_2c_compare_results)
+```{r rho0.5numFalseMRun01}
+blocked_i1_2c_compare_results <- validate_power_blocked_i1_2cfr(
+  user.params.list = user.params.list, sim.params.list = sim.params.list, 
+  design = design
+)
+pander::pandoc.table(
+  blocked_i1_2c_compare_results,
+  paste0("PowerSimulation_", "rho_", rho,"_falseNull_",M),
+  style = "grid", split.tables = 100
+)
 ```

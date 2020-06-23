@@ -1,44 +1,15 @@
 ################################
 # generate simulation data
 ################################
-library(MASS)
-library(nlme)
 
 ################################
 # generate 'science' table of full potential outcomes
 ################################
-#' @param M number of tests/domains/outcomes
-#' @param S.j N-length assignment vector of individuals to schools. For example if S.j[3] = 4 then individual 3 is in school 4
-#' @param S.k N-length assignment vector of individuals to districts. For example if S.k[3] = 4 then individual 3 is in district 4
-#'
-#' Level 3
-#' @param Xi0 scalar grand mean outcome under no treatment
-#' @param Xi1 scalar grand mean impact
-#' @param rho.D MxM correlation matrix of district covariates
-#' @param xi M-vector of coefficient of district covariates
-#' @param eta0.sq M-vector of variances of district random effects
-#' @param eta1.sq M-vector of variances of district impacts
-#' @param rho.w MxM matrix of correlations for district random effects in models of outcomes under no treatment
-#' @param rho.z MxM matrix of correlations for district impacts
-#' @param theta.wz MxM matrix of correlations between district random effects and impacts
-#'
-#' Level 2
-#' @param rho.X MxM correlation matrix of school covariates
-#' @param delta M-vector of coefficients of school covariates
-#' @param tau0.sq M-vector of variances of school random effects
-#' @param tau1.sq M-vector of variances of school impacts
-#' @param rho.u MxM matrix of correlations for school random effects in models of outcomes under no treatment
-#' @param rho.v MxM matrix of correlations for school impacts
-#' @param theta.uv MxM matrix of correlations between school random effects and impacts
-#'
-#' Level 1
-#' @param rho.C MxM correlation matrix of individual covariates
-#' @param gamma M-vector of coefficients of individual covariates
-#' @param rho.r MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment
-#'
+#' @param model.params.list list of DGP parameters
 #' @param check boolean indicating whether to conduct checks
 #'
-#' @return list of two data frames: potential outcomes given control y0 and treatment y1
+#' @return list of: potential outcomes given control y0, treatment y1,
+#'         covariates D.ijk, X.ijk, C.ijk
 #'
 #' @export
 gen_full_data <- function(model.params.list, check = FALSE) {
@@ -46,7 +17,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   if(check){ print(model.params.list) }
 
   #######################
-  # setup
+  # setup: conver model params.list to variables
   #######################
 
   M        <- model.params.list[['M']];
@@ -65,6 +36,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
 
   J <- max(S.j)
   K <- max(S.k)
+  N <- length(S.j)
 
   #######################
   # Districts: Level 3
@@ -225,6 +197,50 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   }
 
   return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.ijk = D.ijk, X.ijk = X.ijk, C.ijk = C.ijk))
+}
+
+
+
+################################
+# Converts user-inputted parameters into relevant DGP parameters
+################################
+#' @param user.params.list list of DGP parameters
+#'
+#' @return model.params.list
+#'
+#' @export
+convert.params <- function(user.params.list, check = FALSE) {
+
+  if(check){ print(user.params.list) }
+
+  M =  user.params.list[['M']]
+
+  model.params.list = list(
+    M = user.params.list[['M']],
+    Xi0 = user.params.list[['Xi0']],
+    rho.D = user.params.list[['rho.D']],
+    rho.w = user.params.list[['rho.w']], rho.z = user.params.list[['rho.z']],
+    rho.X = user.params.list[['rho.X']],
+    rho.u = user.params.list[['rho.u']], rho.v = user.params.list[['rho.v']],
+    rho.C = user.params.list[['rho.C']],
+    rho.r = user.params.list[['rho.r']],
+    theta.wz = user.params.list[['theta.wz']],
+    theta.uv = user.params.list[['theta.uv']],
+    S.j = user.params.list[['S.j']],
+    S.k = user.params.list[['S.k']],
+    Xi1 = 1,
+    eta0.sq = rep(1, M),
+    eta1.sq = rep(1, M),
+    tau0.sq = rep(1, M),
+    tau1.sq = rep(1, M),
+    xi = rep(1, M),
+    delta = rep(1, M),
+    gamma = rep(1, M)
+  )
+
+  if(check){ print(model.params.list) }
+
+  return(model.params.list)
 }
 
 

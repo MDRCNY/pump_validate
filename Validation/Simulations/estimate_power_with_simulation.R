@@ -1,9 +1,3 @@
-# Library
-library(here)
-# Sourcing from data generating functions
-source(here::here("Validation/Simulations", "gen_blocked_i1_2.R"))
-source(here::here("Validation/Simulations", "gen_simple_c2_2r.R"))
-
 ###########################################################################
 #  Function: make.model	Inputs:dat,dummies      	                        #
 #		a reshaped dataset (dat)-->data for one m 			                      #
@@ -229,21 +223,24 @@ makelist.samp <-function(M, samp.obs, T.ijk, model.params.list, design) {
 #	Outputs: MxS matrix of adjusted p-values for a single proc 	            #
 ###########################################################################
 
-get.adjp <- function(rawp, rawt, proc, alpha, B, ncl, mdat, maxT) {
+get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list) {
 
   if(proc=="WY"){
     #adjust.WY<-function(data, B, subgroup, which.mult, incl.covar, rawp, ncl, clustered, clusterby, design)
     #print(paste0("working on ", proc, " with ", B, " permutations"))
     #adjust.wy needs rawp as a vector for all m of a single sample
     tw1 <- Sys.time()
-    adjp.proc <- adjust.WY(data=mdat, B=B, rawp=rawp, rawt=rawt, ncl=ncl, clustered=TRUE, blockby='block.id', design, maxT = maxT)[,"WY"]
+    adjp.proc <- adjust.WY(
+      data = mdat, B = sim.params.list[['B']], rawp = rawp, rawt = rawt,
+      ncl = sim.params.list[['ncl']], clustered = TRUE, blockby = 'block.id',
+      design = design, maxT = sim.params.list[['maxT']])[,"WY"]
     tw2 <- Sys.time()
     # print(difftime(tw2, tw1))
   }
   else {
     #return a matrix with m columns (domains) and b rows (samples)
     #this needs rawp to be a matrix with m columns and was designed for all samples to be a row.
-    mt.out <-mt.rawp2adjp(rawp, proc, alpha)
+    mt.out <-mt.rawp2adjp(rawp, proc, sim.params.list[['alpha']])
     adjp.proc <- mt.out$adjp[order(mt.out$index), proc]
     #mt.rawp2adjp(rawp, proc, alpha)$adjp[,proc]
   }
@@ -263,82 +260,67 @@ get.rejects <- function(adjp, alpha) {
 }
 
 #  Funtion to estimate statistical power after multiple hypothesis testing has been done
-#
-#' @param procs multiple testing procedures to compute power for
-#'
-#' @param S number of samples to generate for Monte Carlo Simulations
-#' @param ncl number of clusters for parallel computing
-#' @param B number of samples of Westfall-Young, this translates to snum in our new method(the number of samples for Westfall-Young. The default is set at 1,000.)
-#' @param model.params.list List of model parameters
-#' @param check boolean indicating whether to conduct checks
-#' @param maxT
+#' @param user.params.list List of user-supplied parameters
+#' @param sim.params.list List of simulation parameters
 #' @param design RCT design (see list/naming convention)
+est_power_sim <- function(user.params.list, sim.params.list, design) {
 
-est_power_sim <- function(procs, S, ncl, B, maxT = FALSE,
-                          model.params.list, check, design) {
+  # convert user-inputted parameters into model parameters
+  model.params.list <- convert.params(user.params.list)
 
-  if(model.params.list[['M']] == 1) {
+  # save out some commonly used variables
+  M <- model.params.list[['M']]
+
+  S <- sim.params.list[['S']]
+  N <- length(model.params.list[['S.j']])
+  alpha <- sim.params.list[['alpha']]
+  procs <- sim.params.list[['procs']]
+
+  if(M == 1) {
     print("Multiple testing corrections are not needed when M=1")
     procs <- NULL
   }
 
-  power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M+5)
+  power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + 5)
   colnames(power.results) = c(paste0("D", 1:M, "indiv"), "min", "1/3", "1/2","2/3", "full")
   rownames(power.results) = c("rawp", procs)
   se.power <- CI.lower.power <- CI.upper.power <- power.results
 
-  nulls <- which(MDES==0)
-  alts <- which(MDES!=0)
+  # true positives and false positives
+  nulls <- which(user.params.list[['MDES']] == 0)
+  alts <- which(user.params.list[['MDES']] != 0)
 
-  adjp.proc <- array(0, c(S, M, length(procs)+1))
+  # list of adjustment procedures
+  adjp.proc <- array(0, c(S, M, length(procs) + 1))
   dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", procs))
-
   names(adjp.proc) <- c("rawp", procs)
 
   px <- S/100
-  rawt.all <- matrix(NA,S,M)
+  rawt.all <- matrix(NA, S, M)
   # begin loop through all samples to be generated
   for (s in 1:S) {
 
     t1 <- Sys.time()
     if (s %% px==0){ message(paste0("Now processing sample ", s, " of ", S))}
 
-    # generate sample data
-    samp.full <- gen_full_data( model.params.list, check = FALSE )
+    # generate full, unobserved sample data
+    samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
 
     for (d in design){
 
-      # samp <- gen_blocked_i1_2 (M = M ,MDES = MDES ,n.j = n.j ,J = J ,rho.0_lev1 = rho.0_lev1 ,
-      #                            rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,ICC = ICC ,alpha = alpha ,
-      #                           Gamma.00 = Gamma.00 ,p.j.range = p.j.range  ,R2.1 = R2.1 ,
-      #                          R2.2 = R2.2 ,check = check ,omega = omega)
+      # TODO: replace with proper treatment assignment code
+      if (d %in% c("Blocked_i1_2c","Blocked_i1_2f","Blocked_i1_2r")) {
+        T.ijk <- rbinom(N, 1, 0.5)
+      }
+      if (d %in% c("Simple_c2_2r")) {
+        T.ijk <- rbinom(N, 1, 0.5)
+      }
 
-      # generate sample based on design
-      # if (d %in% c("Blocked_i1_2c","Blocked_i1_2f","Blocked_i1_2r")) {
-      #
-      #   T.ijk <- rbinom(N, 1, 0.5)
-      #
-      #
-      #   samp <- gen_blocked_i1_2 (M = M ,MDES = MDES ,n.j = n.j ,J = J ,rho.0_lev1 = rho.0_lev1 ,
-      #                         rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,ICC = ICC ,alpha = alpha ,
-      #                         Gamma.00 = Gamma.00 ,p.j.range = p.j.range  ,R2.1 = R2.1 ,
-      #                         R2.2 = R2.2 ,check = check ,omega = omega)
-      # }
-      #
-      # if (d %in% c("Simple_c2_2r")) {
-      #
-      #   samp <- gen_simple_c2_2r (M = M ,MDES = MDES,n.j = n.j ,J = J,rho.0_lev1 = rho.0_lev1 ,
-      #                         rho.0_lev2 = rho.0_lev2 ,rho.1_lev2 = rho.1_lev2 ,theta = theta ,
-      #                         ICC = ICC ,alpha = alpha,Gamma.00 = Gamma.00 , p.j.range = p.j.range ,
-      #                         p.j = p.j ,R2.1 = R2.1 ,R2.2 = R2.2 ,check = check ,omega = omega)
-      # }
-
-      T.ijk <- rbinom(N, 1, 0.5)
+      # convert full data to observed data
       samp.obs = samp.full
       samp.obs$Yobs = gen_Yobs(samp.full, T.ijk)
 
       mdat <- makelist.samp(M, samp.obs, T.ijk, model.params.list, design = d) #list length M
-      # mdat <- makelist.samp(M, samp, design = d) #list length M
       rawp <- get.rawp(mdat, design = d, n.j, J) #vector length M
       rawt <- get.rawt(mdat, design = d, n.j, J) #vector length M
       rawt.all[s,] <- rawt
@@ -352,7 +334,7 @@ est_power_sim <- function(procs, S, ncl, B, maxT = FALSE,
       } else {
         t11 <- Sys.time()
         proc <- procs[p-1]
-        pvals <- get.adjp(rawp, rawt, proc, alpha, B, ncl, mdat, maxT = maxT)
+        pvals <- get.adjp(proc, rawp, rawt, mdat, sim.params.list)
         t21 <- Sys.time()
         if (s == 1) {message(paste("One sample of ", proc, " took ", t21 - t11))}
       }
@@ -372,7 +354,7 @@ est_power_sim <- function(procs, S, ncl, B, maxT = FALSE,
     }
     else {
       power.results[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) mean(x < alpha))
-      se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) sqrt(mean(x < alpha)*(1 - mean(x < alpha))/B))
+      se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) sqrt(mean(x < alpha)*(1 - mean(x < alpha))/sim.params.list[['B']]))
     }
     rejects <- get.rejects(adjp.proc[,,p], alpha)
     if (M == 1) {
