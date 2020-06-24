@@ -20,7 +20,9 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # setup: conver model params.list to variables
   #######################
 
-  M        <- model.params.list[['M']];
+  M        <- model.params.list[['M']];       J       <- model.params.list[['J']];
+  K        <- model.params.list[['K']];       n.jk    <- model.params.list[['n.jk']];
+  N        <- model.params.list[['N']];
   S.j      <- model.params.list[['S.j']];     S.k     <- model.params.list[['S.k']];
   Xi0      <- model.params.list[['Xi0']];     Xi1     <- model.params.list[['Xi1']];
   rho.D    <- model.params.list[['rho.D']];   xi      <- model.params.list[['xi']];
@@ -33,10 +35,6 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   theta.uv <- model.params.list[['theta.uv']];
   rho.C    <- model.params.list[['rho.C']];   gamma   <- model.params.list[['gamma']];
   rho.r    <- model.params.list[['rho.r']]
-
-  J <- max(S.j)
-  K <- max(S.k)
-  N <- length(S.j)
 
   #######################
   # Districts: Level 3
@@ -86,14 +84,14 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   Sigma.uv.full[(M+1):(2*M), 1:M]                                    <- t(Sigma.uv)
 
   ### test that these are the same!
-  Sigma.uv.temp <- matrix(NA, 2*M, 2*M)
-  for (k in 1:M) {
-    for (l in 1:M) {
-      Sigma.uv.temp[k,l]                            <- rho.u[k,l] * sqrt(tau0.sq[k]) * sqrt(tau0.sq[l])
-      Sigma.uv.temp[M+k,M+l]                        <- rho.v[k,l] * sqrt(tau1.sq[k]) * sqrt(tau1.sq[l])
-      Sigma.uv.temp[M+k,l] <- Sigma.uv.temp[k,M+l]  <- theta[k,l] * sqrt(tau0.sq[k]) * sqrt(tau1.sq[l])
-    }
-  }
+  # Sigma.uv.temp <- matrix(NA, 2*M, 2*M)
+  # for (k in 1:M) {
+  #   for (l in 1:M) {
+  #     Sigma.uv.temp[k,l]                            <- rho.u[k,l] * sqrt(tau0.sq[k]) * sqrt(tau0.sq[l])
+  #     Sigma.uv.temp[M+k,M+l]                        <- rho.v[k,l] * sqrt(tau1.sq[k]) * sqrt(tau1.sq[l])
+  #     Sigma.uv.temp[M+k,l] <- Sigma.uv.temp[k,M+l]  <- theta[k,l] * sqrt(tau0.sq[k]) * sqrt(tau1.sq[l])
+  #   }
+  # }
   ### test that these are the same!
 
   # generate full vector of school random effects and impacts
@@ -213,29 +211,50 @@ convert.params <- function(user.params.list, check = FALSE) {
 
   if(check){ print(user.params.list) }
 
-  M =  user.params.list[['M']]
+  ICC.2 = user.params.list[['ICC.3']]
+  ICC.3 = user.params.list[['ICC.3']]
+  R2.1 = user.params.list[['R2.1']]
+  R2.2 = user.params.list[['R2.2']]
+  R2.3 = user.params.list[['R2.3']]
 
-  model.params.list = list(
-    M = user.params.list[['M']],
-    Xi0 = user.params.list[['Xi0']],
-    rho.D = user.params.list[['rho.D']],
-    rho.w = user.params.list[['rho.w']], rho.z = user.params.list[['rho.z']],
-    rho.X = user.params.list[['rho.X']],
-    rho.u = user.params.list[['rho.u']], rho.v = user.params.list[['rho.v']],
-    rho.C = user.params.list[['rho.C']],
-    rho.r = user.params.list[['rho.r']],
-    theta.wz = user.params.list[['theta.wz']],
-    theta.uv = user.params.list[['theta.uv']],
-    S.j = user.params.list[['S.j']],
-    S.k = user.params.list[['S.k']],
-    Xi1 = 1,
-    eta0.sq = rep(1, M),
-    eta1.sq = rep(1, M),
-    tau0.sq = rep(1, M),
-    tau1.sq = rep(1, M),
-    xi = rep(1, M),
-    delta = rep(1, M),
-    gamma = rep(1, M)
+  eta0.sq <- sqrt( ( ICC.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.1) ))
+  tau0.sq <- sqrt( ( ICC.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.1) ))
+  eta1.sq <- user.params.list[['omega.3']] * eta0.sq
+  tau1.sq <- user.params.list[['omega.2']] * tau0.sq
+  delta   <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
+  xi      <- sqrt( ( ICC.3*R2.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.3)*(1-R2.1) ))
+  gamma   <- sqrt( R2.1/(1-R2.1) )
+  Xi1 <- user.params.list[['MDES']] * sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
+
+  model.params.list <- list(
+      M = user.params.list[['M']]                    # number of outcomes
+    , J = user.params.list[['J']]                    # number of schools
+    , K = user.params.list[['K']]                    # number of districts
+    , N = user.params.list[['N']]                    # number of individuals
+    , n.j = user.params.list[['n.j']]               # number of individuals per school
+    , S.j = user.params.list[['S.j']]                # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
+    , S.k = user.params.list[['S.k']]                # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
+    , Xi0 = user.params.list[['Xi0']]                # scalar grand mean outcome under no treatment
+    , Xi1 = Xi1                                      # scalar grand mean impact
+    , xi = xi                                        # M-vector of coefficient of district covariates
+    , rho.D = user.params.list[['rho.D']]            # MxM correlation matrix of district covariates
+    , eta0.sq = eta0.sq                              # M-vector of variances of district random effects
+    , eta1.sq = eta1.sq                              # M-vector of variances of district impacts
+    , rho.w = user.params.list[['rho.w']]            # MxM matrix of correlations for district random effects
+    , rho.z = user.params.list[['rho.z']]            # MxM matrix of correlations for district impacts
+    , theta.wz = user.params.list[['theta.wz']]      # MxM matrix of correlations between district random effects and impacts
+    ################################################## level 2
+    , delta = delta                                  # M-vector of coefficients of school covariates
+    , rho.X = user.params.list[['rho.X']]            # MxM correlation matrix of school covariates
+    , tau0.sq = tau0.sq                              # M-vector of variances of school random effects
+    , tau1.sq = tau1.sq                              # M-vector of variances of school impacts
+    , rho.u = user.params.list[['rho.u']]            # MxM matrix of correlations for school random effects
+    , rho.v = user.params.list[['rho.v']]            #MxM matrix of correlations for school impacts
+    , theta.uv = user.params.list[['theta.uv']]      # MxM matrix of correlations between school random effects and impacts
+    ################################################## level 1
+    , gamma = gamma                                  # M-vector of coefficients of individual covariates
+    , rho.C = user.params.list[['rho.C']]            # MxM correlation matrix of individual covariates
+    , rho.r = user.params.list[['rho.r']]            # MxM matrix of correlations for individual residuals
   )
 
   if(check){ print(model.params.list) }

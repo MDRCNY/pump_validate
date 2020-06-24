@@ -272,7 +272,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   M <- model.params.list[['M']]
 
   S <- sim.params.list[['S']]
-  N <- length(model.params.list[['S.j']])
+  N <- model.params.list[['N']]
   alpha <- sim.params.list[['alpha']]
   procs <- sim.params.list[['procs']]
 
@@ -310,10 +310,10 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
 
       # TODO: replace with proper treatment assignment code
       if (d %in% c("Blocked_i1_2c","Blocked_i1_2f","Blocked_i1_2r")) {
-        T.ijk <- rbinom(N, 1, 0.5)
+        T.ijk <- rbinom(N, 1, sim.params.list[['p.j']])
       }
       if (d %in% c("Simple_c2_2r")) {
-        T.ijk <- rbinom(N, 1, 0.5)
+        T.ijk <- rbinom(N, 1, sim.params.list[['p.j']])
       }
 
       # convert full data to observed data
@@ -321,7 +321,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
       samp.obs$Yobs = gen_Yobs(samp.full, T.ijk)
 
       mdat <- makelist.samp(M, samp.obs, T.ijk, model.params.list, design = d) #list length M
-      rawp <- get.rawp(mdat, design = d, n.j, J) #vector length M
+      rawp <- get.rawp(mdat, design = d, user.params.list[['n.j']], J) #vector length M
       rawt <- get.rawt(mdat, design = d, n.j, J) #vector length M
       rawt.all[s,] <- rawt
 

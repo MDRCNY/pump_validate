@@ -48,22 +48,15 @@ validate_power_blocked_i1_2cfr <- function(user.params.list,
   # Simulation Values #
   #####################
 
-  J <- max(user.params.list[['S.j']])
-  K <- max(user.params.list[['S.k']])
-  N <- length(user.params.list[['S.j']])
-  n.jk <- N/J
-
   params.file.base <- paste0(
-    design, "_", sim.params.list[['S']],
-    "_", "S", "_", model.params.list[['M']], "_", "M","_",
-    convert.vec.to.filename(user.params.list[['MDES']]),"_", "MDES",
-    "_", J, "_", "J", "_", n.jk, "_", "njk","_",
-    convert.vec.to.filename(user.params.list[['rho']]), "_rho_",
+    design, "_", sim.params.list[['S']], "_S_",
+    user.params.list[['M']], "_M_",
+    convert.vec.to.filename(user.params.list[['MDES']]),"_MDES_",
+    user.params.list[['J']], "_J_",
+    user.params.list[['n.j']], "_nj_",
+    convert.vec.to.filename(user.params.list[['rho.default']]), "_rho_",
     convert.vec.to.filename(user.params.list[['R2.1']]),"_R21_"
   )
-
-  #margin of error being 0.05
-  me <- 0.05
 
   # simulate and run power calculations
   sim.filename = paste0(params.file.base, "simulation_results.RDS")
@@ -105,23 +98,30 @@ validate_power_blocked_i1_2cfr <- function(user.params.list,
   pump.filename <- paste0(params.file.base, "pump_results.RDS")
   if(sim.params.list[['runPump']]){
 
+    iterator <- 0
     pum_combined_results <- NULL
 
     # UPDATE p and n.j
     for (MTP in sim.params.list[['procs']]){
       pum_results <- pum::power_blocked_i1_2c(
         M = M, MTP = MTP,
-        MDES = user.params.list[['MDES']], numFalse = M,
-        J = J, n.j = n.jk,
-        p = 0.5, alpha = sim.params.list[['alpha']], numCovar.1 = 0, numCovar.2 = 0,
+        MDES = user.params.list[['MDES']], numFalse = user.params.list[['M']],
+        J = user.params.list[['J']], n.j = user.params.list[['n.j']],
+        p = user.params.list[['p.j']],
+        alpha = sim.params.list[['alpha']], numCovar.1 = 0, numCovar.2 = 0,
         R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.1']],
         ICC = user.params.list[['ICC']], sigma = NULL,
-        rho = rho, omega = NULL,
+        rho = user.params.list[['rho.default']], omega = NULL,
         tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
         ncl = sim.params.list[['ncl']]
       )
       pum_results <- data.frame(pum_results)
-      pum_combined_results <- dplyr::bind_rows(pum_combined_results, pum_results[2,])
+      if (iterator == 0){
+        pum_combined_results <- pum_results
+      }else{
+        pum_combined_results <- dplyr::bind_rows(pum_combined_results, pum_results[2,])
+      }
+      iterator = iterator + 1
     }
     # adding rownames to the pum_combined_results table
     # rownames(pum_combined_results) <- c("rawp", sim.params.list[['procs']])
@@ -144,15 +144,15 @@ validate_power_blocked_i1_2cfr <- function(user.params.list,
                                 "sim_comp"  = simpwr$adjusted_power[,"full"]
                                 )
 
-  # # Setting NAs for the power definitions that do not need adjustment
-  # # compare_results$pup_indiv[2:4] <- NA
-  # # # compare_results$powerup_indiv_lower_ci[2:4] <- NA
-  # # # compare_results$powerup_indiv_upper_ci[2:4] <- NA
-  # # compare_results$pup_comp[2:4] <- NA
-  # # compare_results$sim_comp[2:4] <- NA
-  # # # compare_results$sim_complete_lower_ci[2:4] <- NA
-  # # # compare_results$sim_complete_upper_ci[2:4] <- NA
-  # #
+  # Setting NAs for the power definitions that do not need adjustment
+  compare_results$pup_indiv[2:4] <- NA
+  # compare_results$powerup_indiv_lower_ci[2:4] <- NA
+  # compare_results$powerup_indiv_upper_ci[2:4] <- NA
+  compare_results$pup_comp[2:4] <- NA
+  compare_results$sim_comp[2:4] <- NA
+  # compare_results$sim_complete_lower_ci[2:4] <- NA
+  # compare_results$sim_complete_upper_ci[2:4] <- NA
+
   # Giving Rownames a column header
   compare_results <- compare_results %>%
                      tibble::rownames_to_column(var = "MTP")

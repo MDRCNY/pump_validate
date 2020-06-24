@@ -2937,149 +2937,157 @@ div.tocify {
 <p>In this section, we set up the required R packages and source files to run the rest of the Validation document.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># by default, all code chunks will cache their results</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co"># unless the code changes</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">cache =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># set whether or not to run checks, simulations, or pump</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">check &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">runSim &lt;-<span class="st"> </span><span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">runPump &lt;-<span class="st"> </span><span class="ot">FALSE</span></a></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">library</span>(dplyr)     <span class="co"># For combining different dataframes</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">library</span>(here)      <span class="co"># For relative path sourcing</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">library</span>(lme4)      <span class="co"># Linear mixed effect models</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">library</span>(MASS)</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">library</span>(multtest)  <span class="co"># Multiple Testing Procedures package</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">library</span>(nlme)</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="kw">library</span>(pander)    <span class="co"># For good table format</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">library</span>(PowerUpR)  <span class="co"># Comparison with another package that has some limitations</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">library</span>(pum)       <span class="co"># For Power Under Multiplicity Package</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="kw">library</span>(RcppEigen) <span class="co"># Linear algebra calculations</span></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="kw">library</span>(snow)      <span class="co"># Parallelization and use of multiple clusters</span></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="kw">library</span>(tictoc)    <span class="co"># For timing of the scripts</span></a></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;adjust_WY.R&quot;</span>)) <span class="co"># MTP Westfall-Young</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;gen_blocked_i1_2.R&quot;</span>)) <span class="co"># data generating functions for 2 level block and cluster</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;gen_data.R&quot;</span>)) <span class="co"># data generating functions for 2 level block and cluster</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;estimate_power_with_simulation.R&quot;</span>)) <span class="co"># Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;validate_power_mdes_sample_blocked_i1_2c.R&quot;</span>)) <span class="co"># Wrapping and creating </span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;misc.R&quot;</span>)) <span class="co"># For coloring texts and other purposes</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-3" data-line-number="3">knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">cache =</span> <span class="ot">FALSE</span>, <span class="dt">warning =</span> <span class="ot">FALSE</span>, <span class="dt">message =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(dplyr)     <span class="co"># For combining different dataframes</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(here)      <span class="co"># For relative path sourcing</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">library</span>(lme4)      <span class="co"># Linear mixed effect models</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">library</span>(MASS)</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">library</span>(multtest)  <span class="co"># Multiple Testing Procedures package</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw">library</span>(nlme)</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="kw">library</span>(pander)    <span class="co"># For good table format</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">library</span>(PowerUpR)  <span class="co"># Comparison with another package that has some limitations</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="kw">library</span>(pum)       <span class="co"># For Power Under Multiplicity Package</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="kw">library</span>(RcppEigen) <span class="co"># Linear algebra calculations</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="kw">library</span>(snow)      <span class="co"># Parallelization and use of multiple clusters</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw">library</span>(tictoc)    <span class="co"># For timing of the scripts</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"> <span class="co"># MTP Westfall-Young</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;adjust_WY.R&quot;</span>))</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co"># data generating function</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;gen_data.R&quot;</span>))</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co"># Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;estimate_power_with_simulation.R&quot;</span>))</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co"># Wrapping and creating </span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;validate_power_mdes_sample_blocked_i1_2c.R&quot;</span>))</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co"># For coloring texts and other purposes</span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="kw">source</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;Validation/Simulations&quot;</span>, <span class="st">&quot;misc.R&quot;</span>)) </a></code></pre></div>
 </div>
 </div>
 <div id="power-validation" class="section level1">
 <h1>Power Validation</h1>
 <p>In this section, we validate power results for different definitions of power, <strong>minimum</strong>, <strong>individual</strong> and <strong>complete</strong> for three multiple adjustment multiple methods, <strong>Bonferroni</strong>, <strong>Benjamini Hocheberg</strong> and <strong>Holm</strong>.</p>
 <p>Each subsection of the power validation below is a variation of correlation between outcomes, <strong>rho</strong> &amp; the ratio of <strong>false nulls</strong> in M outcomes. For more details on input parameters, please refer to the paper or the Appendix section at the bottom of this markdown.</p>
-<div id="n.j-100-m-3numfalse-m-j-20-rho-0.5-0.5-0.5-mdes-0.125-0.125-0.125-r2-000" class="section level3">
-<h3>n.j = 100, M = 3,numFalse = M, J = 20, rho = (0.5, 0.5, 0.5), MDES = (0.125, 0.125, 0.125), R2 = (0,0,0)</h3>
 <p>If you are previewing this in html, please click on the code section to review more detailed parameters.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># ICC needs to be zero for constant and fixed effets</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">design &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Blocked_i1_2c&quot;</span>)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">M &lt;-<span class="st"> </span><span class="dv">3</span> </a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">MDES &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="fl">0.125</span>, M) </a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">rho &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.5</span>)</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">ncl &lt;-<span class="dv">2</span> </a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">J =<span class="st"> </span><span class="dv">20</span> </a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">n.j =<span class="st"> </span><span class="dv">100</span> </a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">p.j &lt;-<span class="st"> </span><span class="fl">0.5</span> </a>
-<a class="sourceLine" id="cb5-10" data-line-number="10">p.j.range &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="fl">0.5</span>,J) </a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">theta &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>,M,M) </a>
-<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="kw">diag</span>(theta) &lt;-<span class="st"> </span><span class="dv">0</span> </a>
-<a class="sourceLine" id="cb5-13" data-line-number="13">omega &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,M) </a>
-<a class="sourceLine" id="cb5-14" data-line-number="14">Gamma<span class="fl">.00</span> &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,M) </a>
-<a class="sourceLine" id="cb5-15" data-line-number="15">sig.sq &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>,M)</a>
-<a class="sourceLine" id="cb5-16" data-line-number="16">ICC &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, M) </a>
-<a class="sourceLine" id="cb5-17" data-line-number="17">R2<span class="fl">.2</span> &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,M)  </a>
-<a class="sourceLine" id="cb5-18" data-line-number="18">R2<span class="fl">.1</span> &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,M) </a></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># generate simulation parameters list to feed into simulations</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">sim.params.list =<span class="st"> </span><span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">    <span class="dt">S =</span> <span class="dv">10</span>           <span class="co"># Number of samples for Monte Carlo Simulation</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">  , <span class="dt">B =</span> <span class="dv">2</span>            <span class="co"># Number of samples for WestFall-Young. The equivalent is snum in our new method.</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">  , <span class="dt">maxT =</span> <span class="ot">FALSE</span>     <span class="co"># ?</span></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6">  , <span class="dt">alpha =</span> <span class="fl">0.05</span>     <span class="co"># significance level</span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7">  , <span class="dt">tnum =</span> <span class="dv">10000</span>     <span class="co"># Number of test statistics (samples) for all procedures other than Westfall-Young</span></a>
-<a class="sourceLine" id="cb6-8" data-line-number="8">  , <span class="dt">ncl =</span> <span class="dv">2</span>          <span class="co"># Number of computer clusters (max on RStudio Server is 16)</span></a>
-<a class="sourceLine" id="cb6-9" data-line-number="9">  , <span class="dt">procs =</span> <span class="kw">c</span>(<span class="st">&quot;Bonferroni&quot;</span>, <span class="st">&quot;BH&quot;</span>, <span class="st">&quot;Holm&quot;</span>)</a>
-<a class="sourceLine" id="cb6-10" data-line-number="10">  , <span class="dt">runSim =</span> <span class="ot">TRUE</span>    <span class="co"># </span></a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">  , <span class="dt">runPump =</span> <span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb6-12" data-line-number="12">)</a></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">create.default.model.params.list &lt;-<span class="st"> </span><span class="cf">function</span>() {</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="co"># generate model parameters list to feed into simulations</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="co"># base parameters</span></a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">  M =<span class="st"> </span><span class="dv">3</span></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">  xi.scalar =<span class="st"> </span>delta.scalar =<span class="st"> </span>gamma.scalar =<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">  tau0.sq.scalar =<span class="st"> </span>tau1.sq.scalar =<span class="st"> </span>eta0.sq.scalar =<span class="st"> </span>eta1.sq.scalar =<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">  rho.D.scalar =<span class="st"> </span>rho.w.scalar =<span class="st"> </span>rho.z.scalar =<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">  rho.X.scalar =<span class="st"> </span>rho.u.scalar =<span class="st"> </span>rho.v.scalar =<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">  rho.C.scalar =<span class="st"> </span>rho.r.scalar =<span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb7-10" data-line-number="10">  </a>
-<a class="sourceLine" id="cb7-11" data-line-number="11">  n.jk =<span class="st"> </span><span class="dv">10</span></a>
-<a class="sourceLine" id="cb7-12" data-line-number="12">  J =<span class="st"> </span><span class="dv">20</span></a>
-<a class="sourceLine" id="cb7-13" data-line-number="13">  K =<span class="st"> </span><span class="dv">2</span></a>
-<a class="sourceLine" id="cb7-14" data-line-number="14">  N =<span class="st"> </span>n.jk <span class="op">*</span><span class="st"> </span>J</a>
-<a class="sourceLine" id="cb7-15" data-line-number="15">  </a>
-<a class="sourceLine" id="cb7-16" data-line-number="16">  <span class="co"># vector of assignments to schools</span></a>
-<a class="sourceLine" id="cb7-17" data-line-number="17">  S.j =<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, N)</a>
-<a class="sourceLine" id="cb7-18" data-line-number="18">  start.index =<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb7-19" data-line-number="19">  end.index =<span class="st"> </span>n.jk</a>
-<a class="sourceLine" id="cb7-20" data-line-number="20">  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>J)</a>
-<a class="sourceLine" id="cb7-21" data-line-number="21">  {</a>
-<a class="sourceLine" id="cb7-22" data-line-number="22">    S.j[start.index<span class="op">:</span>end.index] =<span class="st"> </span>j</a>
-<a class="sourceLine" id="cb7-23" data-line-number="23">    start.index =<span class="st"> </span>end.index <span class="op">+</span><span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb7-24" data-line-number="24">    end.index =<span class="st"> </span>end.index <span class="op">+</span><span class="st"> </span>n.jk</a>
-<a class="sourceLine" id="cb7-25" data-line-number="25">  }</a>
-<a class="sourceLine" id="cb7-26" data-line-number="26">  </a>
-<a class="sourceLine" id="cb7-27" data-line-number="27">  S.k =<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, N)</a>
-<a class="sourceLine" id="cb7-28" data-line-number="28">  start.index =<span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb7-29" data-line-number="29">  n.k =<span class="st"> </span>N<span class="op">/</span>K</a>
-<a class="sourceLine" id="cb7-30" data-line-number="30">  end.index =<span class="st"> </span>n.k</a>
-<a class="sourceLine" id="cb7-31" data-line-number="31">  <span class="cf">for</span>(k <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>K)</a>
-<a class="sourceLine" id="cb7-32" data-line-number="32">  {</a>
-<a class="sourceLine" id="cb7-33" data-line-number="33">    S.k[start.index<span class="op">:</span>end.index] =<span class="st"> </span>k</a>
-<a class="sourceLine" id="cb7-34" data-line-number="34">    start.index =<span class="st"> </span>end.index <span class="op">+</span><span class="st"> </span><span class="dv">1</span></a>
-<a class="sourceLine" id="cb7-35" data-line-number="35">    end.index =<span class="st"> </span>end.index <span class="op">+</span><span class="st"> </span>n.k</a>
-<a class="sourceLine" id="cb7-36" data-line-number="36">  }</a>
-<a class="sourceLine" id="cb7-37" data-line-number="37">  </a>
-<a class="sourceLine" id="cb7-38" data-line-number="38">  model.params.list =<span class="st"> </span><span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb7-39" data-line-number="39">    <span class="dt">M =</span> M</a>
-<a class="sourceLine" id="cb7-40" data-line-number="40">    , <span class="dt">S.j =</span> S.j</a>
-<a class="sourceLine" id="cb7-41" data-line-number="41">    , <span class="dt">S.k =</span> S.k</a>
-<a class="sourceLine" id="cb7-42" data-line-number="42">    <span class="co"># level 3</span></a>
-<a class="sourceLine" id="cb7-43" data-line-number="43">    , <span class="dt">Xi0 =</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb7-44" data-line-number="44">    , <span class="dt">Xi1 =</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb7-45" data-line-number="45">    , <span class="dt">xi =</span> <span class="kw">rep</span>(xi.scalar, M)</a>
-<a class="sourceLine" id="cb7-46" data-line-number="46">    , <span class="dt">rho.D =</span> <span class="kw">gen.corr.matrix</span>(M, rho.D.scalar)</a>
-<a class="sourceLine" id="cb7-47" data-line-number="47">    , <span class="dt">eta0.sq =</span> <span class="kw">rep</span>(eta0.sq.scalar, M)</a>
-<a class="sourceLine" id="cb7-48" data-line-number="48">    , <span class="dt">eta1.sq =</span> <span class="kw">rep</span>(eta1.sq.scalar, M)</a>
-<a class="sourceLine" id="cb7-49" data-line-number="49">    , <span class="dt">rho.w =</span> <span class="kw">gen.corr.matrix</span>(M, rho.w.scalar)</a>
-<a class="sourceLine" id="cb7-50" data-line-number="50">    , <span class="dt">rho.z =</span> <span class="kw">gen.corr.matrix</span>(M, rho.z.scalar)</a>
-<a class="sourceLine" id="cb7-51" data-line-number="51">    , <span class="dt">theta.wz =</span> <span class="kw">matrix</span>(<span class="dv">0</span>, M, M)</a>
-<a class="sourceLine" id="cb7-52" data-line-number="52">    <span class="co"># level 2</span></a>
-<a class="sourceLine" id="cb7-53" data-line-number="53">    , <span class="dt">delta =</span> <span class="kw">rep</span>(delta.scalar, M)</a>
-<a class="sourceLine" id="cb7-54" data-line-number="54">    , <span class="dt">rho.X =</span> <span class="kw">gen.corr.matrix</span>(M, rho.X.scalar)</a>
-<a class="sourceLine" id="cb7-55" data-line-number="55">    , <span class="dt">tau0.sq =</span> <span class="kw">rep</span>(tau0.sq.scalar, M)</a>
-<a class="sourceLine" id="cb7-56" data-line-number="56">    , <span class="dt">tau1.sq =</span> <span class="kw">rep</span>(tau1.sq.scalar, M)</a>
-<a class="sourceLine" id="cb7-57" data-line-number="57">    , <span class="dt">rho.u =</span> <span class="kw">gen.corr.matrix</span>(M, rho.u.scalar)</a>
-<a class="sourceLine" id="cb7-58" data-line-number="58">    , <span class="dt">rho.v =</span> <span class="kw">gen.corr.matrix</span>(M, rho.v.scalar)</a>
-<a class="sourceLine" id="cb7-59" data-line-number="59">    , <span class="dt">theta.uv =</span> <span class="kw">matrix</span>(<span class="dv">0</span>, M, M)</a>
-<a class="sourceLine" id="cb7-60" data-line-number="60">    <span class="co"># level 1</span></a>
-<a class="sourceLine" id="cb7-61" data-line-number="61">    , <span class="dt">gamma =</span> <span class="kw">rep</span>(delta.scalar, M)</a>
-<a class="sourceLine" id="cb7-62" data-line-number="62">    , <span class="dt">rho.C =</span> <span class="kw">gen.corr.matrix</span>(M, rho.C.scalar)</a>
-<a class="sourceLine" id="cb7-63" data-line-number="63">    , <span class="dt">rho.r =</span> <span class="kw">gen.corr.matrix</span>(M, rho.r.scalar)</a>
-<a class="sourceLine" id="cb7-64" data-line-number="64">  )</a>
-<a class="sourceLine" id="cb7-65" data-line-number="65">  <span class="kw">return</span>(model.params.list)</a>
-<a class="sourceLine" id="cb7-66" data-line-number="66">}</a>
-<a class="sourceLine" id="cb7-67" data-line-number="67">model.params.list &lt;-<span class="st"> </span><span class="kw">create.default.model.params.list</span>()</a>
-<a class="sourceLine" id="cb7-68" data-line-number="68">user.params.list &lt;-<span class="st"> </span>model.params.list</a>
-<a class="sourceLine" id="cb7-69" data-line-number="69">user.params.list[[<span class="st">'MDES'</span>]] &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="fl">0.125</span>, M) </a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># list of simulation parameters</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">sim.params.list =<span class="st"> </span><span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">    <span class="dt">S =</span> <span class="dv">10</span>           <span class="co"># Number of samples for Monte Carlo Simulation</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  , <span class="dt">B =</span> <span class="dv">2</span>            <span class="co"># Number of samples for WestFall-Young. The equivalent is snum in our new method.</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  , <span class="dt">maxT =</span> <span class="ot">FALSE</span>     <span class="co"># ?</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  , <span class="dt">alpha =</span> <span class="fl">0.05</span>     <span class="co"># significance level</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">  , <span class="dt">p.j =</span> <span class="fl">0.5</span>        <span class="co"># binomial assignment probability</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">  , <span class="dt">tnum =</span> <span class="dv">10000</span>     <span class="co"># Number of test statistics (samples) for all procedures other than Westfall-Young</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">  , <span class="dt">ncl =</span> <span class="dv">2</span>          <span class="co"># Number of computer clusters (max on RStudio Server is 16)</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">  , <span class="dt">procs =</span> <span class="kw">c</span>(<span class="st">&quot;Bonferroni&quot;</span>, <span class="st">&quot;BH&quot;</span>, <span class="st">&quot;Holm&quot;</span>) <span class="co"># multiple testing procedures to compute power for </span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">  , <span class="dt">runSim =</span> <span class="ot">TRUE</span>    <span class="co"># if TRUE, we will re-run the simulation. if FALSE, we will pull previous run result.</span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">  , <span class="dt">runPump =</span> <span class="ot">TRUE</span>   <span class="co"># if TRUE, we will run method from our package. if FALSE, we will pull previous run result.</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">  , <span class="dt">check =</span> <span class="ot">FALSE</span>    <span class="co"># run checks such as printing out quantities</span></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">M &lt;-<span class="st"> </span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">J &lt;-<span class="st"> </span><span class="dv">20</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">K &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">n.j &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">N &lt;-<span class="st"> </span>n.j <span class="op">*</span><span class="st"> </span>J</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">rho.default &lt;-<span class="st"> </span><span class="fl">0.5</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="co"># create simple simulation setup, although this can generalize to be as complicated as you want!</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="co"># assuming equal sized schools in equal sized districts, generate</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="co"># school and district assignments S.j and S.k</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">assignment.vecs &lt;-<span class="st"> </span><span class="kw">gen_simple_assignments</span>(<span class="dt">J =</span> <span class="dv">20</span>, <span class="dt">K =</span> <span class="dv">2</span>, <span class="dt">n.j =</span> <span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="co">##### covariates</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">rho.D.scalar &lt;-<span class="st"> </span>rho.X.scalar &lt;-<span class="st"> </span>rho.C.scalar &lt;-<span class="st"> </span>rho.default</a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">rho.D &lt;-<span class="st"> </span><span class="kw">gen.corr.matrix</span>(M, rho.D.scalar)</a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">rho.X &lt;-<span class="st"> </span><span class="kw">gen.corr.matrix</span>(M, rho.X.scalar)</a>
+<a class="sourceLine" id="cb5-16" data-line-number="16">rho.C &lt;-<span class="st"> </span><span class="kw">gen.corr.matrix</span>(M, rho.C.scalar)</a>
+<a class="sourceLine" id="cb5-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="co">##### random effects and impacts</span></a>
+<a class="sourceLine" id="cb5-19" data-line-number="19">rho.w.scalar &lt;-<span class="st"> </span>rho.z.scalar &lt;-<span class="st"> </span>rho.default</a>
+<a class="sourceLine" id="cb5-20" data-line-number="20">rho.u.scalar &lt;-<span class="st"> </span>rho.v.scalar &lt;-rho.default</a>
+<a class="sourceLine" id="cb5-21" data-line-number="21">rho.r.scalar &lt;-<span class="st"> </span>rho.default</a>
+<a class="sourceLine" id="cb5-22" data-line-number="22">rho.w &lt;-<span class="st"> </span><span class="kw">gen.corr.matrix</span>(M, rho.w.scalar)</a>
+<a class="sourceLine" id="cb5-23" data-line-number="23">rho.z &lt;-<span class="st"> </span><span class="kw">gen.corr.matrix</span>(M, rho.z.scalar)</a>
+<a class="sourceLine" id="cb5-24" data-line-number="24">rho.u &lt;-<span class="st"> </span><span class="kw">gen.corr.matrix</span>(M, rho.u.scalar)</a>
+<a class="sourceLine" id="cb5-25" data-line-number="25">rho.v &lt;-<span class="st"> </span><span class="kw">gen.corr.matrix</span>(M, rho.v.scalar)</a>
+<a class="sourceLine" id="cb5-26" data-line-number="26">rho.r &lt;-<span class="st"> </span><span class="kw">gen.corr.matrix</span>(M, rho.r.scalar)</a>
+<a class="sourceLine" id="cb5-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb5-28" data-line-number="28">theta.wz &lt;-<span class="st"> </span>theta.uv &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, M, M)</a>
+<a class="sourceLine" id="cb5-29" data-line-number="29"></a>
+<a class="sourceLine" id="cb5-30" data-line-number="30">user.params.list &lt;-<span class="st"> </span><span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb5-31" data-line-number="31">  <span class="dt">M =</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb5-32" data-line-number="32">  , <span class="dt">S.j =</span> assignment.vecs[[<span class="st">'S.j'</span>]]        <span class="co"># N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)</span></a>
+<a class="sourceLine" id="cb5-33" data-line-number="33">  , <span class="dt">S.k =</span> assignment.vecs[[<span class="st">'S.k'</span>]]        <span class="co"># N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)</span></a>
+<a class="sourceLine" id="cb5-34" data-line-number="34">  , <span class="dt">J =</span> J                                 <span class="co"># number of districts</span></a>
+<a class="sourceLine" id="cb5-35" data-line-number="35">  , <span class="dt">K =</span> K                                 <span class="co"># number of schools</span></a>
+<a class="sourceLine" id="cb5-36" data-line-number="36">  , <span class="dt">N =</span> N                                 <span class="co"># number of individuals</span></a>
+<a class="sourceLine" id="cb5-37" data-line-number="37">  , <span class="dt">n.j =</span> n.j                             <span class="co"># number of individuals per school</span></a>
+<a class="sourceLine" id="cb5-38" data-line-number="38">  , <span class="dt">rho.default =</span> <span class="fl">0.5</span>                     <span class="co"># default correlation value</span></a>
+<a class="sourceLine" id="cb5-39" data-line-number="39">  <span class="co">################################################## level 3</span></a>
+<a class="sourceLine" id="cb5-40" data-line-number="40">  , <span class="dt">Xi0 =</span> <span class="dv">0</span>                               <span class="co"># scalar grand mean outcome under no treatment</span></a>
+<a class="sourceLine" id="cb5-41" data-line-number="41">  , <span class="dt">MDES =</span> <span class="kw">rep</span>(<span class="fl">0.125</span>, M)                  <span class="co"># minimum detectable effect size                              </span></a>
+<a class="sourceLine" id="cb5-42" data-line-number="42">  , <span class="dt">R2.3 =</span> <span class="kw">rep</span>(<span class="dv">0</span>, M)                      <span class="co"># percent of district variation explained by district covariates</span></a>
+<a class="sourceLine" id="cb5-43" data-line-number="43">  , <span class="dt">rho.D =</span> rho.D                         <span class="co"># MxM correlation matrix of district covariates</span></a>
+<a class="sourceLine" id="cb5-44" data-line-number="44">  , <span class="dt">ICC.3 =</span> <span class="fl">0.3</span>                           <span class="co"># district intraclass correlation </span></a>
+<a class="sourceLine" id="cb5-45" data-line-number="45">  , <span class="dt">omega.3 =</span> <span class="fl">0.5</span>                         <span class="co"># ratio of district effect size variability to random effects variability</span></a>
+<a class="sourceLine" id="cb5-46" data-line-number="46">  , <span class="dt">rho.w =</span> rho.w                         <span class="co"># MxM matrix of correlations for district random effects</span></a>
+<a class="sourceLine" id="cb5-47" data-line-number="47">  , <span class="dt">rho.z =</span> rho.z                         <span class="co"># MxM matrix of correlations for district impacts</span></a>
+<a class="sourceLine" id="cb5-48" data-line-number="48">  , <span class="dt">theta.wz =</span> theta.wz                   <span class="co"># MxM matrix of correlations between district random effects and impacts</span></a>
+<a class="sourceLine" id="cb5-49" data-line-number="49">  <span class="co">################################################## level 2</span></a>
+<a class="sourceLine" id="cb5-50" data-line-number="50">  , <span class="dt">R2.2 =</span> <span class="kw">rep</span>(<span class="dv">0</span>, M)                      <span class="co"># percent of school variation explained by school covariates</span></a>
+<a class="sourceLine" id="cb5-51" data-line-number="51">  , <span class="dt">rho.X =</span> rho.X                         <span class="co"># MxM correlation matrix of school covariates</span></a>
+<a class="sourceLine" id="cb5-52" data-line-number="52">  , <span class="dt">ICC.2 =</span> <span class="fl">0.3</span>                           <span class="co"># school intraclass correlation   </span></a>
+<a class="sourceLine" id="cb5-53" data-line-number="53">  , <span class="dt">omega.2 =</span> <span class="fl">0.5</span>                         <span class="co"># ratio of school effect size variability to random effects variability</span></a>
+<a class="sourceLine" id="cb5-54" data-line-number="54">  , <span class="dt">rho.u =</span> rho.u                         <span class="co"># MxM matrix of correlations for school random effects</span></a>
+<a class="sourceLine" id="cb5-55" data-line-number="55">  , <span class="dt">rho.v =</span> rho.v                         <span class="co"># MxM matrix of correlations for school impacts</span></a>
+<a class="sourceLine" id="cb5-56" data-line-number="56">  , <span class="dt">theta.uv =</span> theta.uv                   <span class="co"># MxM matrix of correlations between school random effects and impacts</span></a>
+<a class="sourceLine" id="cb5-57" data-line-number="57">  <span class="co">################################################## level 1</span></a>
+<a class="sourceLine" id="cb5-58" data-line-number="58">  , <span class="dt">R2.1 =</span> <span class="kw">rep</span>(<span class="dv">0</span>, M)                      <span class="co"># percent of indiv variation explained by indiv covariates</span></a>
+<a class="sourceLine" id="cb5-59" data-line-number="59">  , <span class="dt">rho.C =</span> rho.C                         <span class="co"># MxM correlation matrix of individual covariates</span></a>
+<a class="sourceLine" id="cb5-60" data-line-number="60">  , <span class="dt">rho.r =</span> rho.r                         <span class="co"># MxM matrix of correlations for individual residuals </span></a>
+<a class="sourceLine" id="cb5-61" data-line-number="61">)</a></code></pre></div>
+<div id="n.j-100-m-3-numfalse-m-j-20-rho-0.5-0.5-0.5-mdes-0.125-0.125-0.125-r2.2-000" class="section level3">
+<h3>n.j = 100, M = 3, numFalse = M, J = 20, rho = (0.5, 0.5, 0.5), MDES = (0.125, 0.125, 0.125), R2.2 = (0,0,0)</h3>
+</div>
+</div>
+<div id="banana-question-what-is-numfalse" class="section level1">
+<h1>banana question: what is numfalse?</h1>
 <p><span style="color: green;">Individual Statistical power is estimated to be around 0.8. Please check the table below for estimations of other definitions of statistical power. Across all power definitions, estimation results across the <strong>PUMP</strong> package, <strong>Monte Carlo Simulation</strong> results and <strong>PowerUp</strong> package are about the same as detailed below.</span></p>
 <p><span style="color: red;">We will be adding Westfall-Young step down adjustment later on.</span></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">blocked_i1_2c_compare_results &lt;-<span class="st"> </span><span class="kw">validate_power_blocked_i1_2cfr</span>(</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">  <span class="dt">user.params.list =</span> user.params.list, <span class="dt">sim.params.list =</span> sim.params.list, </a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">  <span class="dt">design =</span> design, <span class="dt">check =</span> check</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">)</a>
-<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="co"># pander::pandoc.table(</span></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">#   blocked_i1_2c_compare_results,</span></a>
-<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="co">#   paste0(&quot;PowerSimulation_&quot;, &quot;rho_&quot;, rho,&quot;_falseNull_&quot;,M), </span></a>
-<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">#   style = &quot;grid&quot;, split.tables = 100</span></a>
-<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="co"># )</span></a></code></pre></div>
-</div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">blocked_i1_2c_compare_results &lt;-<span class="st"> </span><span class="kw">validate_power_blocked_i1_2cfr</span>(</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">  <span class="dt">user.params.list =</span> user.params.list, <span class="dt">sim.params.list =</span> sim.params.list, </a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="dt">design =</span> <span class="st">&quot;Blocked_i1_2c&quot;</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">pander<span class="op">::</span><span class="kw">pandoc.table</span>(</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">  blocked_i1_2c_compare_results,</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">  <span class="kw">paste0</span>(<span class="st">&quot;PowerSimulation_&quot;</span>, <span class="st">&quot;rho_&quot;</span>, rho.default,<span class="st">&quot;_falseNull_&quot;</span>, user.params.list[[<span class="st">'M'</span>]]),</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">  <span class="dt">style =</span> <span class="st">&quot;grid&quot;</span>, <span class="dt">split.tables =</span> <span class="dv">100</span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">)</a></code></pre></div>
+<pre><code>## 
+## 
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
+## +============+===========+===========+===========+==========+==========+==========+==========+
+## |    rawp    |   0.79    |     1     |   0.13    |   0.95   |    1     |   0.83   |   0.9    |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## | Bonferroni |   0.65    |     1     |    NA     |   0.86   |    1     |   0.68   |   0.9    |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |     BH     |   0.76    |     1     |    NA     |   0.88   |    1     |   0.78   |   0.9    |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |    Holm    |   0.73    |     1     |    NA     |   0.87   |    1     |   0.73   |   0.9    |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## 
+## Table: PowerSimulation_rho_0.5_falseNull_3 (continued below)
+## 
+##  
+## 
+## +----------+----------+----------+
+## | pum_comp | sim_comp | pup_comp |
+## +==========+==========+==========+
+## |   0.61   |   0.6    |    NA    |
+## +----------+----------+----------+
+## |   0.61   |    NA    |    NA    |
+## +----------+----------+----------+
+## |   0.61   |    NA    |    NA    |
+## +----------+----------+----------+
+## |   0.6    |    NA    |    NA    |
+## +----------+----------+----------+</code></pre>
 </div>
 
 
