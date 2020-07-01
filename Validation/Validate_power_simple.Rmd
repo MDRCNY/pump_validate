@@ -30,8 +30,7 @@ In this section, we set up the required R packages and source files to run the r
 
 ```{r knit.options}
 # by default, all code chunks will cache their results
-# unless the code changes
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE)
 ```
 
 ```{r libraries}
@@ -71,6 +70,8 @@ Each subsection of the power validation below is a variation of correlation betw
 If you are previewing this in html, please click on the code section to review more detailed parameters.
 
 
+This section sets up the simulation-level parameters, such as how many monte carlo samples to draw.
+
 ```{r}
 # list of simulation parameters
 sim.params.list = list(
@@ -88,45 +89,69 @@ sim.params.list = list(
 )
 ```
 
+This section sets up the model parameters, such as the number of outcomes and correlation structures.
+
 ```{r}
-M <- 3
-J <- 20
-K <- 2
-n.j <- 100
-N <- n.j * J
-rho.default <- 0.5
-# create simple simulation setup, although this can generalize to be as complicated as you want!
-# assuming equal sized schools in equal sized districts, generate
-# school and district assignments S.j and S.k
-assignment.vecs <- gen_simple_assignments(J = 20, K = 2, n.j = 100)
+# option 1: input higher-level params, and allow for simple defaults
+# assumes equal sized schools that are evenly split between districts
+# assumes same correlation structure across all outcomes, covariates, random effects, etc.
+simple.user.params.list <- list(
+  M = 3                     # Number of outcomes
+  , J = 20                  # Number of schools
+  , K = 2                   # Number of districts                  
+  , n.j = 100               # Number of students per school
+  , rho.default = 0.5       # Default correlation
+)
+assignment.vecs <- gen_simple_assignments(
+  J = simple.user.params.list[['J']],
+  K = simple.user.params.list[['K']],
+  n.j = simple.user.params.list[['n.j']]
+)
+default.rho.matrix <- gen_corr_matrix(
+  M = simple.user.params.list[['M']],
+  rho.scalar = simple.user.params.list[['rho.default']]
+)
 
-##### covariates
-rho.D.scalar <- rho.X.scalar <- rho.C.scalar <- rho.default
-rho.D <- gen.corr.matrix(M, rho.D.scalar)
-rho.X <- gen.corr.matrix(M, rho.X.scalar)
-rho.C <- gen.corr.matrix(M, rho.C.scalar)
+M <- simple.user.params.list[['M']]
+rho.default <- simple.user.params.list[['rho.default']]
+S.j <- assignment.vecs[['S.j']]
+S.k = assignment.vecs[['S.k']]  
+rho.D <- rho.w <- rho.z <- default.rho.matrix
+rho.X <- rho.u <- rho.v <- default.rho.matrix
+rho.C <- rho.r <- default.rho.matrix
+theta.wz <- theta.uv <- matrix(0, M, simple.user.params.list[['M']])
 
-##### random effects and impacts
-rho.w.scalar <- rho.z.scalar <- rho.default
-rho.u.scalar <- rho.v.scalar <-rho.default
-rho.r.scalar <- rho.default
-rho.w <- gen.corr.matrix(M, rho.w.scalar)
-rho.z <- gen.corr.matrix(M, rho.z.scalar)
-rho.u <- gen.corr.matrix(M, rho.u.scalar)
-rho.v <- gen.corr.matrix(M, rho.v.scalar)
-rho.r <- gen.corr.matrix(M, rho.r.scalar)
+# option 2: set these parameters yourself with more complicated parameters
+# rho.default <- NULL
+## school and district assignments
+# S.j <-
+# S.k <-
+# 
+# ## covariates
+# rho.D <- 
+# rho.X <- 
+# rho.C <- 
+# 
+# ### random effects and impacts
+# rho.w <- 
+# rho.z <- 
+# rho.u <-
+# rho.v <- 
+# rho.r <- 
+# theta.wz <-
+# theta.uv <-
+```
 
-theta.wz <- theta.uv <- matrix(0, M, M)
-
+```{r}
 user.params.list <- list(
-  M = 3
-  , S.j = assignment.vecs[['S.j']]        # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
-  , S.k = assignment.vecs[['S.k']]        # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
-  , J = J                                 # number of districts
-  , K = K                                 # number of schools
-  , N = N                                 # number of individuals
-  , n.j = n.j                             # number of individuals per school
-  , rho.default = 0.5                     # default correlation value
+  M = M
+  , J = max(S.j)                          # number of schools
+  , K = max(S.k)                          # number of districts
+  , N = length(S.j)                       # number of individuals
+  , n.j = length(S.j)/max(S.j)            # number of individuals per school
+  , rho.default = rho.default             # if supplied, default rho value
+  , S.j = S.j                             # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
+  , S.k = S.k                             # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
   ################################################## level 3
   , Xi0 = 0                               # scalar grand mean outcome under no treatment
   , MDES = rep(0.125, M)                  # minimum detectable effect size                              
@@ -167,7 +192,7 @@ blocked_i1_2c_compare_results <- validate_power_blocked_i1_2cfr(
 )
 pander::pandoc.table(
   blocked_i1_2c_compare_results,
-  paste0("PowerSimulation_", "rho_", rho.default,"_falseNull_", user.params.list[['M']]),
+  paste0("PowerSimulation_", "rho_", simple.user.params.list[['rho.default']],"_falseNull_", user.params.list[['M']]),
   style = "grid", split.tables = 100
 )
 ```

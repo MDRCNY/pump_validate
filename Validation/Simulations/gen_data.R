@@ -21,7 +21,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   #######################
 
   M        <- model.params.list[['M']];       J       <- model.params.list[['J']];
-  K        <- model.params.list[['K']];       n.jk    <- model.params.list[['n.jk']];
+  K        <- model.params.list[['K']];       n.j     <- model.params.list[['n.j']];
   N        <- model.params.list[['N']];
   S.j      <- model.params.list[['S.j']];     S.k     <- model.params.list[['S.k']];
   Xi0      <- model.params.list[['Xi0']];     Xi1     <- model.params.list[['Xi1']];
@@ -41,15 +41,15 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   #######################
 
   # generate district covariates
-  Sigma.D  <- gen.cov.matrix(M, rep(1, M), rep(1, M), rho.D)
+  Sigma.D  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.D)
   D.k      <- matrix(mvrnorm(K, mu = rep(0, M), Sigma = Sigma.D), K, M)
 
   # covariance of random district effects
-  Sigma.w  <- gen.cov.matrix(M, eta0.sq, eta0.sq, rho.w)
+  Sigma.w  <- gen_cov_matrix(M, eta0.sq, eta0.sq, rho.w)
   # covariance random district impacts
-  Sigma.z  <- gen.cov.matrix(M, eta1.sq, eta1.sq, rho.z)
+  Sigma.z  <- gen_cov_matrix(M, eta1.sq, eta1.sq, rho.z)
   # covariance between impacts and effects
-  Sigma.wz <- gen.cov.matrix(M, eta0.sq, eta1.sq, theta.wz)
+  Sigma.wz <- gen_cov_matrix(M, eta0.sq, eta1.sq, theta.wz)
   # full covariance matrix
   Sigma.wz.full                                                      <- matrix(NA, 2*M, 2*M)
   Sigma.wz.full[1:M, 1:M]                                            <- Sigma.w
@@ -67,15 +67,15 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   #######################
 
   # generate school covariates
-  Sigma.X         <- gen.cov.matrix(M, rep(1, M), rep(1, M), rho.X)
+  Sigma.X         <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.X)
   X.jk            <- matrix(mvrnorm(J, mu = rep(0, M), Sigma = Sigma.X), J, M)
 
   # covariance of school random effects
-  Sigma.u <- gen.cov.matrix(M, tau0.sq, tau0.sq, rho.u)
+  Sigma.u <- gen_cov_matrix(M, tau0.sq, tau0.sq, rho.u)
   # covariance of school random impacts
-  Sigma.v <- gen.cov.matrix(M, tau1.sq, tau1.sq, rho.v)
+  Sigma.v <- gen_cov_matrix(M, tau1.sq, tau1.sq, rho.v)
   # covariance of school random effects and impacts
-  Sigma.uv <- gen.cov.matrix(M, tau0.sq, tau1.sq, theta.uv)
+  Sigma.uv <- gen_cov_matrix(M, tau0.sq, tau1.sq, theta.uv)
   # full covariance matrix
   Sigma.uv.full                                                      <- matrix(NA, 2*M, 2*M)
   Sigma.uv.full[1:M, 1:M]                                            <- Sigma.u
@@ -104,11 +104,11 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   #######################
 
   # generate individual covariates
-  Sigma.C <- gen.cov.matrix(M, rep(1, M), rep(1, M), rho.C)
+  Sigma.C <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.C)
   C.ijk   <- matrix(mvrnorm(N, mu = rep(0, M), Sigma = Sigma.C), N, M)
 
   # generate individual residuals
-  Sigma.r <- gen.cov.matrix(M, rep(1, M), rep(1, M), rho.r)
+  Sigma.r <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.r)
   r.ijk   <- matrix(mvrnorm(N, mu = rep(0,M), Sigma = Sigma.r), N, M)
 
   #######################
@@ -231,7 +231,7 @@ convert.params <- function(user.params.list, check = FALSE) {
     , J = user.params.list[['J']]                    # number of schools
     , K = user.params.list[['K']]                    # number of districts
     , N = user.params.list[['N']]                    # number of individuals
-    , n.j = user.params.list[['n.j']]               # number of individuals per school
+    , n.j = user.params.list[['n.j']]                # number of individuals per school
     , S.j = user.params.list[['S.j']]                # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
     , S.k = user.params.list[['S.k']]                # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
     , Xi0 = user.params.list[['Xi0']]                # scalar grand mean outcome under no treatment

@@ -77,7 +77,7 @@ convert.vec.to.filename <- function(vec)
 #' @export
 #'
 #' @examples
-gen.corr.matrix = function(M, rho.scalar)
+gen_corr_matrix = function(M, rho.scalar)
 {
   rho.matrix = diag(M) + rho.scalar * matrix(1, M, M) - rho.scalar * diag(M)
   return(rho.matrix)
@@ -94,7 +94,7 @@ gen.corr.matrix = function(M, rho.scalar)
 #' @export
 #'
 #' @examples
-gen.cov.matrix = function(D, var1.vec, var2.vec, rho.matrix) {
+gen_cov_matrix = function(D, var1.vec, var2.vec, rho.matrix) {
   Sigma <- matrix(NA, D, D)
   for(k in 1:D) {
     for(l in 1:D) {
@@ -104,7 +104,7 @@ gen.cov.matrix = function(D, var1.vec, var2.vec, rho.matrix) {
   return(Sigma)
 }
 
-# generate simple defaults for simulations
+# generate simple default assignment to schools and districts for simulations
 # this assumes equal sized schools in equal sized districts
 #'
 #' @param K number of districts

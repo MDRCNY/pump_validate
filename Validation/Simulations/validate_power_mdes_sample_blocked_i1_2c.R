@@ -40,9 +40,7 @@ validate_power_blocked_i1_2cfr <- function(user.params.list,
                                            sim.params.list,
                                            design) {
 
-  ######################################################
-  # Variable setting for saving files
-  ######################################################
+  # design = "Blocked_i1_2c"
 
   #####################
   # Simulation Values #
@@ -104,12 +102,12 @@ validate_power_blocked_i1_2cfr <- function(user.params.list,
     # UPDATE p and n.j
     for (MTP in sim.params.list[['procs']]){
       pum_results <- pum::power_blocked_i1_2c(
-        M = M, MTP = MTP,
+        M = user.params.list[['M']], MTP = MTP,
         MDES = user.params.list[['MDES']], numFalse = user.params.list[['M']],
         J = user.params.list[['J']], n.j = user.params.list[['n.j']],
         p = user.params.list[['p.j']],
         alpha = sim.params.list[['alpha']], numCovar.1 = 0, numCovar.2 = 0,
-        R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.1']],
+        R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
         ICC = user.params.list[['ICC']], sigma = NULL,
         rho = user.params.list[['rho.default']], omega = NULL,
         tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
