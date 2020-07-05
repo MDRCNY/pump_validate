@@ -144,3 +144,27 @@ gen_simple_assignments <- function(J, K, n.j){
 
   return(list(S.j = S.j, S.k = S.k))
 }
+
+# read in simulation and user parameters
+#' and return corresponding file name
+#'
+#' @param design
+#' @param user.params.list
+#' @param sim.params.list
+#'
+#' @return params.file.base
+gen_params_file_base <- function(user.params.list, sim.params.list, design)
+{
+  params.file.base <- paste0(
+    design, "_", sim.params.list[['S']], "_S_",
+    user.params.list[['M']], "_M_",
+    convert.vec.to.filename(user.params.list[['MDES']]),"_MDES_",
+    user.params.list[['J']], "_J_",
+    user.params.list[['n.j']], "_nj_",
+    convert.vec.to.filename(user.params.list[['rho.default']]), "_rho_",
+    convert.vec.to.filename(user.params.list[['R2.1']]),"_R21_"
+  )
+  return(params.file.base)
+}
+
+

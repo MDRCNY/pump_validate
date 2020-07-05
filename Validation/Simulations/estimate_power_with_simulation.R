@@ -257,7 +257,10 @@ get.rejects <- function(adjp, alpha) {
   rejects <- 1*(adjp<alpha)
 }
 
-#  Funtion to estimate statistical power after multiple hypothesis testing has been done
+###########################################################################
+#  Function: est_power_sim				                                        #
+#  Funtion to estimate statistical power using simulations
+###########################################################################
 #' @param user.params.list List of user-supplied parameters
 #' @param sim.params.list List of simulation parameters
 #' @param design RCT design (see list/naming convention)
@@ -265,6 +268,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
 
   # convert user-inputted parameters into model parameters
   model.params.list <- convert.params(user.params.list)
+  if(sim.params.list[['check']]){ print(model.params.list) }
 
   # save out some commonly used variables
   M <- model.params.list[['M']]
@@ -292,13 +296,13 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", procs))
   names(adjp.proc) <- c("rawp", procs)
 
-  px <- S/100
+  px <- 100
   rawt.all <- matrix(NA, S, M)
   # begin loop through all samples to be generated
   for (s in 1:S) {
 
     t1 <- Sys.time()
-    if (s %% px==0){ message(paste0("Now processing sample ", s, " of ", S))}
+    if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S))}
 
     # generate full, unobserved sample data
     samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
@@ -322,7 +326,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
       rawt <- get.rawt(mdat, design = d, model.params.list[['n.j']], model.params.list[['J']]) #vector length M
       rawt.all[s,] <- rawt
 
-    } # popping through design
+    } # popping through designs
 
     for (p in 1:(length(procs) + 1)) {
       if (p == 1) {
@@ -339,8 +343,13 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     }
 
     t2 <- Sys.time()
-    if (s == 1) {message(paste("Expected time diff of", (t2 - t1) * S, "and expected finish at", t1 + (t2 - t1) * S,"for S =", S, sep =" "))}
-    else if (s %% px == 0) {message(difftime(t2, t1))}
+    if (s == 1) {
+      message(paste(
+        "Expected time diff of", round(S*difftime(t2, t1, units = 'mins'),2),
+        "minutes and expected finish at", t1 + (t2 - t1) * S,"for S =", S, sep =" ")
+      )
+    }
+    # else if (s %% px == 0) {message(difftime(t2, t1))}
   } # end loop through samples
 
   for (p in 1:(length(procs) + 1)) {
