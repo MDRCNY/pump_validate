@@ -65,19 +65,19 @@ This section sets up the simulation-level parameters, such as how many monte car
 
 ```{r simulation.parameters.setup, echo = TRUE}
 sim.params.list = list(
-    S = 100          # Number of samples for Monte Carlo Simulation
+    S = 2000         # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
-  , maxT = FALSE     # ?
-  , alpha = 0.05     # significance level
-  , MoE = 0.05       # margin of error
-  , p.j = 0.5        # binomial assignment probability
+  , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
+  , alpha = 0.05     # Significance level
+  , MoE = 0.05       # Margin of error
+  , p.j = 0.5        # Binomial assignment probability within a school
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
   , procs = c("Bonferroni", "BH", "Holm")
-                     # multiple testing procedures to compute power for 
-  , runSim = TRUE    # if TRUE, we will re-run the simulation. if FALSE, we will pull previous run result.
-  , runPump = TRUE   # if TRUE, we will run method from our package. if FALSE, we will pull previous run result.
-  , check = FALSE    # run checks such as printing out quantities
+                     # Multiple testing procedures to compute power for 
+  , runSim = TRUE    # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = TRUE   # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , check = FALSE    # Run checks such as printing out quantities
 )
 ```
 
@@ -178,7 +178,7 @@ blocked_i1_2c_compare_results_nj100 <- validate_power(
 )
 pander::pandoc.table(
   blocked_i1_2c_compare_results_nj100,
-  style = "grid"
+  style = "grid", split.tables = 100
 )
 ```
 

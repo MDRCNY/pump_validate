@@ -345,8 +345,9 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     t2 <- Sys.time()
     if (s == 1) {
       message(paste(
-        "Expected time diff of", round(S*difftime(t2, t1, units = 'mins'),2),
-        "minutes and expected finish at", t1 + (t2 - t1) * S,"for S =", S, sep =" ")
+        "Current time:", t2,
+        "\nExpected time diff of", round(S*(difftime(t2, t1)[[1]])/60,2),
+        "minutes.\nExpected finish at", t1 + (t2 - t1) * S,"for S =", S, sep =" ")
       )
     }
     # else if (s %% px == 0) {message(difftime(t2, t1))}
