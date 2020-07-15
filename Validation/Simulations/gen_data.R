@@ -30,6 +30,9 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   rho.w    <- model.params.list[['rho.w']];   rho.z   <- model.params.list[['rho.z']];
   theta.wz <- model.params.list[['theta.wz']];
   rho.X    <- model.params.list[['rho.X']];   delta   <- model.params.list[['delta']];
+  ######### temp
+  psi      <- model.params.list[['psi']]
+  ######### temp
   tau0.sq  <- model.params.list[['tau0.sq']]; tau1.sq <- model.params.list[['tau1.sq']];
   rho.u    <- model.params.list[['rho.u']];   rho.v   <- model.params.list[['rho.v']];
   theta.uv <- model.params.list[['theta.uv']];
@@ -134,7 +137,11 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   Gamma1.ijk <- Xi1                        + z.ijk
   # school level
   mu.ijk     <- Gamma0.ijk + delta * X.ijk + u.ijk
-  beta.ijk   <- Gamma1.ijk                 + v.ijk
+  ######### temp
+  # allow for school-level covariate to influence treatment
+  beta.ijk   <- Gamma1.ijk + psi   * X.ijk + v.ijk
+  # beta.ijk   <- Gamma1.ijk                 + v.ijk
+  ######### temp
   # individual level
   Y0.ijk     <- mu.ijk     + gamma * C.ijk + r.ijk
   Y1.ijk     <- Y0.ijk                     + beta.ijk
@@ -143,45 +150,48 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   Y0.ijk <- data.frame(Y0.ijk)
   Y1.ijk <- data.frame(Y1.ijk)
 
-  # CHECKS
-  # if (check) {
-  #
-  #   # correlations between block-level means
-  #   cor(mu.j)
-  #
-  #   # variance of block-level means
-  #   apply(mu.j,2,var)
-  #
-  #   # grand means of block-level means (should be equal to Gamma.00)
-  #   apply(mu.j,2,mean)
-  #
-  #   # calculated true coef on block-level covariates
-  #   coef.R2.2
-  #
-  #   # check of estimated R2.2, coef.R2.1 and var of resid
-  #   summary(lm(mu.j[,1]~X.j[,1]))
-  #
-  #   # correlation between between indiv levels of outcome under no treatment
-  #   #cor(output[output$cluster.id==j,c("D.M1.ij","D.M2.ij")])
-  #
-  #   # compute block-level means from indiv-level measures
-  #   agg.clustermean <- aggregate(output,by=list(output$cluster.id),FUN="mean")
-  #
-  #   # variances of block-level outcomes under no treatment
-  #   apply(agg.clustermean,2,var)
-  #
-  #   # check of effects
-  #   apply(agg.clustermean[,paste0("D1.M",1:M,".ij")] - agg.clustermean[,paste0("D0.M",1:M,".ij")],2,mean)
-  #
-  #   # estimated ICC from lme
-  #   # require(nlme)
-  #   lme.dat <- groupedData(D0.M1.ij~1|cluster.id,data=output)
-  #   lme.test <- lme(lme.dat)
-  #   varests <- as.numeric(VarCorr(lme.test)[,"Variance"])  # vector of variance estimates
-  #   varests
-  #   ICC.calc <- varests[1]/sum(varests)
-  #   ICC.calc
-  # }
+  # some useful checks
+  # TODO: update this better
+  if (check) {
+
+    # correlations between block-level means
+    print(paste('Correlation of block-level means'))
+    print(cor(mu.ijk))
+
+    # variance of block-level means
+    print(paste('Variance of block-level means'))
+    print(apply(mu.ijk, 2, var))
+
+    # grand means of block-level means (should be equal to Gamma.00)
+    print(paste('Means of block-level means'))
+    print(apply(mu.ijk, 2, mean))
+
+    # calculated true coef on block-level covariates
+    print(paste('True R2.1'))
+    print(1 - Sigma.r[1,1]/(gamma^2 + Sigma.r[1,1]))
+
+    # check of estimated R2.2, coef.R2.1 and var of resid
+    print('Estimated R2.2')
+    summary(lm(mu.ijk[,1]~X.ijk[,1]))$r.squared
+
+    # compute block-level means from indiv-level measures
+    # agg.clustermean <- aggregate(output, by = list(output$cluster.id),FUN="mean")
+
+    # variances of block-level outcomes under no treatment
+    # apply(agg.clustermean,2,var)
+
+    # check of effects
+    # apply(agg.clustermean[,paste0("D1.M",1:M,".ij")] - agg.clustermean[,paste0("D0.M",1:M,".ij")],2,mean)
+
+    # estimated ICC from lme
+    # require(nlme)
+    # lme.dat <- groupedData(D0.M1.ij~1|cluster.id,data=output)
+    # lme.test <- lme(lme.dat)
+    # varests <- as.numeric(VarCorr(lme.test)[,"Variance"])  # vector of variance estimates
+    # varests
+    # ICC.calc <- varests[1]/sum(varests)
+    # ICC.calc
+  }
 
   return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.ijk = D.ijk, X.ijk = X.ijk, C.ijk = C.ijk))
 }
@@ -216,6 +226,7 @@ convert.params <- function(user.params.list, check = FALSE) {
   eta1.sq <- user.params.list[['omega.3']] * eta0.sq
   tau1.sq <- user.params.list[['omega.2']] * tau0.sq
   delta   <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
+  psi     <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
   xi      <- sqrt( ( ICC.3*R2.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.3)*(1-R2.1) ))
   gamma   <- sqrt( R2.1/(1-R2.1) )
   Xi1 <- user.params.list[['MDES']] * sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
@@ -239,6 +250,9 @@ convert.params <- function(user.params.list, check = FALSE) {
     , theta.wz = user.params.list[['theta.wz']]      # MxM matrix of correlations between district random effects and impacts
     ################################################## level 2
     , delta = delta                                  # M-vector of coefficients of school covariates
+    ######## temp
+    , psi = user.params.list[['psi']]                 # coefficient of school covariate in treatment effect
+    ######## temp
     , rho.X = user.params.list[['rho.X']]            # MxM correlation matrix of school covariates
     , tau0.sq = tau0.sq                              # M-vector of variances of school random effects
     , tau1.sq = tau1.sq                              # M-vector of variances of school impacts
