@@ -1,6 +1,15 @@
 library(here)
 library(MASS)
-# library(nlme)
+library(multtest)
+library(RcppEigen)
+
+# if you haven't installed multtest, code for installing from
+# Bioconductor
+# if (!requireNamespace("BiocManager", quietly = TRUE)){
+#   install.packages("BiocManager")
+# }
+# BiocManager::install("multtest")
+
 
 # data generating function
 source(here::here("Validation/Simulations", "gen_data.R"))
