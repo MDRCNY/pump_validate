@@ -16,7 +16,9 @@
 library(dplyr)       # for combing data frames
 library(here)        # for relative file paths
 library(lme4)        # for modeling
+library(MASS)
 library(multtest)   # Multiple Testing Procedures package
+library(nlme)
 library(PowerUpR)    # for checking with another power estimation function
 library(pum)         # for checking with the new methods
 library(RcppEigen)   # rcpp for speed issues
@@ -38,9 +40,6 @@ library(tictoc)      # for timing
 #' @examples
 validate_power <- function(user.params.list, sim.params.list, design) {
 
-  # FOR DEBUGGING
-  # design = "Blocked_i1_2c"
-
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 
@@ -51,10 +50,10 @@ validate_power <- function(user.params.list, sim.params.list, design) {
   # simulate and run power calculations
   sim.filename = paste0(params.file.base, "simulation_results.RDS")
   if(sim.params.list[['runSim']]){
-    simpwr <- est_power_sim(user.params.list, sim.params.list, design)
-    saveRDS(simpwr, file = here("Validation/data", sim.filename))
+    sim_results <- est_power_sim(user.params.list, sim.params.list, design)
+    saveRDS(sim_results, file = here("Validation/data", sim.filename))
   } else {
-    simpwr <- readRDS(file = here::here("Validation/data", sim.filename))
+    sim_results <- readRDS(file = here::here("Validation/data", sim.filename))
   }
 
   ###################
@@ -117,36 +116,8 @@ validate_power <- function(user.params.list, sim.params.list, design) {
     pum_combined_results <- readRDS(file = here::here("Validation/data", pump.filename))
   }
 
-  ########################################
-  # Compare Results Table                #
-  ########################################
-  compare_results <- data.frame(
-    "pum_indiv" = pum_combined_results[,"indiv"],
-    "sim_indiv" = simpwr$adjusted_power[,"D1indiv"],
-    "pup_indiv" = power_up_results$power,
-    "pum_min1"  = pum_combined_results[,"min1"],
-    "sim_min1"  = simpwr$adjusted_power[,"1/3"],
-    "pum_min2"  = pum_combined_results[,"min2"],
-    "sim_min2"  = simpwr$adjusted_power[,"2/3"],
-    "pum_comp"  = pum_combined_results[,"complete"],
-    "sim_comp"  = simpwr$adjusted_power[,"full"]
-  )
-
-  # Setting NAs for the power definitions that do not need adjustment
-  compare_results$pup_indiv[2:4] <- NA
-  # compare_results$powerup_indiv_lower_ci[2:4] <- NA
-  # compare_results$powerup_indiv_upper_ci[2:4] <- NA
-  compare_results$pup_comp[2:4] <- NA
-  compare_results$sim_comp[2:4] <- NA
-  # compare_results$sim_complete_lower_ci[2:4] <- NA
-  # compare_results$sim_complete_upper_ci[2:4] <- NA
-
-  # Giving Rownames a column header
-  compare_results <- compare_results %>%
-                     tibble::rownames_to_column(var = "MTP")
-  compare_results <- round_df(compare_results,2) # Rounding the data frames
-
   compare.filename <- paste0(params.file.base, "comparison_results.RDS")
+  compare_results <- gen.results.table(pum_combined_results, power_up_results, sim_results)
   saveRDS(compare_results, file = here::here("Validation/data", compare.filename))
 
   return(compare_results)

@@ -31,13 +31,11 @@ TODO: Add sample size, Westfall-Young
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
+knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE)
 ```
 
 ```{r libraries}
 library(here)
-library(MASS)
-library(nlme)
 library(pander)    # For good table format
 ```
 
@@ -65,8 +63,10 @@ If you are previewing this in html, please click on the code section to review m
 This section sets up the simulation-level parameters, such as how many monte carlo samples to draw.
 
 ```{r simulation.parameters.setup, echo = TRUE}
-sim.params.list = list(
-    S = 2000         # Number of samples for Monte Carlo Simulation
+design <- "Blocked_i1_2c"
+
+sim.params.list <- list(
+    S = 100          # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
@@ -172,11 +172,14 @@ Main parameters:
 `r colorize("Individual Statistical power is estimated to be around 0.8. Please check the table below for estimations of other definitions of statistical power. Across all power definitions, estimation results across the __PUMP__ package, __Monte Carlo Simulation__ results and __PowerUp__ package are about the same as detailed below.", "green")`
 
 ```{r rho0.5tPMnj100}
-blocked_i1_2c_compare_results_nj100 <- validate_power(
-  user.params.list = user.params.list,
-  sim.params.list = sim.params.list, 
-  design = "Blocked_i1_2c"
-)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+comparison.file <- find_comparison_file(params.file.base)
+blocked_i1_2c_compare_results_nj100 <- readRDS(comparison.file)
+# blocked_i1_2c_compare_results_nj100 <- validate_power(
+#   user.params.list = user.params.list,
+#   sim.params.list = sim.params.list, 
+#   design = "Blocked_i1_2c"
+# )
 pander::pandoc.table(
   blocked_i1_2c_compare_results_nj100,
   style = "grid", split.tables = 100
@@ -191,11 +194,15 @@ pander::pandoc.table(
 user.params.list[['n.j']] <- 75
 user.params.list[['N']] <- user.params.list[['n.j']]*user.params.list[['J']]
 
-blocked_i1_2c_compare_results_nj75 <- validate_power(
-  user.params.list = user.params.list,
-  sim.params.list = sim.params.list, 
-  design = "Blocked_i1_2c"
-)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+comparison.file <- find_comparison_file(params.file.base)
+blocked_i1_2c_compare_results_nj75 <- readRDS(comparison.file)
+
+# blocked_i1_2c_compare_results_nj75 <- validate_power(
+#   user.params.list = user.params.list,
+#   sim.params.list = sim.params.list, 
+#   design = "Blocked_i1_2c"
+# )
 pander::pandoc.table(
   blocked_i1_2c_compare_results_nj75,
   style = "grid", split.tables = 100
@@ -210,18 +217,20 @@ pander::pandoc.table(
 ```{r rho0.5tPMnj50}
 user.params.list[['n.j']] <- 50
 user.params.list[['N']] <- user.params.list[['n.j']]*user.params.list[['J']]
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+comparison.file <- find_comparison_file(params.file.base)
+blocked_i1_2c_compare_results_nj50 <- readRDS(comparison.file)
 
-blocked_i1_2c_compare_results_nj50 <- validate_power(
-  user.params.list = user.params.list,
-  sim.params.list = sim.params.list,
-  design = "Blocked_i1_2c"
-)
+# blocked_i1_2c_compare_results_nj50 <- validate_power(
+#   user.params.list = user.params.list,
+#   sim.params.list = sim.params.list,
+#   design = "Blocked_i1_2c"
+# )
 pander::pandoc.table(
   blocked_i1_2c_compare_results_nj50,
   style = "grid", split.tables = 100
 )
 ```
-
 
 
 # MDES validation

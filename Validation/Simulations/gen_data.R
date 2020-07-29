@@ -32,6 +32,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   rho.X    <- model.params.list[['rho.X']];   delta   <- model.params.list[['delta']];
   ######### temp
   psi      <- model.params.list[['psi']]
+  if(is.null(psi)){ psi <- 0 }
   ######### temp
   tau0.sq  <- model.params.list[['tau0.sq']]; tau1.sq <- model.params.list[['tau1.sq']];
   rho.u    <- model.params.list[['rho.u']];   rho.v   <- model.params.list[['rho.v']];
@@ -137,11 +138,13 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   Gamma1.ijk <- Xi1                        + z.ijk
   # school level
   mu.ijk     <- Gamma0.ijk + delta * X.ijk + u.ijk
+  
   ######### temp
   # allow for school-level covariate to influence treatment
   beta.ijk   <- Gamma1.ijk + psi   * X.ijk + v.ijk
   # beta.ijk   <- Gamma1.ijk                 + v.ijk
   ######### temp
+  
   # individual level
   Y0.ijk     <- mu.ijk     + gamma * C.ijk + r.ijk
   Y1.ijk     <- Y0.ijk                     + beta.ijk
@@ -226,7 +229,7 @@ convert.params <- function(user.params.list, check = FALSE) {
   eta1.sq <- user.params.list[['omega.3']] * eta0.sq
   tau1.sq <- user.params.list[['omega.2']] * tau0.sq
   delta   <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
-  psi     <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
+  # psi     <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
   xi      <- sqrt( ( ICC.3*R2.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.3)*(1-R2.1) ))
   gamma   <- sqrt( R2.1/(1-R2.1) )
   Xi1 <- user.params.list[['MDES']] * sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
