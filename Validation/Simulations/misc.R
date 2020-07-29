@@ -145,7 +145,7 @@ gen_simple_assignments <- function(J, K, n.j){
   return(list(S.j = S.j, S.k = S.k))
 }
 
-# read in simulation and user parameters
+#' read in simulation and user parameters
 #' and return corresponding file name
 #'
 #' @param design
@@ -166,5 +166,64 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
   )
   return(params.file.base)
 }
+
+#' read in results from pum, powerup, and simulation
+#' and return table
+#'
+#' @param pum_combined_results
+#' @param power_up_results
+#' @param sim_results
+#'
+#' @return compare_results
+
+gen.results.table <- function(pum_combined_results, power_up_results, sim_results)
+{
+  compare_results <- data.frame(
+    "pum_indiv" = pum_combined_results[,"indiv"],
+    "sim_indiv" = sim_results$adjusted_power[,"D1indiv"],
+    "pup_indiv" = power_up_results$power,
+    "pum_min1"  = pum_combined_results[,"min1"],
+    "sim_min1"  = sim_results$adjusted_power[,"1/3"],
+    "pum_min2"  = pum_combined_results[,"min2"],
+    "sim_min2"  = sim_results$adjusted_power[,"2/3"],
+    "pum_comp"  = pum_combined_results[,"complete"],
+    "sim_comp"  = sim_results$adjusted_power[,"full"]
+  )
+  
+  # Setting NAs for the power definitions that do not need adjustment
+  compare_results$pup_indiv[2:4] <- NA
+  # compare_results$powerup_indiv_lower_ci[2:4] <- NA
+  # compare_results$powerup_indiv_upper_ci[2:4] <- NA
+  compare_results$pup_comp[2:4] <- NA
+  compare_results$sim_comp[2:4] <- NA
+  # compare_results$sim_complete_lower_ci[2:4] <- NA
+  # compare_results$sim_complete_upper_ci[2:4] <- NA
+  
+  # Giving rownames a column header
+  compare_results <- compare_results %>%
+    tibble::rownames_to_column(var = "MTP")
+  compare_results <- round_df(compare_results,2) # Rounding the data frames
+  
+  return(compare_results)
+}
+
+#' check for existing validation file
+#'
+#' @param params.file.base
+#'
+#' @return params.file.base
+
+find_comparison_file <- function(params.file.base)
+{
+  results.files <- list.files(here::here("Validation/data"), full.names = TRUE)
+  results.files <- results.files[grep(params.file.base, results.files)]
+  comparison.file <- results.files[grep('comparison', results.files)]
+  if(length(comparison.file) == 0)
+  {
+    stop('Results not yet computed for given parameters')
+  }
+  return(comparison.file)
+}
+
 
 

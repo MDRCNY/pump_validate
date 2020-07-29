@@ -2959,21 +2959,23 @@ div.tocify {
 <p>Each subsection of the power validation below is a variation of <strong>rho</strong>, the correlation between outcomes, the <strong>number of individuals per school</strong>, and the number of <strong>true positives</strong> in M outcomes. For more details on input parameters, please refer to the paper or the Appendix section at the bottom of this markdown.</p>
 <p>If you are previewing this in html, please click on the code section to review more detailed parameters.</p>
 <p>This section sets up the simulation-level parameters, such as how many monte carlo samples to draw.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>sim.params.list =<span class="st"> </span><span class="kw">list</span>(</span>
-<span id="cb1-2"><a href="#cb1-2"></a>    <span class="dt">S =</span> <span class="dv">2000</span>         <span class="co"># Number of samples for Monte Carlo Simulation</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>  , <span class="dt">B =</span> <span class="dv">2</span>            <span class="co"># Number of samples for WestFall-Young. The equivalent is snum in our new method.</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>  , <span class="dt">maxT =</span> <span class="ot">FALSE</span>     <span class="co"># ?</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>  , <span class="dt">alpha =</span> <span class="fl">0.05</span>     <span class="co"># significance level</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>  , <span class="dt">MoE =</span> <span class="fl">0.05</span>       <span class="co"># margin of error</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>  , <span class="dt">p.j =</span> <span class="fl">0.5</span>        <span class="co"># binomial assignment probability</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a>  , <span class="dt">tnum =</span> <span class="dv">10000</span>     <span class="co"># Number of test statistics (samples) for all procedures other than Westfall-Young</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a>  , <span class="dt">ncl =</span> <span class="dv">2</span>          <span class="co"># Number of computer clusters (max on RStudio Server is 16)</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a>  , <span class="dt">procs =</span> <span class="kw">c</span>(<span class="st">&quot;Bonferroni&quot;</span>, <span class="st">&quot;BH&quot;</span>, <span class="st">&quot;Holm&quot;</span>)</span>
-<span id="cb1-11"><a href="#cb1-11"></a>                     <span class="co"># multiple testing procedures to compute power for </span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>  , <span class="dt">runSim =</span> <span class="ot">TRUE</span>    <span class="co"># if TRUE, we will re-run the simulation. if FALSE, we will pull previous run result.</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a>  , <span class="dt">runPump =</span> <span class="ot">TRUE</span>   <span class="co"># if TRUE, we will run method from our package. if FALSE, we will pull previous run result.</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>  , <span class="dt">check =</span> <span class="ot">FALSE</span>    <span class="co"># run checks such as printing out quantities</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>design &lt;-<span class="st"> &quot;Blocked_i1_2c&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a>sim.params.list &lt;-<span class="st"> </span><span class="kw">list</span>(</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    <span class="dt">S =</span> <span class="dv">100</span>          <span class="co"># Number of samples for Monte Carlo Simulation</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>  , <span class="dt">B =</span> <span class="dv">2</span>            <span class="co"># Number of samples for WestFall-Young. The equivalent is snum in our new method.</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>  , <span class="dt">maxT =</span> <span class="ot">FALSE</span>     <span class="co"># In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>  , <span class="dt">alpha =</span> <span class="fl">0.05</span>     <span class="co"># Significance level</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  , <span class="dt">MoE =</span> <span class="fl">0.05</span>       <span class="co"># Margin of error</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>  , <span class="dt">p.j =</span> <span class="fl">0.5</span>        <span class="co"># Binomial assignment probability within a school</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>  , <span class="dt">tnum =</span> <span class="dv">10000</span>     <span class="co"># Number of test statistics (samples) for all procedures other than Westfall-Young</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>  , <span class="dt">ncl =</span> <span class="dv">2</span>          <span class="co"># Number of computer clusters (max on RStudio Server is 16)</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>  , <span class="dt">procs =</span> <span class="kw">c</span>(<span class="st">&quot;Bonferroni&quot;</span>, <span class="st">&quot;BH&quot;</span>, <span class="st">&quot;Holm&quot;</span>)</span>
+<span id="cb1-13"><a href="#cb1-13"></a>                     <span class="co"># Multiple testing procedures to compute power for </span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>  , <span class="dt">runSim =</span> <span class="ot">TRUE</span>    <span class="co"># If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.</span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>  , <span class="dt">runPump =</span> <span class="ot">TRUE</span>   <span class="co"># If TRUE, we will run method from our package. If FALSE, we will pull previous run result.</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>  , <span class="dt">check =</span> <span class="ot">FALSE</span>    <span class="co"># Run checks such as printing out quantities</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>)</span></code></pre></div>
 <p>This section sets up the model parameters, such as the number of outcomes and correlation structures.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># optional: if you want more complicated parameter choices, set them yourself</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="co"># otherwise reasonable defaults are assumed</span></span>
@@ -3031,7 +3033,7 @@ div.tocify {
 <span id="cb3-30"><a href="#cb3-30"></a>  <span class="co">################################################## level 2: schools</span></span>
 <span id="cb3-31"><a href="#cb3-31"></a>  , <span class="dt">R2.2 =</span> <span class="kw">rep</span>(<span class="dv">0</span>, M)                      <span class="co"># percent of school variation explained by school covariates</span></span>
 <span id="cb3-32"><a href="#cb3-32"></a>  , <span class="dt">rho.X =</span> default.rho.matrix            <span class="co"># MxM correlation matrix of school covariates</span></span>
-<span id="cb3-33"><a href="#cb3-33"></a>  , <span class="dt">ICC.2 =</span> <span class="kw">rep</span>(<span class="dv">0</span>, M)                     <span class="co"># school intraclass correlation   </span></span>
+<span id="cb3-33"><a href="#cb3-33"></a>  , <span class="dt">ICC.2 =</span> <span class="kw">rep</span>(<span class="fl">0.5</span>, M)                   <span class="co"># school intraclass correlation   </span></span>
 <span id="cb3-34"><a href="#cb3-34"></a>  , <span class="dt">omega.2 =</span> <span class="dv">0</span>                           <span class="co"># ratio of school effect size variability to random effects variability</span></span>
 <span id="cb3-35"><a href="#cb3-35"></a>  , <span class="dt">rho.u =</span> default.rho.matrix            <span class="co"># MxM matrix of correlations for school random effects</span></span>
 <span id="cb3-36"><a href="#cb3-36"></a>  , <span class="dt">rho.v =</span> default.rho.matrix            <span class="co"># MxM matrix of correlations for school impacts</span></span>
@@ -3059,13 +3061,13 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |    0.8    |   0.79    |    0.8    |   0.95   |   0.95   |   0.84   |   0.83   |
+## |    rawp    |    0.8    |    0.8    |    0.8    |   0.95   |   0.98   |   0.84   |   0.86   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.66    |   0.64    |    NA     |   0.87   |   0.86   |   0.68   |   0.66   |
+## | Bonferroni |   0.65    |   0.67    |    NA     |   0.87   |   0.91   |   0.68   |   0.71   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.77    |   0.74    |    NA     |   0.89   |   0.88   |   0.79   |   0.78   |
+## |     BH     |   0.76    |   0.76    |    NA     |   0.89   |   0.92   |   0.79   |   0.81   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.73    |   0.71    |    NA     |   0.87   |   0.86   |   0.74   |   0.72   |
+## |    Holm    |   0.73    |   0.73    |    NA     |   0.87   |   0.91   |   0.74   |   0.76   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: Table continues below
@@ -3075,13 +3077,13 @@ div.tocify {
 ## +----------+----------+----------+
 ## | pum_comp | sim_comp | pup_comp |
 ## +==========+==========+==========+
-## |   0.61   |   0.6    |    NA    |
+## |   0.61   |   0.63   |    NA    |
 ## +----------+----------+----------+
 ## |   0.61   |    NA    |    NA    |
 ## +----------+----------+----------+
 ## |   0.61   |    NA    |    NA    |
 ## +----------+----------+----------+
-## |   0.61   |    NA    |    NA    |
+## |   0.6    |    NA    |    NA    |
 ## +----------+----------+----------+</code></pre>
 </div>
 <div id="setup-2-school-size-75" class="section level3">
@@ -3094,13 +3096,13 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |   0.67    |   0.68    |   0.68    |   0.88   |   0.88   |   0.7    |   0.7    |
+## |    rawp    |   0.67    |   0.65    |   0.68    |   0.89   |   0.89   |   0.7    |   0.69   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |    0.5    |   0.51    |    NA     |   0.75   |   0.75   |   0.51   |   0.5    |
+## | Bonferroni |   0.51    |   0.52    |    NA     |   0.76   |   0.76   |   0.51   |   0.48   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.62    |   0.62    |    NA     |   0.78   |   0.77   |   0.64   |   0.64   |
+## |     BH     |   0.62    |   0.59    |    NA     |   0.78   |   0.76   |   0.64   |   0.61   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.58    |   0.58    |    NA     |   0.76   |   0.75   |   0.57   |   0.56   |
+## |    Holm    |   0.58    |   0.56    |    NA     |   0.76   |   0.76   |   0.57   |   0.54   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: Table continues below
@@ -3114,7 +3116,7 @@ div.tocify {
 ## +----------+----------+----------+
 ## |   0.44   |    NA    |    NA    |
 ## +----------+----------+----------+
-## |   0.44   |    NA    |    NA    |
+## |   0.45   |    NA    |    NA    |
 ## +----------+----------+----------+
 ## |   0.44   |    NA    |    NA    |
 ## +----------+----------+----------+</code></pre>
@@ -3129,13 +3131,13 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |    0.5    |   0.53    |   0.51    |   0.75   |   0.76   |   0.5    |   0.51   |
+## |    rawp    |   0.51    |   0.53    |   0.51    |   0.76   |   0.76   |   0.51   |   0.56   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.33    |   0.35    |    NA     |   0.57   |   0.58   |   0.3    |   0.31   |
+## | Bonferroni |   0.34    |   0.36    |    NA     |   0.58   |   0.62   |   0.31   |   0.35   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.42    |   0.45    |    NA     |   0.59   |   0.6    |   0.43   |   0.44   |
+## |     BH     |   0.43    |   0.41    |    NA     |   0.6    |   0.64   |   0.44   |   0.46   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.39    |   0.42    |    NA     |   0.58   |   0.58   |   0.37   |   0.38   |
+## |    Holm    |   0.39    |   0.39    |    NA     |   0.57   |   0.62   |   0.37   |   0.4    |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: Table continues below
@@ -3145,13 +3147,13 @@ div.tocify {
 ## +----------+----------+----------+
 ## | pum_comp | sim_comp | pup_comp |
 ## +==========+==========+==========+
-## |   0.25   |   0.26   |    NA    |
+## |   0.26   |   0.23   |    NA    |
 ## +----------+----------+----------+
-## |   0.25   |    NA    |    NA    |
+## |   0.26   |    NA    |    NA    |
 ## +----------+----------+----------+
-## |   0.25   |    NA    |    NA    |
+## |   0.26   |    NA    |    NA    |
 ## +----------+----------+----------+
-## |   0.25   |    NA    |    NA    |
+## |   0.26   |    NA    |    NA    |
 ## +----------+----------+----------+</code></pre>
 </div>
 </div>
@@ -3256,9 +3258,9 @@ div.tocify {
 ## +---------------------+---------------+---------------+----------------------+
 ## |         MTP         | Adjusted_MDES | Targeted_MDES | Targeted_Indiv_Power |
 ## +=====================+===============+===============+======================+
-## |     Bonferroni      |    0.1238     |     0.125     |         0.33         |
+## |     Bonferroni      |    0.1256     |     0.125     |         0.34         |
 ## +---------------------+---------------+---------------+----------------------+
-## | Benjamini_Hocheberg |    0.1251     |     0.125     |         0.42         |
+## | Benjamini_Hocheberg |    0.1267     |     0.125     |         0.43         |
 ## +---------------------+---------------+---------------+----------------------+
 ## |        Holm         |    0.1202     |     0.125     |         0.39         |
 ## +---------------------+---------------+---------------+----------------------+</code></pre>
