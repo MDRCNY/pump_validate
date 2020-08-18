@@ -357,7 +357,7 @@ power_blocked_i1_2c <- function(M, MDES, numFalse, J, n.j,
   
   # setting the col and row names for all power results table
   colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
-  rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
+  rownames(all.power.results)<-c("rawp","Bonferroni","Holm","BH","WY-SS","WY-SD")
   
   #5th call back to progress bar: All power calculation done
   if (is.function(updateProgress) & !is.null(all.power.results)) {
@@ -460,21 +460,21 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
   ### INDIVIDUAL POWER ###
   if (power.definition =="indiv") {
     
-    if (MTP == "raw"){
+    if (MTP == "rawp"){
       
       # Attaching the MDES result to power results for tabular output
       mdes.results <- t(data.frame(c(MDES.raw,power))) # transpose the MDES raw and power to have the results columnwise
-      colnames(mdes.results) <- c("MDES without adjustment", paste0(power.definition, " power"))
+      colnames(mdes.results) <- c(paste0(MTP, " adjusted MDES"), paste0(power.definition, " power"))
       
       return (mdes.results)
       
     } #Raw MDES if anybody ever asked for it
     
-    if (MTP == "BF"){
+    if (MTP == "Bonferroni"){
       
       # Attaching the MDES result to power results for tabular output
       mdes.results <- t(data.frame(c(MDES.BF,power))) #transpose the MDES raw and power to have the results columnwise
-      colnames(mdes.results) <- c(paste0( MTP, " adjusted MDES"), paste0(power.definition, " power"))
+      colnames(mdes.results) <- c(paste0(MTP, " adjusted MDES"), paste0(power.definition, " power"))
       
       return(mdes.results)
       
@@ -483,7 +483,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
   } # if we are doing power for raw (i.e. unadjusted) and Bonferroni
   
   # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint!
-  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
+  if (MTP %in% c("Holm","BH","WY-SS","WY-SD") & power.definition == "indiv") {
     
     lowhigh <- c(MDES.raw,MDES.BF)
     try.MDES <- midpoint(MDES.raw,MDES.BF)
@@ -595,12 +595,12 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
 #' @return raw sample returns
 #' @export
 
-sample_blocked_i1_2c_raw <- function(J, n.j, J0=10, n.j0=10,
+sample_blocked_i1_2c_raw <- function(J = NULL, n.j = NULL, J0 = 10, n.j0 = 10,
                                      whichSS, MDES, power, p,
-                                     alpha, numCovar.1, numCovar.2=0,
+                                     alpha, numCovar.1, numCovar.2 = 0,
                                      R2.1, R2.2, ICC, mod.type, sigma,
-                                     omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
-  
+                                     omega, two.tailed = TRUE,
+                                     num.iter = 100, tol = 0.1) {
   
   i <- 0 # starting the iterator
   conv <- FALSE # boolean value for convergence
@@ -622,7 +622,7 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0=10, n.j0=10,
                  abs(qt(alpha, df)))
     
     T2 <- abs(qt(power, df))
-    
+
     MT <- ifelse(power >= 0.5, T1 + T2, T1 - T2)
     
     if (whichSS=="J") {
@@ -694,9 +694,9 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0=10, n.j0=10,
 #' @export
 
 sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
-                                 J0, n.j0, MDES, power, power.definition,
+                                 J0 = 10, n.j0 = 10, MDES, power, power.definition,
                                  MTP, marginError,p, alpha, numCovar.1,
-                                 numCovar.2=0, R2.1, R2.2,ICC,mod.type,
+                                 numCovar.2 = 0, R2.1, R2.2,ICC,mod.type,
                                  sigma = 0, rho = 0.99, omega,tnum = 10000,
                                  snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
   
@@ -730,13 +730,33 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
   # Compute J or n.j for raw and BF SS for INDIVIDUAL POWER. We are estimating bounds like we estimated MDES bounds.
   # for now assuming only two tailed tests
   if (doJ) {
-    J.raw <- sample_blocked_i1_2c_raw(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
-    J.BF <- sample_blocked_i1_2c_raw(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    J.raw <- sample_blocked_i1_2c_raw(
+      alpha = alpha,
+      n.j = n.j, J0 = J0, n.j0 = n.j0, whichSS = whichSS, MDES = MDES,
+      power = power, p = p, numCovar.1 = numCovar.1, R2.1 = R2.1, R2.2 = R2.2,
+      ICC = ICC, mod.type = mod.type, sigma = sigma, omega = omega
+    )
+    J.BF <- sample_blocked_i1_2c_raw(
+      alpha = alpha/M,
+      n.j = n.j, J0 = J0, n.j0 = n.j0, whichSS = whichSS, MDES = MDES,
+      power = power, p = p, numCovar.1 = numCovar.1, R2.1 = R2.1, R2.2 = R2.2,
+      ICC = ICC, mod.type = mod.type, sigma = sigma, omega = omega
+    )
   }
   
   if (don.j) {
-    n.j.raw <- sample_blocked_i1_2c_raw(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
-    n.j.BF <- sample_blocked_i1_2c_raw(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    n.j.raw <- sample_blocked_i1_2c_raw(
+      alpha = alpha,
+      J = J, J0 = J0, n.j0 = n.j0, whichSS = whichSS, MDES = MDES,
+      power = power, p = p, numCovar.1 = numCovar.1, R2.1 = R2.1, R2.2 = R2.2,
+      ICC = ICC, mod.type = mod.type, sigma = sigma, omega = omega
+    )
+    n.j.BF <- sample_blocked_i1_2c_raw(
+      alpha = alpha/M,
+      J = J, J0 = J0, n.j0 = n.j0, whichSS = whichSS, MDES = MDES,
+      power = power, p = p,  numCovar.1 = numCovar.1, R2.1 = R2.1, R2.2 = R2.2,
+      ICC = ICC, mod.type = mod.type, sigma = sigma, omega = omega
+    )
   }
   
   # So below we focus on just one type of sample being estimated: Either block or samples within block
@@ -753,23 +773,21 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
   ### INDIVIDUAL POWER for Raw and BF ###
   if (power.definition=="indiv") {
     
-    if (MTP == "raw"){
+    if (MTP == "rawp"){
       
       # saving the sample estimates for Individual Power with the MTP type
-      raw.ss <- data.frame("Raw","Indivdual", ss.raw)
-      colnames(raw.ss) <- c("Type of MTP", "Type of Power", "Sample Size")
+      ss.raw <- data.frame(MTP, power.definition, ss.raw, power)
+      colnames(ss.raw)<- c("MTP", "Type of Power", "Sample Size", "Target Power")
       
-      # To check if the function is returning a table
-      
-      return(raw.ss)
+      return(ss.raw)
       
     } #MTP raw
     
-    if (MTP == "BF") {
+    if (MTP == "Bonferroni") {
       
       # saving the sample estimates for Individual Power with the MTP type
-      ss.BF <- data.frame("Bonferroni", "Individual", ss.BF)
-      colnames(ss.BF) <- c("Type of MTP", "Type of Power", "Sample Size")
+      ss.BF <- data.frame(MTP, power.definition, ss.BF, power)
+      colnames(ss.BF)<- c("MTP", "Type of Power", "Sample Size", "Target Power")
       
       return(ss.BF)
       
@@ -783,18 +801,19 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
   # conservative adjustment
   
   # For individual power, other J's or n.j's will be between raw and BF, so make starting value the midpoint
-  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
+  if (MTP %in% c("Holm","BH","WY-SS","WY-SD") & power.definition == "indiv") {
     
     lowhigh <- c(ss.raw,ss.BF)
     try.ss <- midpoint(lowhigh[1],lowhigh[2])
     
-  }
   # For minimal powers, makes starting value = raw
-  if (power.definition != "indiv")  {
+  } else if (power.definition != "indiv")  {
     
     lowhigh <- c(0,ss.BF)
     try.ss <- midpoint(lowhigh[1],lowhigh[2])
-    
+  } else
+  {
+    stop(print(paste('Not yet implemented:', MTP, power.definition)))
   }
   ii <- 0
   target.power <- 0
@@ -856,7 +875,7 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
       
       # The estimated sample table with MTP type, Power, Sample Size and the target power
       est.sample <- data.frame(MTP, power.definition, try.ss.numeric, target.power)
-      colnames(est.sample) <- c("Type of MTP", "Type of Power", "Sample Size", "Target Power")
+      colnames(est.sample) <- c("MTP", "Type of Power", "Sample Size", "Target Power")
       
       return(est.sample)
       
@@ -887,7 +906,7 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
 }
 
 ## indiv, BF, J
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = rep(mdes1,M), power=test.power["BF","indiv"], power.definition = "indiv", MTP = "BF", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
+# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = rep(mdes1,M), power=test.power["Bonferroni","indiv"], power.definition = "indiv", MTP = "Bonferroni", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
 # print(test.SS)
 # ## indiv, BH, n.j
 # test.SS <- SS.blockedRCT.2(M, numFalse = M, J, n.j=NULL, J0=J0, n.j0=n.j0, MDES = mdes1, power=test.power["BH","indiv"], power.definition = "indiv", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
