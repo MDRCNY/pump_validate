@@ -194,7 +194,7 @@ gen.results.table <- function(pum_combined_results, power_up_results, sim_result
   compare_results$pup_indiv[2:4] <- NA
   # compare_results$powerup_indiv_lower_ci[2:4] <- NA
   # compare_results$powerup_indiv_upper_ci[2:4] <- NA
-  compare_results$pup_comp[2:4] <- NA
+  # compare_results$pup_comp[2:4] <- NA
   compare_results$sim_comp[2:4] <- NA
   # compare_results$sim_complete_lower_ci[2:4] <- NA
   # compare_results$sim_complete_upper_ci[2:4] <- NA
@@ -211,19 +211,17 @@ gen.results.table <- function(pum_combined_results, power_up_results, sim_result
 #'
 #' @param params.file.base
 #'
-#' @return params.file.base
+#' @return comparison.file
 
-find_comparison_file <- function(params.file.base)
+find_file <- function(params.file.base, type)
 {
   results.files <- list.files(here::here("Validation/data"), full.names = TRUE)
   results.files <- results.files[grep(params.file.base, results.files)]
-  comparison.file <- results.files[grep('comparison', results.files)]
-  if(length(comparison.file) == 0)
+  # return file
+  ret.file <- results.files[grep(type, results.files)]
+  if(length(ret.file) == 0)
   {
     stop('Results not yet computed for given parameters')
   }
-  return(comparison.file)
+  return(ret.file)
 }
-
-
-

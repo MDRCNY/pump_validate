@@ -2951,7 +2951,7 @@ div.tocify {
 <h1>Purpose</h1>
 <p>This document lays out results for estimating statistical power and minimum detectable effect size (MDES) for: Blocked RCT, with 2 levels, constant treatment effects, and randomization done at level 1 (individual level).</p>
 <p>We compare results of the derived methods against Monte Carlo Simulations &amp; the PowerUp R package on power. The methods are derived by Kristin Porter as outlined in the paper/s here (Add reference section).</p>
-<p>TODO: Add sample size, Westfall-Young</p>
+<p>TODO: Westfall-Young</p>
 </div>
 <div id="power-validation" class="section level1">
 <h1>Power Validation</h1>
@@ -2959,7 +2959,7 @@ div.tocify {
 <p>Each subsection of the power validation below is a variation of <strong>rho</strong>, the correlation between outcomes, the <strong>number of individuals per school</strong>, and the number of <strong>true positives</strong> in M outcomes. For more details on input parameters, please refer to the paper or the Appendix section at the bottom of this markdown.</p>
 <p>If you are previewing this in html, please click on the code section to review more detailed parameters.</p>
 <p>This section sets up the simulation-level parameters, such as how many monte carlo samples to draw.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>design &lt;-<span class="st"> &quot;Blocked_i1_2c&quot;</span></span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>design &lt;-<span class="st"> &quot;blocked_i1_2c&quot;</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
 <span id="cb1-3"><a href="#cb1-3"></a>sim.params.list &lt;-<span class="st"> </span><span class="kw">list</span>(</span>
 <span id="cb1-4"><a href="#cb1-4"></a>    <span class="dt">S =</span> <span class="dv">100</span>          <span class="co"># Number of samples for Monte Carlo Simulation</span></span>
@@ -2967,10 +2967,10 @@ div.tocify {
 <span id="cb1-6"><a href="#cb1-6"></a>  , <span class="dt">maxT =</span> <span class="ot">FALSE</span>     <span class="co"># In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values</span></span>
 <span id="cb1-7"><a href="#cb1-7"></a>  , <span class="dt">alpha =</span> <span class="fl">0.05</span>     <span class="co"># Significance level</span></span>
 <span id="cb1-8"><a href="#cb1-8"></a>  , <span class="dt">MoE =</span> <span class="fl">0.05</span>       <span class="co"># Margin of error</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a>  , <span class="dt">p.j =</span> <span class="fl">0.5</span>        <span class="co"># Binomial assignment probability within a school</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>  , <span class="dt">p.j =</span> <span class="fl">0.5</span>        <span class="co"># Binomial assignment probability</span></span>
 <span id="cb1-10"><a href="#cb1-10"></a>  , <span class="dt">tnum =</span> <span class="dv">10000</span>     <span class="co"># Number of test statistics (samples) for all procedures other than Westfall-Young</span></span>
 <span id="cb1-11"><a href="#cb1-11"></a>  , <span class="dt">ncl =</span> <span class="dv">2</span>          <span class="co"># Number of computer clusters (max on RStudio Server is 16)</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>  , <span class="dt">procs =</span> <span class="kw">c</span>(<span class="st">&quot;Bonferroni&quot;</span>, <span class="st">&quot;BH&quot;</span>, <span class="st">&quot;Holm&quot;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12"></a>  , <span class="dt">procs =</span> <span class="kw">c</span>(<span class="st">&quot;Bonferroni&quot;</span>, <span class="st">&quot;BH&quot;</span>, <span class="st">&quot;Holm&quot;</span>, <span class="st">&quot;WY-SS&quot;</span>, <span class="st">&quot;WY-SD&quot;</span>)</span>
 <span id="cb1-13"><a href="#cb1-13"></a>                     <span class="co"># Multiple testing procedures to compute power for </span></span>
 <span id="cb1-14"><a href="#cb1-14"></a>  , <span class="dt">runSim =</span> <span class="ot">TRUE</span>    <span class="co"># If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.</span></span>
 <span id="cb1-15"><a href="#cb1-15"></a>  , <span class="dt">runPump =</span> <span class="ot">TRUE</span>   <span class="co"># If TRUE, we will run method from our package. If FALSE, we will pull previous run result.</span></span>
@@ -3058,33 +3058,13 @@ div.tocify {
 <p><span style="color: green;">Individual Statistical power is estimated to be around 0.8. Please check the table below for estimations of other definitions of statistical power. Across all power definitions, estimation results across the <strong>PUMP</strong> package, <strong>Monte Carlo Simulation</strong> results and <strong>PowerUp</strong> package are about the same as detailed below.</span></p>
 <pre><code>## 
 ## 
-## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
-## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |    0.8    |    0.8    |    0.8    |   0.95   |   0.98   |   0.84   |   0.86   |
-## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.65    |   0.67    |    NA     |   0.87   |   0.91   |   0.68   |   0.71   |
-## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.76    |   0.76    |    NA     |   0.89   |   0.92   |   0.79   |   0.81   |
-## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.73    |   0.73    |    NA     |   0.87   |   0.91   |   0.74   |   0.76   |
-## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## 
-## Table: Table continues below
-## 
-##  
-## 
-## +----------+----------+----------+
-## | pum_comp | sim_comp | pup_comp |
-## +==========+==========+==========+
-## |   0.61   |   0.63   |    NA    |
-## +----------+----------+----------+
-## |   0.61   |    NA    |    NA    |
-## +----------+----------+----------+
-## |   0.61   |    NA    |    NA    |
-## +----------+----------+----------+
-## |   0.6    |    NA    |    NA    |
-## +----------+----------+----------+</code></pre>
+## +------------+---------------+-------------+--------------+
+## |    MTP     | Type of Power | Sample Size | Target Power |
+## +============+===============+=============+==============+
+## | Bonferroni |     indiv     |     20      |     0.33     |
+## +------------+---------------+-------------+--------------+
+## |     BH     |     indiv     |     21      |    0.437     |
+## +------------+---------------+-------------+--------------+</code></pre>
 </div>
 <div id="setup-2-school-size-75" class="section level3">
 <h3>Setup 2: School size 75</h3>
@@ -3096,30 +3076,30 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |   0.67    |   0.65    |   0.68    |   0.89   |   0.89   |   0.7    |   0.69   |
+## |    rawp    |   0.68    |   0.95    |   0.68    |   0.89   |    1     |   0.7    |   0.98   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.51    |   0.52    |    NA     |   0.76   |   0.76   |   0.51   |   0.48   |
+## | Bonferroni |   0.51    |   0.88    |    NA     |   0.76   |   0.98   |   0.51   |   0.92   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.62    |   0.59    |    NA     |   0.78   |   0.76   |   0.64   |   0.61   |
+## |     BH     |   0.62    |   0.95    |    NA     |   0.78   |   0.99   |   0.64   |   0.97   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.58    |   0.56    |    NA     |   0.76   |   0.76   |   0.57   |   0.54   |
+## |    Holm    |   0.59    |   0.92    |    NA     |   0.76   |   0.98   |   0.58   |   0.94   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: Table continues below
 ## 
 ##  
 ## 
-## +----------+----------+----------+
-## | pum_comp | sim_comp | pup_comp |
-## +==========+==========+==========+
-## |   0.44   |   0.43   |    NA    |
-## +----------+----------+----------+
-## |   0.44   |    NA    |    NA    |
-## +----------+----------+----------+
-## |   0.45   |    NA    |    NA    |
-## +----------+----------+----------+
-## |   0.44   |    NA    |    NA    |
-## +----------+----------+----------+</code></pre>
+## +----------+----------+
+## | pum_comp | sim_comp |
+## +==========+==========+
+## |   0.44   |   0.9    |
+## +----------+----------+
+## |   0.44   |    NA    |
+## +----------+----------+
+## |   0.44   |    NA    |
+## +----------+----------+
+## |   0.44   |    NA    |
+## +----------+----------+</code></pre>
 </div>
 <div id="setup-3-school-size-50" class="section level3">
 <h3>Setup 3: School size 50</h3>
@@ -3131,141 +3111,76 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |   0.51    |   0.53    |   0.51    |   0.76   |   0.76   |   0.51   |   0.56   |
+## |    rawp    |   0.51    |   0.76    |   0.51    |   0.75   |   0.95   |   0.51   |   0.77   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.34    |   0.36    |    NA     |   0.58   |   0.62   |   0.31   |   0.35   |
+## | Bonferroni |   0.34    |   0.59    |    NA     |   0.57   |   0.84   |   0.31   |   0.57   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.43    |   0.41    |    NA     |   0.6    |   0.64   |   0.44   |   0.46   |
+## |     BH     |   0.43    |   0.73    |    NA     |   0.6    |   0.85   |   0.44   |   0.71   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.39    |   0.39    |    NA     |   0.57   |   0.62   |   0.37   |   0.4    |
+## |    Holm    |    0.4    |   0.68    |    NA     |   0.58   |   0.84   |   0.38   |   0.64   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: Table continues below
 ## 
 ##  
 ## 
-## +----------+----------+----------+
-## | pum_comp | sim_comp | pup_comp |
-## +==========+==========+==========+
-## |   0.26   |   0.23   |    NA    |
-## +----------+----------+----------+
-## |   0.26   |    NA    |    NA    |
-## +----------+----------+----------+
-## |   0.26   |    NA    |    NA    |
-## +----------+----------+----------+
-## |   0.26   |    NA    |    NA    |
-## +----------+----------+----------+</code></pre>
+## +----------+----------+
+## | pum_comp | sim_comp |
+## +==========+==========+
+## |   0.26   |   0.54   |
+## +----------+----------+
+## |   0.26   |    NA    |
+## +----------+----------+
+## |   0.26   |    NA    |
+## +----------+----------+
+## |   0.26   |    NA    |
+## +----------+----------+</code></pre>
 </div>
 </div>
 <div id="mdes-validation" class="section level1">
 <h1>MDES validation</h1>
-<p>In this section, we validate the derived minimum detectable effect size (MDES) function across different <strong>MTP</strong> (Bonferroni, Benjamini-Hocheberg and Holms) and <strong>power definition (individual and minimum_1).</strong> The validation is carried out by generating power values for the specific <strong>MTP</strong> and <strong>power</strong> definitions for a specific <strong>MDES</strong>. Then, we supply the generated estimate <strong>power</strong> as an input parameter to see if the specified <strong>MDES</strong> is returned.</p>
+<p>In this section, we validate the derived minimum detectable effect size (MDES) function across different <strong>MTP</strong> (Bonferroni, Benjamini-Hocheberg and Holms) and <strong>power definition</strong> (individual and minimum_1). The validation is carried out by generating power values for the specific <strong>MTP</strong> and <strong>power</strong> definitions for a specific <strong>MDES</strong>. Then, we supply the generated estimate <strong>power</strong> as an input parameter to see if the specified <strong>MDES</strong> is returned.</p>
 <div id="power-0.65---0.87" class="section level2">
 <h2>Power: 0.65 - 0.87</h2>
 <p>Below, we have input parameters of number of outcomes, minimum detectable effect size, statistical power, and significance level that would estimate a high statistical power value of above <strong>0.65</strong> to <strong>1.00</strong> for different definitions of power. This estimated power value is used as an input to the mdes function where we validate if the <em>returned</em> <strong>mdes</strong> value is close to the <strong>mdes</strong> value that was inputted to provide the estimated power.</p>
 <div id="individual-power" class="section level3">
 <h3>Individual Power</h3>
 <p>School size: 50</p>
-<p><span style="color: green;">The Bonferroni, Benjamini Hocheberg and Holms’ <strong>adjusted MDES</strong> and the <strong>Target MDES</strong> are within an acceptable margin of error for the specified targetted power. The <strong>adjusted MDES</strong> is estimated at the <strong>corresponding</strong> individual power in the table below. The <strong>corresponding</strong> individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.</span></p>
+<p><span style="color: green;">The Bonferroni, Benjamini Hocheberg and Holms’ <strong>adjusted MDES</strong> and the <strong>targeted MDES</strong> are within an acceptable margin of error for the specified targetted power. The <strong>adjusted MDES</strong> is estimated at the <strong>corresponding</strong> individual power in the table below. The <strong>corresponding</strong> individual power is the power at which our MDES method stops looking for a MDES value close to the target MDES.</span></p>
 <p><span style="color: purple;">KH: Why numCovar.1 = 5?</span></p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>mdes_<span class="dv">0125</span>_bonf_indiv &lt;-<span class="st"> </span><span class="kw">quiet</span>(pum<span class="op">::</span><span class="kw">mdes_blocked_i1_2c</span>(</span>
-<span id="cb7-2"><a href="#cb7-2"></a>  <span class="co"># Bonferroni</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a>  <span class="dt">power =</span> power.results[<span class="kw">which</span>(power.results<span class="op">$</span>MTP <span class="op">==</span><span class="st"> &quot;Bonferroni&quot;</span>), <span class="st">&quot;pum_indiv&quot;</span>],</span>
-<span id="cb7-4"><a href="#cb7-4"></a>  <span class="dt">MTP =</span> <span class="st">&quot;BF&quot;</span>,</span>
-<span id="cb7-5"><a href="#cb7-5"></a>  <span class="co"># fixed parameters</span></span>
-<span id="cb7-6"><a href="#cb7-6"></a>  <span class="dt">M =</span> user.params.list[[<span class="st">&#39;M&#39;</span>]],</span>
-<span id="cb7-7"><a href="#cb7-7"></a>  <span class="dt">numFalse =</span> user.params.list[[<span class="st">&#39;M&#39;</span>]],</span>
-<span id="cb7-8"><a href="#cb7-8"></a>  <span class="dt">J =</span> user.params.list[[<span class="st">&#39;J&#39;</span>]],</span>
-<span id="cb7-9"><a href="#cb7-9"></a>  <span class="dt">n.j =</span> user.params.list[[<span class="st">&#39;n.j&#39;</span>]],</span>
-<span id="cb7-10"><a href="#cb7-10"></a>  <span class="dt">power.definition =</span> <span class="st">&quot;indiv&quot;</span>,</span>
-<span id="cb7-11"><a href="#cb7-11"></a>  <span class="dt">marginError =</span> sim.params.list[[<span class="st">&#39;MoE&#39;</span>]],</span>
-<span id="cb7-12"><a href="#cb7-12"></a>  <span class="dt">p =</span> sim.params.list[[<span class="st">&#39;p.j&#39;</span>]],</span>
-<span id="cb7-13"><a href="#cb7-13"></a>  <span class="dt">alpha =</span> sim.params.list[[<span class="st">&#39;alpha&#39;</span>]],</span>
-<span id="cb7-14"><a href="#cb7-14"></a>  <span class="dt">numCovar.1 =</span> <span class="dv">5</span>, <span class="dt">numCovar.2 =</span> <span class="dv">1</span>,</span>
-<span id="cb7-15"><a href="#cb7-15"></a>  <span class="dt">R2.1 =</span> user.params.list[[<span class="st">&#39;R2.1&#39;</span>]], <span class="dt">R2.2 =</span> user.params.list[[<span class="st">&#39;R2.2&#39;</span>]],</span>
-<span id="cb7-16"><a href="#cb7-16"></a>  <span class="dt">ICC =</span> user.params.list[[<span class="st">&#39;ICC.2&#39;</span>]],</span>
-<span id="cb7-17"><a href="#cb7-17"></a>  <span class="dt">mod.type =</span> <span class="st">&quot;constant&quot;</span>,</span>
-<span id="cb7-18"><a href="#cb7-18"></a>  <span class="dt">rho =</span> user.params.list[[<span class="st">&#39;rho.default&#39;</span>]],</span>
-<span id="cb7-19"><a href="#cb7-19"></a>  <span class="dt">omega =</span> user.params.list[[<span class="st">&#39;omega.2&#39;</span>]],</span>
-<span id="cb7-20"><a href="#cb7-20"></a>  <span class="dt">tnum =</span> sim.params.list[[<span class="st">&#39;tnum&#39;</span>]], <span class="dt">snum =</span> sim.params.list[[<span class="st">&#39;B&#39;</span>]],</span>
-<span id="cb7-21"><a href="#cb7-21"></a>  <span class="dt">ncl =</span> sim.params.list[[<span class="st">&#39;ncl&#39;</span>]]</span>
-<span id="cb7-22"><a href="#cb7-22"></a></span>
-<span id="cb7-23"><a href="#cb7-23"></a>))</span>
-<span id="cb7-24"><a href="#cb7-24"></a>results_bonf &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb7-25"><a href="#cb7-25"></a>  <span class="dt">MTP =</span> <span class="st">&#39;Bonferroni&#39;</span>,</span>
-<span id="cb7-26"><a href="#cb7-26"></a>  <span class="dt">Adjusted_MDES =</span> <span class="kw">unlist</span>(mdes_<span class="dv">0125</span>_bonf_indiv[<span class="dv">1</span>]),</span>
-<span id="cb7-27"><a href="#cb7-27"></a>  <span class="dt">Targeted_MDES =</span> user.params.list[[<span class="st">&#39;MDES&#39;</span>]][<span class="dv">1</span>],</span>
-<span id="cb7-28"><a href="#cb7-28"></a>  <span class="dt">Targeted_Indiv_Power =</span> power.results[<span class="kw">which</span>(power.results<span class="op">$</span>MTP <span class="op">==</span><span class="st"> &quot;Bonferroni&quot;</span>), <span class="st">&quot;pum_indiv&quot;</span>]</span>
-<span id="cb7-29"><a href="#cb7-29"></a>)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>mdes_<span class="dv">0125</span>_bh_indiv &lt;-<span class="st"> </span><span class="kw">quiet</span>(pum<span class="op">::</span><span class="kw">mdes_blocked_i1_2c</span>(</span>
-<span id="cb8-2"><a href="#cb8-2"></a>  <span class="co"># BH</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>  <span class="dt">power =</span> power.results[<span class="kw">which</span>(power.results<span class="op">$</span>MTP <span class="op">==</span><span class="st"> &quot;BH&quot;</span>), <span class="st">&quot;pum_indiv&quot;</span>],</span>
-<span id="cb8-4"><a href="#cb8-4"></a>  <span class="dt">MTP =</span> <span class="st">&quot;BH&quot;</span>,</span>
-<span id="cb8-5"><a href="#cb8-5"></a>  <span class="co"># fixed parameters</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>  <span class="dt">M =</span> user.params.list[[<span class="st">&#39;M&#39;</span>]],</span>
-<span id="cb8-7"><a href="#cb8-7"></a>  <span class="dt">numFalse =</span> user.params.list[[<span class="st">&#39;M&#39;</span>]],</span>
-<span id="cb8-8"><a href="#cb8-8"></a>  <span class="dt">J =</span> user.params.list[[<span class="st">&#39;J&#39;</span>]],</span>
-<span id="cb8-9"><a href="#cb8-9"></a>  <span class="dt">n.j =</span> user.params.list[[<span class="st">&#39;n.j&#39;</span>]],</span>
-<span id="cb8-10"><a href="#cb8-10"></a>  <span class="dt">power.definition =</span> <span class="st">&quot;indiv&quot;</span>,</span>
-<span id="cb8-11"><a href="#cb8-11"></a>  <span class="dt">marginError =</span> sim.params.list[[<span class="st">&#39;MoE&#39;</span>]],</span>
-<span id="cb8-12"><a href="#cb8-12"></a>  <span class="dt">p =</span> sim.params.list[[<span class="st">&#39;p.j&#39;</span>]],</span>
-<span id="cb8-13"><a href="#cb8-13"></a>  <span class="dt">alpha =</span> sim.params.list[[<span class="st">&#39;alpha&#39;</span>]],</span>
-<span id="cb8-14"><a href="#cb8-14"></a>  <span class="dt">numCovar.1 =</span> <span class="dv">5</span>, <span class="dt">numCovar.2 =</span> <span class="dv">1</span>,</span>
-<span id="cb8-15"><a href="#cb8-15"></a>  <span class="dt">R2.1 =</span> user.params.list[[<span class="st">&#39;R2.1&#39;</span>]], <span class="dt">R2.2 =</span> user.params.list[[<span class="st">&#39;R2.2&#39;</span>]],</span>
-<span id="cb8-16"><a href="#cb8-16"></a>  <span class="dt">ICC =</span> user.params.list[[<span class="st">&#39;ICC.2&#39;</span>]],</span>
-<span id="cb8-17"><a href="#cb8-17"></a>  <span class="dt">mod.type =</span> <span class="st">&quot;constant&quot;</span>,</span>
-<span id="cb8-18"><a href="#cb8-18"></a>  <span class="dt">rho =</span> user.params.list[[<span class="st">&#39;rho.default&#39;</span>]],</span>
-<span id="cb8-19"><a href="#cb8-19"></a>  <span class="dt">omega =</span> user.params.list[[<span class="st">&#39;omega.2&#39;</span>]],</span>
-<span id="cb8-20"><a href="#cb8-20"></a>  <span class="dt">tnum =</span> sim.params.list[[<span class="st">&#39;tnum&#39;</span>]], <span class="dt">snum =</span> sim.params.list[[<span class="st">&#39;B&#39;</span>]],</span>
-<span id="cb8-21"><a href="#cb8-21"></a>  <span class="dt">ncl =</span> sim.params.list[[<span class="st">&#39;ncl&#39;</span>]]</span>
-<span id="cb8-22"><a href="#cb8-22"></a>))</span>
-<span id="cb8-23"><a href="#cb8-23"></a>results_bf &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb8-24"><a href="#cb8-24"></a>  <span class="dt">MTP =</span> <span class="st">&#39;Benjamini_Hocheberg&#39;</span>,</span>
-<span id="cb8-25"><a href="#cb8-25"></a>  <span class="dt">Adjusted_MDES =</span> <span class="kw">unlist</span>(mdes_<span class="dv">0125</span>_bh_indiv[<span class="dv">1</span>]),</span>
-<span id="cb8-26"><a href="#cb8-26"></a>  <span class="dt">Targeted_MDES =</span> user.params.list[[<span class="st">&#39;MDES&#39;</span>]][<span class="dv">1</span>],</span>
-<span id="cb8-27"><a href="#cb8-27"></a>  <span class="dt">Targeted_Indiv_Power =</span> power.results[<span class="kw">which</span>(power.results<span class="op">$</span>MTP <span class="op">==</span><span class="st"> &quot;BH&quot;</span>), <span class="st">&quot;pum_indiv&quot;</span>]</span>
-<span id="cb8-28"><a href="#cb8-28"></a>)</span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>mdes_<span class="dv">0125</span>_holm_indiv &lt;-<span class="st"> </span><span class="kw">quiet</span>(pum<span class="op">::</span><span class="kw">mdes_blocked_i1_2c</span>(</span>
-<span id="cb9-2"><a href="#cb9-2"></a>  <span class="co"># Holms</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a>  <span class="dt">power =</span> power.results[<span class="kw">which</span>(power.results<span class="op">$</span>MTP <span class="op">==</span><span class="st"> &quot;Holm&quot;</span>), <span class="st">&quot;pum_indiv&quot;</span>],</span>
-<span id="cb9-4"><a href="#cb9-4"></a>  <span class="dt">MTP =</span> <span class="st">&quot;HO&quot;</span>,</span>
-<span id="cb9-5"><a href="#cb9-5"></a>  <span class="co"># fixed parameters</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a>  <span class="dt">M =</span> user.params.list[[<span class="st">&#39;M&#39;</span>]],</span>
-<span id="cb9-7"><a href="#cb9-7"></a>  <span class="dt">numFalse =</span> user.params.list[[<span class="st">&#39;M&#39;</span>]],</span>
-<span id="cb9-8"><a href="#cb9-8"></a>  <span class="dt">J =</span> user.params.list[[<span class="st">&#39;J&#39;</span>]],</span>
-<span id="cb9-9"><a href="#cb9-9"></a>  <span class="dt">n.j =</span> user.params.list[[<span class="st">&#39;n.j&#39;</span>]],</span>
-<span id="cb9-10"><a href="#cb9-10"></a>  <span class="dt">power.definition =</span> <span class="st">&quot;indiv&quot;</span>,</span>
-<span id="cb9-11"><a href="#cb9-11"></a>  <span class="dt">marginError =</span> sim.params.list[[<span class="st">&#39;MoE&#39;</span>]],</span>
-<span id="cb9-12"><a href="#cb9-12"></a>  <span class="dt">p =</span> sim.params.list[[<span class="st">&#39;p.j&#39;</span>]],</span>
-<span id="cb9-13"><a href="#cb9-13"></a>  <span class="dt">alpha =</span> sim.params.list[[<span class="st">&#39;alpha&#39;</span>]],</span>
-<span id="cb9-14"><a href="#cb9-14"></a>  <span class="dt">numCovar.1 =</span> <span class="dv">5</span>, <span class="dt">numCovar.2 =</span> <span class="dv">1</span>,</span>
-<span id="cb9-15"><a href="#cb9-15"></a>  <span class="dt">R2.1 =</span> user.params.list[[<span class="st">&#39;R2.1&#39;</span>]], <span class="dt">R2.2 =</span> user.params.list[[<span class="st">&#39;R2.2&#39;</span>]],</span>
-<span id="cb9-16"><a href="#cb9-16"></a>  <span class="dt">ICC =</span> user.params.list[[<span class="st">&#39;ICC.2&#39;</span>]],</span>
-<span id="cb9-17"><a href="#cb9-17"></a>  <span class="dt">mod.type =</span> <span class="st">&quot;constant&quot;</span>,</span>
-<span id="cb9-18"><a href="#cb9-18"></a>  <span class="dt">rho =</span> user.params.list[[<span class="st">&#39;rho.default&#39;</span>]],</span>
-<span id="cb9-19"><a href="#cb9-19"></a>  <span class="dt">omega =</span> user.params.list[[<span class="st">&#39;omega.2&#39;</span>]],</span>
-<span id="cb9-20"><a href="#cb9-20"></a>  <span class="dt">tnum =</span> sim.params.list[[<span class="st">&#39;tnum&#39;</span>]], <span class="dt">snum =</span> sim.params.list[[<span class="st">&#39;B&#39;</span>]],</span>
-<span id="cb9-21"><a href="#cb9-21"></a>  <span class="dt">ncl =</span> sim.params.list[[<span class="st">&#39;ncl&#39;</span>]]</span>
-<span id="cb9-22"><a href="#cb9-22"></a>))</span>
-<span id="cb9-23"><a href="#cb9-23"></a>results_holm &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb9-24"><a href="#cb9-24"></a>  <span class="dt">MTP =</span> <span class="st">&#39;Holm&#39;</span>,</span>
-<span id="cb9-25"><a href="#cb9-25"></a>  <span class="dt">Adjusted_MDES =</span> <span class="kw">unlist</span>(mdes_<span class="dv">0125</span>_holm_indiv[<span class="dv">1</span>]),</span>
-<span id="cb9-26"><a href="#cb9-26"></a>  <span class="dt">Targeted_MDES =</span> user.params.list[[<span class="st">&#39;MDES&#39;</span>]][<span class="dv">1</span>],</span>
-<span id="cb9-27"><a href="#cb9-27"></a>  <span class="dt">Targeted_Indiv_Power =</span> power.results[<span class="kw">which</span>(power.results<span class="op">$</span>MTP <span class="op">==</span><span class="st"> &quot;Holm&quot;</span>), <span class="st">&quot;pum_indiv&quot;</span>]</span>
-<span id="cb9-28"><a href="#cb9-28"></a>)</span></code></pre></div>
 <pre><code>## 
 ## 
-## +---------------------+---------------+---------------+----------------------+
-## |         MTP         | Adjusted_MDES | Targeted_MDES | Targeted_Indiv_Power |
-## +=====================+===============+===============+======================+
-## |     Bonferroni      |    0.1256     |     0.125     |         0.34         |
-## +---------------------+---------------+---------------+----------------------+
-## | Benjamini_Hocheberg |    0.1267     |     0.125     |         0.43         |
-## +---------------------+---------------+---------------+----------------------+
-## |        Holm         |    0.1202     |     0.125     |         0.39         |
-## +---------------------+---------------+---------------+----------------------+</code></pre>
+## +------------+-------------------+-------------------+---------------+
+## |    MTP     |   adjusted MDES   |    indiv power    | Targeted_MDES |
+## +============+===================+===================+===============+
+## |    rawp    | 0.132529615172815 |      0.5523       |     0.125     |
+## +------------+-------------------+-------------------+---------------+
+## | Bonferroni | 0.125576301894109 |       0.34        |     0.125     |
+## +------------+-------------------+-------------------+---------------+
+## |     BH     | 0.119885437115418 | 0.435433333333333 |     0.125     |
+## +------------+-------------------+-------------------+---------------+
+## |    Holm    | 0.135958099756237 | 0.425366666666667 |     0.125     |
+## +------------+-------------------+-------------------+---------------+</code></pre>
 </div>
 </div>
+</div>
+<div id="sample-size-validation" class="section level1">
+<h1>Sample size validation</h1>
+<p>School size: 50</p>
+<p>TODO: mess with defaults n.j0, J0?</p>
+<pre><code>## 
+## 
+## +------------+---------------+-------------+--------------+
+## |    MTP     | Type of Power | Sample Size | Target Power |
+## +============+===============+=============+==============+
+## |    rawp    |     indiv     |     20      |     0.51     |
+## +------------+---------------+-------------+--------------+
+## | Bonferroni |     indiv     |     20      |     0.34     |
+## +------------+---------------+-------------+--------------+
+## |     BH     |     indiv     |     21      |    0.444     |
+## +------------+---------------+-------------+--------------+
+## |    Holm    |     indiv     |     20      |    0.385     |
+## +------------+---------------+-------------+--------------+</code></pre>
 </div>
 
 

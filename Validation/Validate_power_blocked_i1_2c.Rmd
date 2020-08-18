@@ -27,7 +27,7 @@ Blocked RCT, with 2 levels, constant treatment effects, and randomization done a
 
 We compare results of the derived methods against Monte Carlo Simulations & the PowerUp R package on power. The methods are derived by Kristin Porter as outlined in the paper/s here (Add reference section).
 
-TODO: Add sample size, Westfall-Young
+TODO: Westfall-Young
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
@@ -37,6 +37,9 @@ knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FA
 ```{r libraries}
 library(here)
 library(pander)    # For good table format
+
+# default tables to round to 3 digits
+panderOptions('round', 3)
 ```
 
 ```{r scriptFiles}
@@ -63,7 +66,7 @@ If you are previewing this in html, please click on the code section to review m
 This section sets up the simulation-level parameters, such as how many monte carlo samples to draw.
 
 ```{r simulation.parameters.setup, echo = TRUE}
-design <- "Blocked_i1_2c"
+design <- "blocked_i1_2c"
 
 sim.params.list <- list(
     S = 100          # Number of samples for Monte Carlo Simulation
@@ -71,10 +74,10 @@ sim.params.list <- list(
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
   , MoE = 0.05       # Margin of error
-  , p.j = 0.5        # Binomial assignment probability within a school
+  , p.j = 0.5        # Binomial assignment probability
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
-  , procs = c("Bonferroni", "BH", "Holm")
+  , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                      # Multiple testing procedures to compute power for 
   , runSim = TRUE    # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE   # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
@@ -173,15 +176,15 @@ Main parameters:
 
 ```{r rho0.5tPMnj100}
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-comparison.file <- find_comparison_file(params.file.base)
-blocked_i1_2c_compare_results_nj100 <- readRDS(comparison.file)
+power.file <- find_file(params.file.base, type = 'power')
+blocked_i1_2c_power_results_nj100 <- readRDS(power.file)
 # blocked_i1_2c_compare_results_nj100 <- validate_power(
 #   user.params.list = user.params.list,
 #   sim.params.list = sim.params.list, 
-#   design = "Blocked_i1_2c"
+#   design = "blocked_i1_2c"
 # )
 pander::pandoc.table(
-  blocked_i1_2c_compare_results_nj100,
+  blocked_i1_2c_power_results_nj100,
   style = "grid", split.tables = 100
 )
 ```
@@ -195,16 +198,16 @@ user.params.list[['n.j']] <- 75
 user.params.list[['N']] <- user.params.list[['n.j']]*user.params.list[['J']]
 
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-comparison.file <- find_comparison_file(params.file.base)
-blocked_i1_2c_compare_results_nj75 <- readRDS(comparison.file)
-
+power.file <- find_file(params.file.base, type = 'power')
+blocked_i1_2c_power_results_nj75 <- readRDS(power.file)
 # blocked_i1_2c_compare_results_nj75 <- validate_power(
 #   user.params.list = user.params.list,
 #   sim.params.list = sim.params.list, 
-#   design = "Blocked_i1_2c"
+#   design = "blocked_i1_2c"
 # )
+
 pander::pandoc.table(
-  blocked_i1_2c_compare_results_nj75,
+  blocked_i1_2c_power_results_nj75,
   style = "grid", split.tables = 100
 )
 ```
@@ -217,25 +220,26 @@ pander::pandoc.table(
 ```{r rho0.5tPMnj50}
 user.params.list[['n.j']] <- 50
 user.params.list[['N']] <- user.params.list[['n.j']]*user.params.list[['J']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-comparison.file <- find_comparison_file(params.file.base)
-blocked_i1_2c_compare_results_nj50 <- readRDS(comparison.file)
 
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+power.file <- find_file(params.file.base, type = 'power')
+blocked_i1_2c_power_results_nj50 <- readRDS(power.file)
 # blocked_i1_2c_compare_results_nj50 <- validate_power(
 #   user.params.list = user.params.list,
 #   sim.params.list = sim.params.list,
-#   design = "Blocked_i1_2c"
+#   design = "blocked_i1_2c"
 # )
+
 pander::pandoc.table(
-  blocked_i1_2c_compare_results_nj50,
-  style = "grid", split.tables = 100
+  blocked_i1_2c_power_results_nj50,
+  style = "grid", split.tables = 100, row.names = FALSE
 )
 ```
 
 
 # MDES validation
 
-In this section, we validate the derived minimum detectable effect size (MDES) function across different __MTP__ (Bonferroni, Benjamini-Hocheberg and Holms) and __power definition (individual and minimum_1).__  The validation is carried out by generating power values for the specific __MTP__ and __power__ definitions for a specific __MDES__. Then, we supply the generated estimate __power__ as an input parameter to see if the specified __MDES__ is returned.
+In this section, we validate the derived minimum detectable effect size (MDES) function across different __MTP__ (Bonferroni, Benjamini-Hocheberg and Holms) and __power definition__ (individual and minimum_1).  The validation is carried out by generating power values for the specific __MTP__ and __power__ definitions for a specific __MDES__. Then, we supply the generated estimate __power__ as an input parameter to see if the specified __MDES__ is returned.
 
 ## Power: 0.65 - 0.87
 
@@ -243,117 +247,44 @@ Below, we have input parameters of number of outcomes, minimum detectable effect
 
 ```{r readPowerTable}
 # Reading the Power Table in for the corresponding specified parameters
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design = "Blocked_i1_2c")
-compare.filename <- paste0(params.file.base, "comparison_results.RDS")
-power.results <- readRDS(file = here::here("Validation/data", compare.filename))
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design = "blocked_i1_2c")
+power.file <- find_file(params.file.base, type = 'power')
+power.results <- readRDS(power.file)
 ```
 
 ### Individual Power
 
 School size: 50
 
-`r colorize("The Bonferroni, Benjamini Hocheberg and Holms' __adjusted MDES__ and the __Target MDES__ are within an acceptable margin of error for the specified targetted power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a mdes value close to the target mdes.", "green")`
+`r colorize("The Bonferroni, Benjamini Hocheberg and Holms' __adjusted MDES__ and the __targeted MDES__ are within an acceptable margin of error for the specified targetted power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a MDES value close to the target MDES.", "green")`
 
 `r colorize("KH: Why numCovar.1 = 5?", "purple")`
 
-```{r mdesBonfIndiv, echo = TRUE}
-mdes_0125_bonf_indiv <- quiet(pum::mdes_blocked_i1_2c(
-  # Bonferroni
-  power = power.results[which(power.results$MTP == "Bonferroni"), "pum_indiv"],
-  MTP = "BF",
-  # fixed parameters
-  M = user.params.list[['M']],
-  numFalse = user.params.list[['M']],
-  J = user.params.list[['J']],
-  n.j = user.params.list[['n.j']],
-  power.definition = "indiv",
-  marginError = sim.params.list[['MoE']],
-  p = sim.params.list[['p.j']],
-  alpha = sim.params.list[['alpha']],
-  numCovar.1 = 5, numCovar.2 = 1,
-  R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
-  ICC = user.params.list[['ICC.2']],
-  mod.type = "constant",
-  rho = user.params.list[['rho.default']],
-  omega = user.params.list[['omega.2']],
-  tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-  ncl = sim.params.list[['ncl']]
-
-))
-results_bonf <- data.frame(
-  MTP = 'Bonferroni',
-  Adjusted_MDES = unlist(mdes_0125_bonf_indiv[1]),
-  Targeted_MDES = user.params.list[['MDES']][1],
-  Targeted_Indiv_Power = power.results[which(power.results$MTP == "Bonferroni"), "pum_indiv"]
-)
-```
-
-
-```{r mdesBHIndiv, echo = TRUE}
-mdes_0125_bh_indiv <- quiet(pum::mdes_blocked_i1_2c(
-  # BH
-  power = power.results[which(power.results$MTP == "BH"), "pum_indiv"],
-  MTP = "BH",
-  # fixed parameters
-  M = user.params.list[['M']],
-  numFalse = user.params.list[['M']],
-  J = user.params.list[['J']],
-  n.j = user.params.list[['n.j']],
-  power.definition = "indiv",
-  marginError = sim.params.list[['MoE']],
-  p = sim.params.list[['p.j']],
-  alpha = sim.params.list[['alpha']],
-  numCovar.1 = 5, numCovar.2 = 1,
-  R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
-  ICC = user.params.list[['ICC.2']],
-  mod.type = "constant",
-  rho = user.params.list[['rho.default']],
-  omega = user.params.list[['omega.2']],
-  tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-  ncl = sim.params.list[['ncl']]
-))
-results_bf <- data.frame(
-  MTP = 'Benjamini_Hocheberg',
-  Adjusted_MDES = unlist(mdes_0125_bh_indiv[1]),
-  Targeted_MDES = user.params.list[['MDES']][1],
-  Targeted_Indiv_Power = power.results[which(power.results$MTP == "BH"), "pum_indiv"]
-)
-```
-
-```{r mdesHolmIndiv, echo = TRUE}
-mdes_0125_holm_indiv <- quiet(pum::mdes_blocked_i1_2c(
-  # Holms
-  power = power.results[which(power.results$MTP == "Holm"), "pum_indiv"],
-  MTP = "HO",
-  # fixed parameters
-  M = user.params.list[['M']],
-  numFalse = user.params.list[['M']],
-  J = user.params.list[['J']],
-  n.j = user.params.list[['n.j']],
-  power.definition = "indiv",
-  marginError = sim.params.list[['MoE']],
-  p = sim.params.list[['p.j']],
-  alpha = sim.params.list[['alpha']],
-  numCovar.1 = 5, numCovar.2 = 1,
-  R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
-  ICC = user.params.list[['ICC.2']],
-  mod.type = "constant",
-  rho = user.params.list[['rho.default']],
-  omega = user.params.list[['omega.2']],
-  tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-  ncl = sim.params.list[['ncl']]
-))
-results_holm <- data.frame(
-  MTP = 'Holm',
-  Adjusted_MDES = unlist(mdes_0125_holm_indiv[1]),
-  Targeted_MDES = user.params.list[['MDES']][1],
-  Targeted_Indiv_Power = power.results[which(power.results$MTP == "Holm"), "pum_indiv"]
-)
-```
-
-
 ```{r mdesCombined}
-mdes_0125_indiv_combined <- rbind(results_bonf, results_bf, results_holm)
-rownames(mdes_0125_indiv_combined) <- NULL
-pander::pandoc.table(mdes_0125_indiv_combined, style = "grid", split.tables = 90, row.names = FALSE)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes')
+blocked_i1_2c_mdes_results_nj50 <- readRDS(mdes.file)
+blocked_i1_2c_mdes_results_nj50 = cbind(
+  blocked_i1_2c_mdes_results_nj50, Targeted_MDES = user.params.list[['MDES']][1]
+)
+pander::pandoc.table(
+  blocked_i1_2c_mdes_results_nj50,
+  style = "grid", split.tables = 100, row.names = FALSE
+)
+```
+
+# Sample size validation
+
+School size: 50
+
+TODO: mess with defaults n.j0, J0?
+
+```{r sampleCombined}
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample')
+blocked_i1_2c_sample_results_nj50 <- readRDS(sample.file)
+pander::pandoc.table(
+  blocked_i1_2c_sample_results_nj50,
+  style = "grid", split.tables = 100, row.names = FALSE
+)
 ```

@@ -15,15 +15,16 @@ source(here::here("Validation/Simulations", "validate_power.R"))
 # For coloring texts and other purposes
 source(here::here("Validation/Simulations", "misc.R"))
 
+# design <- "simple_c2_2r"
 design <- "blocked_i1_2c"
 
 sim.params.list <- list(
-  S = 100           # Number of samples for Monte Carlo Simulation
+  S = 100            # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
   , MoE = 0.05       # Margin of error
-  , p.j = 0.5        # Binomial assignment probability within a school
+  , p.j = 0.5        # Binomial assignment probability
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
   , procs = c("Bonferroni", "BH", "Holm")
@@ -70,8 +71,8 @@ user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
   , K = 2                                 # number of districts (still required for two-level model)
-  , N = 100*20                            # number of individuals
-  , n.j = 100                             # number of individuals per school
+  , N = 50*20                             # number of individuals
+  , n.j = 50                              # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.j = NULL                            # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
@@ -102,8 +103,23 @@ user.params.list <- list(
   , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals 
 )
 
-compare_results <- validate_power(
+# power validation
+power.results <- validate_power(
   user.params.list = user.params.list,
   sim.params.list = sim.params.list, 
   design = design
+)
+
+# # MDES validation
+# mdes.results <- validate_mdes(
+#   user.params.list = user.params.list,
+#   sim.params.list = sim.params.list,
+#   power.results = power.results
+# )
+
+# sample size validation
+sample.results <- validate_sample(
+  user.params.list = user.params.list,
+  sim.params.list = sim.params.list,
+  power.results = power.results
 )
