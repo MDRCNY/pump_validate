@@ -275,26 +275,3 @@ validate_sample <- function(user.params.list, sim.params.list, power.results) {
   return(sample_compare_results)
   
 } # validate_sample
-
-# power = power.results[which(power.results$MTP == MTP), "pum_indiv"];
-# MTP = MTP;
-# typesample = 'J';
-# MDES = user.params.list[['MDES']][[1]];
-# M = user.params.list[['M']];
-# numFalse = user.params.list[['M']];
-# J = user.params.list[['J']];
-# n.j = user.params.list[['n.j']];
-# power.definition = "indiv";
-# marginError = sim.params.list[['MoE']];
-# p = sim.params.list[['p.j']];
-# alpha = sim.params.list[['alpha']];
-# numCovar.1 = 5; numCovar.2 = 1;
-# R2.1 = user.params.list[['R2.1']][1]; R2.2 = user.params.list[['R2.2']][1];
-# ICC = user.params.list[['ICC.2']][1];
-# mod.type = "constant";
-# rho = user.params.list[['rho.default']];
-# omega = user.params.list[['omega.2']];
-# tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
-# ncl = sim.params.list[['ncl']];
-# J0 = 10; n.j0 = 10;
-# updateProgress = NULL
