@@ -68,32 +68,30 @@ validate_power <- function(user.params.list, sim.params.list, design) {
 
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
   {
-    power_up_results <- quiet(
-      power.bira2c1(
-        es = user.params.list[['MDES']][1],
-        alpha = sim.params.list[['alpha']],
-        two.tailed = TRUE,
-        p = sim.params.list[['p.j']],
-        g1 = 1,
-        r21 = user.params.list[['R2.1']][1],
-        n = user.params.list[['n.j']],
-        J = user.params.list[['J']]
-      ))
+    power_up_results <- power.bira2c1(
+      es = user.params.list[['MDES']][1],
+      alpha = sim.params.list[['alpha']],
+      two.tailed = TRUE,
+      p = sim.params.list[['p.j']],
+      g1 = 1,
+      r21 = user.params.list[['R2.1']][1],
+      n = user.params.list[['n.j']],
+      J = user.params.list[['J']]
+    )
   } else if(design %in% c('simple_c2_2r'))
   {
-    power_up_results <- quiet(
-      power.cra2r2(
-        es = user.params.list[['MDES']][1],
-        alpha = sim.params.list[['alpha']],
-        two.tailed = TRUE,
-        g2 = 1,
-        p = sim.params.list[['p.j']],
-        rho2 = user.params.list[['ICC.2']][1],
-        r21 = user.params.list[['R2.1']][1],
-        r22 = user.params.list[['R2.2']][1],
-        n = user.params.list[['n.j']],
-        J = user.params.list[['J']]
-      ))
+    power_up_results <- power.cra2r2(
+      es = user.params.list[['MDES']][1],
+      alpha = sim.params.list[['alpha']],
+      two.tailed = TRUE,
+      g2 = 1,
+      p = sim.params.list[['p.j']],
+      rho2 = user.params.list[['ICC.2']][1],
+      r21 = user.params.list[['R2.1']][1],
+      r22 = user.params.list[['R2.2']][1],
+      n = user.params.list[['n.j']],
+      J = user.params.list[['J']]
+    )
   } else {
     stop(paste('Unknown design:', design)) 
   }
@@ -129,7 +127,7 @@ validate_power <- function(user.params.list, sim.params.list, design) {
         )
       } else if(design %in% c('simple_c2_2r'))
       {
-        
+        # TODO
       } else {
         stop(paste('Unknown design:', design)) 
       }
@@ -176,7 +174,7 @@ validate_mdes <- function(user.params.list, sim.params.list, power.results) {
   # add in raw
   procs <- sim.params.list[['procs']]
   if(!("rawp" %in% sim.params.list[['procs']]))
-  {
+  { 
     procs = c("rawp", procs)
   }
   
@@ -202,7 +200,8 @@ validate_mdes <- function(user.params.list, sim.params.list, power.results) {
       rho = user.params.list[['rho.default']],
       omega = user.params.list[['omega.2']],
       tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-      ncl = sim.params.list[['ncl']]
+      ncl = sim.params.list[['ncl']],
+      max.iter = sim.params.list[['max.iter']]
     )
   
     mdes_results = cbind(MTP = MTP, mdes_results)
@@ -265,7 +264,8 @@ validate_sample <- function(user.params.list, sim.params.list, power.results) {
       rho = user.params.list[['rho.default']],
       omega = user.params.list[['omega.2']],
       tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-      ncl = sim.params.list[['ncl']]
+      ncl = sim.params.list[['ncl']],
+      max.iter = sim.params.list[['max.iter']]
     )
     sample_compare_results <- rbind(sample_compare_results, sample_results)
   }

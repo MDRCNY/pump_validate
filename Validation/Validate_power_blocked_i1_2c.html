@@ -2970,12 +2970,13 @@ div.tocify {
 <span id="cb1-9"><a href="#cb1-9"></a>  , <span class="dt">p.j =</span> <span class="fl">0.5</span>        <span class="co"># Binomial assignment probability</span></span>
 <span id="cb1-10"><a href="#cb1-10"></a>  , <span class="dt">tnum =</span> <span class="dv">10000</span>     <span class="co"># Number of test statistics (samples) for all procedures other than Westfall-Young</span></span>
 <span id="cb1-11"><a href="#cb1-11"></a>  , <span class="dt">ncl =</span> <span class="dv">2</span>          <span class="co"># Number of computer clusters (max on RStudio Server is 16)</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>  , <span class="dt">procs =</span> <span class="kw">c</span>(<span class="st">&quot;Bonferroni&quot;</span>, <span class="st">&quot;BH&quot;</span>, <span class="st">&quot;Holm&quot;</span>, <span class="st">&quot;WY-SS&quot;</span>, <span class="st">&quot;WY-SD&quot;</span>)</span>
-<span id="cb1-13"><a href="#cb1-13"></a>                     <span class="co"># Multiple testing procedures to compute power for </span></span>
-<span id="cb1-14"><a href="#cb1-14"></a>  , <span class="dt">runSim =</span> <span class="ot">TRUE</span>    <span class="co"># If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a>  , <span class="dt">runPump =</span> <span class="ot">TRUE</span>   <span class="co"># If TRUE, we will run method from our package. If FALSE, we will pull previous run result.</span></span>
-<span id="cb1-16"><a href="#cb1-16"></a>  , <span class="dt">check =</span> <span class="ot">FALSE</span>    <span class="co"># Run checks such as printing out quantities</span></span>
-<span id="cb1-17"><a href="#cb1-17"></a>)</span></code></pre></div>
+<span id="cb1-12"><a href="#cb1-12"></a>  , <span class="dt">max.iter =</span> <span class="dv">20</span>    <span class="co"># Number of MDES and sample size iterations</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>  , <span class="dt">procs =</span> <span class="kw">c</span>(<span class="st">&quot;Bonferroni&quot;</span>, <span class="st">&quot;BH&quot;</span>, <span class="st">&quot;Holm&quot;</span>, <span class="st">&quot;WY-SS&quot;</span>, <span class="st">&quot;WY-SD&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a>                     <span class="co"># Multiple testing procedures to compute power for </span></span>
+<span id="cb1-15"><a href="#cb1-15"></a>  , <span class="dt">runSim =</span> <span class="ot">TRUE</span>    <span class="co"># If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>  , <span class="dt">runPump =</span> <span class="ot">TRUE</span>   <span class="co"># If TRUE, we will run method from our package. If FALSE, we will pull previous run result.</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>  , <span class="dt">check =</span> <span class="ot">FALSE</span>    <span class="co"># Run checks such as printing out quantities</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>)</span></code></pre></div>
 <p>This section sets up the model parameters, such as the number of outcomes and correlation structures.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># optional: if you want more complicated parameter choices, set them yourself</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="co"># otherwise reasonable defaults are assumed</span></span>
@@ -3058,13 +3059,41 @@ div.tocify {
 <p><span style="color: green;">Individual Statistical power is estimated to be around 0.8. Please check the table below for estimations of other definitions of statistical power. Across all power definitions, estimation results across the <strong>PUMP</strong> package, <strong>Monte Carlo Simulation</strong> results and <strong>PowerUp</strong> package are about the same as detailed below.</span></p>
 <pre><code>## 
 ## 
-## +------------+---------------+-------------+--------------+
-## |    MTP     | Type of Power | Sample Size | Target Power |
-## +============+===============+=============+==============+
-## | Bonferroni |     indiv     |     20      |     0.33     |
-## +------------+---------------+-------------+--------------+
-## |     BH     |     indiv     |     21      |    0.437     |
-## +------------+---------------+-------------+--------------+</code></pre>
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
+## +============+===========+===========+===========+==========+==========+==========+==========+
+## |    rawp    |    0.8    |   0.97    |    0.8    |   0.95   |    1     |   0.84   |   0.99   |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## | Bonferroni |   0.65    |   0.92    |    0.8    |   0.87   |    1     |   0.68   |   0.93   |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |     BH     |   0.76    |   0.95    |    0.8    |   0.88   |    1     |   0.79   |   0.96   |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |    Holm    |   0.73    |   0.93    |    0.8    |   0.86   |    1     |   0.73   |   0.94   |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |   WY-SS    |   0.83    |     1     |    0.8    |    1     |    1     |    1     |    1     |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |   WY-SD    |     1     |     1     |    0.8    |    1     |    1     |    1     |    1     |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## 
+## Table: Table continues below
+## 
+##  
+## 
+## +----------+----------+
+## | pum_comp | sim_comp |
+## +==========+==========+
+## |   0.61   |   0.94   |
+## +----------+----------+
+## |   0.61   |   0.88   |
+## +----------+----------+
+## |   0.61   |   0.94   |
+## +----------+----------+
+## |   0.6    |   0.92   |
+## +----------+----------+
+## |   0.6    |    1     |
+## +----------+----------+
+## |   0.6    |   0.98   |
+## +----------+----------+</code></pre>
 </div>
 <div id="setup-2-school-size-75" class="section level3">
 <h3>Setup 2: School size 75</h3>
@@ -3076,13 +3105,17 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |   0.68    |   0.95    |   0.68    |   0.89   |    1     |   0.7    |   0.98   |
+## |    rawp    |   0.68    |   0.92    |   0.68    |   0.89   |   0.98   |   0.71   |   0.96   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.51    |   0.88    |    NA     |   0.76   |   0.98   |   0.51   |   0.92   |
+## | Bonferroni |   0.51    |   0.82    |   0.68    |   0.76   |   0.95   |   0.52   |   0.86   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.62    |   0.95    |    NA     |   0.78   |   0.99   |   0.64   |   0.97   |
+## |     BH     |   0.62    |    0.9    |   0.68    |   0.78   |   0.96   |   0.64   |   0.91   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |   0.59    |   0.92    |    NA     |   0.76   |   0.98   |   0.58   |   0.94   |
+## |    Holm    |   0.58    |   0.87    |   0.68    |   0.76   |   0.95   |   0.57   |   0.88   |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |   WY-SS    |   0.67    |     1     |   0.68    |    1     |    1     |   0.5    |    1     |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |   WY-SD    |    0.5    |   0.95    |   0.68    |   0.5    |   0.98   |   0.5    |   0.95   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: Table continues below
@@ -3092,13 +3125,17 @@ div.tocify {
 ## +----------+----------+
 ## | pum_comp | sim_comp |
 ## +==========+==========+
-## |   0.44   |   0.9    |
+## |   0.44   |   0.77   |
 ## +----------+----------+
-## |   0.44   |    NA    |
+## |   0.44   |   0.61   |
 ## +----------+----------+
-## |   0.44   |    NA    |
+## |   0.44   |   0.77   |
 ## +----------+----------+
-## |   0.44   |    NA    |
+## |   0.44   |   0.76   |
+## +----------+----------+
+## |   0.44   |    1     |
+## +----------+----------+
+## |   0.45   |   0.91   |
 ## +----------+----------+</code></pre>
 </div>
 <div id="setup-3-school-size-50" class="section level3">
@@ -3111,13 +3148,17 @@ div.tocify {
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## |    MTP     | pum_indiv | sim_indiv | pup_indiv | pum_min1 | sim_min1 | pum_min2 | sim_min2 |
 ## +============+===========+===========+===========+==========+==========+==========+==========+
-## |    rawp    |   0.51    |   0.76    |   0.51    |   0.75   |   0.95   |   0.51   |   0.77   |
+## |    rawp    |   0.51    |   0.84    |   0.51    |   0.75   |   0.98   |   0.51   |   0.84   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## | Bonferroni |   0.34    |   0.59    |    NA     |   0.57   |   0.84   |   0.31   |   0.57   |
+## | Bonferroni |   0.33    |    0.7    |   0.51    |   0.57   |   0.89   |   0.31   |   0.7    |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |     BH     |   0.43    |   0.73    |    NA     |   0.6    |   0.85   |   0.44   |   0.71   |
+## |     BH     |   0.43    |   0.77    |   0.51    |   0.6    |   0.9    |   0.44   |   0.78   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
-## |    Holm    |    0.4    |   0.68    |    NA     |   0.58   |   0.84   |   0.38   |   0.64   |
+## |    Holm    |    0.4    |   0.75    |   0.51    |   0.58   |   0.89   |   0.37   |   0.75   |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |   WY-SS    |   0.17    |     1     |   0.51    |   0.5    |    1     |    0     |    1     |
+## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
+## |   WY-SD    |   0.17    |   0.89    |   0.51    |   0.5    |   0.97   |    0     |   0.87   |
 ## +------------+-----------+-----------+-----------+----------+----------+----------+----------+
 ## 
 ## Table: Table continues below
@@ -3127,13 +3168,17 @@ div.tocify {
 ## +----------+----------+
 ## | pum_comp | sim_comp |
 ## +==========+==========+
-## |   0.26   |   0.54   |
+## |   0.25   |   0.58   |
 ## +----------+----------+
-## |   0.26   |    NA    |
+## |   0.25   |   0.44   |
 ## +----------+----------+
-## |   0.26   |    NA    |
+## |   0.25   |   0.58   |
 ## +----------+----------+
-## |   0.26   |    NA    |
+## |   0.26   |   0.57   |
+## +----------+----------+
+## |   0.26   |    1     |
+## +----------+----------+
+## |   0.25   |   0.8    |
 ## +----------+----------+</code></pre>
 </div>
 </div>
@@ -3150,17 +3195,21 @@ div.tocify {
 <p><span style="color: purple;">KH: Why numCovar.1 = 5?</span></p>
 <pre><code>## 
 ## 
-## +------------+-------------------+-------------------+---------------+
-## |    MTP     |   adjusted MDES   |    indiv power    | Targeted_MDES |
-## +============+===================+===================+===============+
-## |    rawp    | 0.132529615172815 |      0.5523       |     0.125     |
-## +------------+-------------------+-------------------+---------------+
-## | Bonferroni | 0.125576301894109 |       0.34        |     0.125     |
-## +------------+-------------------+-------------------+---------------+
-## |     BH     | 0.119885437115418 | 0.435433333333333 |     0.125     |
-## +------------+-------------------+-------------------+---------------+
-## |    Holm    | 0.135958099756237 | 0.425366666666667 |     0.125     |
-## +------------+-------------------+-------------------+---------------+</code></pre>
+## +------------+---------------+-------------+---------------+
+## |    MTP     | adjusted MDES | indiv power | Targeted_MDES |
+## +============+===============+=============+===============+
+## |    rawp    |     0.124     |     0.5     |     0.125     |
+## +------------+---------------+-------------+---------------+
+## | Bonferroni |     0.124     |    0.33     |     0.125     |
+## +------------+---------------+-------------+---------------+
+## |     BH     |     0.12      |    0.442    |     0.125     |
+## +------------+---------------+-------------+---------------+
+## |    Holm    |     0.136     |    0.434    |     0.125     |
+## +------------+---------------+-------------+---------------+
+## |   WY-SS    |      Inf      |      1      |     0.125     |
+## +------------+---------------+-------------+---------------+
+## |   WY-SD    |     0.103     |    0.363    |     0.125     |
+## +------------+---------------+-------------+---------------+</code></pre>
 </div>
 </div>
 </div>
@@ -3175,12 +3224,19 @@ div.tocify {
 ## +============+===============+=============+==============+
 ## |    rawp    |     indiv     |     20      |     0.51     |
 ## +------------+---------------+-------------+--------------+
-## | Bonferroni |     indiv     |     20      |     0.34     |
+## | Bonferroni |     indiv     |     20      |     0.33     |
 ## +------------+---------------+-------------+--------------+
-## |     BH     |     indiv     |     21      |    0.444     |
+## |     BH     |     indiv     |     21      |    0.438     |
 ## +------------+---------------+-------------+--------------+
-## |    Holm    |     indiv     |     20      |    0.385     |
+## |    Holm    |     indiv     |     20      |    0.382     |
+## +------------+---------------+-------------+--------------+
+## |   WY-SS    |     indiv     |     10      |    0.167     |
+## +------------+---------------+-------------+--------------+
+## |   WY-SD    |     indiv     |     10      |    0.167     |
 ## +------------+---------------+-------------+--------------+</code></pre>
+</div>
+<div id="fixed-effects" class="section level1">
+<h1>Fixed Effects</h1>
 </div>
 
 

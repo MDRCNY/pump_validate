@@ -412,6 +412,7 @@ midpoint<-function(lower,upper) {
 #' @param omega NULL (parameter in development)
 #' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
+#' @param max.iter maximum number of iterations for calculating the MDES
 #' @param updateProgress this is the progress bar function that will be passed to the main MDES calculation function
 #' @param rho correlation between outcomes. This generates the sigma matrix.
 #' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
@@ -422,15 +423,15 @@ midpoint<-function(lower,upper) {
 
 mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
                               p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                              mod.type, sigma = 0, rho = 0.99,omega,
-                              tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
+                              mod.type, sigma = 0, rho = 0.99, omega,
+                              tnum = 10000, snum = 2, ncl = 2, max.iter = 20, updateProgress = NULL) {
   
   # Setting up Sigma values
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
   # Checks on what we are estimating, sample size
-  print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
+  print(paste("Estimating MDES for", MTP, "for target", power.definition, "power of", round(power, 4)))
   
   # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
   if (MTP=="WY-SD" & snum < 1000){
@@ -505,7 +506,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
   # While loop through until the iteration is past 20 or we have met the target.power as we search for the right MDES
   # within the margin of error we have specified.
   
-  while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {
+  while (ii < max.iter & (target.power < power - marginError | target.power > power + marginError)) {
     
     # Passing our callback function
     if (is.function(updateProgress)) {
@@ -521,7 +522,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
                                     tnum = tnum, snum = snum, ncl = ncl)
     
     # Pull out the power value corresponding to the MTP and definition of power
-    target.power <- runpower[MTP,power.definition]
+    target.power <- runpower[MTP, power.definition]
     
     # Displaying the progress of mdes calculation via target power
     if (is.function(updateProgress)) {
@@ -536,7 +537,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
       
       mdes.results <- data.frame(try.MDES[1], target.power)
       
-      colnames(mdes.results) <- c(paste0(MTP, " adjusted MDES"),paste0(power.definition, " power")) # Giving the proper colnames
+      colnames(mdes.results) <- c(paste0(MTP, " adjusted MDES"), paste0(power.definition, " power")) # Giving the proper colnames
       
       return(mdes.results)
       
@@ -562,6 +563,11 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
     ii <- ii + 1
     
   } # end while
+  
+  if(ii >= max.iter)
+  {
+    print('Maximum iterations reached, target power not achieved')
+  }
   
 } # MDES blockedRCT 2
 
@@ -590,7 +596,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
 #' @param sigma correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)
 #' @param omega NULL (parameter in development)
 #' @param two.tailed a boolean value for whether we are looking at two-tailed distribution or not
-#' @param num.iter number of iterations to look for sample size. The default is set at 100
+#' @param max.iter number of iterations to look for sample size. The default is set at 100
 #' @param tol tolerance from initializing sample values
 #' @return raw sample returns
 #' @export
@@ -600,12 +606,12 @@ sample_blocked_i1_2c_raw <- function(J = NULL, n.j = NULL, J0 = 10, n.j0 = 10,
                                      alpha, numCovar.1, numCovar.2 = 0,
                                      R2.1, R2.2, ICC, mod.type, sigma,
                                      omega, two.tailed = TRUE,
-                                     num.iter = 100, tol = 0.1) {
+                                     max.iter = 100, tol = 0.1) {
   
   i <- 0 # starting the iterator
   conv <- FALSE # boolean value for convergence
   
-  while (i <= num.iter & conv == FALSE) {
+  while (i <= max.iter & conv == FALSE) {
     # checking which type of sample we are estimating
     if (whichSS =="J"){
       df <- J0 * (n.j - 1) - numCovar.1 - 1 # degree of freedom calculation
@@ -686,7 +692,7 @@ sample_blocked_i1_2c_raw <- function(J = NULL, n.j = NULL, J0 = 10, n.j0 = 10,
 #' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
 #' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
-#' @param num.iter the number of iterations to look for the optimal sample size. The default is set at 20
+#' @param max.iter the number of iterations to look for the optimal sample size. The default is set at 20
 #' @param updateProgress a call back function for our internal use in our Shiny application
 #' @param rho correlation between outcomes when sigma is generated
 #'
@@ -698,8 +704,11 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
                                  MTP, marginError,p, alpha, numCovar.1,
                                  numCovar.2 = 0, R2.1, R2.2,ICC,mod.type,
                                  sigma = 0, rho = 0.99, omega,tnum = 10000,
-                                 snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
+                                 snum=2, ncl=2, max.iter = 20, updateProgress=NULL) {
   
+  
+  # Checks on what we are estimating, sample size
+  print(paste("Estimating SS for", MTP, "for target", power.definition, "power of", round(power, 4), "and MDES", MDES))
   
   # SET UP #
   sigma <- matrix(data = rho, nrow = M, ncol = M)
@@ -817,7 +826,7 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
   }
   ii <- 0
   target.power <- 0
-  while (ii < num.iter & (target.power < power - marginError | target.power > power + marginError) ) {
+  while (ii < max.iter & (target.power < power - marginError | target.power > power + marginError) ) {
     
     if (is.function(updateProgress)) {
       
@@ -878,7 +887,6 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
       colnames(est.sample) <- c("MTP", "Type of Power", "Sample Size", "Target Power")
       
       return(est.sample)
-      
     }
     
     # if the test is underpowered or overpowered, repeat the loop with new bounds as below.
@@ -898,9 +906,9 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
     ii <- ii + 1
   } # end while
   
-  if (ii==num.iter & !(target.power > power - marginError & target.power < power + marginError)) {
+  if (ii == max.iter & !(target.power > power - marginError & target.power < power + marginError)) {
     
-    text <- paste0("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (num.iter).")
+    text <- paste0("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (max.iter).")
     updateProgress(detail = text)
   }
 }

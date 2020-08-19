@@ -191,11 +191,11 @@ gen.results.table <- function(pum_combined_results, power_up_results, sim_result
   )
   
   # Setting NAs for the power definitions that do not need adjustment
-  compare_results$pup_indiv[2:4] <- NA
+  # compare_results$pup_indiv[row.names(compare_results) != 'rawp'] <- NA
   # compare_results$powerup_indiv_lower_ci[2:4] <- NA
   # compare_results$powerup_indiv_upper_ci[2:4] <- NA
   # compare_results$pup_comp[2:4] <- NA
-  compare_results$sim_comp[2:4] <- NA
+  # compare_results$sim_comp[row.names(compare_results) != 'rawp'] <- NA
   # compare_results$sim_complete_lower_ci[2:4] <- NA
   # compare_results$sim_complete_upper_ci[2:4] <- NA
   

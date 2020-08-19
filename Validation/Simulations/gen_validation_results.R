@@ -19,7 +19,7 @@ source(here::here("Validation/Simulations", "misc.R"))
 design <- "blocked_i1_2c"
 
 sim.params.list <- list(
-  S = 100            # Number of samples for Monte Carlo Simulation
+  S = 100           # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
@@ -27,7 +27,8 @@ sim.params.list <- list(
   , p.j = 0.5        # Binomial assignment probability
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
-  , procs = c("Bonferroni", "BH", "Holm")
+  , max.iter = 100   # maximum number of iterations for MDES calculations
+  , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                      # Multiple testing procedures to compute power for 
   , runSim = TRUE    # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE   # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
@@ -71,8 +72,8 @@ user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
   , K = 2                                 # number of districts (still required for two-level model)
-  , N = 50*20                             # number of individuals
-  , n.j = 50                              # number of individuals per school
+  , N = 100*20                            # number of individuals
+  , n.j = 100                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.j = NULL                            # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
@@ -110,16 +111,16 @@ power.results <- validate_power(
   design = design
 )
 
-# # MDES validation
+# MDES validation
 # mdes.results <- validate_mdes(
 #   user.params.list = user.params.list,
 #   sim.params.list = sim.params.list,
 #   power.results = power.results
 # )
-
-# sample size validation
-sample.results <- validate_sample(
-  user.params.list = user.params.list,
-  sim.params.list = sim.params.list,
-  power.results = power.results
-)
+# 
+# # sample size validation
+# sample.results <- validate_sample(
+#   user.params.list = user.params.list,
+#   sim.params.list = sim.params.list,
+#   power.results = power.results
+# )
