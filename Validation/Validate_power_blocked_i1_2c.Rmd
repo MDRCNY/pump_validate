@@ -27,8 +27,6 @@ Blocked RCT, with 2 levels, constant treatment effects, and randomization done a
 
 We compare results of the derived methods against Monte Carlo Simulations & the PowerUp R package on power. The methods are derived by Kristin Porter as outlined in the paper/s here (Add reference section).
 
-TODO: Westfall-Young
-
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
 knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE)
@@ -77,6 +75,7 @@ sim.params.list <- list(
   , p.j = 0.5        # Binomial assignment probability
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
+  , max.iter = 20    # Number of MDES and sample size iterations
   , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                      # Multiple testing procedures to compute power for 
   , runSim = TRUE    # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
@@ -287,4 +286,64 @@ pander::pandoc.table(
   blocked_i1_2c_sample_results_nj50,
   style = "grid", split.tables = 100, row.names = FALSE
 )
+```
+
+
+
+
+
+```{r fixedEffects.parms}
+
+# user.params.list[['omega.2']] = 1
+# model.params.list <- convert.params(user.params.list)
+# library(MASS)
+# Sigma.z  <- gen_cov_matrix(
+#   model.params.list[['M']],
+#   model.params.list[['eta1.sq']],
+#   model.params.list[['eta1.sq']],
+#   user.params.list[['rho.z']]
+# )
+# z <- mvrnorm(
+#   model.params.list[['M']]*user.params.list[['K']],
+#   rep(0, model.params.list[['M']]),
+#   Sigma.z, empirical = TRUE
+# )
+# 
+# user.params.list <- list(
+#   M = 3                                   # number of outcomes
+#   , J = 20                                # number of schools
+#   , K = 2                                 # number of districts (still required for two-level model)
+#   , N = 100*20                            # number of individuals
+#   , n.j = 100                             # number of individuals per school
+#   , rho.default = rho.default             # default rho value (optional)
+#   , S.j = NULL                            # N-length vector of indiv school assignments (optional)
+#   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
+#   ################################################## grand mean otucome and impact
+#   , Xi0 = 0                               # scalar grand mean outcome under no treatment
+#   , MDES = rep(0.125, M)                  # minimum detectable effect size      
+#   ################################################## level 3: districts
+#   , R2.3 = rep(0, M)                      # percent of district variation explained by district covariates
+#                                           # for 2-level model, set to 0
+#   , rho.D = default.rho.matrix            # MxM correlation matrix of district covariates
+#   , ICC.3 = rep(0, M)                     # district intraclass correlation
+#                                           # for 2-level model, set to 0
+#   , omega.3 = 0                           # ratio of district effect size variability to random effects variability
+#   , rho.w = default.rho.matrix            # MxM matrix of correlations for district random effects
+#   , rho.z = default.rho.matrix            # MxM matrix of correlations for district impacts
+#   , theta.wz = matrix(0, M, M)            # MxM matrix of correlations between district random effects and impacts
+#   , fixed.z = FALSE                       # fixed effects?
+#   ################################################## level 2: schools
+#   , R2.2 = rep(0, M)                      # percent of school variation explained by school covariates
+#   , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
+#   , ICC.2 = rep(0.5, M)                   # school intraclass correlation	
+#   , omega.2 = 0                           # ratio of school effect size variability to random effects variability
+#   , rho.u = default.rho.matrix            # MxM matrix of correlations for school random effects
+#   , rho.v = default.rho.matrix            # MxM matrix of correlations for school impacts
+#   , theta.uv = matrix(0, M, M)            # MxM matrix of correlations between school random effects and impacts
+#   , fixed.v = FALSE                       # fixed effects?
+#   ################################################## level 1: individuals
+#   , R2.1 = rep(0, M)                      # percent of indiv variation explained by indiv covariates
+#   , rho.C = default.rho.matrix            # MxM correlation matrix of individual covariates
+#   , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals 
+# )
 ```
