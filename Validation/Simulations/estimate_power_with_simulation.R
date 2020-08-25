@@ -1,7 +1,7 @@
-###########################################################################
+# --------------------------------------------------------------------- #
 #  Function: est_power_sim				                                        #
 #  Function to estimate statistical power using simulations
-###########################################################################
+# --------------------------------------------------------------------- #
 #' @param user.params.list List of user-supplied parameters
 #' @param sim.params.list List of simulation parameters
 #' @param design RCT design (see list/naming convention)
@@ -145,7 +145,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   
 }
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #  Function: make.model	Inputs:dat,dummies      	                        #
 #		a reshaped dataset (dat)-->data for one m 			                      #
 #		dummies, string of dummy names in formula, if function needs          #
@@ -153,7 +153,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
 #         fixfastLm, fixlmer, or random                                   #
 #	Outputs: model object of type function					                        #
 #	Notes: dummies can be output of make.dummies $dnames			              #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 make.model<-function(dat, dummies, design) {
 
@@ -178,13 +178,13 @@ make.model<-function(dat, dummies, design) {
   return(mod)
 }
 
-######################################################################################
+# --------------------------------------------------------------------- #
 #	Function: make.dummies		Inputs:	dat, clusterby, n.j, J
 #		a dataset (dat),
-#		a column name as a string to cluster by (clusterby), ZH: Can this be blockby?    #
-#		n.j, and J 									                                                     #
-#	Outputs: dummies (column names), lmedat.fixed (data.frame)		                     #
-######################################################################################
+#		a column name as a string to cluster by (clusterby), ZH: Can this be blockby?    
+#		n.j, and J 									                                                     
+#	Outputs: dummies (column names), lmedat.fixed (data.frame)		                    
+# --------------------------------------------------------------------- #
 
 make.dummies <- function(dat, blockby, n.j, J){
 
@@ -205,11 +205,11 @@ make.dummies <- function(dat, blockby, n.j, J){
 }
 
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #	Function: get.pval 	Inputs: mod						                              #
 #		a model object, mod							                                      #
 #	Outputs: pvalue 									                                      #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 get.pval.Level1 <- function(mod) {
 
@@ -255,7 +255,7 @@ get.tstat.Level2 <- function(mod) {
   return(tstat)
 }
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #	Function: get.rawp	Inputs: mdat, design, n.j, J      	                  #
 #   mdat, a single dataset from list of S datasets as a list length M     #
 #		p, a string "random", "fixfastLm", or "fixlmer"					          #
@@ -264,7 +264,7 @@ get.tstat.Level2 <- function(mod) {
 # Calls: make.dummies, make.model, get.pval                               #
 #	Outputs: matrix of raw p-values for a single sample		                  #
 #	Notes: gets raw p-vals for a single dataset and funct at a time	        #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 get.rawp <- function(mdat, design, n.j, J) {
 
@@ -304,7 +304,7 @@ get.rawt <- function(mdat, design, n.j, J) {
   return(rawt)
 }
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #  Function: makelist.samp
 # Inputs 
 #		    M, number of domains                                              #
@@ -313,7 +313,7 @@ get.rawt <- function(mdat, design, n.j, J) {
 #	Outputs: list length M of data by domain                                #
 #          each entry is a dataset for a single domain               			#
 #	Notes:                                                        	        #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 makelist.samp <-function(M, samp.obs, T.ijk, T.j, model.params.list, design) {
 
@@ -374,13 +374,13 @@ makelist.samp <-function(M, samp.obs, T.ijk, T.j, model.params.list, design) {
 
 
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #  Function: get.adjp 	Inputs: rawp, proc, alpha				                  #
 #		a matrix nrow=S ncol=M of raw p-values							                  #
 #  	a string for a single proc            							                  #
 #  	a number, alpha, should be 0.05 in most cases	 			                  #
 #	Outputs: MxS matrix of adjusted p-values for a single proc 	            #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design) {
 
@@ -405,12 +405,12 @@ get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list,
   return(adjp.proc)
 }
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #  Function: get.rejects   Inputs: adjp, alpha  				                  #
 #		a matrix nrow=S ncol=M of adjusted p-values, from get.adjp			      #
 #  	a number, alpha, should be 0.05 in most cases	 			                  #
 #	Outputs: MxS matrix of 1 and 0 indicating rejecting the null            #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 get.rejects <- function(adjp, alpha) {
   # return a matrix of 1 and 0 (for true/false <alpha)
