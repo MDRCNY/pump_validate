@@ -141,7 +141,7 @@ validate_power <- function(user.params.list, sim.params.list, design) {
       iterator = iterator + 1
     }
     # adding rownames to the pum_combined_results table
-    rownames(pum_combined_results) <- c("raw", sim.params.list[['procs']])
+    rownames(pum_combined_results) <- c("rawp", sim.params.list[['procs']])
     saveRDS(pum_combined_results, file = here::here("Validation/data", pump.filename))
   } else {
     pum_combined_results <- readRDS(file = here::here("Validation/data", pump.filename))
@@ -182,7 +182,7 @@ validate_mdes <- function(user.params.list, sim.params.list, power.results) {
   
   for (MTP in procs){
     mdes_results <- mdes_blocked_i1_2c(
-      power = power.results[which(power.results$MTP == MTP), "pum_indiv"],
+      power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'],
       MTP = MTP,
       # fixed parameters
       M = user.params.list[['M']],
@@ -244,7 +244,7 @@ validate_sample <- function(user.params.list, sim.params.list, power.results) {
   
   for (MTP in procs){
     sample_results <- sample_blocked_i1_2c(
-      power = power.results[which(power.results$MTP == MTP), "pum_indiv"],
+      power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'],
       MTP = MTP,
       # fixed parameters
       typesample = 'J',

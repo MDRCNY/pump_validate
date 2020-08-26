@@ -33,8 +33,10 @@ knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FA
 ```
 
 ```{r libraries}
+library(ggplot2)
 library(here)
 library(pander)    # For good table format
+library(reshape2)
 
 # default tables to round to 3 digits
 panderOptions('round', 3)
@@ -175,17 +177,8 @@ Main parameters:
 
 ```{r rho0.5tPMnj100}
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-power.file <- find_file(params.file.base, type = 'power')
-blocked_i1_2c_power_results_nj100 <- readRDS(power.file)
-# blocked_i1_2c_compare_results_nj100 <- validate_power(
-#   user.params.list = user.params.list,
-#   sim.params.list = sim.params.list, 
-#   design = "blocked_i1_2c"
-# )
-pander::pandoc.table(
-  blocked_i1_2c_power_results_nj100,
-  style = "grid", split.tables = 100
-)
+blocked_i1_2c_nj100_power_plot <- gen.results.plot(params.file.base)
+print(blocked_i1_2c_nj100_power_plot)
 ```
 
 ### Setup 2: School size 75
@@ -196,19 +189,9 @@ pander::pandoc.table(
 user.params.list[['n.j']] <- 75
 user.params.list[['N']] <- user.params.list[['n.j']]*user.params.list[['J']]
 
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-power.file <- find_file(params.file.base, type = 'power')
-blocked_i1_2c_power_results_nj75 <- readRDS(power.file)
-# blocked_i1_2c_compare_results_nj75 <- validate_power(
-#   user.params.list = user.params.list,
-#   sim.params.list = sim.params.list, 
-#   design = "blocked_i1_2c"
-# )
 
-pander::pandoc.table(
-  blocked_i1_2c_power_results_nj75,
-  style = "grid", split.tables = 100
-)
+blocked_i1_2c_nj75_power_plot <- gen.results.plot(gen_params_file_base(user.params.list, sim.params.list, design))
+print(blocked_i1_2c_nj75_power_plot)
 ```
 
 
@@ -220,19 +203,8 @@ pander::pandoc.table(
 user.params.list[['n.j']] <- 50
 user.params.list[['N']] <- user.params.list[['n.j']]*user.params.list[['J']]
 
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-power.file <- find_file(params.file.base, type = 'power')
-blocked_i1_2c_power_results_nj50 <- readRDS(power.file)
-# blocked_i1_2c_compare_results_nj50 <- validate_power(
-#   user.params.list = user.params.list,
-#   sim.params.list = sim.params.list,
-#   design = "blocked_i1_2c"
-# )
-
-pander::pandoc.table(
-  blocked_i1_2c_power_results_nj50,
-  style = "grid", split.tables = 100, row.names = FALSE
-)
+blocked_i1_2c_nj50_power_plot <- gen.results.plot(gen_params_file_base(user.params.list, sim.params.list, design))
+print(blocked_i1_2c_nj50_power_plot)
 ```
 
 

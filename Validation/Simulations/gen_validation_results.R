@@ -28,7 +28,8 @@ sim.params.list <- list(
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
   , max.iter = 100   # maximum number of iterations for MDES calculations
-  , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+  , procs = c("Bonferroni", "BH", "Holm")
+  # , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                      # Multiple testing procedures to compute power for 
   , runSim = TRUE    # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE   # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
@@ -72,8 +73,8 @@ user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
   , K = 2                                 # number of districts (still required for two-level model)
-  , N = 100*20                            # number of individuals
-  , n.j = 100                             # number of individuals per school
+  , N = 50*20                            # number of individuals
+  , n.j = 50                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.j = NULL                            # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
@@ -112,15 +113,15 @@ power.results <- validate_power(
 )
 
 # MDES validation
-# mdes.results <- validate_mdes(
-#   user.params.list = user.params.list,
-#   sim.params.list = sim.params.list,
-#   power.results = power.results
-# )
-# 
-# # sample size validation
-# sample.results <- validate_sample(
-#   user.params.list = user.params.list,
-#   sim.params.list = sim.params.list,
-#   power.results = power.results
-# )
+mdes.results <- validate_mdes(
+  user.params.list = user.params.list,
+  sim.params.list = sim.params.list,
+  power.results = power.results
+)
+
+# sample size validation
+sample.results <- validate_sample(
+  user.params.list = user.params.list,
+  sim.params.list = sim.params.list,
+  power.results = power.results
+)
