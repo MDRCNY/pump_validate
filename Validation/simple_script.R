@@ -61,11 +61,11 @@ user.params.list <- list(
   , N = 100*20                            # number of individuals
   , n.j = 100                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
-  , S.j = NULL                            # N-length vector of indiv school assignments (optional)
+  , S.jk = NULL                            # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
   ################################################## grand mean otucome and impact
   , Xi0 = 0                               # scalar grand mean outcome under no treatment
-  , MDES = rep(0.125, M)                  # minimum detectable effect size
+  , ATE_ES = rep(0.125, M)                  # minimum detectable effect size
   ################################################## level 3: districts
   , R2.3 = rep(0, M)                      # percent of district variation explained by district covariates
   # for 2-level model, set to 0
@@ -95,5 +95,8 @@ user.params.list <- list(
 
 # blocked_i1_2c design
 # estimate power through simulation
+sim.params.list$S = 10
 blocked_i1_2c_power <- est_power_sim(user.params.list, sim.params.list, design = 'Blocked_i1_2c')
 print(blocked_i1_2c_power)
+
+

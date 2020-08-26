@@ -1,7 +1,11 @@
-# --------------------------------------------------------------------- #
-#  Function: est_power_sim				                                        #
-#  Function to estimate statistical power using simulations
-# --------------------------------------------------------------------- #
+
+
+
+
+#'  Function: est_power_sim				                                       
+#'  
+#'  Function to estimate statistical power using simulations (on t-statistics)
+#'
 #' @param user.params.list List of user-supplied parameters
 #' @param sim.params.list List of simulation parameters
 #' @param design RCT design (see list/naming convention)
@@ -31,8 +35,8 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   se.power <- CI.lower.power <- CI.upper.power <- power.results
   
   # true positives and false positives
-  nulls <- which(user.params.list[['MDES']] == 0)
-  alts <- which(user.params.list[['MDES']] != 0)
+  nulls <- which(user.params.list[['ATE_ES']] == 0)
+  alts <- which(user.params.list[['ATE_ES']] != 0)
   
   # list of adjustment procedures
   adjp.proc <- array(0, c(S, M, length(procs) + 1))
@@ -49,27 +53,20 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     
     # generate full, unobserved sample data
     samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
+    S.jk = samp.full$ID$S.jk
+    S.k = samp.full$ID$S.k
     
     # generate treatment assignment vector
     T.ijk <- rep(NA, N)
-    T.j <- rep(NA, N)
     
-    # blocked designs
+    design = tolower(design)
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r')) {
-      for(j in 1:J)
-      {
-        n.j <- sum(model.params.list[['S.j']] == j)
-        T.ijk[model.params.list[['S.j']] == j] <- sample(c(rep(0, n.j*p.j), rep(1, n.j*(1-p.j))))
-      }
-    # cluster designs
+      # blocked designs
+      T.ijk = randomizr::block_ra( S.jk, prob=p.j )
     } else if(design %in% c('simple_c2_2r'))  { 
-      T.j <- sample(c(rep(0, J*p.j), rep(1, J*(1-p.j))))
-      for(j in 1:J)
-      {
-        T.ijk[model.params.list[['S.j']] == j] <- T.j[j]
-      }
-    } else
-    {
+      # cluster designs
+      T.ijk <- randomizr::cluster_ra( S.jk, prob=p.j )
+    } else {
       stop(print(paste('Design', design, 'not implemented yet')))
     }
     
@@ -77,12 +74,12 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     samp.obs = samp.full
     samp.obs$Yobs = gen_Yobs(samp.full, T.ijk)
     
-    mdat <- makelist.samp(M, samp.obs, T.ijk, T.j, model.params.list, design = design) #list length M
+    mdat <- makelist.samp(M, samp.obs, T.ijk, model.params.list, design = design) #list length M
     rawp <- get.rawp(mdat, design = design, model.params.list[['n.j']], J) #vector length M
     rawt <- get.rawt(mdat, design = design, model.params.list[['n.j']], J) #vector length M
     rawt.all[s,] <- rawt
     
-    # loop through adjustment procedures
+    # loop through adjustment procedures (adding 'rawp' as default in all cases)
     for (p in 1:(length(procs) + 1)) {
       if (p == 1) {
         pvals <-rawp
@@ -116,14 +113,18 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     }
     else {
       power.results[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) mean(x < alpha))
-      se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) sqrt(mean(x < alpha)*(1 - mean(x < alpha))/sim.params.list[['B']]))
+      se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
+        sqrt(mean(x < alpha)*(1 - mean(x < alpha))/sim.params.list[['B']]) 
+      } )
     }
     rejects <- get.rejects(adjp.proc[,,p], alpha)
     if (M == 1) {
       if (alts != 0) num.t.pos = rejects
+    } else if (length(alts) == 1) {
+      num.t.pos <- rejects[,alts]
+    } else {
+      num.t.pos <- apply(rejects[,alts], 1, sum)
     }
-    else if (length(alts) == 1) {num.t.pos <- rejects[,alts]}
-    else {num.t.pos <- apply(rejects[,alts], 1, sum)}
     power.results[p, "min"] <- mean(1 * (num.t.pos > 0))
     se.power[p, "min"] <- sqrt(mean(1 * (num.t.pos > 0)) * (1 - mean(1 * (num.t.pos > 0)))/S)
     power.results[p, "1/3"] <- mean(1 * (num.t.pos >= (1/3) * M))
@@ -162,10 +163,10 @@ make.model<-function(dat, dummies, design) {
                   dat[,grep("block[0-9]", colnames(dat))])
     mod <- fastLm(mmat, dat[,"D"])
   } else if (design == "blocked_i1_2f") {
-    form <- as.formula("D~Treat.ij+Covar.j+Covar.ij+(1|block.id)")
+    form <- as.formula("D~1+Treat.ij+Covar.j+Covar.ij+(1|block.id)")
     mod <- lmer(form, data=dat)
   } else if (design == "blocked_i1_2r") {
-    form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+(Treat.ij|block.id)"))
+    form <- as.formula(paste0("D~1+Treat.ij+Covar.j+Covar.ij+(1+Treat.ij|block.id)"))
     mod <- lmer(form, data=dat)
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("D~Treat.j+Covar.j+Covar.ij+(1|cluster.id)"))
@@ -315,7 +316,7 @@ get.rawt <- function(mdat, design, n.j, J) {
 #	Notes:                                                        	        #
 # --------------------------------------------------------------------- #
 
-makelist.samp <-function(M, samp.obs, T.ijk, T.j, model.params.list, design) {
+makelist.samp <-function(M, samp.obs, T.ijk, model.params.list, design) {
 
   if (design %in% c("blocked_i1_2c", "blocked_i1_2f", "blocked_i1_2r")) {
 
@@ -324,11 +325,10 @@ makelist.samp <-function(M, samp.obs, T.ijk, T.j, model.params.list, design) {
     {
       mdat.rn[[m]] <- data.frame(
         D        = samp.obs[['Yobs']][,m],
-        Covar.j  = samp.obs[['X.ijk']][,m],
+        Covar.j  = samp.obs[['X.jk']][,m],
         Covar.ij = samp.obs[['C.ijk']][,m],
         Treat.ij = T.ijk,
-        Treat.j  = T.j,
-        block.id = model.params.list[['S.j']]
+        block.id = samp.obs$ID$S.jk
       )
     }
 
@@ -347,11 +347,10 @@ makelist.samp <-function(M, samp.obs, T.ijk, T.j, model.params.list, design) {
     {
       mdat.rn[[m]] <- data.frame(
         D          = samp.obs[['Yobs']][,m],
-        Covar.j    = samp.obs[['X.ijk']][,m],
+        Covar.j    = samp.obs[['X.jk']][,m],
         Covar.ij   = samp.obs[['C.ijk']][,m],
-        Treat.ij   = T.ijk,
-        Treat.j    = T.j,
-        cluster.id = model.params.list[['S.j']]
+        Treat.ijk   = T.ijk,
+        cluster.id = samp.obs$ID$S.jk
       )
     }
     

@@ -69,7 +69,7 @@ validate_power <- function(user.params.list, sim.params.list, design) {
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
   {
     power_up_results <- power.bira2c1(
-      es = user.params.list[['MDES']][1],
+      es = user.params.list[['ATE_ES']][1],
       alpha = sim.params.list[['alpha']],
       two.tailed = TRUE,
       p = sim.params.list[['p.j']],
@@ -81,7 +81,7 @@ validate_power <- function(user.params.list, sim.params.list, design) {
   } else if(design %in% c('simple_c2_2r'))
   {
     power_up_results <- power.cra2r2(
-      es = user.params.list[['MDES']][1],
+      es = user.params.list[['ATE_ES']][1],
       alpha = sim.params.list[['alpha']],
       two.tailed = TRUE,
       g2 = 1,
@@ -115,7 +115,7 @@ validate_power <- function(user.params.list, sim.params.list, design) {
       {
         pum_results <- pum::power_blocked_i1_2c(
           M = user.params.list[['M']], MTP = MTP,
-          MDES = user.params.list[['MDES']], numFalse = user.params.list[['M']],
+          ATE_ES = user.params.list[['ATE_ES']], numFalse = user.params.list[['M']],
           J = user.params.list[['J']], n.j = user.params.list[['n.j']],
           p = sim.params.list[['p.j']],
           alpha = sim.params.list[['alpha']], numCovar.1 = 0, numCovar.2 = 0,
@@ -248,7 +248,7 @@ validate_sample <- function(user.params.list, sim.params.list, power.results) {
       MTP = MTP,
       # fixed parameters
       typesample = 'J',
-      MDES = user.params.list[['MDES']][[1]],
+      ATE_ES = user.params.list[['ATE_ES']][[1]],
       M = user.params.list[['M']],
       numFalse = user.params.list[['M']],
       J = user.params.list[['J']],

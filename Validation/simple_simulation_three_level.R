@@ -64,21 +64,32 @@ default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 
 user.params.list <- list(
   M = M                                   # number of outcomes
-  , J = 70                                # number of schools
-  , n.j = 50                              # number of individuals per school
+  , J = 10                                # number of schools (per district)
+  , K = 9
+  , n.j = 20                              # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   ################################################## grand mean otucome and impact
   , Xi0 = 0                               # scalar grand mean outcome under no treatment
   , ATE_ES = rep(0.125, M)                  # minimum detectable effect size
-
+  , ICC.2 = rep(0.45, M)                   # school intraclass correlation
+  , ICC.3 = rep(0.5, M)                     # district intraclass correlation
+  ################################################## level 3: districts
+  , R2.3 = rep(0.5, M)                      # percent of district variation explained by district covariates
+  # for 2-level model, set to 0
+  , rho.D = default.rho.matrix            # MxM correlation matrix of district covariates
+  # for 2-level model, set to 0
+  , omega.3 = 0.5                           # ratio of district effect size variability to random effects variability
+  , rho.w = default.rho.matrix            # MxM matrix of correlations for district random effects
+  , rho.z = default.rho.matrix            # MxM matrix of correlations for district impacts
+  , theta.wz = matrix(0, M, M)            # MxM matrix of correlations between district random effects and impacts
+  
   ################################################## level 2: schools
-  , R2.2 = rep(0, M)                      # percent of school variation explained by school covariates
+  , R2.2 = rep(0.7, M)                      # percent of school variation explained by school covariates
   ######## temp
   , psi = rep(0, M)                       # coefficients of school covariate in treatment effect
   ######## temp
   , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
-  , ICC.2 = rep(0.7, M)                   # school intraclass correlation
-  , omega.2 = 0                           # ratio of school effect size variability to random effects variability
+  , omega.2 = 0.5                           # ratio of school effect size variability to random effects variability
   , rho.u = default.rho.matrix            # MxM matrix of correlations for school random effects
   , rho.v = default.rho.matrix            # MxM matrix of correlations for school impacts
   , theta.uv = matrix(0, M, M)            # MxM matrix of correlations between school random effects and impacts
@@ -129,7 +140,7 @@ gen_data_frame = function( samp.full, Tx = NULL ) {
 
 
 #### Exploring what we get back from the data generating code ####
-if ( FALSE ) {
+  
   
   # blocked_i1_2c design
   # estimate power through simulation
@@ -141,6 +152,7 @@ if ( FALSE ) {
   class( samp.full )
   names( samp.full )
   
+  table( samp.full$ID$S.k )
   
   
   sapply( samp.full, length )
@@ -159,13 +171,15 @@ if ( FALSE ) {
   head( samp.full$Yobs )
   
   samp = gen_data_frame( samp.full )
+  
   samp$Tx = T.ijk
   samp
   table( samp$S.jk )
-  #table( samp$S.jk, samp$S.k )
+  table( samp$S.jk, samp$S.k, useNA="always"  )
+  table( samp$S.k )
   
   library( lme4 )
-  M0 = lmer( Yobs_1 ~ 1 +  X.jk_1 + C.ijk_1 + Tx + (1+Tx | S.jk ),
+  M0 = lmer( Yobs_1 ~ 1 +  D.k_1 + X.jk_1 + C.ijk_1 + Tx + (1+Tx | S.jk ),
              data = samp )
   summary( M0 )
   
@@ -178,119 +192,25 @@ if ( FALSE ) {
   #rawp <- get.rawp(mdat, design = d, model.params.list[['n.j']], model.params.list[['J']]) #vector length M
   #rawt.all[s,] <- rawt
   
-}
-
-
-##### Playing with level 2 predictive variables #####
-
-if ( FALSE ) {
+  sd( samp$Y0_1 )
+  sd( samp$Y1_1 )
+  
+  ss = samp %>% group_by( S.jk, S.k, D.k_1, X.jk_1 ) %>%
+    summarise( Ybar0 = mean( Y0_1 ),
+               Ybar1 = mean( Y1_1 ), .groups="drop" )
+  nrow( ss )
+  ggplot( ss, aes( X.jk_1, Ybar0, col=D.k_1 ) ) +
+    facet_wrap( ~ S.k ) +
+    geom_point()
+    
   
   
-}
-
-##### Little simulation looking at level 2 predictive variables ####
-
-
-
-one_run = function( model.params.list ) {
+  head( samp )
+  ggplot( samp, aes( X.jk_1, Yobs_1, col = Tx ) ) +
+    facet_wrap( ~ S.k ) +
+    geom_jitter( alpha=0.4)
   
-  samp.full <- gen_full_data(model.params.list, check = FALSE )
-  
-  # Randomize
-  #T.ijk <- cluster_ra( samp.full$ID$S.jk, prob = sim.params.list$p.j )
-  T.ijk <- block_ra( samp.full$ID$S.jk, prob = sim.params.list$p.j )
-  
-  samp.full$Yobs = gen_Yobs(samp.full, T.ijk)
-  
-  samp = gen_data_frame( samp.full, T.ijk )
-  
-  M0 = lmer( Yobs_1 ~ 1 + X.jk_1 + C.ijk_1 + Tx * X.jk_1 + (1 | S.jk ),
-             data = samp )
-  summary( M0 )
-  tst = as.data.frame( summary(M0)$coefficients[ c( "Tx", "X.jk_1:Tx" ), ] )
-  names( tst ) = c( "Est", "SE", "df", "t", "pvalue" )
-  tst$Param = c("Tx","Tx:X" )
-  
-  samp = mutate( samp, tau =  Y1_1 - Y0_1 )
-  Moracle = lm( tau ~ X.jk_1, data= samp )
-  tst$tau = c( mean( samp$Y1_1 - samp$Y0_1 ), coef(Moracle)[["X.jk_1"]] )
-  tst$sdY0 = sd( samp$Y0_1 )
-  
-  tst
-}
-
-
-if ( FALSE ) {
+  ggplot( samp, aes( D.k_1, Yobs_1, col = Tx ) ) +
+    geom_jitter( alpha=0.4)
   
   
-  model.params.list = convert.params( user.params.list )
-  model.params.list$psi = 0.6
-  
-  R = 10
-  #debug( one_run )
-  rps = map_df( 1:R, ~ one_run( model.params.list ) )
-  
-  rps
-  
-  rps %>% group_by( Param ) %>% 
-    summarise( meansdY0 = mean( sdY0 ),
-               meanATE = mean( tau ),
-               meanATE_est = mean( Est ),
-               meanES = meanATE / meansdY0 )
-  
-  
-}
-
-scat = function( str, ... ) {
-  cat( sprintf( str, ... ) )
-}
-
-
-
-one_experiment = function( psi, R = 10 ) {
-  scat( "Running on %.3f with %d reps\n", psi, R )
-  
-  model.params.list$psi = psi
-  rps = map_df( 1:R, ~ one_run( model.params.list ) )
-  
-  rps
-}
-
-
-
-
-model.params.list = convert.params( user.params.list )
-model.params.list$psi = 0.6
-model.params.list$J = 20
-model.params.list$n.j = 40
-
-design = tibble( psi = c( 0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.90 ) )
-design
-
-R = 10
-design$data = pmap( design, one_experiment, R=R )
-design
-res = unnest( design, cols=c(data) )
-
-head( res )
-
-sres = res %>% group_by( psi, Param ) %>%
-  summarise( Eparam = round( mean( tau ), digits = 4 ),
-             Eest = mean( Est ),
-             SE_true = sd( Est ),
-             ESE = mean( SE ),
-             sdY0 = mean( sdY0 ),
-             ES = Eparam / sdY0,
-             power = mean( pvalue <= 0.10 ) )
-
-sres %>% arrange( Param )
-
-ggplot( sres, aes( psi, ES ) ) +
-  facet_wrap( ~ Param ) +
-  geom_point() + geom_line()
-
-ggplot( sres, aes( psi, power ) ) +
-  facet_wrap( ~ Param ) +
-  geom_point() + geom_line()
-
-
