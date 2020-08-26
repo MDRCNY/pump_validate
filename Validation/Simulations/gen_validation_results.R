@@ -44,7 +44,7 @@ sim.params.list <- list(
 
 ### school and district assignments
 # N-length vector of individual school assignments i.e. (1,1,2,2,3,3)
-# S.j <-
+# S.jk <-
 # N-length vector of individual district assignments i.e. (1,1,1,2,2,2)
 # S.k <-
 
@@ -76,11 +76,11 @@ user.params.list <- list(
   , N = 50*20                            # number of individuals
   , n.j = 50                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
-  , S.j = NULL                            # N-length vector of indiv school assignments (optional)
+  , S.jk = NULL                            # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
   ################################################## grand mean otucome and impact
   , Xi0 = 0                               # scalar grand mean outcome under no treatment
-  , MDES = rep(0.125, M)                  # minimum detectable effect size      
+  , ATE_ES = rep(0.125, M)                  # minimum detectable effect size      
   ################################################## level 3: districts
   , R2.3 = rep(0, M)                      # percent of district variation explained by district covariates
   # for 2-level model, set to 0

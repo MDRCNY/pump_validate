@@ -8,7 +8,7 @@ library(nlme)
 #' Treatment assignment happens at level 1
 #'
 #' @param M number of tests/domains/outcomes
-#' @param MDES minimum detectable effect size, vector length M
+#' @param ATE_ES ATE in effect size units, vector length M
 #' @param n.j number of observations per block
 #' @param J number of blocks
 #' @param rho.0_lev1 MxM matrix of correlations for Level 1 residuals in models of outcomes under no treatment
@@ -30,13 +30,13 @@ library(nlme)
 #'
 #' @examples
 
-gen_blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2, 
+gen_blocked_i1_2 <- function(M, ATE_ES, n.j, J, rho.0_lev1, rho.0_lev2, 
                          rho.1_lev2, theta, ICC, alpha, Gamma.00, 
                          p.j.range, R2.1, R2.2, omega, check) {
   
   require(MASS)
   
-  if(check) cat("M", M, "MDES", MDES, "n.j", n.j, 
+  if(check) cat("M", M, "ATE_ES", ATE_ES, "n.j", n.j, 
                 "J", J, "rho", rho, "ICC", ICC, 
                 alpha, "Gamma.00", Gamma.00, p.j.range, 
                 R2.1, R2.2, check, omega)
@@ -142,7 +142,7 @@ gen_blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
   Gamma.11 <- rep(0, M)
   for(m in 1:M) {
     
-    Gamma.11[m] <- MDES[m] * sd(D0.ij[,m])
+    Gamma.11[m] <- ATE_ES[m] * sd(D0.ij[,m])
     
     #beta.j<-Gamma.11[m] + as.matrix(v.j)[,m] 
     beta.j <- Gamma.11[m] 
@@ -171,7 +171,7 @@ gen_blocked_i1_2 <- function(M, MDES, n.j, J, rho.0_lev1, rho.0_lev2,
   
   output <- merge(output.temp,X.j,by = "block.id")
   
-  #  filename = paste0("gendata_M", M,"_MDES", MDES, "_J", J, "_nj", n.j, "_ICC", ICC, "_rho", rho, ".csv")
+  #  filename = paste0("gendata_M", M,"_ATE", ATE_ES, "_J", J, "_nj", n.j, "_ICC", ICC, "_rho", rho, ".csv")
   
   # CHECKS
   if (check) {

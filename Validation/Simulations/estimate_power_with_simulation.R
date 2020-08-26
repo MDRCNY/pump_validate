@@ -1,7 +1,11 @@
-###########################################################################
-#  Function: est_power_sim				                                        #
-#  Function to estimate statistical power using simulations
-###########################################################################
+
+
+
+
+#'  Function: est_power_sim				                                       
+#'  
+#'  Function to estimate statistical power using simulations (on t-statistics)
+#'
 #' @param user.params.list List of user-supplied parameters
 #' @param sim.params.list List of simulation parameters
 #' @param design RCT design (see list/naming convention)
@@ -31,8 +35,8 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   se.power <- CI.lower.power <- CI.upper.power <- power.results
   
   # true positives and false positives
-  nulls <- which(user.params.list[['MDES']] == 0)
-  alts <- which(user.params.list[['MDES']] != 0)
+  nulls <- which(user.params.list[['ATE_ES']] == 0)
+  alts <- which(user.params.list[['ATE_ES']] != 0)
   
   # list of adjustment procedures
   adjp.proc <- array(0, c(S, M, length(procs) + 1))
@@ -49,27 +53,20 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     
     # generate full, unobserved sample data
     samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
+    S.jk = samp.full$ID$S.jk
+    S.k = samp.full$ID$S.k
     
     # generate treatment assignment vector
     T.ijk <- rep(NA, N)
-    T.j <- rep(NA, N)
     
-    # blocked designs
+    design = tolower(design)
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r')) {
-      for(j in 1:J)
-      {
-        n.j <- sum(model.params.list[['S.j']] == j)
-        T.ijk[model.params.list[['S.j']] == j] <- sample(c(rep(0, n.j*p.j), rep(1, n.j*(1-p.j))))
-      }
-    # cluster designs
+      # blocked designs
+      T.ijk = randomizr::block_ra( S.jk, prob=p.j )
     } else if(design %in% c('simple_c2_2r'))  { 
-      T.j <- sample(c(rep(0, J*p.j), rep(1, J*(1-p.j))))
-      for(j in 1:J)
-      {
-        T.ijk[model.params.list[['S.j']] == j] <- T.j[j]
-      }
-    } else
-    {
+      # cluster designs
+      T.ijk <- randomizr::cluster_ra( S.jk, prob=p.j )
+    } else {
       stop(print(paste('Design', design, 'not implemented yet')))
     }
     
@@ -77,12 +74,12 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     samp.obs = samp.full
     samp.obs$Yobs = gen_Yobs(samp.full, T.ijk)
     
-    mdat <- makelist.samp(M, samp.obs, T.ijk, T.j, model.params.list, design = design) #list length M
+    mdat <- makelist.samp(M, samp.obs, T.ijk, model.params.list, design = design) #list length M
     rawp <- get.rawp(mdat, design = design, model.params.list[['n.j']], J) #vector length M
     rawt <- get.rawt(mdat, design = design, model.params.list[['n.j']], J) #vector length M
     rawt.all[s,] <- rawt
     
-    # loop through adjustment procedures
+    # loop through adjustment procedures (adding 'rawp' as default in all cases)
     for (p in 1:(length(procs) + 1)) {
       if (p == 1) {
         pvals <-rawp
@@ -116,14 +113,18 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     }
     else {
       power.results[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) mean(x < alpha))
-      se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) sqrt(mean(x < alpha)*(1 - mean(x < alpha))/sim.params.list[['B']]))
+      se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
+        sqrt(mean(x < alpha)*(1 - mean(x < alpha))/sim.params.list[['B']]) 
+      } )
     }
     rejects <- get.rejects(adjp.proc[,,p], alpha)
     if (M == 1) {
       if (alts != 0) num.t.pos = rejects
+    } else if (length(alts) == 1) {
+      num.t.pos <- rejects[,alts]
+    } else {
+      num.t.pos <- apply(rejects[,alts], 1, sum)
     }
-    else if (length(alts) == 1) {num.t.pos <- rejects[,alts]}
-    else {num.t.pos <- apply(rejects[,alts], 1, sum)}
     power.results[p, "min"] <- mean(1 * (num.t.pos > 0))
     se.power[p, "min"] <- sqrt(mean(1 * (num.t.pos > 0)) * (1 - mean(1 * (num.t.pos > 0)))/S)
     power.results[p, "1/3"] <- mean(1 * (num.t.pos >= (1/3) * M))
@@ -145,7 +146,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   
 }
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #  Function: make.model	Inputs:dat,dummies      	                        #
 #		a reshaped dataset (dat)-->data for one m 			                      #
 #		dummies, string of dummy names in formula, if function needs          #
@@ -153,7 +154,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
 #         fixfastLm, fixlmer, or random                                   #
 #	Outputs: model object of type function					                        #
 #	Notes: dummies can be output of make.dummies $dnames			              #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 make.model<-function(dat, dummies, design) {
 
@@ -162,10 +163,10 @@ make.model<-function(dat, dummies, design) {
                   dat[,grep("block[0-9]", colnames(dat))])
     mod <- fastLm(mmat, dat[,"D"])
   } else if (design == "blocked_i1_2f") {
-    form <- as.formula("D~Treat.ij+Covar.j+Covar.ij+(1|block.id)")
+    form <- as.formula("D~1+Treat.ij+Covar.j+Covar.ij+(1|block.id)")
     mod <- lmer(form, data=dat)
   } else if (design == "blocked_i1_2r") {
-    form <- as.formula(paste0("D~Treat.ij+Covar.j+Covar.ij+(Treat.ij|block.id)"))
+    form <- as.formula(paste0("D~1+Treat.ij+Covar.j+Covar.ij+(1+Treat.ij|block.id)"))
     mod <- lmer(form, data=dat)
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("D~Treat.j+Covar.j+Covar.ij+(1|cluster.id)"))
@@ -178,13 +179,13 @@ make.model<-function(dat, dummies, design) {
   return(mod)
 }
 
-######################################################################################
+# --------------------------------------------------------------------- #
 #	Function: make.dummies		Inputs:	dat, clusterby, n.j, J
 #		a dataset (dat),
-#		a column name as a string to cluster by (clusterby), ZH: Can this be blockby?    #
-#		n.j, and J 									                                                     #
-#	Outputs: dummies (column names), lmedat.fixed (data.frame)		                     #
-######################################################################################
+#		a column name as a string to cluster by (clusterby), ZH: Can this be blockby?    
+#		n.j, and J 									                                                     
+#	Outputs: dummies (column names), lmedat.fixed (data.frame)		                    
+# --------------------------------------------------------------------- #
 
 make.dummies <- function(dat, blockby, n.j, J){
 
@@ -205,11 +206,11 @@ make.dummies <- function(dat, blockby, n.j, J){
 }
 
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #	Function: get.pval 	Inputs: mod						                              #
 #		a model object, mod							                                      #
 #	Outputs: pvalue 									                                      #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 get.pval.Level1 <- function(mod) {
 
@@ -255,7 +256,7 @@ get.tstat.Level2 <- function(mod) {
   return(tstat)
 }
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #	Function: get.rawp	Inputs: mdat, design, n.j, J      	                  #
 #   mdat, a single dataset from list of S datasets as a list length M     #
 #		p, a string "random", "fixfastLm", or "fixlmer"					          #
@@ -264,7 +265,7 @@ get.tstat.Level2 <- function(mod) {
 # Calls: make.dummies, make.model, get.pval                               #
 #	Outputs: matrix of raw p-values for a single sample		                  #
 #	Notes: gets raw p-vals for a single dataset and funct at a time	        #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 get.rawp <- function(mdat, design, n.j, J) {
 
@@ -304,7 +305,7 @@ get.rawt <- function(mdat, design, n.j, J) {
   return(rawt)
 }
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #  Function: makelist.samp
 # Inputs 
 #		    M, number of domains                                              #
@@ -313,9 +314,9 @@ get.rawt <- function(mdat, design, n.j, J) {
 #	Outputs: list length M of data by domain                                #
 #          each entry is a dataset for a single domain               			#
 #	Notes:                                                        	        #
-###########################################################################
+# --------------------------------------------------------------------- #
 
-makelist.samp <-function(M, samp.obs, T.ijk, T.j, model.params.list, design) {
+makelist.samp <-function(M, samp.obs, T.ijk, model.params.list, design) {
 
   if (design %in% c("blocked_i1_2c", "blocked_i1_2f", "blocked_i1_2r")) {
 
@@ -324,11 +325,10 @@ makelist.samp <-function(M, samp.obs, T.ijk, T.j, model.params.list, design) {
     {
       mdat.rn[[m]] <- data.frame(
         D        = samp.obs[['Yobs']][,m],
-        Covar.j  = samp.obs[['X.ijk']][,m],
+        Covar.j  = samp.obs[['X.jk']][,m],
         Covar.ij = samp.obs[['C.ijk']][,m],
         Treat.ij = T.ijk,
-        Treat.j  = T.j,
-        block.id = model.params.list[['S.j']]
+        block.id = samp.obs$ID$S.jk
       )
     }
 
@@ -347,11 +347,10 @@ makelist.samp <-function(M, samp.obs, T.ijk, T.j, model.params.list, design) {
     {
       mdat.rn[[m]] <- data.frame(
         D          = samp.obs[['Yobs']][,m],
-        Covar.j    = samp.obs[['X.ijk']][,m],
+        Covar.j    = samp.obs[['X.jk']][,m],
         Covar.ij   = samp.obs[['C.ijk']][,m],
-        Treat.ij   = T.ijk,
-        Treat.j    = T.j,
-        cluster.id = model.params.list[['S.j']]
+        Treat.ijk   = T.ijk,
+        cluster.id = samp.obs$ID$S.jk
       )
     }
     
@@ -374,13 +373,13 @@ makelist.samp <-function(M, samp.obs, T.ijk, T.j, model.params.list, design) {
 
 
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #  Function: get.adjp 	Inputs: rawp, proc, alpha				                  #
 #		a matrix nrow=S ncol=M of raw p-values							                  #
 #  	a string for a single proc            							                  #
 #  	a number, alpha, should be 0.05 in most cases	 			                  #
 #	Outputs: MxS matrix of adjusted p-values for a single proc 	            #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design) {
 
@@ -405,12 +404,12 @@ get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list,
   return(adjp.proc)
 }
 
-###########################################################################
+# --------------------------------------------------------------------- #
 #  Function: get.rejects   Inputs: adjp, alpha  				                  #
 #		a matrix nrow=S ncol=M of adjusted p-values, from get.adjp			      #
 #  	a number, alpha, should be 0.05 in most cases	 			                  #
 #	Outputs: MxS matrix of 1 and 0 indicating rejecting the null            #
-###########################################################################
+# --------------------------------------------------------------------- #
 
 get.rejects <- function(adjp, alpha) {
   # return a matrix of 1 and 0 (for true/false <alpha)

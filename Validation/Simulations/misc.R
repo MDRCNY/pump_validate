@@ -104,29 +104,29 @@ gen_cov_matrix = function(D, var1.vec, var2.vec, rho.matrix) {
   return(Sigma)
 }
 
-# generate simple default assignment to schools and districts for simulations
-# this assumes equal sized schools in equal sized districts
+#' generate simple default schools and districts IDs for individual students for
+#' simulations. This assumes equal sized schools in equal sized districts
 #'
 #' @param K number of districts
-#' @param J number of schools
+#' @param J number of schools per district
 #' @param n.j number of individuals per school
 #'
-#' @return list(S.j, S.k) of school and district assignments for each individual
+#' @return list(S.jk, S.k) of school and district assignments for each individual
 #' @export
 #'
 #' @examples
 
 gen_simple_assignments <- function(J, K, n.j){
 
-  N <- n.j * J
+  N <- n.j * J * K
 
   # vector of assignments to schools
-  S.j = rep(NA, N)
+  S.jk = rep(NA, N)
   start.index = 1
   end.index = n.j
-  for(j in 1:J)
+  for(j in 1:(K*J))
   {
-    S.j[start.index:end.index] = j
+    S.jk[start.index:end.index] = j
     start.index = end.index + 1
     end.index = end.index + n.j
   }
@@ -141,8 +141,10 @@ gen_simple_assignments <- function(J, K, n.j){
     start.index = end.index + 1
     end.index = end.index + n.k
   }
+  stopifnot( all( !is.na( S.jk ) ) )
+  stopifnot( all( !is.na( S.k ) ) )
 
-  return(list(S.j = S.j, S.k = S.k))
+  return(list(S.jk = S.jk, S.k = S.k))
 }
 
 #' read in simulation and user parameters
