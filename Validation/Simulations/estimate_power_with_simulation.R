@@ -1,7 +1,3 @@
-
-
-
-
 #'  Function: est_power_sim				                                       
 #'  
 #'  Function to estimate statistical power using simulations (on t-statistics)
@@ -18,7 +14,6 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   # save out some commonly used variables
   M <- model.params.list[['M']]
   S <- sim.params.list[['S']]
-  N <- model.params.list[['N']]
   J <- model.params.list[['J']]
   p.j <- sim.params.list[['p.j']]
   alpha <- sim.params.list[['alpha']]
@@ -53,19 +48,16 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     
     # generate full, unobserved sample data
     samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
-    S.jk = samp.full$ID$S.jk
-    S.k = samp.full$ID$S.k
+    S.jk <- samp.full$ID$S.jk
+    S.k <- samp.full$ID$S.k
     
-    # generate treatment assignment vector
-    T.ijk <- rep(NA, N)
-    
-    design = tolower(design)
+    # blocked designs
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r')) {
-      # blocked designs
-      T.ijk = randomizr::block_ra( S.jk, prob=p.j )
+      
+      T.ijk = randomizr::block_ra( S.jk, prob = p.j )
+    # cluster designs
     } else if(design %in% c('simple_c2_2r'))  { 
-      # cluster designs
-      T.ijk <- randomizr::cluster_ra( S.jk, prob=p.j )
+      T.ijk <- randomizr::cluster_ra( S.jk, prob = p.j )
     } else {
       stop(print(paste('Design', design, 'not implemented yet')))
     }
@@ -75,8 +67,8 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     samp.obs$Yobs = gen_Yobs(samp.full, T.ijk)
     
     mdat <- makelist.samp(M, samp.obs, T.ijk, model.params.list, design = design) #list length M
-    rawp <- get.rawp(mdat, design = design, model.params.list[['n.j']], J) #vector length M
-    rawt <- get.rawt(mdat, design = design, model.params.list[['n.j']], J) #vector length M
+    rawp <- get.rawp(mdat, design = design, n.j = model.params.list[['n.j']], J = J) #vector length M
+    rawt <- get.rawt(mdat, design = design, n.j = model.params.list[['n.j']], J = J) #vector length M
     rawt.all[s,] <- rawt
     
     # loop through adjustment procedures (adding 'rawp' as default in all cases)
@@ -114,7 +106,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     else {
       power.results[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) mean(x < alpha))
       se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
-        sqrt(mean(x < alpha)*(1 - mean(x < alpha))/sim.params.list[['B']]) 
+        sqrt(mean(x < alpha)*(1 - mean(x < alpha))/sim.params.list[['S']]) 
       } )
     }
     rejects <- get.rejects(adjp.proc[,,p], alpha)
@@ -189,7 +181,7 @@ make.model<-function(dat, dummies, design) {
 
 make.dummies <- function(dat, blockby, n.j, J){
 
-  # dat = mdat[[m]]; blockby= "block.id"; n.j, J
+  # dat = mdat[[m]]; blockby= "block.id"
 
   block.rep <- matrix(
     data = rep(dat[,blockby], n.j),
@@ -268,11 +260,21 @@ get.tstat.Level2 <- function(mod) {
 # --------------------------------------------------------------------- #
 
 get.rawp <- function(mdat, design, n.j, J) {
+  
+  # n.j = model.params.list[['n.j']]
 
   if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
     mdums = lapply(mdat, function(m) make.dummies(m, "block.id", n.j, J))
     mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
     rawp = sapply(mods, function(x) get.pval.Level1(x))
+    # 
+    # rawp = rep(NA, length(mdat))
+    # for(m in 1:length(mdat))
+    # {
+    #   mod = lm(D ~ block.id + Covar.j + Covar.ij + Treat.ij, data = mdat[[m]])
+    #   rawp[m] = summary(mod)$coef["Treat.ij", "Pr(>|t|)"]
+    # }
+
   }
   if (design == "blocked_i1_2r") {
     mods = lapply(mdat, function(m) make.model(m,NULL,design))
@@ -332,14 +334,6 @@ makelist.samp <-function(M, samp.obs, T.ijk, model.params.list, design) {
       )
     }
 
-    # mdat <- lapply(1:M, function(m) samp[,c("block.id","Treat.ij",grep(as.character(m), names(samp), value=TRUE))])
-    # mdat.rn <- lapply(mdat, function(x)
-    #   data.frame(D = x[,grep("D.M", names(x), value=TRUE)], #outcome
-    #              Covar.j = x[,grep("^X[0-9].j", names(x), value=TRUE)], #site level covariate
-    #              Covar.ij = x[,grep("^X[0-9].ij", names(x), value=TRUE)], #individual level covariate
-    #              Treat.ij = x[,"Treat.ij"],
-    #              block.id = x[,"block.id"]))
-
   } else if (design %in% c("simple_c2_2r")){
 
     mdat.rn <- NULL
@@ -349,22 +343,10 @@ makelist.samp <-function(M, samp.obs, T.ijk, model.params.list, design) {
         D          = samp.obs[['Yobs']][,m],
         Covar.j    = samp.obs[['X.jk']][,m],
         Covar.ij   = samp.obs[['C.ijk']][,m],
-        Treat.ijk   = T.ijk,
+        Treat.ijk  = T.ijk,
         cluster.id = samp.obs$ID$S.jk
       )
     }
-    
-    
-    # mdat <- lapply(1:M, function(m) samp.obs[,c("cluster.id","Treat.ij", "Treat.j",grep(as.character(m), names(samp.obs), value=TRUE))])
-    # 
-    # mdat.rn <- lapply(mdat, function(x)
-    #   data.frame(D=x[,grep("D.M", names(x), value=TRUE)], #outcome
-    #              Covar.j = x[,grep("X[0-9].j", names(x), value=TRUE)], #site level covariate
-    #              Covar.ij = x[,grep("X[0-9].ij", names(x), value=TRUE)], #individual level covariate
-    #              Treat.ij = x[,"Treat.ij"],
-    #              Treat.j = x[,"Treat.j"],
-    #              cluster.id = x[,"cluster.id"]))
-    
   } else {
     stop(paste('Error: unknown design', design))
   }

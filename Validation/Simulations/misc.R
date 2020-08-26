@@ -160,7 +160,7 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
   params.file.base <- paste0(
     design, "_", sim.params.list[['S']], "_S_",
     user.params.list[['M']], "_M_",
-    convert.vec.to.filename(user.params.list[['MDES']]),"_MDES_",
+    convert.vec.to.filename(user.params.list[['ATE_ES']]),"_ATES_",
     user.params.list[['J']], "_J_",
     user.params.list[['n.j']], "_nj_",
     convert.vec.to.filename(user.params.list[['rho.default']]), "_rho_",
@@ -182,12 +182,12 @@ gen.power.results.plot <- function(params.file.base)
   power_results <- readRDS(power.file)
   results_plot <- ggplot(power_results,
     aes(x = MTP, y = value, color = method)) +
-    geom_point(position = position_jitter(w = 0, h = 0.01)) +
+    geom_point() +
+    geom_line() +
     facet_wrap(~power_type, labeller = label_both) +
     ylab('Power')
   return(results_plot)
 }
-
 
 #' read in results from pum, powerup, and simulation
 #' and return table
@@ -200,16 +200,68 @@ gen.power.results.plot <- function(params.file.base)
 
 gen.results.table <- function(pum_combined_results, power_up_results, sim_results)
 {
+  compare_results <- data.frame(
+    "pum_indiv" = pum_combined_results[,"indiv"],
+    "sim_indiv" = sim_results$adjusted_power[,"D1indiv"],
+    "pup_indiv" = power_up_results$power,
+    "pum_min1"  = pum_combined_results[,"min1"],
+    "sim_min1"  = sim_results$adjusted_power[,"1/3"],
+    "pum_min2"  = pum_combined_results[,"min2"],
+    "sim_min2"  = sim_results$adjusted_power[,"2/3"],
+    "pum_comp"  = pum_combined_results[,"complete"],
+    "sim_comp"  = sim_results$adjusted_power[,"full"]
+  )
+
+  # Setting NAs for the power definitions that do not need adjustment
+  compare_results$pup_indiv[row.names(compare_results) != 'rawp'] <- NA
+  compare_results$pup_comp[row.names(compare_results) != 'rawp'] <- NA
+  compare_results$sim_comp[row.names(compare_results) != 'rawp'] <- NA
+
+  # Giving rownames a column header
+  compare_results <- compare_results %>%
+    tibble::rownames_to_column(var = "MTP")
+  compare_results <- round_df(compare_results,2) # Rounding the data frames
+
+  return(compare_results)
+}
+
+
+#' read in results from pum, powerup, and simulation
+#' and return table
+#'
+#' @param pum_combined_results
+#' @param power_up_results
+#' @param sim_results
+#'
+#' @return compare_results_long
+
+gen.combined.results.long <- function(pum_combined_results, power_up_results, sim_results)
+{
   # creates a long data frame with results from all methods and MTPs
   
   # ugly code, but takes in all the differently-formatted results from the different methods
   # and puts it into a uniform, long format
+  
+  # apply for means and upper and lower bounds of confidence interval
+  get_sim_results = function(sim_results)
+  {
+    sim_results = sim_results[,c('D1indiv', '1/3', '2/3', 'full')]
+    sim_results <- data.frame(sim_results)
+    colnames(sim_results) = c('indiv', 'min1', 'min2', 'complete')
+    sim_results$MTP <- rownames(sim_results)
+    sim_results_melt <- melt(sim_results, id.vars = 'MTP')
+    sim_results_melt$method = 'sim'
+    return(sim_results_melt)
+  }
+  sim_results_melt_full <- list.rbind(lapply(sim_results, get_sim_results))
+  sim_results_melt_full$value.type = sapply(rownames(sim_results_melt_full), function(x){strsplit(x, '\\.')[[1]][1]})
   
   pum_results_table <- pum_combined_results
   pum_results_table <- pum_results_table[,c('indiv', 'min1', 'min2', 'complete')]
   pum_results_table$MTP <- rownames(pum_results_table)
   pum_results_melt <- melt(pum_results_table, id.vars = 'MTP')
   pum_results_melt$method = 'pum'
+  pum_results_melt$value.type = 'adjusted.power'
   
   powerup_results_table <- data.frame(matrix(NA, ncol = ncol(pum_results_table), nrow = nrow(pum_results_table)))
   rownames(powerup_results_table) <- rownames(pum_results_table)
@@ -218,44 +270,15 @@ gen.results.table <- function(pum_combined_results, power_up_results, sim_result
   powerup_results_table['rawp', 'indiv'] = power_up_results$power
   powerup_results_melt <- melt(powerup_results_table, id.vars = 'MTP')
   powerup_results_melt$method = 'pup'
+  powerup_results_melt$value.type = 'adjusted.power'
   
-  sim_results_table <- sim_results$adjusted_power
-  sim_results_table = sim_results_table[,c('D1indiv', '1/3', '2/3', 'full')]
-  sim_results_table <- data.frame(sim_results_table)
-  colnames(sim_results_table) = c('indiv', 'min1', 'min2', 'complete')
-  sim_results_table$MTP <- rownames(sim_results_table)
-  sim_results_melt <- melt(sim_results_table, id.vars = 'MTP')
-  sim_results_melt$method = 'sim'
-  
-  compare_results <- data.frame(
-    rbind(pum_results_melt, powerup_results_melt, sim_results_melt)
+  compare_results_long <- data.frame(
+    rbind(pum_results_melt, powerup_results_melt, sim_results_melt_full)
   )
-  colnames(compare_results) <- c('MTP', 'power_type', 'value', 'method')
-  compare_results <- compare_results[,c('MTP', 'power_type','method', 'value')]
+  colnames(compare_results_long) <- c('MTP', 'power_type', 'value', 'method', 'value.type')
+  compare_results_long <- compare_results_long[,c('MTP', 'power_type','method', 'value.type', 'value')]
   
-  # compare_results <- data.frame(
-  #   "pum_indiv" = pum_combined_results[,"indiv"],
-  #   "sim_indiv" = sim_results$adjusted_power[,"D1indiv"],
-  #   "pup_indiv" = power_up_results$power,
-  #   "pum_min1"  = pum_combined_results[,"min1"],
-  #   "sim_min1"  = sim_results$adjusted_power[,"1/3"],
-  #   "pum_min2"  = pum_combined_results[,"min2"],
-  #   "sim_min2"  = sim_results$adjusted_power[,"2/3"],
-  #   "pum_comp"  = pum_combined_results[,"complete"],
-  #   "sim_comp"  = sim_results$adjusted_power[,"full"]
-  # )
-  # 
-  # # Setting NAs for the power definitions that do not need adjustment
-  # compare_results$pup_indiv[row.names(compare_results) != 'rawp'] <- NA
-  # compare_results$pup_comp[row.names(compare_results) != 'rawp'] <- NA
-  # compare_results$sim_comp[row.names(compare_results) != 'rawp'] <- NA
-  # 
-  # # Giving rownames a column header
-  # compare_results <- compare_results %>%
-  #   tibble::rownames_to_column(var = "MTP")
-  # compare_results <- round_df(compare_results,2) # Rounding the data frames
-  
-  return(compare_results)
+  return(compare_results_long)
 }
 
 #' check for existing validation file
