@@ -168,13 +168,13 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
 }
 
 
-#' read in results and return a plot
+#' takes in parameters, finds relevant pre-compiled results file, and returns a plot
 #'
-#' @param power_results
+#' @param params.file.base the base string of the results file you want
 #'
-#' @return power_results_plot
+#' @return results_plot
 
-gen.results.plot <- function(params.file.base)
+gen.power.results.plot <- function(params.file.base)
 {
   power.file <- find_file(params.file.base, type = 'power')
   power_results <- readRDS(power.file)

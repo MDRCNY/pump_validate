@@ -177,7 +177,7 @@ Main parameters:
 
 ```{r rho0.5tPMnj100}
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2c_nj100_power_plot <- gen.results.plot(params.file.base)
+blocked_i1_2c_nj100_power_plot <- gen.power.results.plot(params.file.base)
 print(blocked_i1_2c_nj100_power_plot)
 ```
 
@@ -190,7 +190,7 @@ user.params.list[['n.j']] <- 75
 user.params.list[['N']] <- user.params.list[['n.j']]*user.params.list[['J']]
 
 
-blocked_i1_2c_nj75_power_plot <- gen.results.plot(gen_params_file_base(user.params.list, sim.params.list, design))
+blocked_i1_2c_nj75_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design))
 print(blocked_i1_2c_nj75_power_plot)
 ```
 
@@ -203,7 +203,7 @@ print(blocked_i1_2c_nj75_power_plot)
 user.params.list[['n.j']] <- 50
 user.params.list[['N']] <- user.params.list[['n.j']]*user.params.list[['J']]
 
-blocked_i1_2c_nj50_power_plot <- gen.results.plot(gen_params_file_base(user.params.list, sim.params.list, design))
+blocked_i1_2c_nj50_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design))
 print(blocked_i1_2c_nj50_power_plot)
 ```
 
