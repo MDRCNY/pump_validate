@@ -48,7 +48,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   
   M        <- model.params.list[['M']];       J       <- model.params.list[['J']];
   K        <- model.params.list[['K']];       n.j     <- model.params.list[['n.j']];
-  S.jk      <- model.params.list[['S.jk']];     S.k     <- model.params.list[['S.k']];
+  S.jk      <- model.params.list[['S.jk']];   S.k     <- model.params.list[['S.k']];
   Xi0      <- model.params.list[['Xi0']];     Xi1     <- model.params.list[['Xi1']];
   rho.D    <- model.params.list[['rho.D']];   xi      <- model.params.list[['xi']];
   eta0.sq  <- model.params.list[['eta0.sq']]; eta1.sq <- model.params.list[['eta1.sq']];
@@ -83,7 +83,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     S.k = assignments[['S.k']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
   }
   
-  N = length( S.jk )
+  N <- length( S.jk )
   
   
   # ------------------------------#
@@ -268,8 +268,8 @@ gen_full_data <- function(model.params.list, check = FALSE) {
 #'
 #' @export
 convert.params <- function(user.params.list, check = FALSE) {
-  if(check){ print(user.params.list) }
   
+  if(check){ print(user.params.list) }
   
   ICC.2 = user.params.list[['ICC.2']]
   ICC.3 = user.params.list[['ICC.3']]
@@ -290,7 +290,6 @@ convert.params <- function(user.params.list, check = FALSE) {
     R2.3 = 0
     omega.3 = 0
     K = 1
-    
   }
   
   eta0.sq <- sqrt( ( ICC.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.1) ))
@@ -307,7 +306,6 @@ convert.params <- function(user.params.list, check = FALSE) {
     M = user.params.list[['M']]                    # number of outcomes
     , J = user.params.list[['J']]                    # number of schools
     , K = user.params.list[['K']]                    # number of districts
-    , N = user.params.list[['N']]                    # number of individuals
     , n.j = user.params.list[['n.j']]                # number of individuals per school
     , Xi0 = user.params.list[['Xi0']]                # scalar grand mean outcome under no treatment
     , Xi1 = Xi1                                      # scalar grand mean impact

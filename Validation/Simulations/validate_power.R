@@ -14,22 +14,25 @@
 
 # Loading the libraries
 library(dplyr)       # for combing data frames
+library(ggplot2)
 library(here)        # for relative file paths
 library(lme4)        # for modeling
 library(MASS)
-library(multtest)   # Multiple Testing Procedures package
+library(multtest)    # Multiple Testing Procedures package
 library(nlme)
 library(PowerUpR)    # for checking with another power estimation function
 library(RcppEigen)   # rcpp for speed issues
+library(reshape2)
+library(rlist)
 library(snow)        # for parallel coding
 library(tibble)      # a modern take on data frames
 library(tictoc)      # for timing
 
 ################
-# choose whether to load package coad or local code
-source(here::here("Methods", "utils.R"))
-source(here::here("Methods", "blocked_i1_2cfr.R"))
-# library(pum)         # for checking with the new methods
+# choose whether to load package code or local code
+# source(here::here("Methods", "utils.R"))
+# source(here::here("Methods", "blocked_i1_2cfr.R"))
+library(pum)         # for checking with the new methods
 ################
 
 #' Estimating Power through simulations
@@ -113,9 +116,9 @@ validate_power <- function(user.params.list, sim.params.list, design) {
 
       if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
       {
-        pum_results <- pum::power_blocked_i1_2c(
+        pum_results <- power_blocked_i1_2c(
           M = user.params.list[['M']], MTP = MTP,
-          ATE_ES = user.params.list[['ATE_ES']], numFalse = user.params.list[['M']],
+          MDES = user.params.list[['ATE_ES']], numFalse = user.params.list[['M']],
           J = user.params.list[['J']], n.j = user.params.list[['n.j']],
           p = sim.params.list[['p.j']],
           alpha = sim.params.list[['alpha']], numCovar.1 = 0, numCovar.2 = 0,
@@ -148,7 +151,7 @@ validate_power <- function(user.params.list, sim.params.list, design) {
   }
 
   compare.filename <- paste0(params.file.base, "comparison_power_results.RDS")
-  compare_results <- gen.results.table(pum_combined_results, power_up_results, sim_results)
+  compare_results <- gen.combined.results.long(pum_combined_results, power_up_results, sim_results)
   saveRDS(compare_results, file = here::here("Validation/data", compare.filename))
 
   return(compare_results)
@@ -200,8 +203,8 @@ validate_mdes <- function(user.params.list, sim.params.list, power.results) {
       rho = user.params.list[['rho.default']],
       omega = user.params.list[['omega.2']],
       tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-      ncl = sim.params.list[['ncl']],
-      max.iter = sim.params.list[['max.iter']]
+      ncl = sim.params.list[['ncl']]
+      #, max.iter = sim.params.list[['max.iter']]
     )
   
     mdes_results = cbind(MTP = MTP, mdes_results)
@@ -248,7 +251,7 @@ validate_sample <- function(user.params.list, sim.params.list, power.results) {
       MTP = MTP,
       # fixed parameters
       typesample = 'J',
-      ATE_ES = user.params.list[['ATE_ES']][[1]],
+      MDES = user.params.list[['ATE_ES']][[1]],
       M = user.params.list[['M']],
       numFalse = user.params.list[['M']],
       J = user.params.list[['J']],

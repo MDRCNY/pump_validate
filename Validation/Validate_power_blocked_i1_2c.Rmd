@@ -33,10 +33,8 @@ knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FA
 ```
 
 ```{r libraries}
-library(ggplot2)
 library(here)
 library(pander)    # For good table format
-library(reshape2)
 
 # default tables to round to 3 digits
 panderOptions('round', 3)
@@ -69,7 +67,7 @@ This section sets up the simulation-level parameters, such as how many monte car
 design <- "blocked_i1_2c"
 
 sim.params.list <- list(
-    S = 100          # Number of samples for Monte Carlo Simulation
+    S = 1000          # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
@@ -127,14 +125,13 @@ user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
   , K = 2                                 # number of districts (still required for two-level model)
-  , N = 100*20                            # number of individuals
   , n.j = 100                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.j = NULL                            # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
   ################################################## grand mean otucome and impact
   , Xi0 = 0                               # scalar grand mean outcome under no treatment
-  , MDES = rep(0.125, M)                  # minimum detectable effect size      
+  , ATE_ES = rep(0.125, M)                 # minimum detectable effect size      
   ################################################## level 3: districts
   , R2.3 = rep(0, M)                      # percent of district variation explained by district covariates
                                           # for 2-level model, set to 0

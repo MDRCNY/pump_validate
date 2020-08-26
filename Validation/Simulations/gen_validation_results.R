@@ -19,7 +19,7 @@ source(here::here("Validation/Simulations", "misc.R"))
 design <- "blocked_i1_2c"
 
 sim.params.list <- list(
-  S = 100           # Number of samples for Monte Carlo Simulation
+  S = 1000            # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
@@ -27,7 +27,7 @@ sim.params.list <- list(
   , p.j = 0.5        # Binomial assignment probability
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
-  , max.iter = 100   # maximum number of iterations for MDES calculations
+  , max.iter = 100   # maximum number of iterations for MDES or sample size calculations
   , procs = c("Bonferroni", "BH", "Holm")
   # , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                      # Multiple testing procedures to compute power for 
@@ -73,14 +73,13 @@ user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
   , K = 2                                 # number of districts (still required for two-level model)
-  , N = 50*20                            # number of individuals
-  , n.j = 50                             # number of individuals per school
+  , n.j = 100                              # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
-  , S.jk = NULL                            # N-length vector of indiv school assignments (optional)
+  , S.jk = NULL                           # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
   ################################################## grand mean otucome and impact
   , Xi0 = 0                               # scalar grand mean outcome under no treatment
-  , ATE_ES = rep(0.125, M)                  # minimum detectable effect size      
+  , ATE_ES = rep(0.125, M)                # minimum detectable effect size      
   ################################################## level 3: districts
   , R2.3 = rep(0, M)                      # percent of district variation explained by district covariates
   # for 2-level model, set to 0
@@ -112,16 +111,24 @@ power.results <- validate_power(
   design = design
 )
 
-# MDES validation
-mdes.results <- validate_mdes(
-  user.params.list = user.params.list,
-  sim.params.list = sim.params.list,
-  power.results = power.results
-)
+# results_plot <- ggplot(power.results,
+#                        aes(x = MTP, y = value, color = method)) +
+#   geom_point(position = position_jitter(w = 0, h = 0.01)) +
+#   facet_wrap(~power_type, labeller = label_both) +
+#   ylab('Power')
+# 
+# print(results_plot)
 
-# sample size validation
-sample.results <- validate_sample(
-  user.params.list = user.params.list,
-  sim.params.list = sim.params.list,
-  power.results = power.results
-)
+# MDES validation
+# mdes.results <- validate_mdes(
+#   user.params.list = user.params.list,
+#   sim.params.list = sim.params.list,
+#   power.results = power.results
+# )
+# 
+# # sample size validation
+# sample.results <- validate_sample(
+#   user.params.list = user.params.list,
+#   sim.params.list = sim.params.list,
+#   power.results = power.results
+# )
