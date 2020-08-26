@@ -355,10 +355,8 @@ power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
       
     }
     
-  } else
-  {
-    stop(paste('Unknown MTP', MTP))
-  }
+  } # Westfall Young choices
+  
   
   # combine all adjusted p-values in list (each entry is a matrix for given MTP)
   if (MTP == "Bonferroni"){
@@ -381,12 +379,6 @@ power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
     
     adjp.each <- list(rawp, adjp.SD)
     
-  } else if (MTP == "rawp")
-  {
-    adjp.each <- list(rawp, rawp)
-  } else
-  {
-    stop(paste('Unknown MTP', MTP))
   }
   
   # for each MTP, get matrix of indicators for whether the adjusted p-value is less than alpha
@@ -630,7 +622,6 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
     } # if the function is being called, run the progress bar
     
     # Function to calculate the target power to check in with the pre-specified power in the loop
-    print(MTP)
     runpower <- power_blocked_i1_2c(M = M, MDES = try.MDES, numFalse = numFalse, MTP = MTP, J = J, n.j = n.j,rho = rho,
                                     p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                     mod.type = mod.type, sigma = sigma, omega = omega,
