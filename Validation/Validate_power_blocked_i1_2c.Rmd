@@ -67,7 +67,7 @@ This section sets up the simulation-level parameters, such as how many monte car
 design <- "blocked_i1_2c"
 
 sim.params.list <- list(
-    S = 1000          # Number of samples for Monte Carlo Simulation
+    S = 2000          # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
@@ -186,7 +186,6 @@ print(blocked_i1_2c_nj100_power_plot)
 user.params.list[['n.j']] <- 75
 user.params.list[['N']] <- user.params.list[['n.j']]*user.params.list[['J']]
 
-
 blocked_i1_2c_nj75_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design))
 print(blocked_i1_2c_nj75_power_plot)
 ```
@@ -226,15 +225,10 @@ School size: 50
 
 `r colorize("The Bonferroni, Benjamini Hocheberg and Holms' __adjusted MDES__ and the __targeted MDES__ are within an acceptable margin of error for the specified targetted power. The __adjusted MDES__ is estimated at the __corresponding__ individual power in the table below. The __corresponding__ individual power is the power at which our MDES method stops looking for a MDES value close to the target MDES.", "green")`
 
-`r colorize("KH: Why numCovar.1 = 5?", "purple")`
-
 ```{r mdesCombined}
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 mdes.file <- find_file(params.file.base, type = 'mdes')
 blocked_i1_2c_mdes_results_nj50 <- readRDS(mdes.file)
-blocked_i1_2c_mdes_results_nj50 = cbind(
-  blocked_i1_2c_mdes_results_nj50, Targeted_MDES = user.params.list[['MDES']][1]
-)
 pander::pandoc.table(
   blocked_i1_2c_mdes_results_nj50,
   style = "grid", split.tables = 100, row.names = FALSE

@@ -19,7 +19,7 @@ source(here::here("Validation/Simulations", "misc.R"))
 design <- "blocked_i1_2c"
 
 sim.params.list <- list(
-  S = 1000            # Number of samples for Monte Carlo Simulation
+  S = 2000           # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
@@ -73,7 +73,7 @@ user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
   , K = 2                                 # number of districts (still required for two-level model)
-  , n.j = 100                              # number of individuals per school
+  , n.j = 50                              # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.jk = NULL                           # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
@@ -111,24 +111,16 @@ power.results <- validate_power(
   design = design
 )
 
-# results_plot <- ggplot(power.results,
-#                        aes(x = MTP, y = value, color = method)) +
-#   geom_point(position = position_jitter(w = 0, h = 0.01)) +
-#   facet_wrap(~power_type, labeller = label_both) +
-#   ylab('Power')
-# 
-# print(results_plot)
-
 # MDES validation
-# mdes.results <- validate_mdes(
-#   user.params.list = user.params.list,
-#   sim.params.list = sim.params.list,
-#   power.results = power.results
-# )
-# 
-# # sample size validation
-# sample.results <- validate_sample(
-#   user.params.list = user.params.list,
-#   sim.params.list = sim.params.list,
-#   power.results = power.results
-# )
+mdes.results <- validate_mdes(
+  user.params.list = user.params.list,
+  sim.params.list = sim.params.list,
+  power.results = power.results
+)
+
+# sample size validation
+sample.results <- validate_sample(
+  user.params.list = user.params.list,
+  sim.params.list = sim.params.list,
+  power.results = power.results
+)
