@@ -254,24 +254,22 @@ gen.combined.results.long <- function(pum_combined_results, power_up_results, si
     return(sim_results_melt)
   }
   sim_results_melt_full <- list.rbind(lapply(sim_results, get_sim_results))
-  sim_results_melt_full$value.type = sapply(rownames(sim_results_melt_full), function(x){strsplit(x, '\\.')[[1]][1]})
+  sim_results_melt_full$value.type <- sapply(rownames(sim_results_melt_full), function(x){strsplit(x, '\\.')[[1]][1]})
   
-  pum_results_table <- pum_combined_results
-  pum_results_table <- pum_results_table[,c('indiv', 'min1', 'min2', 'complete')]
+  pum_results_table <- pum_combined_results[,c('indiv', 'min1', 'min2', 'complete')]
   pum_results_table$MTP <- rownames(pum_results_table)
   pum_results_melt <- melt(pum_results_table, id.vars = 'MTP')
   pum_results_melt$method = 'pum'
-  pum_results_melt$value.type = 'adjusted.power'
+  pum_results_melt$value.type = 'adjusted_power'
   
-  powerup_results_table <- data.frame(matrix(NA, ncol = ncol(pum_results_table), nrow = nrow(pum_results_table)))
-  rownames(powerup_results_table) <- rownames(pum_results_table)
-  colnames(powerup_results_table) <- colnames(pum_results_table)
-  powerup_results_table$MTP <- rownames(pum_results_table)
-  powerup_results_table['rawp', 'indiv'] = power_up_results$power
-  powerup_results_melt <- melt(powerup_results_table, id.vars = 'MTP')
-  powerup_results_melt$method = 'pup'
-  powerup_results_melt$value.type = 'adjusted.power'
-  
+  powerup_results_melt <- data.frame(
+    MTP = 'rawp',
+    variable = 'indiv',
+    method = 'pup',
+    value = c(power_up_results$power, power_up_results$lower_ci, power_up_results$upper_ci),
+    value.type = c('adjusted_power', 'ci_lower',  'ci_upper')
+  )
+
   compare_results_long <- data.frame(
     rbind(pum_results_melt, powerup_results_melt, sim_results_melt_full)
   )
@@ -295,7 +293,7 @@ find_file <- function(params.file.base, type)
   ret.file <- results.files[grep(type, results.files)]
   if(length(ret.file) == 0)
   {
-    stop('Results not yet computed for given parameters')
+    stop(paste('Results not yet computed for given parameters:', params.file.base))
   }
   return(ret.file)
 }

@@ -81,7 +81,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
         proc <- procs[p-1]
         pvals <- get.adjp(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design)
         t21 <- Sys.time()
-        if (s == 1) {message(paste("One sample of ", proc, " took ", t21 - t11))}
+        if (s == 1) {message(paste("One sample of", proc, "took", t21 - t11))}
       }
       adjp.proc[s,,proc] = pvals
     }
@@ -105,9 +105,12 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     }
     else {
       power.results[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) mean(x < alpha))
-      se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
-        sqrt(mean(x < alpha)*(1 - mean(x < alpha))/sim.params.list[['S']]) 
-      } )
+      # se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
+      #   sqrt(0.25/S) 
+      # })
+      # se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
+      #   sqrt(mean(x < alpha)*(1 - mean(x < alpha))/S) 
+      # })
     }
     rejects <- get.rejects(adjp.proc[,,p], alpha)
     if (M == 1) {
@@ -118,15 +121,17 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
       num.t.pos <- apply(rejects[,alts], 1, sum)
     }
     power.results[p, "min"] <- mean(1 * (num.t.pos > 0))
-    se.power[p, "min"] <- sqrt(mean(1 * (num.t.pos > 0)) * (1 - mean(1 * (num.t.pos > 0)))/S)
+    # se.power[p, "min"] <- sqrt(mean(1 * (num.t.pos > 0)) * (1 - mean(1 * (num.t.pos > 0)))/S)
     power.results[p, "1/3"] <- mean(1 * (num.t.pos >= (1/3) * M))
-    se.power[p, "1/3"] <- sqrt(mean(1 * (num.t.pos >= (1/3) * M)) * (1 - mean(1 * (num.t.pos >= (1/3) * M)))/S)
+    # se.power[p, "1/3"] <- sqrt(mean(1 * (num.t.pos >= (1/3) * M)) * (1 - mean(1 * (num.t.pos >= (1/3) * M)))/S)
     power.results[p, "1/2"] <- mean(1 * (num.t.pos >= (1/2) * M))
-    se.power[p, "1/2"] <- sqrt(mean(1 * (num.t.pos >= (1/2) * M)) * (1 - mean(1 * (num.t.pos >= (1/2) * M)))/S)
+    # se.power[p, "1/2"] <- sqrt(mean(1 * (num.t.pos >= (1/2) * M)) * (1 - mean(1 * (num.t.pos >= (1/2) * M)))/S)
     power.results[p, "2/3"] <- mean(1 * (num.t.pos >= (2/3) * M))
-    se.power[p, "2/3"] <- sqrt(mean(1 * (num.t.pos >= (2/3) * M)) * (1 - mean(1 * (num.t.pos >= (2/3) * M)))/S)
+    # se.power[p, "2/3"] <- sqrt(mean(1 * (num.t.pos >= (2/3) * M)) * (1 - mean(1 * (num.t.pos >= (2/3) * M)))/S)
     power.results[p, "full"] <- mean(1 * (num.t.pos == M))
-    se.power[p, "full"] <- sqrt(mean(1 * (num.t.pos == M)) * (1 - mean(1 * (num.t.pos == M)))/S)
+    # se.power[p, "full"] <- sqrt(mean(1 * (num.t.pos == M)) * (1 - mean(1 * (num.t.pos == M)))/S)
+    
+    se.power[p,] <- sqrt(0.25/S) 
   }
   CI.lower.power <- power.results - 1.96 * (se.power)
   CI.upper.power <- power.results + 1.96 * (se.power)
@@ -267,11 +272,13 @@ get.rawp <- function(mdat, design, n.j, J) {
     mdums = lapply(mdat, function(m) make.dummies(m, "block.id", n.j, J))
     mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
     rawp = sapply(mods, function(x) get.pval.Level1(x))
-    # 
+
     # rawp = rep(NA, length(mdat))
     # for(m in 1:length(mdat))
     # {
-    #   mod = lm(D ~ block.id + Covar.j + Covar.ij + Treat.ij, data = mdat[[m]])
+    #   dat = data.frame(mdat[[m]])
+    #   dat$block.id = as.factor(dat$block.id)
+    #   mod = lm(D ~ block.id + Covar.j + Covar.ij + Treat.ij, data = dat)
     #   rawp[m] = summary(mod)$coef["Treat.ij", "Pr(>|t|)"]
     # }
 
@@ -330,7 +337,7 @@ makelist.samp <-function(M, samp.obs, T.ijk, model.params.list, design) {
         Covar.j  = samp.obs[['X.jk']][,m],
         Covar.ij = samp.obs[['C.ijk']][,m],
         Treat.ij = T.ijk,
-        block.id = samp.obs$ID$S.jk
+        block.id = as.factor(samp.obs$ID$S.jk)
       )
     }
 

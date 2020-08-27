@@ -30,9 +30,9 @@ library(tictoc)      # for timing
 
 ################
 # choose whether to load package code or local code
-# source(here::here("Methods", "utils.R"))
-# source(here::here("Methods", "blocked_i1_2cfr.R"))
-library(pum)         # for checking with the new methods
+source(here::here("Methods", "utils.R"))
+source(here::here("Methods", "blocked_i1_2cfr.R"))
+# library(pum)         # for checking with the new methods
 ################
 
 #' Estimating Power through simulations
@@ -174,15 +174,13 @@ validate_mdes <- function(user.params.list, sim.params.list, power.results) {
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
   
-  # add in raw
   procs <- sim.params.list[['procs']]
   if(!("rawp" %in% sim.params.list[['procs']]))
-  { 
+  {
     procs = c("rawp", procs)
   }
   
   mdes_compare_results <- NULL
-  
   for (MTP in procs){
     mdes_results <- mdes_blocked_i1_2c(
       power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'],
@@ -196,24 +194,24 @@ validate_mdes <- function(user.params.list, sim.params.list, power.results) {
       marginError = sim.params.list[['MoE']],
       p = sim.params.list[['p.j']],
       alpha = sim.params.list[['alpha']],
-      numCovar.1 = 5, numCovar.2 = 1,
-      R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
-      ICC = user.params.list[['ICC.2']],
+      numCovar.1 = 1, numCovar.2 = 1,
+      R2.1 = user.params.list[['R2.1']][1], R2.2 = user.params.list[['R2.2']][1],
+      ICC = user.params.list[['ICC.2']][1],
       mod.type = "constant",
       rho = user.params.list[['rho.default']],
       omega = user.params.list[['omega.2']],
       tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-      ncl = sim.params.list[['ncl']]
-      #, max.iter = sim.params.list[['max.iter']]
+      ncl = sim.params.list[['ncl']],
+      max.iter = sim.params.list[['max.iter']]
     )
-  
-    mdes_results = cbind(MTP = MTP, mdes_results)
-    colnames(mdes_results) = c('MTP', 'adjusted MDES', 'indiv power')
     mdes_compare_results <- rbind(mdes_compare_results, mdes_results)
   }
   compare.filename <- paste0(params.file.base, "comparison_mdes_results.RDS")
   
-  mdes_compare_results[,2:3] = apply(mdes_compare_results[,2:3], 2, as.numeric)
+  mdes_compare_results[,2:3] <- apply(mdes_compare_results[,2:3], 2, as.numeric)
+  mdes_compare_results[,'Targeted MDES'] <- user.params.list[['ATE_ES']][1]
+  rownames(mdes_compare_results) <- NULL
+  
   saveRDS(mdes_compare_results, file = here::here("Validation/data", compare.filename))
   return(mdes_compare_results)
   
@@ -236,7 +234,6 @@ validate_sample <- function(user.params.list, sim.params.list, power.results) {
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
   
-  # add in raw
   procs <- sim.params.list[['procs']]
   if(!("rawp" %in% sim.params.list[['procs']]))
   {
@@ -244,33 +241,37 @@ validate_sample <- function(user.params.list, sim.params.list, power.results) {
   }
   
   sample_compare_results <- NULL
-  
-  for (MTP in procs){
-    sample_results <- sample_blocked_i1_2c(
-      power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'],
-      MTP = MTP,
-      # fixed parameters
-      typesample = 'J',
-      MDES = user.params.list[['ATE_ES']][[1]],
-      M = user.params.list[['M']],
-      numFalse = user.params.list[['M']],
-      J = user.params.list[['J']],
-      n.j = user.params.list[['n.j']],
-      power.definition = "indiv",
-      marginError = sim.params.list[['MoE']],
-      p = sim.params.list[['p.j']],
-      alpha = sim.params.list[['alpha']],
-      numCovar.1 = 5, numCovar.2 = 1,
-      R2.1 = user.params.list[['R2.1']][1], R2.2 = user.params.list[['R2.2']][1],
-      ICC = user.params.list[['ICC.2']][1],
-      mod.type = "constant",
-      rho = user.params.list[['rho.default']],
-      omega = user.params.list[['omega.2']],
-      tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-      ncl = sim.params.list[['ncl']],
-      max.iter = sim.params.list[['max.iter']]
-    )
-    sample_compare_results <- rbind(sample_compare_results, sample_results)
+  for(type in c('J', 'n.j'))
+  {
+    for (MTP in procs)
+    {
+      sample_results <- sample_blocked_i1_2c(
+        power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'],
+        MTP = MTP,
+        typesample = type,
+        # fixed parameters
+        MDES = user.params.list[['ATE_ES']][[1]],
+        M = user.params.list[['M']],
+        numFalse = user.params.list[['M']],
+        J = user.params.list[['J']],
+        n.j = user.params.list[['n.j']],
+        power.definition = "indiv",
+        marginError = sim.params.list[['MoE']],
+        p = sim.params.list[['p.j']],
+        alpha = sim.params.list[['alpha']],
+        numCovar.1 = 1, numCovar.2 = 1,
+        R2.1 = user.params.list[['R2.1']][1], R2.2 = user.params.list[['R2.2']][1],
+        ICC = user.params.list[['ICC.2']][1],
+        mod.type = "constant",
+        rho = user.params.list[['rho.default']],
+        omega = user.params.list[['omega.2']],
+        tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
+        ncl = sim.params.list[['ncl']],
+        max.iter = sim.params.list[['max.iter']]
+      )
+      sample_results$type <- type
+      sample_compare_results <- rbind(sample_compare_results, sample_results)
+    }
   }
   sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
   compare.filename <- paste0(params.file.base, "comparison_sample_results.RDS")
@@ -278,3 +279,33 @@ validate_sample <- function(user.params.list, sim.params.list, power.results) {
   return(sample_compare_results)
   
 } # validate_sample
+
+### DEBUG
+if(FALSE)
+{
+  MTP = 'Bonferroni';
+  power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
+  MTP = MTP;
+  M = user.params.list[['M']];
+  numFalse = user.params.list[['M']];
+  J = user.params.list[['J']];
+  n.j = user.params.list[['n.j']];
+  power.definition = "indiv";
+  marginError = sim.params.list[['MoE']];
+  p = sim.params.list[['p.j']];
+  alpha = sim.params.list[['alpha']];
+  numCovar.1 = 1; numCovar.2 = 1;
+  R2.1 = user.params.list[['R2.1']][1]; R2.2 = user.params.list[['R2.2']][1];
+  ICC = user.params.list[['ICC.2']][1];
+  mod.type = "constant";
+  rho = user.params.list[['rho.default']];
+  omega = user.params.list[['omega.2']];
+  tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
+  ncl = sim.params.list[['ncl']];
+  max.iter = sim.params.list[['max.iter']];
+  updateProgress = NULL;
+  typesample = 'J';
+  J0 = 10; n.j0 = 10;
+  MDES = user.params.list[['ATE_ES']][[1]];
+  two.tailed = TRUE; max.iter = 100; tol = 0.1
+}
