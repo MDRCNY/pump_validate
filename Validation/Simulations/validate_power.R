@@ -47,7 +47,7 @@ source(here::here("Methods", "blocked_i1_2cfr.R"))
 #' @export
 #'
 #' @examples
-validate_power <- function(user.params.list, sim.params.list, design) {
+validate_power <- function(user.params.list, sim.params.list, design, gen.wide.results = FALSE) {
 
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -130,7 +130,7 @@ validate_power <- function(user.params.list, sim.params.list, design) {
         )
       } else if(design %in% c('simple_c2_2r'))
       {
-        # TODO
+        stop(paste('Unknown design:', design))
       } else {
         stop(paste('Unknown design:', design)) 
       }
@@ -151,7 +151,14 @@ validate_power <- function(user.params.list, sim.params.list, design) {
   }
 
   compare.filename <- paste0(params.file.base, "comparison_power_results.RDS")
-  compare_results <- gen.combined.results.long(pum_combined_results, power_up_results, sim_results)
+  if(gen.wide.results)
+  {
+    compare_results <- gen.combined.results.wide(pum_combined_results, power_up_results, sim_results) 
+  } else
+  {
+    compare_results <- gen.combined.results.long(pum_combined_results, power_up_results, sim_results)
+  }
+  
   saveRDS(compare_results, file = here::here("Validation/data", compare.filename))
 
   return(compare_results)

@@ -21,7 +21,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   
   if(M == 1) {
     print("Multiple testing corrections are not needed when M=1")
-    procs <- NULL
+    procs <- "Bonferroni"
   }
   
   power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + 5)
@@ -49,11 +49,10 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     # generate full, unobserved sample data
     samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
     S.jk <- samp.full$ID$S.jk
-    S.k <- samp.full$ID$S.k
+    S.k  <- samp.full$ID$S.k
     
     # blocked designs
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r')) {
-      
       T.ijk = randomizr::block_ra( S.jk, prob = p.j )
     # cluster designs
     } else if(design %in% c('simple_c2_2r'))  { 

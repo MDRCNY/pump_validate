@@ -67,9 +67,9 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   
   has_level_three = FALSE
   if ( !is.null( K ) && K > 1 ) {
-    has_level_three = TRUE
+    has_level_three <- TRUE
   } else {
-    K = 1
+    K <- 1
   }
   
   # ------------------------------#
@@ -78,11 +78,9 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # generates vector of school and district assignments, assuming equal sizes of everything
   if ( is.null( S.jk ) ) {
     assignments <- gen_simple_assignments( J, K, n.j )
-    
-    S.jk = assignments[['S.jk']]  # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
-    S.k = assignments[['S.k']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
+    S.jk        <- assignments[['S.jk']]  # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
+    S.k         <- assignments[['S.k']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
   }
-  
   N <- length( S.jk )
   
   
@@ -94,20 +92,19 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     
     # generate district covariates
     Sigma.D  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.D)
-    D      <- matrix(mvrnorm(K, mu = rep(0, M), Sigma = Sigma.D), K, M)
+    D        <- matrix(mvrnorm(K, mu = rep(0, M), Sigma = Sigma.D), K, M)
     
     # covariance of random district effects
-    Sigma.w  <- gen_cov_matrix(M, eta0.sq, eta0.sq, rho.w)
+    Sigma.w       <- gen_cov_matrix(M, eta0.sq, eta0.sq, rho.w)
     # covariance random district impacts
-    Sigma.z  <- gen_cov_matrix(M, eta1.sq, eta1.sq, rho.z)
+    Sigma.z       <- gen_cov_matrix(M, eta1.sq, eta1.sq, rho.z)
     # covariance between impacts and effects
-    Sigma.wz <- gen_cov_matrix(M, eta0.sq, eta1.sq, theta.wz)
+    Sigma.wz      <- gen_cov_matrix(M, eta0.sq, eta1.sq, theta.wz)
     # full covariance matrix
-    
-    Sigma.wz.full = gen_RE_cov_matrix( Sigma.w, Sigma.z, Sigma.wz )
+    Sigma.wz.full <- gen_RE_cov_matrix( Sigma.w, Sigma.z, Sigma.wz )
     
     # generate full vector of district random effects and impacts
-    wz.k <- matrix(mvrnorm(K, mu = rep(0,2*M), Sigma = Sigma.wz.full), K, 2*M)
+    wz.k <- mvrnorm(K, mu = rep(0,2*M), Sigma = Sigma.wz.full)
     w.k  <- wz.k[,1:M, drop = FALSE]
     z.k  <- wz.k[,(M+1):(2*M), drop = FALSE]
   } else {
@@ -119,20 +116,20 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # ------------------------------#
   
   # generate school covariates
-  Sigma.X         <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.X)
-  X            <- matrix(mvrnorm(J*K, mu = rep(0, M), Sigma = Sigma.X), J*K, M)
+  Sigma.X       <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.X)
+  X             <- mvrnorm(J*K, mu = rep(0, M), Sigma = Sigma.X)
   
   # covariance of school random effects
-  Sigma.u <- gen_cov_matrix(M, tau0.sq, tau0.sq, rho.u)
+  Sigma.u       <- gen_cov_matrix(M, tau0.sq, tau0.sq, rho.u)
   # covariance of school random impacts
-  Sigma.v <- gen_cov_matrix(M, tau1.sq, tau1.sq, rho.v)
+  Sigma.v       <- gen_cov_matrix(M, tau1.sq, tau1.sq, rho.v)
   # covariance of school random effects and impacts
-  Sigma.uv <- gen_cov_matrix(M, tau0.sq, tau1.sq, theta.uv)
+  Sigma.uv      <- gen_cov_matrix(M, tau0.sq, tau1.sq, theta.uv)
   # full covariance matrix
-  Sigma.uv.full = gen_RE_cov_matrix( Sigma.u, Sigma.v, Sigma.uv )
+  Sigma.uv.full <- gen_RE_cov_matrix( Sigma.u, Sigma.v, Sigma.uv )
   
   # generate full vector of school random effects and impacts
-  uv.jk <- matrix( mvrnorm(J*K, mu = rep(0, 2*M), Sigma = Sigma.uv.full), J*K, 2*M )
+  uv.jk <- mvrnorm(J*K, mu = rep(0, 2*M), Sigma = Sigma.uv.full)
   u.jk  <- uv.jk[,1:M, drop = FALSE]
   v.jk  <- uv.jk[,(M+1):(2*M), drop = FALSE]
   
@@ -164,13 +161,13 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     if ( has_level_three ) {
       # fill in values from district level variables
       Xi0.ijk[i,] = Xi0[S.k[i]]
-      D.k[i,]   = D[S.k[i],]
+      D.k[i,]     = D[S.k[i],]
       w.ijk[i,]   = w.k[S.k[i],]
       z.ijk[i,]   = z.k[S.k[i],]
     }
     
     # fill in values from school level variables
-    X.jk[i,]   = X[S.jk[i],]
+    X.jk[i,]    = X[S.jk[i],]
     u.ijk[i,]   = u.jk[S.jk[i],]
     v.ijk[i,]   = v.jk[S.jk[i],]
   }
@@ -248,12 +245,12 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     # ICC.calc
   }
   
-  ID = data.frame( S.jk = S.jk, S.k=S.k )
+  ID = data.frame( S.jk = S.jk, S.k = S.k )
   
   if ( has_level_three ) {
     return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = D.k, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
   } else {
-    ID$S.k = NULL
+    ID$S.k <- NULL
     return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
   }
 }
@@ -303,7 +300,7 @@ convert.params <- function(user.params.list, check = FALSE) {
   Xi1 <- user.params.list[['ATE_ES']] * sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
   
   model.params.list <- list(
-    M = user.params.list[['M']]                    # number of outcomes
+    M = user.params.list[['M']]                      # number of outcomes
     , J = user.params.list[['J']]                    # number of schools
     , K = user.params.list[['K']]                    # number of districts
     , n.j = user.params.list[['n.j']]                # number of individuals per school
@@ -315,7 +312,7 @@ convert.params <- function(user.params.list, check = FALSE) {
   if ( has_level_three ) {
     model.params.list <- c( model.params.list, list( 
       # -------------------------------------------- level 3
-      xi = xi                                        # M-vector of coefficient of district covariates
+      xi = xi                                          # M-vector of coefficient of district covariates
       , rho.D = user.params.list[['rho.D']]            # MxM correlation matrix of district covariates
       , eta0.sq = eta0.sq                              # M-vector of variances of district random effects
       , eta1.sq = eta1.sq                              # M-vector of variances of district impacts
@@ -327,9 +324,9 @@ convert.params <- function(user.params.list, check = FALSE) {
   
   model.params.list <- c( model.params.list, list(
     # -------------------------------------------- level 2
-    delta = delta                                  # M-vector of coefficients of school covariates
+    delta = delta                                    # M-vector of coefficients of school covariates
     #-------temp
-    , psi = user.params.list[['psi']]                 # coefficient of school covariate in treatment effect
+    , psi = user.params.list[['psi']]                # coefficient of school covariate in treatment effect
     #-------temp
     , rho.X = user.params.list[['rho.X']]            # MxM correlation matrix of school covariates
     , tau0.sq = tau0.sq                              # M-vector of variances of school random effects

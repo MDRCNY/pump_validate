@@ -198,7 +198,7 @@ gen.power.results.plot <- function(params.file.base)
 #'
 #' @return compare_results
 
-gen.results.table <- function(pum_combined_results, power_up_results, sim_results)
+gen.combined.results.wide <- function(pum_combined_results, power_up_results, sim_results)
 {
   compare_results <- data.frame(
     "pum_indiv" = pum_combined_results[,"indiv"],
