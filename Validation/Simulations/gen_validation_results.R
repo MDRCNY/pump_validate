@@ -19,7 +19,7 @@ source(here::here("Validation/Simulations", "misc.R"))
 design <- "blocked_i1_2c"
 
 sim.params.list <- list(
-  S = 2000           # Number of samples for Monte Carlo Simulation
+  S = 1000           # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
@@ -72,7 +72,7 @@ default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
-  , K = 2                                 # number of districts (still required for two-level model)
+  , K = 1                                 # number of districts (still required for two-level model)
   , n.j = 50                              # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.jk = NULL                           # N-length vector of indiv school assignments (optional)
@@ -93,7 +93,7 @@ user.params.list <- list(
   ################################################## level 2: schools
   , R2.2 = rep(0, M)                      # percent of school variation explained by school covariates
   , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
-  , ICC.2 = rep(0.5, M)                   # school intraclass correlation	
+  , ICC.2 = rep(0, M)                   # school intraclass correlation	
   , omega.2 = 0                           # ratio of school effect size variability to random effects variability
   , rho.u = default.rho.matrix            # MxM matrix of correlations for school random effects
   , rho.v = default.rho.matrix            # MxM matrix of correlations for school impacts
@@ -107,7 +107,7 @@ user.params.list <- list(
 # power validation
 power.results <- validate_power(
   user.params.list = user.params.list,
-  sim.params.list = sim.params.list, 
+  sim.params.list = sim.params.list,
   design = design
 )
 
