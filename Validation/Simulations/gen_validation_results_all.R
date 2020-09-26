@@ -15,9 +15,6 @@ source(here::here("Validation/Simulations", "validate_power.R"))
 # For coloring texts and other purposes
 source(here::here("Validation/Simulations", "misc.R"))
 
-# design <- "simple_c2_2r"
-design <- "blocked_i1_2c"
-
 sim.params.list <- list(
   S = 1000           # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
@@ -28,8 +25,8 @@ sim.params.list <- list(
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
   , max.iter = 100   # maximum number of iterations for MDES or sample size calculations
-  , procs = c("Bonferroni", "BH", "Holm")
-  # , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+  # , procs = c("Bonferroni", "BH", "Holm")
+  , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                      # Multiple testing procedures to compute power for 
   , runSim = TRUE    # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE   # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
@@ -73,7 +70,7 @@ user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
   , K = 1                                 # number of districts (still required for two-level model)
-  , n.j = 50                              # number of individuals per school
+  , n.j = 75                              # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.jk = NULL                           # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
@@ -93,8 +90,8 @@ user.params.list <- list(
   ################################################## level 2: schools
   , R2.2 = rep(0, M)                      # percent of school variation explained by school covariates
   , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
-  , ICC.2 = rep(0, M)                   # school intraclass correlation	
-  , omega.2 = 0                           # ratio of school effect size variability to random effects variability
+  , ICC.2 = rep(0, M)                     # school intraclass correlation	
+  , omega.2 = 0.5                         # ratio of school effect size variability to random effects variability
   , rho.u = default.rho.matrix            # MxM matrix of correlations for school random effects
   , rho.v = default.rho.matrix            # MxM matrix of correlations for school impacts
   , theta.uv = matrix(0, M, M)            # MxM matrix of correlations between school random effects and impacts
@@ -104,23 +101,92 @@ user.params.list <- list(
   , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals 
 )
 
-# power validation
-power.results <- validate_power(
-  user.params.list = user.params.list,
-  sim.params.list = sim.params.list,
-  design = design
-)
+scenarios = 23
 
-# MDES validation
-mdes.results <- validate_mdes(
-  user.params.list = user.params.list,
-  sim.params.list = sim.params.list,
-  power.results = power.results
-)
+### vary sample size
 
-# sample size validation
-sample.results <- validate_sample(
-  user.params.list = user.params.list,
-  sim.params.list = sim.params.list,
-  power.results = power.results
-)
+user.params.list[['n.j']] <- 100
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r")
+
+print(paste('Completed 3 out of', scenarios))
+
+user.params.list[['n.j']] <- 75
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r")
+
+print(paste('Completed 6 out of', scenarios))
+
+user.params.list[['n.j']] <- 50
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r")
+
+print(paste('Completed 9 out of', scenarios))
+
+# vary R2
+user.params.list[['R2.1']] <- rep(0.6, M)  
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+user.params.list[['R2.2']] <- rep(0.6, M)  
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+
+print(paste('Completed 11 out of', scenarios))
+
+# vary rho
+rho.default <- 0.2
+default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+user.params.list[['rho.default']] <- rho.default
+user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
+user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <- default.rho.matrix
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+
+rho.default <- 0.8
+default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+user.params.list[['rho.default']] <- rho.default
+user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
+user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <- default.rho.matrix
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+
+
+print(paste('Completed 13 out of', scenarios))
+
+# vary true positives
+user.params.list[['ATE_ES']] = c(0.125, 0, 0)
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+
+print(paste('Completed 14 out of', scenarios))
+
+# calculate MDES and sample size
+
+## back to defaults
+user.params.list[['n.j']] <- 50
+rho.default <- 0.5
+default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+user.params.list[['rho.default']] <- rho.default
+user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
+user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <- default.rho.matrix
+user.params.list[['ATE_ES']] = c(0.125, 0.125, 0.125)
+user.params.list[['R2.1']] <- rep(0, M)  
+user.params.list[['R2.2']] <- rep(0, M)  
+
+power.results.2c <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", power.results.2c)
+sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2c", power.results.2c)
+
+print(paste('Completed 17 out of', scenarios))
+
+power.results.2f <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f")
+mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2f", power.results.2f)
+sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2f", power.results.2f)
+
+print(paste('Completed 20 out of', scenarios))
+
+power.results.2r <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r")
+mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2r", power.results.2r)
+sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2r", power.results.2r)
+
+print(paste('Completed 23 out of', scenarios))
+
+

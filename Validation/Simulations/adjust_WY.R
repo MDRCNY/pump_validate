@@ -31,7 +31,7 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
   B <- sim.params.list[['B']]
   ncl <- sim.params.list[['ncl']]
   maxT <- sim.params.list[['maxT']]
-  N <- model.params.list[['N']] 
+  N <- model.params.list[['n.j']]*model.params.list[['J']]
   M <- model.params.list[['M']]
   J <- model.params.list[['J']]
   n.j <- model.params.list[['n.j']]

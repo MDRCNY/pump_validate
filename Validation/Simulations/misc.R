@@ -164,7 +164,8 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
     user.params.list[['J']], "_J_",
     user.params.list[['n.j']], "_nj_",
     convert.vec.to.filename(user.params.list[['rho.default']]), "_rho_",
-    convert.vec.to.filename(user.params.list[['R2.1']]),"_R21_"
+    convert.vec.to.filename(user.params.list[['R2.1']]),"_R21_",
+    convert.vec.to.filename(user.params.list[['R2.2']]),"_R22_"
   )
   return(params.file.base)
 }
@@ -176,7 +177,7 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
 #'
 #' @return results_plot
 
-gen.power.results.plot <- function(params.file.base)
+gen.power.results.plot <- function(params.file.base, design)
 {
   power.file <- find_file(params.file.base, type = 'power')
   power_results <- readRDS(power.file)
@@ -185,7 +186,8 @@ gen.power.results.plot <- function(params.file.base)
     geom_point() +
     geom_line() +
     facet_wrap(~power_type, labeller = label_both) +
-    ylab('Power')
+    ylab('Power') +
+    ggtitle(paste('Design:', design))
   return(results_plot)
 }
 

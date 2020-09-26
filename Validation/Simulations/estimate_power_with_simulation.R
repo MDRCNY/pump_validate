@@ -160,10 +160,10 @@ make.model<-function(dat, dummies, design) {
     mod <- fastLm(mmat, dat[,"D"])
   } else if (design == "blocked_i1_2f") {
     form <- as.formula("D~1+Treat.ij+Covar.j+Covar.ij+(1|block.id)")
-    mod <- lmer(form, data=dat)
+    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_i1_2r") {
     form <- as.formula(paste0("D~1+Treat.ij+Covar.j+Covar.ij+(1+Treat.ij|block.id)"))
-    mod <- lmer(form, data=dat)
+    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("D~Treat.j+Covar.j+Covar.ij+(1|cluster.id)"))
     #    form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))

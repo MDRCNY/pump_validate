@@ -20,6 +20,7 @@ library(lme4)        # for modeling
 library(MASS)
 library(multtest)    # Multiple Testing Procedures package
 library(nlme)
+library(pkgcond)     # for suppress_messages
 library(PowerUpR)    # for checking with another power estimation function
 library(RcppEigen)   # rcpp for speed issues
 library(reshape2)
@@ -30,9 +31,14 @@ library(tictoc)      # for timing
 
 ################
 # choose whether to load package code or local code
-source(here::here("Methods", "utils.R"))
-source(here::here("Methods", "blocked_i1_2cfr.R"))
-# library(pum)         # for checking with the new methods
+# source(here::here("Methods", "utils.R"))
+# source(here::here("Methods", "blocked_i1_2cfr.R"))
+
+# to install pum from github, generate a personal authentication token 'foo'
+# at https://github.com/settings/tokens
+# then run
+# devtools::install_github('MDRCNY/pum-p', auth_token = 'foo')
+library(pum)         # for checking with the new methods
 ################
 
 #' Estimating Power through simulations
@@ -51,6 +57,7 @@ validate_power <- function(user.params.list, sim.params.list, design, gen.wide.r
 
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+  print(paste('Power validation for:', params.file.base))
 
   #####################
   # Simulation Values #
@@ -176,10 +183,11 @@ validate_power <- function(user.params.list, sim.params.list, design, gen.wide.r
 #' @export
 #'
 #' @examples
-validate_mdes <- function(user.params.list, sim.params.list, power.results) {
+validate_mdes <- function(user.params.list, sim.params.list, design, power.results) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+  print(paste('MDES validation for:', params.file.base))
   
   procs <- sim.params.list[['procs']]
   if(!("rawp" %in% sim.params.list[['procs']]))
@@ -236,10 +244,11 @@ validate_mdes <- function(user.params.list, sim.params.list, power.results) {
 #' @export
 #'
 #' @examples
-validate_sample <- function(user.params.list, sim.params.list, power.results) {
+validate_sample <- function(user.params.list, sim.params.list, design, power.results) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+  print(paste('Sample validation for:', params.file.base))
   
   procs <- sim.params.list[['procs']]
   if(!("rawp" %in% sim.params.list[['procs']]))
