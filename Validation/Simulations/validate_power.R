@@ -191,7 +191,7 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
 #' @export
 #'
 #' @examples
-validate_mdes <- function(user.params.list, sim.params.list, design, power.results, overwrite = TRUE) {
+validate_mdes <- function(user.params.list, sim.params.list, design, overwrite = TRUE) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -205,6 +205,12 @@ validate_mdes <- function(user.params.list, sim.params.list, design, power.resul
     if(!("rawp" %in% sim.params.list[['procs']]))
     {
       procs = c("rawp", procs)
+    }
+    
+    power.results = find_file(params.file.base, type = 'power')
+    if(length(power.results) == 0)
+    {
+      stop(paste('Power results table needed for params:', params.file.base))
     }
     
     mdes_compare_results <- NULL
@@ -260,7 +266,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design, power.resul
 #' @export
 #'
 #' @examples
-validate_sample <- function(user.params.list, sim.params.list, design, power.results, overwrite = TRUE) {
+validate_sample <- function(user.params.list, sim.params.list, design, overwrite = TRUE) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -275,6 +281,12 @@ validate_sample <- function(user.params.list, sim.params.list, design, power.res
     if(!("rawp" %in% sim.params.list[['procs']]))
     {
       procs = c("rawp", procs)
+    }
+    
+    power.results = find_file(params.file.base, type = 'power')
+    if(length(power.results) == 0)
+    {
+      stop(paste('Power results table needed for params:', params.file.base))
     }
     
     sample_compare_results <- NULL
