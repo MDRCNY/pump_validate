@@ -7,7 +7,7 @@ Validation/data/*.RDS
 Validation/data/*.csv
 Validation/data/
 *cache*
-_files/*
+Validation/*_files/*
 
 ## Added in another repo. Don't remember for which use.
 inst/doc

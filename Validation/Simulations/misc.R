@@ -180,6 +180,10 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
 gen.power.results.plot <- function(params.file.base, design)
 {
   power.file <- find_file(params.file.base, type = 'power')
+  if(length(power.file) == 0)
+  {
+    stop(paste('Results not yet computed for given parameters:', params.file.base))
+  }
   power_results <- readRDS(power.file)
   results_plot <- ggplot(power_results,
     aes(x = MTP, y = value, color = method)) +
@@ -293,9 +297,5 @@ find_file <- function(params.file.base, type)
   results.files <- results.files[grep(params.file.base, results.files)]
   # return file
   ret.file <- results.files[grep(type, results.files)]
-  if(length(ret.file) == 0)
-  {
-    stop(paste('Results not yet computed for given parameters:', params.file.base))
-  }
   return(ret.file)
 }

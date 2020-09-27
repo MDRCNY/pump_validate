@@ -16,7 +16,7 @@ source(here::here("Validation/Simulations", "validate_power.R"))
 source(here::here("Validation/Simulations", "misc.R"))
 
 sim.params.list <- list(
-  S = 1000           # Number of samples for Monte Carlo Simulation
+  S = 100           # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
@@ -101,36 +101,37 @@ user.params.list <- list(
   , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals 
 )
 
+overwrite = FALSE
 scenarios = 23
 
 ### vary sample size
 
 user.params.list[['n.j']] <- 100
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f")
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", overwrite)
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", overwrite)
 
 print(paste('Completed 3 out of', scenarios))
 
 user.params.list[['n.j']] <- 75
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f")
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", overwrite)
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", overwrite)
 
 print(paste('Completed 6 out of', scenarios))
 
 user.params.list[['n.j']] <- 50
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f")
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", overwrite)
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", overwrite)
 
 print(paste('Completed 9 out of', scenarios))
 
 # vary R2
 user.params.list[['R2.1']] <- rep(0.6, M)  
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
 user.params.list[['R2.2']] <- rep(0.6, M)  
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
 
 print(paste('Completed 11 out of', scenarios))
 
@@ -140,21 +141,21 @@ default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list[['rho.default']] <- rho.default
 user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
 user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <- default.rho.matrix
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
 
 rho.default <- 0.8
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list[['rho.default']] <- rho.default
 user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
 user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <- default.rho.matrix
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
 
 
 print(paste('Completed 13 out of', scenarios))
 
 # vary true positives
 user.params.list[['ATE_ES']] = c(0.125, 0, 0)
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
+power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
 
 print(paste('Completed 14 out of', scenarios))
 
@@ -171,21 +172,21 @@ user.params.list[['ATE_ES']] = c(0.125, 0.125, 0.125)
 user.params.list[['R2.1']] <- rep(0, M)  
 user.params.list[['R2.2']] <- rep(0, M)  
 
-power.results.2c <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c")
-mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", power.results.2c)
-sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2c", power.results.2c)
+power.results.2c <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
+mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", power.results.2c, overwrite)
+sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2c", power.results.2c, overwrite)
 
 print(paste('Completed 17 out of', scenarios))
 
-power.results.2f <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f")
-mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2f", power.results.2f)
-sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2f", power.results.2f)
+power.results.2f <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", overwrite)
+mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2f", power.results.2f, overwrite)
+sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2f", power.results.2f, overwrite)
 
 print(paste('Completed 20 out of', scenarios))
 
-power.results.2r <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r")
-mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2r", power.results.2r)
-sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2r", power.results.2r)
+power.results.2r <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", overwrite)
+mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2r", power.results.2r, overwrite)
+sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2r", power.results.2r, overwrite)
 
 print(paste('Completed 23 out of', scenarios))
 

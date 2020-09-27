@@ -357,6 +357,11 @@ user.params.list[['R2.2']] <- rep(0, M)
 design <- "blocked_i1_2c"
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 mdes.file <- find_file(params.file.base, type = 'mdes')
+if(length(mdes.file) == 0)
+{
+  stop(paste('Results not yet computed for given parameters:', params.file.base))
+}
+
 blocked_i1_2c_mdes_results_nj50 <- readRDS(mdes.file)
 pander::pandoc.table(
   blocked_i1_2c_mdes_results_nj50,
@@ -369,6 +374,11 @@ pander::pandoc.table(
 design <- "blocked_i1_2f"
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 mdes.file <- find_file(params.file.base, type = 'mdes')
+if(length(mdes.file) == 0)
+{
+  stop(paste('Results not yet computed for given parameters:', params.file.base))
+}
+
 blocked_i1_2f_mdes_results_nj50 <- readRDS(mdes.file)
 pander::pandoc.table(
   blocked_i1_2f_mdes_results_nj50,
@@ -381,6 +391,11 @@ pander::pandoc.table(
 design <- "blocked_i1_2r"
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 mdes.file <- find_file(params.file.base, type = 'mdes')
+if(length(mdes.file) == 0)
+{
+  stop(paste('Results not yet computed for given parameters:', params.file.base))
+}
+
 blocked_i1_2r_mdes_results_nj50 <- readRDS(mdes.file)
 pander::pandoc.table(
   blocked_i1_2r_mdes_results_nj50,
@@ -397,6 +412,11 @@ School size: 50
 design <- "blocked_i1_2c"
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample')
+if(length(sample.file) == 0)
+{
+  stop(paste('Results not yet computed for given parameters:', params.file.base))
+}
+
 blocked_i1_2c_sample_results_nj50 <- readRDS(sample.file)
 pander::pandoc.table(
   blocked_i1_2c_sample_results_nj50,
@@ -410,6 +430,11 @@ pander::pandoc.table(
 design <- "blocked_i1_2f"
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample')
+if(length(sample.file) == 0)
+{
+  stop(paste('Results not yet computed for given parameters:', params.file.base))
+}
+
 blocked_i1_2f_sample_results_nj50 <- readRDS(sample.file)
 pander::pandoc.table(
   blocked_i1_2f_sample_results_nj50,
@@ -422,6 +447,11 @@ pander::pandoc.table(
 design <- "blocked_i1_2r"
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample')
+if(length(sample.file) == 0)
+{
+  stop(paste('Results not yet computed for given parameters:', params.file.base))
+}
+
 blocked_i1_2r_sample_results_nj50 <- readRDS(sample.file)
 pander::pandoc.table(
   blocked_i1_2r_sample_results_nj50,
