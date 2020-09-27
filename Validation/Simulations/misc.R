@@ -164,7 +164,8 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
     user.params.list[['J']], "_J_",
     user.params.list[['n.j']], "_nj_",
     convert.vec.to.filename(user.params.list[['rho.default']]), "_rho_",
-    convert.vec.to.filename(user.params.list[['R2.1']]),"_R21_"
+    convert.vec.to.filename(user.params.list[['R2.1']]),"_R21_",
+    convert.vec.to.filename(user.params.list[['R2.2']]),"_R22_"
   )
   return(params.file.base)
 }
@@ -176,16 +177,21 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
 #'
 #' @return results_plot
 
-gen.power.results.plot <- function(params.file.base)
+gen.power.results.plot <- function(params.file.base, design)
 {
   power.file <- find_file(params.file.base, type = 'power')
+  if(length(power.file) == 0)
+  {
+    stop(paste('Results not yet computed for given parameters:', params.file.base))
+  }
   power_results <- readRDS(power.file)
   results_plot <- ggplot(power_results,
     aes(x = MTP, y = value, color = method)) +
     geom_point() +
     geom_line() +
     facet_wrap(~power_type, labeller = label_both) +
-    ylab('Power')
+    ylab('Power') +
+    ggtitle(paste('Design:', design))
   return(results_plot)
 }
 
@@ -291,9 +297,5 @@ find_file <- function(params.file.base, type)
   results.files <- results.files[grep(params.file.base, results.files)]
   # return file
   ret.file <- results.files[grep(type, results.files)]
-  if(length(ret.file) == 0)
-  {
-    stop(paste('Results not yet computed for given parameters:', params.file.base))
-  }
   return(ret.file)
 }

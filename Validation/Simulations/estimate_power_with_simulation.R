@@ -53,7 +53,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     
     # blocked designs
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r')) {
-      T.ijk = randomizr::block_ra( S.jk, prob = p.j )
+      T.ijk <- randomizr::block_ra( S.jk, prob = p.j )
     # cluster designs
     } else if(design %in% c('simple_c2_2r'))  { 
       T.ijk <- randomizr::cluster_ra( S.jk, prob = p.j )
@@ -160,10 +160,10 @@ make.model<-function(dat, dummies, design) {
     mod <- fastLm(mmat, dat[,"D"])
   } else if (design == "blocked_i1_2f") {
     form <- as.formula("D~1+Treat.ij+Covar.j+Covar.ij+(1|block.id)")
-    mod <- lmer(form, data=dat)
+    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_i1_2r") {
     form <- as.formula(paste0("D~1+Treat.ij+Covar.j+Covar.ij+(1+Treat.ij|block.id)"))
-    mod <- lmer(form, data=dat)
+    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("D~Treat.j+Covar.j+Covar.ij+(1|cluster.id)"))
     #    form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))

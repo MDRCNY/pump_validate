@@ -48,7 +48,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   
   M        <- model.params.list[['M']];       J       <- model.params.list[['J']];
   K        <- model.params.list[['K']];       n.j     <- model.params.list[['n.j']];
-  S.jk      <- model.params.list[['S.jk']];   S.k     <- model.params.list[['S.k']];
+  S.jk     <- model.params.list[['S.jk']];    S.k     <- model.params.list[['S.k']];
   Xi0      <- model.params.list[['Xi0']];     Xi1     <- model.params.list[['Xi1']];
   rho.D    <- model.params.list[['rho.D']];   xi      <- model.params.list[['xi']];
   eta0.sq  <- model.params.list[['eta0.sq']]; eta1.sq <- model.params.list[['eta1.sq']];
