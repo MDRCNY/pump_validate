@@ -207,11 +207,12 @@ validate_mdes <- function(user.params.list, sim.params.list, design, overwrite =
       procs = c("rawp", procs)
     }
     
-    power.results = find_file(params.file.base, type = 'power')
-    if(length(power.results) == 0)
+    power.file = find_file(params.file.base, type = 'power')
+    if(length(power.file) == 0)
     {
       stop(paste('Power results table needed for params:', params.file.base))
     }
+    power.results = readRDS(power.file)
     
     mdes_compare_results <- NULL
     for (MTP in procs){
@@ -283,11 +284,12 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
       procs = c("rawp", procs)
     }
     
-    power.results = find_file(params.file.base, type = 'power')
-    if(length(power.results) == 0)
+    power.file = find_file(params.file.base, type = 'power')
+    if(length(power.file) == 0)
     {
       stop(paste('Power results table needed for params:', params.file.base))
     }
+    power.results = readRDS(power.file)
     
     sample_compare_results <- NULL
     for(type in c('J', 'n.j'))
