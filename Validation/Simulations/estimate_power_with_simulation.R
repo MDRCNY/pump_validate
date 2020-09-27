@@ -53,7 +53,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     
     # blocked designs
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r')) {
-      T.ijk = randomizr::block_ra( S.jk, prob = p.j )
+      T.ijk <- randomizr::block_ra( S.jk, prob = p.j )
     # cluster designs
     } else if(design %in% c('simple_c2_2r'))  { 
       T.ijk <- randomizr::cluster_ra( S.jk, prob = p.j )

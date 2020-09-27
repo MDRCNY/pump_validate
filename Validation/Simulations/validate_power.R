@@ -22,6 +22,7 @@ library(multtest)    # Multiple Testing Procedures package
 library(nlme)
 library(pkgcond)     # for suppress_messages
 library(PowerUpR)    # for checking with another power estimation function
+library(randomizr)   # for treatment assignment
 library(RcppEigen)   # rcpp for speed issues
 library(reshape2)
 library(rlist)
