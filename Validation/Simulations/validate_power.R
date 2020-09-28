@@ -32,14 +32,14 @@ library(tictoc)      # for timing
 
 ################
 # choose whether to load package code or local code
-# source(here::here("Methods", "utils.R"))
-# source(here::here("Methods", "blocked_i1_2cfr.R"))
+source(here::here("Methods", "utils.R"))
+source(here::here("Methods", "blocked_i1_2cfr.R"))
 
 # to install pum from github, generate a personal authentication token 'foo'
 # at https://github.com/settings/tokens
 # then run
 # devtools::install_github('MDRCNY/pum-p', auth_token = 'foo')
-library(pum)         # for checking with the new methods
+# library(pum)         # for checking with the new methods
 ################
 
 #' Estimating Power through simulations
@@ -130,7 +130,7 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
         {
           pum_results <- power_blocked_i1_2c(
             M = user.params.list[['M']], MTP = MTP,
-            MDES = user.params.list[['ATE_ES']], numFalse = user.params.list[['M']],
+            MDES = user.params.list[['ATE_ES']], numFalse = sum(user.params.list[['ATE_ES']] != 0),
             J = user.params.list[['J']], n.j = user.params.list[['n.j']],
             p = sim.params.list[['p.j']],
             alpha = sim.params.list[['alpha']], numCovar.1 = 0, numCovar.2 = 0,
@@ -221,7 +221,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design, overwrite =
         MTP = MTP,
         # fixed parameters
         M = user.params.list[['M']],
-        numFalse = user.params.list[['M']],
+        numFalse = sum(user.params.list[['ATE_ES']] != 0),
         J = user.params.list[['J']],
         n.j = user.params.list[['n.j']],
         power.definition = "indiv",
@@ -342,7 +342,8 @@ if(FALSE)
   power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   MTP = MTP;
   M = user.params.list[['M']];
-  numFalse = user.params.list[['M']];
+  MDES = user.params.list[['ATE_ES']];
+  numFalse = sum(user.params.list[['ATE_ES']] != 0);
   J = user.params.list[['J']];
   n.j = user.params.list[['n.j']];
   power.definition = "indiv";
@@ -361,6 +362,6 @@ if(FALSE)
   updateProgress = NULL;
   typesample = 'J';
   J0 = 10; n.j0 = 10;
-  MDES = user.params.list[['ATE_ES']][[1]];
+  # MDES = user.params.list[['ATE_ES']][[1]];
   two.tailed = TRUE; max.iter = 100; tol = 0.1
 }
