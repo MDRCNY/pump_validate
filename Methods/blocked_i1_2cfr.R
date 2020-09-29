@@ -635,7 +635,7 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
     } # if the function is being called, run the progress bar
     
     # Function to calculate the target power to check in with the pre-specified power in the loop
-    runpower <- power_blocked_i1_2c(M = M, MDES = try.MDES, MTP = MTP, J = J, n.j = n.j,rho = rho,
+    runpower <- power_blocked_i1_2c(M = M, MDES = rep(try.MDES, M), MTP = MTP, J = J, n.j = n.j,rho = rho,
                                     p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                     mod.type = mod.type, sigma = sigma, omega = omega,
                                     tnum = tnum, snum = snum, ncl = ncl)
