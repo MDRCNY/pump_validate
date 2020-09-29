@@ -130,7 +130,7 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
         {
           pum_results <- power_blocked_i1_2c(
             M = user.params.list[['M']], MTP = MTP,
-            MDES = user.params.list[['ATE_ES']], numFalse = sum(user.params.list[['ATE_ES']] != 0),
+            MDES = user.params.list[['ATE_ES']],
             J = user.params.list[['J']], n.j = user.params.list[['n.j']],
             p = sim.params.list[['p.j']],
             alpha = sim.params.list[['alpha']], numCovar.1 = 0, numCovar.2 = 0,
@@ -221,7 +221,6 @@ validate_mdes <- function(user.params.list, sim.params.list, design, overwrite =
         MTP = MTP,
         # fixed parameters
         M = user.params.list[['M']],
-        numFalse = sum(user.params.list[['ATE_ES']] != 0),
         J = user.params.list[['J']],
         n.j = user.params.list[['n.j']],
         power.definition = "indiv",
@@ -303,7 +302,6 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
           # fixed parameters
           MDES = user.params.list[['ATE_ES']][[1]],
           M = user.params.list[['M']],
-          numFalse = user.params.list[['M']],
           J = user.params.list[['J']],
           n.j = user.params.list[['n.j']],
           power.definition = "indiv",
@@ -343,7 +341,6 @@ if(FALSE)
   MTP = MTP;
   M = user.params.list[['M']];
   MDES = user.params.list[['ATE_ES']];
-  numFalse = sum(user.params.list[['ATE_ES']] != 0);
   J = user.params.list[['J']];
   n.j = user.params.list[['n.j']];
   power.definition = "indiv";
@@ -351,8 +348,12 @@ if(FALSE)
   p = sim.params.list[['p.j']];
   alpha = sim.params.list[['alpha']];
   numCovar.1 = 1; numCovar.2 = 1;
-  R2.1 = user.params.list[['R2.1']][1]; R2.2 = user.params.list[['R2.2']][1];
-  ICC = user.params.list[['ICC.2']][1];
+  R2.1 = user.params.list[['R2.1']];
+  R2.2 = user.params.list[['R2.2']];
+  ICC = user.params.list[['ICC.2']];
+  # R2.1 = user.params.list[['R2.1']][1];
+  # R2.2 = user.params.list[['R2.2']][1];
+  # ICC = user.params.list[['ICC.2']][1];
   mod.type = "constant";
   rho = user.params.list[['rho.default']];
   omega = user.params.list[['omega.2']];

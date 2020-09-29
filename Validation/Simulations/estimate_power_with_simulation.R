@@ -154,16 +154,29 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
 
 make.model<-function(dat, dummies, design) {
 
-  if (design == "blocked_i1_2c") {
+  if (design == "blocked_i1_2c")
+  {
+    
     mmat <- cbind(dat[,c("Treat.ij", "Covar.j", "Covar.ij")],
                   dat[,grep("block[0-9]", colnames(dat))])
     mod <- fastLm(mmat, dat[,"D"])
-  } else if (design == "blocked_i1_2f") {
+    
+  } else if (design == "blocked_i1_2f")
+  {
+    # M1 = lm( Y ~ 0 + id + id:Z - Z )
+    # betas = coef(M1)[ (K+1):(2*K) ]
+    # ATE_hat = mean( betas )
+    # blkvar::interacted_linear_estimators
+    
     form <- as.formula("D~1+Treat.ij+Covar.j+Covar.ij+(1|block.id)")
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
-  } else if (design == "blocked_i1_2r") {
+    
+  } else if (design == "blocked_i1_2r")
+  {
+    
     form <- as.formula(paste0("D~1+Treat.ij+Covar.j+Covar.ij+(1+Treat.ij|block.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
+    
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("D~Treat.j+Covar.j+Covar.ij+(1|cluster.id)"))
     #    form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))
