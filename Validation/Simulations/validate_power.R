@@ -300,7 +300,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
           MTP = MTP,
           typesample = type,
           # fixed parameters
-          MDES = user.params.list[['ATE_ES']][[1]],
+          MDES = user.params.list[['ATE_ES']][1],
           M = user.params.list[['M']],
           J = user.params.list[['J']],
           n.j = user.params.list[['n.j']],
@@ -339,6 +339,7 @@ if(FALSE)
   MTP = 'Bonferroni';
   power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   MTP = MTP;
+  MDES = user.params.list[['ATE_ES']];
   M = user.params.list[['M']];
   J = user.params.list[['J']];
   n.j = user.params.list[['n.j']];
@@ -347,8 +348,12 @@ if(FALSE)
   p = sim.params.list[['p.j']];
   alpha = sim.params.list[['alpha']];
   numCovar.1 = 1; numCovar.2 = 1;
-  R2.1 = user.params.list[['R2.1']][1]; R2.2 = user.params.list[['R2.2']][1];
-  ICC = user.params.list[['ICC.2']][1];
+  R2.1 = user.params.list[['R2.1']];
+  R2.2 = user.params.list[['R2.2']];
+  ICC = user.params.list[['ICC.2']];
+  # R2.1 = user.params.list[['R2.1']][1];
+  # R2.2 = user.params.list[['R2.2']][1];
+  # ICC = user.params.list[['ICC.2']][1];
   mod.type = "constant";
   rho = user.params.list[['rho.default']];
   omega = user.params.list[['omega.2']];
