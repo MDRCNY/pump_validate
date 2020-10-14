@@ -15,6 +15,9 @@ source(here::here("Validation/Simulations", "validate_power.R"))
 # For coloring texts and other purposes
 source(here::here("Validation/Simulations", "misc.R"))
 
+cores = parallel::detectCores()
+ncl = cores - 1
+
 sim.params.list <- list(
   S = 10           # Number of samples for Monte Carlo Simulation
   , B = 2            # Number of samples for WestFall-Young. The equivalent is snum in our new method.
@@ -23,7 +26,7 @@ sim.params.list <- list(
   , MoE = 0.05       # Margin of error
   , p.j = 0.5        # Binomial assignment probability
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
-  , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
+  , ncl = ncl        # Number of computer clusters (max on RStudio Server is 16)
   , max.iter = 100   # maximum number of iterations for MDES or sample size calculations
   # , procs = c("Bonferroni", "BH", "Holm")
   , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
@@ -101,7 +104,7 @@ user.params.list <- list(
   , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals 
 )
 
-overwrite = FALSE
+overwrite = TRUE
 scenarios = 24
 
 ### vary sample size
@@ -172,7 +175,7 @@ print('--------------------------------------------------------')
 user.params.list[['ATE_ES']] = c(0.125, 0, 0)
 power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
 
-# vary true positives
+# vary ICC.2
 user.params.list[['ATE_ES']] = c(0.125, 0.125, 0.125)
 user.params.list[['ICC.2']] = rep(0.5, M)
 user.params.list[['omega.2']] = 0.5

@@ -20,6 +20,7 @@ library(lme4)        # for modeling
 library(MASS)
 library(multtest)    # Multiple Testing Procedures package
 library(nlme)
+library(parallel)    # parallel computing
 library(pkgcond)     # for suppress_messages
 library(PowerUpR)    # for checking with another power estimation function
 library(randomizr)   # for treatment assignment
@@ -300,7 +301,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
           MTP = MTP,
           typesample = type,
           # fixed parameters
-          MDES = user.params.list[['ATE_ES']][[1]],
+          MDES = user.params.list[['ATE_ES']][1],
           M = user.params.list[['M']],
           J = user.params.list[['J']],
           n.j = user.params.list[['n.j']],
@@ -336,6 +337,8 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
 ### DEBUG
 if(FALSE)
 {
+  # power.results = power.results.2c
+  
   MTP = 'Bonferroni';
   power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   MTP = MTP;

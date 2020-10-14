@@ -1,7 +1,7 @@
 ## R Outout data and storage files
 .RData
 .Ruserdata
-.ini
+*.ini
 .DS_Store
 Validation/data/*.RDS
 Validation/data/*.csv
