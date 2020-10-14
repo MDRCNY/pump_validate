@@ -227,4 +227,3 @@ sample.results <- validate_sample(user.params.list, sim.params.list, design = "b
 print('--------------------------------------------------------')
 print(paste('Completed 24 out of', scenarios))
 print('--------------------------------------------------------')
-

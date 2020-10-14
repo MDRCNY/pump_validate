@@ -342,6 +342,7 @@ if(FALSE)
   MTP = 'Bonferroni';
   power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   MTP = MTP;
+  MDES = user.params.list[['ATE_ES']];
   M = user.params.list[['M']];
   MDES = user.params.list[['ATE_ES']];
   J = user.params.list[['J']];
