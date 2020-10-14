@@ -223,6 +223,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     stop(paste('Please provide a vector of MDES values of length M. Current vector:', MDES, 'M =', M))
   }
   
+<<<<<<< HEAD
   # MDES must be the length of Actual Impacts
   # if (length(MDES) < M) {
   #   if(M == numFalse)
@@ -240,6 +241,8 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   #   print(paste('MDES vector used:', MDES))
   # }
   
+=======
+>>>>>>> fbae8e3bf049c2dab3319b3952fce8776e6bb4a5
   # Setting a default Sigma up
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
@@ -960,7 +963,7 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     
     if (doJ) {
       
-      runpower <- power_blocked_i1_2c(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss,n.j = n.j,
+      runpower <- power_blocked_i1_2c(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss, n.j = n.j,
                                       p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
                                       tnum = tnum, snum = snum, ncl = ncl)
@@ -968,7 +971,7 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     
     if (don.j) {
       
-      runpower <- power_blocked_i1_2c(M, MDES = rep(MDES, M), MTP = MTP, J = J, n.j=try.ss,
+      runpower <- power_blocked_i1_2c(M, MDES = rep(MDES, M), MTP = MTP, J = J, n.j = try.ss,
                                       p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
                                       tnum = tnum, snum = snum, ncl = ncl)
