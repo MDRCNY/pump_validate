@@ -195,30 +195,31 @@ make.dummies <- function(dat, blockby, n.j, J, ncl){
   colnum<-seq(1:J)
   block.dum.fn<-function(...) {1*(...==colnum)}
   
-  cl <- makeSOCKcluster(rep("localhost", ncl))
-  clusterExport(
-    cl,
-    list("block.rep", "block.dum.fn", "colnum"),
-    envir = environment()
-  )
+  # cl <- makeSOCKcluster(rep("localhost", ncl))
+  # clusterExport(
+  #   cl,
+  #   list("block.rep", "block.dum.fn", "colnum"),
+  #   envir = environment()
+  # )
+  # 
+  # iter <- 0
+  # block.dum <- NULL
+  # while(is.null(block.dum) & iter < 5)
+  # {
+  #   block.dum <- tryCatch(
+  #     t(parallel::parApply(cl, block.rep, 1, block.dum.fn)),
+  #     error = function(e)
+  #     {
+  #       print(paste('Error for block.dum. Error:', e, 'Iteration:', iter))
+  #       block.dum <- NULL
+  #     }
+  #   )
+  #   iter <- iter + 1
+  # }
+  # 
+  # stopCluster(cl)
   
-  iter <- 0
-  block.dum <- NULL
-  while(is.null(block.dum) & iter < 5)
-  {
-    block.dum <- tryCatch(
-      t(parallel::parApply(cl, block.rep, 1, block.dum.fn)),
-      error = function(e)
-      {
-        print(paste('Error for block.dum. Error:', e, 'Iteration:', iter))
-        block.dum <- NULL
-      }
-    )
-    iter <- iter + 1
-  }
-  
-  stopCluster(cl)
-  
+  block.dum <- t(apply(block.rep, 1, block.dum.fn))
   colnames(block.dum)<-paste("block",1:J,sep="")
   lmedat.fixed<-cbind(dat,block.dum)
   dummies<-paste(colnames(block.dum[,-1]),collapse="+")
