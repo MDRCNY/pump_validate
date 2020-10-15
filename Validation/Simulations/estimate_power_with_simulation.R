@@ -18,6 +18,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   p.j <- sim.params.list[['p.j']]
   alpha <- sim.params.list[['alpha']]
   procs <- sim.params.list[['procs']]
+  ncl <- sim.params.list[['ncl']]
   
   if(M == 1) {
     print("Multiple testing corrections are not needed when M=1")
@@ -66,7 +67,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     samp.obs$Yobs = gen_Yobs(samp.full, T.ijk)
     
     mdat <- makelist.samp(M, samp.obs, T.ijk, model.params.list, design = design) #list length M
-    rawp <- get.rawp(mdat, design = design, n.j = model.params.list[['n.j']], J = J) #vector length M
+    rawp <- get.rawp(mdat, design = design, n.j = model.params.list[['n.j']], J = J, ncl = ncl) #vector length M
     rawt <- get.rawt(mdat, design = design, n.j = model.params.list[['n.j']], J = J) #vector length M
     rawt.all[s,] <- rawt
     
@@ -103,7 +104,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
       se.power[p,1:M] <- sqrt(mn.lt.alpha * (1 - mn.lt.alpha)/S)
     }
     else {
-      power.results[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) mean(x < alpha))
+      power.results[p, 1:M] <- apply(adjp.proc[,,p, drop = FALSE], 2, function(x) mean(x < alpha))
       # se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
       #   sqrt(0.25/S) 
       # })
@@ -111,13 +112,13 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
       #   sqrt(mean(x < alpha)*(1 - mean(x < alpha))/S) 
       # })
     }
-    rejects <- get.rejects(adjp.proc[,,p], alpha)
+    rejects <- get.rejects(adjp.proc[, , p, drop = FALSE], alpha)
     if (M == 1) {
       if (alts != 0) num.t.pos = rejects
     } else if (length(alts) == 1) {
-      num.t.pos <- rejects[,alts]
+      num.t.pos <- rejects[, alts, , drop = FALSE]
     } else {
-      num.t.pos <- apply(rejects[,alts], 1, sum)
+      num.t.pos <- apply(rejects[,alts, , drop = FALSE], 1, sum)
     }
     power.results[p, "min"] <- mean(1 * (num.t.pos > 0))
     # se.power[p, "min"] <- sqrt(mean(1 * (num.t.pos > 0)) * (1 - mean(1 * (num.t.pos > 0)))/S)
@@ -183,9 +184,9 @@ make.model<-function(dat, dummies, design) {
 #	Outputs: dummies (column names), lmedat.fixed (data.frame)		                    
 # --------------------------------------------------------------------- #
 
-make.dummies <- function(dat, blockby, n.j, J){
+make.dummies <- function(dat, blockby, n.j, J, ncl){
 
-  # dat = mdat[[m]]; blockby= "block.id"
+  # dat = mdat[[1]]; blockby= "block.id"
 
   block.rep <- matrix(
     data = rep(dat[,blockby], n.j),
@@ -193,7 +194,16 @@ make.dummies <- function(dat, blockby, n.j, J){
   )
   colnum<-seq(1:J)
   block.dum.fn<-function(...) {1*(...==colnum)}
-  block.dum<-t(apply(block.rep,1,block.dum.fn))
+  
+  cl <- makeSOCKcluster(rep("localhost", ncl))
+  clusterExport(
+    cl,
+    list("block.rep", "block.dum.fn", "colnum"),
+    envir = environment()
+  )
+  block.dum<-t(parallel::parApply(cl, block.rep, 1, block.dum.fn))
+  stopCluster(cl)
+  
   colnames(block.dum)<-paste("block",1:J,sep="")
   lmedat.fixed<-cbind(dat,block.dum)
   dummies<-paste(colnames(block.dum[,-1]),collapse="+")
@@ -263,24 +273,14 @@ get.tstat.Level2 <- function(mod) {
 #	Notes: gets raw p-vals for a single dataset and funct at a time	        #
 # --------------------------------------------------------------------- #
 
-get.rawp <- function(mdat, design, n.j, J) {
+get.rawp <- function(mdat, design, n.j, J, ncl) {
   
   # n.j = model.params.list[['n.j']]
 
   if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
-    mdums = lapply(mdat, function(m) make.dummies(m, "block.id", n.j, J))
+    mdums = lapply(mdat, function(m) make.dummies(m, "block.id", n.j, J, ncl))
     mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
     rawp = sapply(mods, function(x) get.pval.Level1(x))
-
-    # rawp = rep(NA, length(mdat))
-    # for(m in 1:length(mdat))
-    # {
-    #   dat = data.frame(mdat[[m]])
-    #   dat$block.id = as.factor(dat$block.id)
-    #   mod = lm(D ~ block.id + Covar.j + Covar.ij + Treat.ij, data = dat)
-    #   rawp[m] = summary(mod)$coef["Treat.ij", "Pr(>|t|)"]
-    # }
-
   }
   if (design == "blocked_i1_2r") {
     mods = lapply(mdat, function(m) make.model(m,NULL,design))

@@ -28,6 +28,8 @@
 adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.list,
                       clustered = TRUE, blockby = 'block.id') {
   
+  # clustered = TRUE; blockby = 'block.id';
+  
   B <- sim.params.list[['B']]
   ncl <- sim.params.list[['ncl']]
   maxT <- sim.params.list[['maxT']]
@@ -36,28 +38,24 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
   J <- model.params.list[['J']]
   n.j <- model.params.list[['n.j']]
   p.j <- sim.params.list[['p.j']]
-
+  
   # get order of raw p-values; returns ordered index for the vector "rawp"
   ifelse(maxT==FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing=TRUE))
   
-  # permute treatment indicator B times - permutations are done by block
-  permT <- matrix(NA, N, B)
-  for (b in 1:B) {
-    permT[,b] <- as.vector(apply(cbind(n.j,p.j), 1, resamp.by.block))
-  }
+  assign.vec <- cbind(n.j,p.j)
   
   cl <- makeSOCKcluster(rep("localhost", ncl))
   clusterExport(
     cl,
     list("perm.regs", "data", "clustered", "blockby", "make.dummies", "make.model",
-    "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2",
-    "resamp.by.block", "fastLm", "lmer"),
+         "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2",
+         "resamp.by.block", "fastLm", "lmer", "assign.vec", "J"),
     envir = environment()
   )
   
-  #print these to see what is assigned
-  # print(cl)
-  # print(ncl)
+  permT = parallel::parSapply(
+    cl, 1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) }
+  )
   
   # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
   nullpt <- parallel::parApply(

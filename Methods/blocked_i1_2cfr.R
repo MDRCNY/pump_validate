@@ -74,7 +74,7 @@ comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 #'
 #' @return a matrix of adjusted test statistics values
 
-adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
+adjust.allsamps.WYSS<-function(snum, abs.Zs.H0, abs.Zs.H1) {
   
   # creating the matrix to store the adjusted test values with the number of samples &
   # number of M outcomes
@@ -108,7 +108,7 @@ adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
 #'
 #' @return a matrix of adjusted test statistics values
 
-adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
+adjust.allsamps.WYSD<-function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, ncl) {
   
   # creates clusters to run parallelization on
   cl <- snow::makeCluster(ncl)
@@ -119,7 +119,7 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   # getting M number of outcomes vector
   M <- ncol(abs.Zs.H0)
   # setting up the matrix to save the adjusted p values
-  adjp.WY<-matrix(NA,snum,M)
+  adjp.WY<-matrix(NA, snum, M)
   # dopar is a special function that has to be explicitly called from the foreach package
   # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
   # series of steps to execute
@@ -128,7 +128,8 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   s = 1:snum
   doWY <- foreach::foreach(s= 1:snum, .combine=rbind) %dopar% {
     # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
-    ind.B <- t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
+    ind.B <- t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp = abs.Zs.H1[s,], oo = order.matrix[s,]))
+    
     pi.p.m <- colMeans(ind.B)
     
     # enforcing monotonicity
@@ -139,7 +140,6 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
     adjp.WY[s,] <- adjp.minp[order.matrix[s,]]
     
   }
-  
   return(doWY)
   parallel::stopCluster(cl)
 }
@@ -223,7 +223,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     stop(paste('Please provide a vector of MDES values of length M. Current vector:', MDES, 'M =', M))
   }
   
-  # Setting a default Sigma up
+  # Setting a default Sigma
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
@@ -237,7 +237,6 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   
   # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
   # rmvt draws from a multivariate t-distribution
-  
   Zs.H0 <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0,M),type = c("shifted", "Kshirsagar"))
   Zs.H1 <- Zs.H0 + t.shift.mat
   
@@ -255,28 +254,18 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     updateProgress(message = msg) # Passing back the progress messages onto the callback function
   } # if the function is being called, run the progress bar
   
-  
   # explicit invocation of the function and saving it so that we can pass it along in apply without the
   # explicit calling inside apply
   mt.rawp2adjp <- multtest::mt.rawp2adjp
   
-  #adjp<-multtest::mt.rawp2adjp(pvals.H1,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
-  #rawp <- grab.pval(adjp, proc = "rawp")
-  #adjp.BF <- grab.pval(adjp, proc = "Bonferroni")
-  #adjp.HO <- grab.pval(adjp, proc = "Holm")
-  #adjp.BH <- grab.pval(adjp, proc = "BH")
-  
-  # adjust p-values for all but Westfall-Young using multtest's adjustment function
-  # via Bonferroni, Holm and Bejamini-Hocheberg
-  adjp <- apply(pvals.H1,1,mt.rawp2adjp,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
-  
   # seperating out p values that are adjusted by Bonferroni, Holm and Benjamini-Hocheberg
   grab.pval <- function(...,proc) {return(...$adjp[order(...$index),proc])}
   
+  rawp <- pvals.H1
   
-  rawp <- do.call(rbind,lapply(adjp,grab.pval,proc="rawp"))
   if (MTP == "Bonferroni"){
     
+    adjp <- apply(pvals.H1,1,mt.rawp2adjp,proc="Bonferroni",alpha=alpha)
     adjp.BF <- do.call(rbind,lapply(adjp,grab.pval,proc="Bonferroni"))
     
     if (is.function(updateProgress) & !is.null(adjp.BF)){
@@ -289,6 +278,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     
   } else if (MTP == "Holm") {
     
+    adjp <- apply(pvals.H1,1,mt.rawp2adjp,proc="Holm",alpha=alpha)
     adjp.HO <- do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
     
     if (is.function(updateProgress) & !is.null(adjp.HO)){
@@ -301,6 +291,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     
   } else if (MTP == "BH") {
     
+    adjp <- apply(pvals.H1,1,mt.rawp2adjp,proc=c("BH"),alpha=alpha)
     adjp.BH <- do.call(rbind,lapply(adjp,grab.pval,proc="BH"))
     
     if (is.function(updateProgress) & !is.null(adjp.BH)){
@@ -313,8 +304,15 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     
   } # non-Westfall Young choices
   
+  cl <- makeSOCKcluster(rep("localhost", ncl))
+  clusterExport(
+    cl,
+    list("abs.Zs.H1"),
+    envir = environment()
+  )
+  
   # adjust p-values for Westfall-Young (single-step and step-down)
-  order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
+  order.matrix.1 <- t(parallel::parApply(cl,abs.Zs.H1,1,order,decreasing=TRUE))
   
   if (MTP == "WY-SS"){
     

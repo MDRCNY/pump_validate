@@ -20,6 +20,7 @@ library(lme4)        # for modeling
 library(MASS)
 library(multtest)    # Multiple Testing Procedures package
 library(nlme)
+library(parallel)
 library(pkgcond)     # for suppress_messages
 library(PowerUpR)    # for checking with another power estimation function
 library(randomizr)   # for treatment assignment
@@ -339,8 +340,8 @@ if(FALSE)
   MTP = 'Bonferroni';
   power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   MTP = MTP;
-  MDES = user.params.list[['ATE_ES']];
   M = user.params.list[['M']];
+  MDES = rep(user.params.list[['ATE_ES']], M);
   J = user.params.list[['J']];
   n.j = user.params.list[['n.j']];
   power.definition = "indiv";
