@@ -320,7 +320,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
       t(parallel::parApply(cl,abs.Zs.H1,1,order,decreasing=TRUE)),
       error = function(e)
       {
-        print(e)
+        print(paste('Error for order.matrix. Error:', e, 'Iteration:', iter))
         order.matrix <- NULL
       }
     )

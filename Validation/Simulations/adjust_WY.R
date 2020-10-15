@@ -65,7 +65,7 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
       ),
       error = function(e)
       {
-        print(e)
+        print(paste('Error for permT. Error:', e, 'Iteration:', iter))
         permT <- NULL
       }
     )
@@ -86,7 +86,7 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
       ),
       error = function(e)
       {
-        print(e)
+        print(paste('Error for nullpt. Error:', e, 'Iteration:', iter))
         nullpt <- NULL
       }
     )

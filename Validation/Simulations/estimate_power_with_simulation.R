@@ -210,7 +210,7 @@ make.dummies <- function(dat, blockby, n.j, J, ncl){
       t(parallel::parApply(cl, block.rep, 1, block.dum.fn)),
       error = function(e)
       {
-        print(e)
+        print(paste('Error for block.dum. Error:', e, 'Iteration:', iter))
         block.dum <- NULL
       }
     )
