@@ -243,7 +243,9 @@ validate_mdes <- function(user.params.list, sim.params.list, design, overwrite =
     compare.filename <- paste0(params.file.base, "comparison_mdes_results.RDS")
     
     mdes_compare_results[,2:3] <- apply(mdes_compare_results[,2:3], 2, as.numeric)
-    mdes_compare_results[,'Targeted MDES'] <- user.params.list[['ATE_ES']][1]
+    # mdes_compare_results[,'Targeted MDES'] <- user.params.list[['ATE_ES']][1]
+    mdes_compare_results = cbind(mdes_compare_results, user.params.list[['ATE_ES']][1])
+    colnames(mdes_compare_results) = c('MTP', 'Adjusted MDES', 'Indiv Power', 'Targeted MDES')
     rownames(mdes_compare_results) <- NULL
     
     saveRDS(mdes_compare_results, file = here::here("Validation/data", compare.filename))
