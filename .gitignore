@@ -1,13 +1,17 @@
-## R Outout data and storage files
+## R Out data and storage files
 .RData
 .Ruserdata
-.ini
-.DS_Store
+*.ini
+*.DS_Store
 Validation/data/*.RDS
 Validation/data/*.csv
 Validation/data/
 *cache*
 Validation/*_files/*
+
+# out and error files
+*.out
+*.err
 
 ## Added in another repo. Don't remember for which use.
 inst/doc
