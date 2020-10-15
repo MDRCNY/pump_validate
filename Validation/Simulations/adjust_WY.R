@@ -29,6 +29,8 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
                       clustered = TRUE, blockby = 'block.id') {
   
   # clustered = TRUE; blockby = 'block.id';
+  # data = mdat;
+  
   
   B <- sim.params.list[['B']]
   ncl <- sim.params.list[['ncl']]
@@ -49,19 +51,48 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
     cl,
     list("perm.regs", "data", "clustered", "blockby", "make.dummies", "make.model",
          "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2",
-         "resamp.by.block", "fastLm", "lmer", "assign.vec", "J"),
+         "resamp.by.block", "fastLm", "lmer", "assign.vec", "J", "design"),
     envir = environment()
   )
   
-  permT = parallel::parSapply(
-    cl, 1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) }
-  )
+  iter <- 0
+  permT <- NULL
+  while(is.null(permT) & iter < 5)
+  {
+    permT <- tryCatch(
+      parallel::parSapply(
+        cl, 1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) }
+      ),
+      error = function(e)
+      {
+        print(e)
+        permT <- NULL
+      }
+    )
+    iter <- iter + 1
+  }
+
   
   # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
-  nullpt <- parallel::parApply(
-    cl, permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
-    n.j = n.j, J = J, design = design
-  ) # revised KP
+  # revised KP
+  iter <- 0
+  nullpt <- NULL
+  while(is.null(nullpt) & iter < 5)
+  {
+    nullpt <- tryCatch(
+      parallel::parApply(
+        cl, permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
+        n.j = n.j, J = J, design = design
+      ),
+      error = function(e)
+      {
+        print(e)
+        nullpt <- NULL
+      }
+    )
+    iter <- iter + 1
+  }
+
   
   stopCluster(cl)
   

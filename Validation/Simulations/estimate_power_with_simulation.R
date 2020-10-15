@@ -201,7 +201,22 @@ make.dummies <- function(dat, blockby, n.j, J, ncl){
     list("block.rep", "block.dum.fn", "colnum"),
     envir = environment()
   )
-  block.dum<-t(parallel::parApply(cl, block.rep, 1, block.dum.fn))
+  
+  iter <- 0
+  block.dum <- NULL
+  while(is.null(block.dum) & iter < 5)
+  {
+    block.dum <- tryCatch(
+      t(parallel::parApply(cl, block.rep, 1, block.dum.fn)),
+      error = function(e)
+      {
+        print(e)
+        block.dum <- NULL
+      }
+    )
+    iter <- iter + 1
+  }
+  
   stopCluster(cl)
   
   colnames(block.dum)<-paste("block",1:J,sep="")

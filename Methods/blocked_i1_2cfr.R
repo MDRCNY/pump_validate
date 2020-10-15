@@ -312,7 +312,21 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   )
   
   # adjust p-values for Westfall-Young (single-step and step-down)
-  order.matrix <- t(parallel::parApply(cl,abs.Zs.H1,1,order,decreasing=TRUE))
+  iter <- 0
+  order.matrix <- NULL
+  while(is.null(order.matrix) & iter < 5)
+  {
+    order.matrix <- tryCatch(
+      t(parallel::parApply(cl,abs.Zs.H1,1,order,decreasing=TRUE)),
+      error = function(e)
+      {
+        print(e)
+        order.matrix <- NULL
+      }
+    )
+    iter <- iter + 1
+  }
+  
   parallel::stopCluster(cl)
   
   if (MTP == "WY-SS"){
