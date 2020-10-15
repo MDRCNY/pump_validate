@@ -56,6 +56,8 @@ source(here::here("Methods", "blocked_i1_2cfr.R"))
 #' @examples
 validate_power <- function(user.params.list, sim.params.list, design, overwrite = TRUE, gen.wide.results = FALSE) {
 
+  t1 = Sys.time()
+  
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
   print(paste('Power validation for:', params.file.base))
@@ -173,6 +175,8 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
     
     saveRDS(compare_results, file = here::here("Validation/data", compare.filename))
     
+    t2 = Sys.time()
+    message(paste('Total time:', difftime(t2, t1, 'mins'), 'minutes'))
     return(compare_results)
   } else
   {
