@@ -5,7 +5,7 @@
 #' @param user.params.list List of user-supplied parameters
 #' @param sim.params.list List of simulation parameters
 #' @param design RCT design (see list/naming convention)
-est_power_sim <- function(user.params.list, sim.params.list, design) {
+est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) {
   
   # convert user-inputted parameters into model parameters
   model.params.list <- convert.params(user.params.list)
@@ -18,8 +18,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
   p.j <- sim.params.list[['p.j']]
   alpha <- sim.params.list[['alpha']]
   procs <- sim.params.list[['procs']]
-  ncl <- sim.params.list[['ncl']]
-  
+
   if(M == 1) {
     print("Multiple testing corrections are not needed when M=1")
     procs <- "Bonferroni"
@@ -67,7 +66,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
     samp.obs$Yobs = gen_Yobs(samp.full, T.ijk)
     
     mdat <- makelist.samp(M, samp.obs, T.ijk, model.params.list, design = design) #list length M
-    rawp <- get.rawp(mdat, design = design, n.j = model.params.list[['n.j']], J = J, ncl = ncl) #vector length M
+    rawp <- get.rawp(mdat, design = design, n.j = model.params.list[['n.j']], J = J) #vector length M
     rawt <- get.rawt(mdat, design = design, n.j = model.params.list[['n.j']], J = J) #vector length M
     rawt.all[s,] <- rawt
     
@@ -79,7 +78,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design) {
       } else {
         t11 <- Sys.time()
         proc <- procs[p-1]
-        pvals <- get.adjp(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design)
+        pvals <- get.adjp(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design, cl)
         t21 <- Sys.time()
         if (s == 1) {message(paste("One sample of", proc, "took", t21 - t11))}
       }
@@ -184,7 +183,7 @@ make.model<-function(dat, dummies, design) {
 #	Outputs: dummies (column names), lmedat.fixed (data.frame)		                    
 # --------------------------------------------------------------------- #
 
-make.dummies <- function(dat, blockby, n.j, J, ncl){
+make.dummies <- function(dat, blockby, n.j, J){
 
   # dat = mdat[[1]]; blockby= "block.id"
 
@@ -194,30 +193,6 @@ make.dummies <- function(dat, blockby, n.j, J, ncl){
   )
   colnum<-seq(1:J)
   block.dum.fn<-function(...) {1*(...==colnum)}
-  
-  # cl <- makeSOCKcluster(rep("localhost", ncl))
-  # clusterExport(
-  #   cl,
-  #   list("block.rep", "block.dum.fn", "colnum"),
-  #   envir = environment()
-  # )
-  # 
-  # iter <- 0
-  # block.dum <- NULL
-  # while(is.null(block.dum) & iter < 5)
-  # {
-  #   block.dum <- tryCatch(
-  #     t(parallel::parApply(cl, block.rep, 1, block.dum.fn)),
-  #     error = function(e)
-  #     {
-  #       print(paste('Error for block.dum. Error:', e, 'Iteration:', iter))
-  #       block.dum <- NULL
-  #     }
-  #   )
-  #   iter <- iter + 1
-  # }
-  # 
-  # stopCluster(cl)
   
   block.dum <- t(apply(block.rep, 1, block.dum.fn))
   colnames(block.dum)<-paste("block",1:J,sep="")
@@ -289,12 +264,12 @@ get.tstat.Level2 <- function(mod) {
 #	Notes: gets raw p-vals for a single dataset and funct at a time	        #
 # --------------------------------------------------------------------- #
 
-get.rawp <- function(mdat, design, n.j, J, ncl) {
+get.rawp <- function(mdat, design, n.j, J) {
   
   # n.j = model.params.list[['n.j']]
 
   if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
-    mdums = lapply(mdat, function(m) make.dummies(m, "block.id", n.j, J, ncl))
+    mdums = lapply(mdat, function(m) make.dummies(m, "block.id", n.j, J))
     mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
     rawp = sapply(mods, function(x) get.pval.Level1(x))
   }
@@ -385,7 +360,7 @@ makelist.samp <-function(M, samp.obs, T.ijk, model.params.list, design) {
 #	Outputs: MxS matrix of adjusted p-values for a single proc 	            #
 # --------------------------------------------------------------------- #
 
-get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design) {
+get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design, cl = NULL) {
 
   if(proc == "WY-SD"){
     #print(paste0("working on ", proc, " with ", B, " permutations"))
@@ -393,7 +368,8 @@ get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list,
     adjp.proc <- adjust_WY(
       data = mdat, rawp = rawp, rawt = rawt,
       clustered = TRUE, blockby = 'block.id',
-      sim.params.list = sim.params.list, model.params.list = model.params.list, design = design
+      sim.params.list = sim.params.list, model.params.list = model.params.list, design = design,
+      cl = cl
     )[,"WY"]
     tw2 <- Sys.time()
     # print(difftime(tw2, tw1))

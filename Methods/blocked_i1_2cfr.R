@@ -74,7 +74,7 @@ comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 #'
 #' @return a matrix of adjusted test statistics values
 
-adjust.allsamps.WYSS<-function(snum, abs.Zs.H0, abs.Zs.H1) {
+adjust.allsamps.WYSS <- function(snum, abs.Zs.H0, abs.Zs.H1) {
   
   # creating the matrix to store the adjusted test values with the number of samples &
   # number of M outcomes
@@ -108,25 +108,15 @@ adjust.allsamps.WYSS<-function(snum, abs.Zs.H0, abs.Zs.H1) {
 #'
 #' @return a matrix of adjusted test statistics values
 
-adjust.allsamps.WYSD<-function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, ncl) {
+adjust.allsamps.WYSD <- function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl = NULL) {
   
-  # creates clusters to run parallelization on
-  cl <- snow::makeCluster(ncl)
-  # leveraging snow to run multiple cores for foreach loops
-  doParallel::registerDoParallel(cl)
-  # registering the comp.rawt.SD function in global enivronment of each node
-  parallel::clusterExport(cl=cl, list("comp.rawt.SD"), envir = .GlobalEnv)
   # getting M number of outcomes vector
   M <- ncol(abs.Zs.H0)
   # setting up the matrix to save the adjusted p values
-  adjp.WY<-matrix(NA, snum, M)
-  # dopar is a special function that has to be explicitly called from the foreach package
-  # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
-  # series of steps to execute
-  `%dopar%` <- foreach::`%dopar%`
-  # making s a local variable to perpetuate across (created to bypass a package requirement)
-  s = 1:snum
-  doWY <- foreach::foreach(s= 1:snum, .combine=rbind) %dopar% {
+  adjp.WY <- matrix(NA, snum, M)
+  
+  get.adjp.minp <- function(abs.Zs.H0, abs.Zs.H1, comp.rawt.H0, order.matrix, M, s)
+  {
     # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
     ind.B <- t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp = abs.Zs.H1[s,], oo = order.matrix[s,]))
     
@@ -136,12 +126,36 @@ adjust.allsamps.WYSD<-function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, ncl) {
     adjp.minp <- numeric(M)
     adjp.minp[1] <- pi.p.m[1]
     
-    for (h in 2:M) {adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])}
-    adjp.WY[s,] <- adjp.minp[order.matrix[s,]]
-    
+    for (h in 2:M) { adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1]) }
+    return(adjp.minp)
   }
+
+  if(!is.null(cl))
+  {
+    # leveraging snow to run multiple cores for foreach loops
+    doParallel::registerDoParallel(cl)
+    # registering the comp.rawt.SD function in global enivronment of each node
+    parallel::clusterExport(cl = cl, list('comp.rawt.SD'), envir = environment())
+
+    # dopar is a special function that has to be explicitly called from the foreach package
+    # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
+    # series of steps to execute
+    # `%dopar%` <- foreach::`%dopar%`
+    # making s a local variable to perpetuate across (created to bypass a package requirement)
+    # s = 1:snum
+    doWY <- foreach::foreach(s = 1:snum, .combine = rbind) %dopar% {
+      adjp.minp <- get.adjp.minp(abs.Zs.H0, abs.Zs.H1, comp.rawt.H0, order.matrix, M, s)
+      adjp.WY[s,] <- adjp.minp[order.matrix[s,]]
+    }
+  } else
+  {
+    doWY <- foreach::foreach(s = 1:snum, .combine = rbind) %do% {
+      adjp.minp <- get.adjp.minp(abs.Zs.H0, abs.Zs.H1, comp.rawt.H0, order.matrix, M, s)
+      adjp.WY[s,] <- adjp.minp[order.matrix[s,]]
+    }
+  }
+
   return(doWY)
-  parallel::stopCluster(cl)
 }
 
 #' t.mean.h1 function for generating the mean of test statistics under the joint alternative hypothesis
@@ -171,7 +185,7 @@ t.mean.H1<-function(MDES,J,n.j,R2.1,p) {
 #'
 #' @return the degree of freedom
 
-df<-function(J,n.j,numCovar.1) {
+df <- function(J,n.j,numCovar.1) {
   
   J*n.j - J - numCovar.1 - 1
   
@@ -202,7 +216,7 @@ df<-function(J,n.j,numCovar.1) {
 #' @param omega NULL (parameter in development)
 #' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
-#' @param ncl the number of clusters to use for parallel processing. The default is set at 2.
+#' @param cl clusters object to use for parallel processing.
 #' @param rho correlation between outcomes
 #' @param updateProgress the callback function to update the progress bar (User does not have to input anything)
 #' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
@@ -216,7 +230,9 @@ df<-function(J,n.j,numCovar.1) {
 power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
                                 p, alpha, numCovar.1 = 0, numCovar.2 = 0, R2.1, R2.2 = NULL, ICC,
                                 mod.type, sigma = 0,rho, omega = NULL,
-                                tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
+                                tnum = 10000, snum = 1000, cl = NULL,
+                                updateProgress = NULL) {
+  # parallel = TRUE;
   
   if(length(MDES) < M)
   {
@@ -231,18 +247,18 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   numfalse <- sum(1*MDES>0)
   
   # compute Q(m) for all false nulls. We are calculating the test statistics for when the alternative hypothesis is true.
-  t.shift <- t.mean.H1(MDES,J,n.j,R2.1,p)
-  t.df <- df(J,n.j,numCovar.1)
-  t.shift.mat <- t(matrix(rep(t.shift,tnum),M,tnum)) # repeating shift.beta on every row
+  t.shift <- t.mean.H1(MDES, J, n.j, R2.1, p)
+  t.df <- df(J, n.j, numCovar.1)
+  t.shift.mat <- t(matrix(rep(t.shift,tnum), M, tnum)) # repeating shift.beta on every row
   
   # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
   # rmvt draws from a multivariate t-distribution
-  Zs.H0 <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0,M),type = c("shifted", "Kshirsagar"))
+  Zs.H0 <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0, M), type = c("shifted", "Kshirsagar"))
   Zs.H1 <- Zs.H0 + t.shift.mat
   
   # calculates p values from quantiles and degrees of freedom
-  pvals.H0<- stats::pt(-abs(Zs.H0),df=t.df) * 2
-  pvals.H1<- stats::pt(-abs(Zs.H1),df=t.df) * 2
+  pvals.H0 <- pt(-abs(Zs.H0),df = t.df) * 2
+  pvals.H1 <- pt(-abs(Zs.H1),df = t.df) * 2
   
   # getting the absolute values of the test statistics
   abs.Zs.H0 <- abs(Zs.H0)
@@ -250,7 +266,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   
   # 1st call back to progress bar on progress of calculation: P values generation
   if (is.function(updateProgress) & !is.null(abs.Zs.H0)) {
-    msg  <- paste0("P-values have been generated!") # Priamry text we want to display
+    msg <- paste0("P-values have been generated!") # Priamry text we want to display
     updateProgress(message = msg) # Passing back the progress messages onto the callback function
   } # if the function is being called, run the progress bar
   
@@ -265,8 +281,8 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   
   if (MTP == "Bonferroni"){
     
-    adjp <- apply(pvals.H1,1,mt.rawp2adjp,proc="Bonferroni",alpha=alpha)
-    adjp.BF <- do.call(rbind,lapply(adjp,grab.pval,proc="Bonferroni"))
+    adjp <- apply(pvals.H1, 1, multtest::mt.rawp2adjp, proc = "Bonferroni", alpha = alpha)
+    adjp.BF <- do.call(rbind,lapply(adjp, grab.pval, proc = "Bonferroni"))
     
     if (is.function(updateProgress) & !is.null(adjp.BF)){
       
@@ -278,8 +294,8 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     
   } else if (MTP == "Holm") {
     
-    adjp <- apply(pvals.H1,1,mt.rawp2adjp,proc="Holm",alpha=alpha)
-    adjp.HO <- do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
+    adjp <- apply(pvals.H1, 1, multtest::mt.rawp2adjp, proc = "Holm", alpha = alpha)
+    adjp.HO <- do.call(rbind, lapply(adjp, grab.pval, proc = "Holm"))
     
     if (is.function(updateProgress) & !is.null(adjp.HO)){
       
@@ -291,8 +307,8 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     
   } else if (MTP == "BH") {
     
-    adjp <- apply(pvals.H1,1,mt.rawp2adjp,proc=c("BH"),alpha=alpha)
-    adjp.BH <- do.call(rbind,lapply(adjp,grab.pval,proc="BH"))
+    adjp <- apply(pvals.H1, 1, multtest::mt.rawp2adjp, proc = c("BH"), alpha = alpha)
+    adjp.BH <- do.call(rbind,lapply(adjp, grab.pval, proc = "BH"))
     
     if (is.function(updateProgress) & !is.null(adjp.BH)){
       
@@ -304,34 +320,39 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     
   } # non-Westfall Young choices
   
-  cl <- makeSOCKcluster(rep("localhost", ncl))
-  clusterExport(
-    cl,
-    list("abs.Zs.H1"),
-    envir = environment()
-  )
-  
+
   # adjust p-values for Westfall-Young (single-step and step-down)
-  iter <- 0
-  order.matrix <- NULL
-  while(is.null(order.matrix) & iter < 5)
+  if(!is.null(cl))
   {
-    order.matrix <- tryCatch(
-      t(parallel::parApply(cl,abs.Zs.H1,1,order,decreasing=TRUE)),
-      error = function(e)
-      {
-        print(paste('Error for order.matrix. Error:', e, 'Iteration:', iter))
-        order.matrix <- NULL
-      }
+    clusterExport(
+      cl,
+      list("abs.Zs.H1"),
+      envir = environment()
     )
-    iter <- iter + 1
+    
+    iter <- 0
+    order.matrix <- NULL
+    while(is.null(order.matrix) & iter < 5)
+    {
+      order.matrix <- tryCatch(
+        t(parallel::parApply(cl, abs.Zs.H1, 1, order, decreasing = TRUE)),
+        error = function(e)
+        {
+          print(paste('Error for order.matrix. Error:', e, 'Iteration:', iter))
+          order.matrix <- NULL
+        }
+      )
+      iter <- iter + 1
+    }
+  } else
+  {
+    order.matrix <- t(apply(abs.Zs.H1, 1, order, decreasing = TRUE))
   }
-  
-  parallel::stopCluster(cl)
+ 
   
   if (MTP == "WY-SS"){
     
-    adjp.SS <-adjust.allsamps.WYSS(snum,abs.Zs.H0,abs.Zs.H1)
+    adjp.SS <- adjust.allsamps.WYSS(snum, abs.Zs.H0, abs.Zs.H1)
     
     if (is.function(updateProgress) & !is.null(adjp.SS)){
       
@@ -343,7 +364,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     
   } else if (MTP == "WY-SD"){
     
-    adjp.SD <-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl)
+    adjp.SD <- adjust.allsamps.WYSD(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl)
     
     if (is.function(updateProgress) & !is.null(adjp.SD)){
       
@@ -519,7 +540,7 @@ midpoint<-function(lower,upper) {
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
 #' @param updateProgress this is the progress bar function that will be passed to the main MDES calculation function
 #' @param rho correlation between outcomes. This generates the sigma matrix.
-#' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
+#' @param cl cluster object to use for parallel processing.
 #' @importFrom stats qt
 #' @return mdes results
 #' @export
@@ -528,7 +549,8 @@ midpoint<-function(lower,upper) {
 mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginError,
                               p, alpha, numCovar.1, numCovar.2 = 0, R2.1, R2.2, ICC,
                               mod.type, sigma = 0, rho = 0.99,omega,
-                              tnum = 10000, snum = 1000, ncl = 2, max.iter = 20, updateProgress=NULL) {
+                              tnum = 10000, snum = 1000, cl = NULL,
+                              max.iter = 20, updateProgress = NULL) {
   
   # Setting up Sigma values
   sigma <- matrix(rho, M, M)
@@ -632,9 +654,10 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
     
     # Function to calculate the target power to check in with the pre-specified power in the loop
     runpower <- power_blocked_i1_2c(M = M, MDES = rep(try.MDES, M), MTP = MTP, J = J, n.j = n.j,rho = rho,
-                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
+                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2 = 0,
+                                    R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                     mod.type = mod.type, sigma = sigma, omega = omega,
-                                    tnum = tnum, snum = snum, ncl = ncl)
+                                    tnum = tnum, snum = snum, cl = cl)
     
     # Pull out the power value corresponding to the MTP and definition of power
     target.power <- runpower[MTP,power.definition]
@@ -802,7 +825,7 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
 #' @param omega NULL (parameter in development)
 #' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
-#' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
+#' @param cl cluster object to use for parallel processing.
 #' @param max.iter the number of iterations to look for the optimal sample size. The default is set at 20
 #' @param updateProgress a call back function for our internal use in our Shiny application
 #' @param rho correlation between outcomes when sigma is generated
@@ -815,7 +838,8 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
                                  MTP, marginError,p, alpha, numCovar.1,
                                  numCovar.2 = 0, R2.1, R2.2, ICC, mod.type,
                                  sigma = 0, rho = 0.99, omega, tnum = 10000,
-                                 snum = 2, ncl = 2, max.iter = 20, updateProgress = NULL) {
+                                 snum = 2, cl = NULL,
+                                 max.iter = 20, updateProgress = NULL) {
   
   # Checks on what we are estimating, sample size
   print(paste("Estimating sample size of type", typesample, "for", MTP, "for target", power.definition, "power of", round(power, 4)))
@@ -957,17 +981,19 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     if (doJ) {
       
       runpower <- power_blocked_i1_2c(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss, n.j = n.j,
-                                      p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
+                                      p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
+                                      R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
-                                      tnum = tnum, snum = snum, ncl = ncl)
+                                      tnum = tnum, snum = snum, cl = cl)
     }
     
     if (don.j) {
       
       runpower <- power_blocked_i1_2c(M, MDES = rep(MDES, M), MTP = MTP, J = J, n.j = try.ss,
-                                      p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
+                                      p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
+                                      R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
-                                      tnum = tnum, snum = snum, ncl = ncl)
+                                      tnum = tnum, snum = snum, cl = cl)
       
     }
     
@@ -976,7 +1002,7 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     
     # Providing message on current targeted power
     if (is.function(updateProgress)){
-      text <- paste0("Estimated power for this ",whichSS," is ",target.power)
+      text <- paste("Estimated power for this", whichSS, "is", target.power)
       updateProgress(detail = text)
     }
     
@@ -1016,19 +1042,9 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
   
   if (ii == max.iter & !(target.power > power - marginError & target.power < power + marginError)) {
     
-    text <- paste0("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (max.iter).")
+    text <- paste0(
+      "Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (max.iter)."
+    )
     updateProgress(detail = text)
   }
 }
-
-## indiv, BF, J
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = rep(mdes1,M), power=test.power["BF","indiv"], power.definition = "indiv", MTP = "BF", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
-# print(test.SS)
-# ## indiv, BH, n.j
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J, n.j=NULL, J0=J0, n.j0=n.j0, MDES = mdes1, power=test.power["BH","indiv"], power.definition = "indiv", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
-# print(test.SS)
-# ## min1, BH, J
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = mdes1, test.power["BH","min1"], power.definition = "min1", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
-# print(test.SS)
-#
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, power=0.417, power.definition, MTP, marginError = 0.005, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0 mod.type="constant", sigma=sigma, omega=NULL,tnum = 10000, snum=2, ncl=2)
