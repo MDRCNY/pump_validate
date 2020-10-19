@@ -26,14 +26,13 @@
 #' @examples
 #'
 adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.list,
-                      clustered = TRUE, blockby = 'block.id') {
+                      clustered = TRUE, blockby = 'block.id', cl = NULL) {
   
   # clustered = TRUE; blockby = 'block.id';
   # data = mdat;
   
-  
   B <- sim.params.list[['B']]
-  ncl <- sim.params.list[['ncl']]
+  # ncl <- sim.params.list[['ncl']]
   maxT <- sim.params.list[['maxT']]
   N <- model.params.list[['n.j']]*model.params.list[['J']]
   M <- model.params.list[['M']]
@@ -44,58 +43,64 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
   # get order of raw p-values; returns ordered index for the vector "rawp"
   ifelse(maxT==FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing=TRUE))
   
-  assign.vec <- cbind(n.j,p.j)
+  assign.vec <- cbind(n.j, p.j)
   
-  cl <- makeSOCKcluster(rep("localhost", ncl))
-  clusterExport(
-    cl,
-    list("perm.regs", "data", "clustered", "blockby", "make.dummies", "make.model",
-         "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2",
-         "resamp.by.block", "fastLm", "lmer", "assign.vec", "J", "design"),
-    envir = environment()
-  )
-  
-  iter <- 0
-  permT <- NULL
-  while(is.null(permT) & iter < 5)
+  if(!is.null(cl))
   {
-    permT <- tryCatch(
-      parallel::parSapply(
-        cl, 1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) }
-      ),
-      error = function(e)
-      {
-        print(paste('Error for permT. Error:', e, 'Iteration:', iter))
-        permT <- NULL
-      }
+    clusterExport(
+      cl,
+      list("perm.regs", "data", "clustered", "blockby", "make.dummies", "make.model",
+           "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2",
+           "resamp.by.block", "fastLm", "lmer", "assign.vec", "J", "design"),
+      envir = environment()
     )
-    iter <- iter + 1
+    
+    iter <- 0
+    permT <- NULL
+    while(is.null(permT) & iter < 5)
+    {
+      permT <- tryCatch(
+        parallel::parSapply(
+          cl, 1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) }
+        ),
+        error = function(e)
+        {
+          print(paste('Error for permT. Error:', e, 'Iteration:', iter))
+          permT <- NULL
+        }
+      )
+      iter <- iter + 1
+    }
+    
+    
+    # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
+    # revised KP
+    iter <- 0
+    nullpt <- NULL
+    while(is.null(nullpt) & iter < 5)
+    {
+      nullpt <- tryCatch(
+        parallel::parApply(
+          cl, permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
+          n.j = n.j, J = J, design = design
+        ),
+        error = function(e)
+        {
+          print(paste('Error for nullpt. Error:', e, 'Iteration:', iter))
+          nullpt <- NULL
+        }
+      )
+      iter <- iter + 1
+    }
+  } else
+  {
+    permT <- sapply(1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) })
+    nullpt <- apply(
+      permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
+      n.j = n.j, J = J, design = design
+    )
   }
 
-  
-  # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
-  # revised KP
-  iter <- 0
-  nullpt <- NULL
-  while(is.null(nullpt) & iter < 5)
-  {
-    nullpt <- tryCatch(
-      parallel::parApply(
-        cl, permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
-        n.j = n.j, J = J, design = design
-      ),
-      error = function(e)
-      {
-        print(paste('Error for nullpt. Error:', e, 'Iteration:', iter))
-        nullpt <- NULL
-      }
-    )
-    iter <- iter + 1
-  }
-
-  
-  stopCluster(cl)
-  
   # turn nullpt into a matrix (B rows, ntest columns)
   nullpt.mat <- t(nullpt) # revised
   

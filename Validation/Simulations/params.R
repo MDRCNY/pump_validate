@@ -19,13 +19,14 @@ source(here::here("Validation/Simulations", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 100             # Number of samples for Monte Carlo Simulation
+  S = 2             # Number of samples for Monte Carlo Simulation
   , B = 2           # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = FALSE     # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05     # Significance level
   , MoE = 0.05       # Margin of error
   , p.j = 0.5        # Binomial assignment probability
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
+  , parallel = FALSE # parallelize?
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
   , max.iter = 100   # maximum number of iterations for MDES or sample size calculations
   #, procs = c("Bonferroni", "BH", "Holm")

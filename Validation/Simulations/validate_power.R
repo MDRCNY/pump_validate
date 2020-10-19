@@ -14,6 +14,7 @@
 
 # Loading the libraries
 library(dplyr)       # for combing data frames
+library(foreach)
 library(ggplot2)
 library(here)        # for relative file paths
 library(lme4)        # for modeling
@@ -57,6 +58,8 @@ source(here::here("Methods", "blocked_i1_2cfr.R"))
 #' @examples
 validate_power <- function(user.params.list, sim.params.list, design, overwrite = TRUE, gen.wide.results = FALSE) {
 
+  # design = "blocked_i1_2c"
+  
   t1 = Sys.time()
   
   # for saving out and reading in files based on simulation parameters
@@ -67,6 +70,15 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
   
   if(overwrite | length(current.file) == 0)
   {
+
+    if(sim.params.list[['parallel']])
+    {
+      cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
+    } else
+    {
+      cl <- NULL
+    }
+    
     #####################
     # Simulation Values #
     #####################
@@ -74,7 +86,7 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
     # simulate and run power calculations
     sim.filename = paste0(params.file.base, "simulation_results.RDS")
     if(sim.params.list[['runSim']]){
-      sim_results <- est_power_sim(user.params.list, sim.params.list, design)
+      sim_results <- est_power_sim(user.params.list, sim.params.list, design, cl)
       saveRDS(sim_results, file = here("Validation/data", sim.filename))
     } else {
       sim_results <- readRDS(file = here::here("Validation/data", sim.filename))
@@ -141,7 +153,8 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
             ICC = user.params.list[['ICC']], sigma = NULL,
             rho = user.params.list[['rho.default']], omega = NULL,
             tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-            ncl = sim.params.list[['ncl']]
+            cl = cl
+            # parallel = sim.params.list[['parallel']], ncl = sim.params.list[['ncl']]
           )
         } else if(design %in% c('simple_c2_2r'))
         {
@@ -177,7 +190,13 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
     saveRDS(compare_results, file = here::here("Validation/data", compare.filename))
     
     t2 = Sys.time()
-    message(paste('Total time:', difftime(t2, t1, 'mins'), 'minutes'))
+    message(paste('Total time:', difftime(t2, t1, units = 'mins'), 'minutes'))
+    
+    if(sim.params.list[['parallel']])
+    {
+      parallel::stopCluster(cl)
+    }
+    
     return(compare_results)
   } else
   {
@@ -197,6 +216,14 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
 #'
 #' @examples
 validate_mdes <- function(user.params.list, sim.params.list, design, overwrite = TRUE) {
+  
+  if(sim.params.list[['parallel']])
+  {
+    cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
+  } else
+  {
+    cl <- NULL
+  }
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -239,7 +266,8 @@ validate_mdes <- function(user.params.list, sim.params.list, design, overwrite =
         rho = user.params.list[['rho.default']],
         omega = user.params.list[['omega.2']],
         tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-        ncl = sim.params.list[['ncl']],
+        parallel = sim.params.list[['parallel']], ncl = sim.params.list[['ncl']],
+        cl = cl,
         max.iter = sim.params.list[['max.iter']]
       )
       mdes_compare_results <- rbind(mdes_compare_results, mdes_results)
@@ -251,6 +279,11 @@ validate_mdes <- function(user.params.list, sim.params.list, design, overwrite =
     mdes_compare_results = cbind(mdes_compare_results, user.params.list[['ATE_ES']][1])
     colnames(mdes_compare_results) = c('MTP', 'Adjusted MDES', 'Indiv Power', 'Targeted MDES')
     rownames(mdes_compare_results) <- NULL
+    
+    if(sim.params.list[['parallel']])
+    {
+      parallel::stopCluster(cl)
+    }
     
     saveRDS(mdes_compare_results, file = here::here("Validation/data", compare.filename))
     return(mdes_compare_results)
@@ -283,6 +316,14 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
   
   if(overwrite | length(current.file) == 0)
   {
+    
+    if(sim.params.list[['parallel']])
+    {
+      cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
+    } else
+    {
+      cl <- NULL
+    }
     
     procs <- sim.params.list[['procs']]
     if(!("rawp" %in% sim.params.list[['procs']]))
@@ -322,7 +363,8 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
           rho = user.params.list[['rho.default']],
           omega = user.params.list[['omega.2']],
           tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-          ncl = sim.params.list[['ncl']],
+          cl = cl,
+          parallel = sim.params.list[['parallel']], ncl = sim.params.list[['ncl']],
           max.iter = sim.params.list[['max.iter']]
         )
         sample_results$type <- type
@@ -331,6 +373,12 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
     compare.filename <- paste0(params.file.base, "comparison_sample_results.RDS")
+    
+    if(sim.params.list[['parallel']])
+    {
+      parallel::stopCluster(cl)
+    }
+    
     saveRDS(sample_compare_results, file = here::here("Validation/data", compare.filename))
     return(sample_compare_results)
   } else
@@ -345,7 +393,6 @@ if(FALSE)
 {
   MTP = 'Bonferroni';
   power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
-  MTP = MTP;
   M = user.params.list[['M']];
   MDES = rep(user.params.list[['ATE_ES']], M);
   J = user.params.list[['J']];
@@ -358,18 +405,14 @@ if(FALSE)
   R2.1 = user.params.list[['R2.1']];
   R2.2 = user.params.list[['R2.2']];
   ICC = user.params.list[['ICC.2']];
-  # R2.1 = user.params.list[['R2.1']][1];
-  # R2.2 = user.params.list[['R2.2']][1];
-  # ICC = user.params.list[['ICC.2']][1];
   mod.type = "constant";
   rho = user.params.list[['rho.default']];
   omega = user.params.list[['omega.2']];
   tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
-  ncl = sim.params.list[['ncl']];
+  parallel = sim.params.list[['parallel']]; ncl = sim.params.list[['ncl']];
   max.iter = sim.params.list[['max.iter']];
   updateProgress = NULL;
   typesample = 'J';
   J0 = 10; n.j0 = 10;
-  MDES = user.params.list[['ATE_ES']][[1]];
   two.tailed = TRUE; max.iter = 100; tol = 0.1
 }
