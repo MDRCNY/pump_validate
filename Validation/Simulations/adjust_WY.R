@@ -30,9 +30,8 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
   
   # clustered = TRUE; blockby = 'block.id';
   # data = mdat;
-  
+  # 
   B <- sim.params.list[['B']]
-  # ncl <- sim.params.list[['ncl']]
   maxT <- sim.params.list[['maxT']]
   N <- model.params.list[['n.j']]*model.params.list[['J']]
   M <- model.params.list[['M']]
@@ -44,69 +43,35 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
   ifelse(maxT==FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing=TRUE))
   
   assign.vec <- cbind(n.j, p.j)
+  permT <- sapply(1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) })
   
   if(!is.null(cl))
   {
-    clusterExport(
-      cl,
-      list("perm.regs", "data", "clustered", "blockby", "make.dummies", "make.model",
-           "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2",
-           "resamp.by.block", "fastLm", "lmer", "assign.vec", "J", "design"),
-      envir = environment()
-    )
+    clusterExport(cl, list(
+      "perm.regs", "make.dummies", "make.model",
+      "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2",
+      "fastLm", "lmer"
+      , "resamp.by.block", "J", "assign.vec"
+    ), envir = environment())
     
-    iter <- 0
-    permT <- NULL
-    while(is.null(permT) & iter < 5)
-    {
-      permT <- tryCatch(
-        parallel::parSapply(
-          cl, 1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) }
-        ),
-        error = function(e)
-        {
-          print(paste('Error for permT. Error:', e, 'Iteration:', iter))
-          permT <- NULL
-        }
-      )
-      iter <- iter + 1
-    }
-    
+    permT <- parSapply(1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) })
     
     # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
-    # revised KP
-    iter <- 0
-    nullpt <- NULL
-    while(is.null(nullpt) & iter < 5)
-    {
-      nullpt <- tryCatch(
-        parallel::parApply(
-          cl, permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
-          n.j = n.j, J = J, design = design
-        ),
-        error = function(e)
-        {
-          print(paste('Error for nullpt. Error:', e, 'Iteration:', iter))
-          nullpt <- NULL
-        }
-      )
-      iter <- iter + 1
-    }
+    nullpt <- t(parallel::parApply(
+      cl, permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
+      n.j = n.j, J = J, design = design
+    ))
   } else
   {
-    permT <- sapply(1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) })
-    nullpt <- apply(
+    nullpt <- t(apply(
       permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
       n.j = n.j, J = J, design = design
-    )
+    ))
   }
-
-  # turn nullpt into a matrix (B rows, ntest columns)
-  nullpt.mat <- t(nullpt) # revised
   
   # create dummies for comparisions of null p-values to raw p-values
-  if (maxT==FALSE) ind.B <- apply(nullpt.mat, 1, comp.rawp, rawp = rawp, r.m.r = r.m.r)
-  if (maxT==TRUE)  ind.B <- apply(nullpt.mat, 1, comp.rawt, rawt = rawt, r.m.r = r.m.r)
+  if (maxT==FALSE) ind.B <- apply(nullpt, 1, comp.rawp, rawp = rawp, r.m.r = r.m.r)
+  if (maxT==TRUE)  ind.B <- apply(nullpt, 1, comp.rawt, rawt = rawt, r.m.r = r.m.r)
   
   # take means of dummies, these are already ordered (by r.m.r) but still need to enforce monotonicity
   pi.p.m <- rowMeans(ind.B)
@@ -126,12 +91,11 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
   return(out.oo)
 }
 
-
 ### resamp.by.block function to help resample for fixed cases
-resamp.by.block<-function(...) {
-  tc<-numeric(...[1])
-  tc[1:(...[1]*...[2])]<-1
-  sample(tc,replace=FALSE)
+resamp.by.block <-function(assign.vec) {
+  tc <- numeric(assign.vec[1])
+  tc[1:(assign.vec[1]*assign.vec[2])] <- 1
+  return(sample(tc, replace = FALSE))
 }
 
 #' Performs regression with permuted treatment indicator

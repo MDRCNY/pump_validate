@@ -154,7 +154,6 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
             rho = user.params.list[['rho.default']], omega = NULL,
             tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
             cl = cl
-            # parallel = sim.params.list[['parallel']], ncl = sim.params.list[['ncl']]
           )
         } else if(design %in% c('simple_c2_2r'))
         {
@@ -275,7 +274,6 @@ validate_mdes <- function(user.params.list, sim.params.list, design, overwrite =
     compare.filename <- paste0(params.file.base, "comparison_mdes_results.RDS")
     
     mdes_compare_results[,2:3] <- apply(mdes_compare_results[,2:3], 2, as.numeric)
-    # mdes_compare_results[,'Targeted MDES'] <- user.params.list[['ATE_ES']][1]
     mdes_compare_results = cbind(mdes_compare_results, user.params.list[['ATE_ES']][1])
     colnames(mdes_compare_results) = c('MTP', 'Adjusted MDES', 'Indiv Power', 'Targeted MDES')
     rownames(mdes_compare_results) <- NULL
@@ -363,9 +361,8 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
           rho = user.params.list[['rho.default']],
           omega = user.params.list[['omega.2']],
           tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-          cl = cl,
-          parallel = sim.params.list[['parallel']], ncl = sim.params.list[['ncl']],
-          max.iter = sim.params.list[['max.iter']]
+          max.iter = sim.params.list[['max.iter']],
+          cl = cl
         )
         sample_results$type <- type
         sample_compare_results <- rbind(sample_compare_results, sample_results)
@@ -414,5 +411,8 @@ if(FALSE)
   updateProgress = NULL;
   typesample = 'J';
   J0 = 10; n.j0 = 10;
-  two.tailed = TRUE; max.iter = 100; tol = 0.1
+  two.tailed = TRUE; max.iter = 100; tol = 0.1;
+  
+  # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
+  cl <- NULL
 }
