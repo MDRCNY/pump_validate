@@ -14,7 +14,7 @@ run.mdes.ss = FALSE
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
 
-q <- ifelse(sim.params.list[['sim.parallel']], as.numeric(as.character(Sys.getenv("Q"))), 1)
+q <- ifelse(sim.params.list[['sim.parallel']], as.numeric(as.character(Sys.getenv("q"))), 1)
 
 power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
 

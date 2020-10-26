@@ -86,12 +86,14 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     
     # simulate and run power calculations
     sim.filename = paste0(params.file.base, "simulation_results_", q, ".RDS")
-    
     if(sim.params.list[['runSim']]){
-    
-      if(!sim.params.list[['sim.parallel']]) {
-        sim_results <- est_power_sim(user.params.list, sim.params.list, design, cl)
-        saveRDS(sim_results, file = here("Validation/data", sim.filename))
+      message('Running simulation')
+      sim_results <- est_power_sim(user.params.list, sim.params.list, design, cl)
+      saveRDS(sim_results, file = here("Validation/data", sim.filename))
+    } else {
+      message('Reading in simulation results')
+      if(!sim.param.list[['sim.parallel']]) {
+        sim_results <- readRDS(file = here::here("Validation/data", sim.filename))
       } else {
         sim.files = grep(paste0(params.file.base, 'simulation_results_'), list.files(here("Validation/data")), value = TRUE)
         sim_results <- NULL
@@ -102,9 +104,6 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           sim_results <- rbind(sim_results, sim_results_q)
         }
       }
-    } else
-    {
-      sim_results <- readRDS(file = here::here("Validation/data", sim.filename))
     }
     
     ###################
@@ -113,6 +112,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     powerup.filename <- paste0(params.file.base, "powerup_results.RDS")
     if(sim.params.list[['runPowerUp']])
     {
+      message('Running PowerUp')
       if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
       {
         powerup_results <- power.bira2c1(
@@ -157,6 +157,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       saveRDS(powerup_results, file = here("Validation/data", powerup.filename))
     } else
     {
+      message('Reading in PowerUp results')
       powerup_results <- readRDS(file = here::here("Validation/data", powerup.filename))
     }
     
@@ -165,6 +166,8 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     ######################
     pump.filename <- paste0(params.file.base, "pump_results.RDS")
     if(sim.params.list[['runPump']]){
+      
+      message('Running PUMP')
       
       iterator <- 0
       pum_combined_results <- NULL
@@ -211,6 +214,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       
       saveRDS(pum_results, file = here::here("Validation/data", pump.filename))
     } else {
+      message('Reading in PUMP results')
       pum_results <- readRDS(file = here::here("Validation/data", pump.filename))
     }
   
