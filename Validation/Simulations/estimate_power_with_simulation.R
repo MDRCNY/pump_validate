@@ -5,6 +5,7 @@
 #' @param user.params.list List of user-supplied parameters
 #' @param sim.params.list List of simulation parameters
 #' @param design RCT design (see list/naming convention)
+#' @param cl cluster object for parallel computing
 est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) {
   
   # convert user-inputted parameters into model parameters
@@ -65,9 +66,9 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     samp.obs = samp.full
     samp.obs$Yobs = gen_Yobs(samp.full, T.ijk)
     
-    mdat <- makelist.samp(M, samp.obs, T.ijk, model.params.list, design = design) #list length M
-    rawp <- get.rawp(mdat, design = design, n.j = model.params.list[['n.j']], J = J) #vector length M
-    rawt <- get.rawt(mdat, design = design, n.j = model.params.list[['n.j']], J = J) #vector length M
+    mdat <- makelist.samp(M, samp.obs, T.ijk, model.params.list, design = design) # list length M
+    rawp <- get.rawp(mdat, design = design, n.j = model.params.list[['n.j']], J = J) # vector length M
+    rawt <- get.rawt(mdat, design = design, n.j = model.params.list[['n.j']], J = J) # vector length M
     rawt.all[s,] <- rawt
     
     # loop through adjustment procedures (adding 'rawp' as default in all cases)
@@ -80,7 +81,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         proc <- procs[p-1]
         pvals <- get.adjp(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design, cl)
         t21 <- Sys.time()
-        if (s == 1) {message(paste("One sample of", proc, "took", t21 - t11))}
+        if (s == 1) {message(paste("One sample of", proc, "took", difftime(t21, t11, units = 'secs')))}
       }
       adjp.proc[s,,proc] = pvals
     }
@@ -89,11 +90,11 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     if (s == 1) {
       message(paste(
         "Current time:", t2,
-        "\nExpected time diff for simulation of", round(S*(difftime(t2, t1)[[1]])/60,2),
+        "\nExpected time diff for simulation of", round(S*(difftime(t2, t1, units = 'secs')[[1]])/60,2),
         "minutes.\nExpected finish for simulation at", t1 + (t2 - t1) * S,"for S =", S, sep =" ")
       )
     }
-    # else if (s %% px == 0) {message(difftime(t2, t1))}
+    else if (s %% px == 0) { message(difftime(t2, t1)) }
   } # end loop through samples
   
   for (p in 1:(length(procs) + 1)) {
