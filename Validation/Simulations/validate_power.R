@@ -44,6 +44,7 @@ source(here::here("Methods", "blocked_i1_2cfr.R"))
 # library(pum)         # for checking with the new methods
 ################
 
+
 #' Estimating Power through simulations
 #'
 #' Loop through different simulations like in Table C.3 of the paper
@@ -56,7 +57,7 @@ source(here::here("Methods", "blocked_i1_2cfr.R"))
 #' @export
 #'
 #' @examples
-validate_power <- function(user.params.list, sim.params.list, design, overwrite = TRUE, gen.wide.results = FALSE) {
+validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE, gen.wide.results = FALSE) {
 
   # design = "blocked_i1_2c"
   
@@ -84,51 +85,80 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
     #####################
     
     # simulate and run power calculations
-    sim.filename = paste0(params.file.base, "simulation_results.RDS")
+    sim.filename = paste0(params.file.base, "simulation_results_", q, ".RDS")
+    
     if(sim.params.list[['runSim']]){
-      sim_results <- est_power_sim(user.params.list, sim.params.list, design, cl)
-      saveRDS(sim_results, file = here("Validation/data", sim.filename))
-    } else {
+    
+      if(!sim.params.list[['sim.parallel']]) {
+        sim_results <- est_power_sim(user.params.list, sim.params.list, design, cl)
+        saveRDS(sim_results, file = here("Validation/data", sim.filename))
+      } else {
+        sim.files = grep(paste0(params.file.base, 'simulation_results_'), list.files(here("Validation/data")), value = TRUE)
+        sim_results <- NULL
+        for(sim.file in sim.files)
+        {
+          # sim.file = sim.files[1]
+          sim_results_q <- readRDS(file = here::here("Validation/data", sim.file))
+          sim_results <- rbind(sim_results, sim_results_q)
+        }
+      }
+    } else
+    {
       sim_results <- readRDS(file = here::here("Validation/data", sim.filename))
     }
     
     ###################
     # Power Up Values #
     ###################
-    
-    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
+    powerup.filename <- paste0(params.file.base, "powerup_results.RDS")
+    if(sim.params.list[['runPowerUp']])
     {
-      power_up_results <- power.bira2c1(
-        es = user.params.list[['ATE_ES']][1],
-        alpha = sim.params.list[['alpha']],
-        two.tailed = TRUE,
-        p = sim.params.list[['p.j']],
-        g1 = 1,
-        r21 = user.params.list[['R2.1']][1],
-        n = user.params.list[['n.j']],
-        J = user.params.list[['J']]
+      if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
+      {
+        powerup_results <- power.bira2c1(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['p.j']],
+          g1 = 1,
+          r21 = user.params.list[['R2.1']][1],
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']]
+        )
+      } else if(design %in% c('simple_c2_2r'))
+      {
+        powerup_results <- power.cra2r2(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          g2 = 1,
+          p = sim.params.list[['p.j']],
+          rho2 = user.params.list[['ICC.2']][1],
+          r21 = user.params.list[['R2.1']][1],
+          r22 = user.params.list[['R2.2']][1],
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']]
+        )
+      } else {
+        stop(paste('Unknown design:', design)) 
+      }
+      # Power_Up_Standard_Error
+      powerup_results$se       <- powerup_results$parms$es/powerup_results$ncp
+      powerup_results$lower_ci <- powerup_results$power - (1.96 * powerup_results$se)
+      powerup_results$upper_ci <- powerup_results$power + (1.96 * powerup_results$se)
+      
+      powerup_results <- data.frame(
+        MTP = 'rawp',
+        variable = 'indiv',
+        method = 'pup',
+        value = c(powerup_results$power, powerup_results$lower_ci, powerup_results$upper_ci),
+        value.type = c('adjusted_power', 'ci_lower',  'ci_upper')
       )
-    } else if(design %in% c('simple_c2_2r'))
+      saveRDS(powerup_results, file = here("Validation/data", powerup.filename))
+    } else
     {
-      power_up_results <- power.cra2r2(
-        es = user.params.list[['ATE_ES']][1],
-        alpha = sim.params.list[['alpha']],
-        two.tailed = TRUE,
-        g2 = 1,
-        p = sim.params.list[['p.j']],
-        rho2 = user.params.list[['ICC.2']][1],
-        r21 = user.params.list[['R2.1']][1],
-        r22 = user.params.list[['R2.2']][1],
-        n = user.params.list[['n.j']],
-        J = user.params.list[['J']]
-      )
-    } else {
-      stop(paste('Unknown design:', design)) 
+      powerup_results <- readRDS(file = here::here("Validation/data", powerup.filename))
     }
-    # Power_Up_Standard_Error
-    power_up_results$se       <- power_up_results$parms$es/power_up_results$ncp
-    power_up_results$lower_ci <- power_up_results$power - (1.96 * power_up_results$se)
-    power_up_results$upper_ci <- power_up_results$power + (1.96 * power_up_results$se)
     
     ######################
     # PUMP methods value #
@@ -143,7 +173,7 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
         
         if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
         {
-          pum_results <- power_blocked_i1_2c(
+          pum_results_iter <- power_blocked_i1_2c(
             M = user.params.list[['M']], MTP = MTP,
             MDES = user.params.list[['ATE_ES']],
             J = user.params.list[['J']], n.j = user.params.list[['n.j']],
@@ -162,40 +192,43 @@ validate_power <- function(user.params.list, sim.params.list, design, overwrite 
           stop(paste('Unknown design:', design)) 
         }
         
-        pum_results <- data.frame(pum_results)
+        pum_results_iter <- data.frame(pum_results_iter)
         if (iterator == 0) {
-          pum_combined_results <- pum_results
+          pum_results <- pum_results_iter
         } else {
-          pum_combined_results <- dplyr::bind_rows(pum_combined_results, pum_results[2,])
+          pum_results <- dplyr::bind_rows(pum_results, pum_results_iter[2,])
         }
         iterator = iterator + 1
       }
       # adding rownames to the pum_combined_results table
-      rownames(pum_combined_results) <- c("rawp", sim.params.list[['procs']])
-      saveRDS(pum_combined_results, file = here::here("Validation/data", pump.filename))
+      rownames(pum_results) <- c("rawp", sim.params.list[['procs']])
+      
+      pum_results_table <- data.frame(pum_results[,c('indiv', 'min1', 'min2', 'complete')])
+      pum_results_table$MTP <- rownames(pum_results_table)
+      pum_results <- melt(pum_results_table, id.vars = 'MTP')
+      pum_results$method = 'pum'
+      pum_results$value.type = 'adjusted_power'
+      
+      saveRDS(pum_results, file = here::here("Validation/data", pump.filename))
     } else {
-      pum_combined_results <- readRDS(file = here::here("Validation/data", pump.filename))
+      pum_results <- readRDS(file = here::here("Validation/data", pump.filename))
     }
-    
+  
     compare.filename <- paste0(params.file.base, "comparison_power_results.RDS")
-    if(gen.wide.results)
-    {
-      compare_results <- gen.combined.results.wide(pum_combined_results, power_up_results, sim_results) 
-    } else
-    {
-      compare_results <- gen.combined.results.long(pum_combined_results, power_up_results, sim_results)
-    }
+    compare_results_long <- data.frame(rbind(pum_results, powerup_results, sim_results))
+    colnames(compare_results_long) <- c('MTP', 'power_type', 'value', 'method', 'value.type')
+    compare_results <- compare_results_long[,c('MTP', 'power_type','method', 'value.type', 'value')]
     
     saveRDS(compare_results, file = here::here("Validation/data", compare.filename))
-    
-    t2 = Sys.time()
-    message(paste('Total time:', difftime(t2, t1, units = 'mins'), 'minutes'))
     
     if(sim.params.list[['parallel']])
     {
       parallel::stopCluster(cl)
     }
     
+    t2 = Sys.time()
+    message(paste('Total time:', difftime(t2, t1, units = 'mins'), 'minutes'))
+
     return(compare_results)
   } else
   {
@@ -412,7 +445,6 @@ if(FALSE)
   typesample = 'J';
   J0 = 10; n.j0 = 10;
   two.tailed = TRUE; max.iter = 100; tol = 0.1;
-  
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl <- NULL
 }
