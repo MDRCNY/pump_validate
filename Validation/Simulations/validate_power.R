@@ -92,13 +92,20 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       saveRDS(sim_results, file = here("Validation/data", sim.filename))
     } else {
       sim.files = grep(paste0(params.file.base, 'simulation_results_'), list.files(here("Validation/data")), value = TRUE)
-      message(paste('Reading in simulation results.', length(sim.files), 'results files found.'))
-      sim_results <- NULL
-      for(sim.file in sim.files)
+      if(length(sim.files) > 0)
       {
-        # sim.file = sim.files[1]
-        sim_results_q <- readRDS(file = here::here("Validation/data", sim.file))
-        sim_results <- rbind(sim_results, sim_results_q)
+        sim_results <- NULL
+        message(paste('Reading in simulation results.', length(sim.files), 'results files found.'))
+        for(sim.file in sim.files)
+        {
+          # sim.file = sim.files[1]
+          sim_results_q <- readRDS(file = here::here("Validation/data", sim.file))
+          sim_results <- rbind(sim_results, sim_results_q)
+        }
+      } else
+      {
+        warning(paste('No simulation results found for parameters:', params.file.base))
+        sim_results <- NULL
       }
     }
     
@@ -153,8 +160,16 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       saveRDS(powerup_results, file = here("Validation/data", powerup.filename))
     } else
     {
-      message('Reading in PowerUp results')
-      powerup_results <- readRDS(file = here::here("Validation/data", powerup.filename))
+      if(file.exists(here::here("Validation/data", powerup.filename)))
+      {
+        message('Reading in PowerUp results')
+        powerup_results <- readRDS(file = here::here("Validation/data", powerup.filename))
+      } else
+      {
+        warning(paste('No PowerUp results found for parameters:', params.file.base))
+        powerup_results <- NULL
+      }
+      
     }
     
     ######################
@@ -210,8 +225,16 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       
       saveRDS(pum_results, file = here::here("Validation/data", pump.filename))
     } else {
-      message('Reading in PUMP results')
-      pum_results <- readRDS(file = here::here("Validation/data", pump.filename))
+      if(file.exists(here::here("Validation/data", pump.filename)))
+      {
+        message('Reading in PUMP results')
+        pum_results <- readRDS(file = here::here("Validation/data", pump.filename))
+      } else
+      {
+        warning(paste('No PUMP found for parameters:', params.file.base))
+        pum_results <- NULL
+      }
+
     }
   
     compare.filename <- paste0(params.file.base, "comparison_power_results.RDS")

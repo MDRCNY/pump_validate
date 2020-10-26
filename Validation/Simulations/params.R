@@ -31,7 +31,7 @@ sim.params.list <- list(
   , max.iter = 100        # maximum number of iterations for MDES or sample size calculations
   , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                           # Multiple testing procedures
-  , runSim = TRUE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runSim = FALSE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE        # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
   , runPowerUp = TRUE     # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
   , check = FALSE         # Run checks such as printing out quantities

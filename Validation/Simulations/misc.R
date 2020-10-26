@@ -189,7 +189,7 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
     design, "_",
     sim.params.list[['S']], "_S_",
     user.params.list[['M']], "_M_",
-    user.params.list[['B']], "_B_",
+    sim.params.list[['B']], "_B_",
     convert.vec.to.filename(user.params.list[['ATE_ES']]),"_ATES_",
     user.params.list[['J']], "_J_",
     user.params.list[['n.j']], "_nj_",
