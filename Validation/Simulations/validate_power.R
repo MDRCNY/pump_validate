@@ -92,17 +92,13 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       saveRDS(sim_results, file = here("Validation/data", sim.filename))
     } else {
       message('Reading in simulation results')
-      if(!sim.param.list[['sim.parallel']]) {
-        sim_results <- readRDS(file = here::here("Validation/data", sim.filename))
-      } else {
-        sim.files = grep(paste0(params.file.base, 'simulation_results_'), list.files(here("Validation/data")), value = TRUE)
-        sim_results <- NULL
-        for(sim.file in sim.files)
-        {
-          # sim.file = sim.files[1]
-          sim_results_q <- readRDS(file = here::here("Validation/data", sim.file))
-          sim_results <- rbind(sim_results, sim_results_q)
-        }
+      sim.files = grep(paste0(params.file.base, 'simulation_results_'), list.files(here("Validation/data")), value = TRUE)
+      sim_results <- NULL
+      for(sim.file in sim.files)
+      {
+        # sim.file = sim.files[1]
+        sim_results_q <- readRDS(file = here::here("Validation/data", sim.file))
+        sim_results <- rbind(sim_results, sim_results_q)
       }
     }
     
