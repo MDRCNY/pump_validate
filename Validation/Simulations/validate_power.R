@@ -104,7 +104,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         }
       } else
       {
-        warning(paste('No simulation results found for parameters:', params.file.base))
+        warning(paste('New simulation results not run, no simulation results found for parameters:', params.file.base))
         sim_results <- NULL
       }
     }
@@ -166,7 +166,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         powerup_results <- readRDS(file = here::here("Validation/data", powerup.filename))
       } else
       {
-        warning(paste('No PowerUp results found for parameters:', params.file.base))
+        warning(paste('PowerUp results not run, no PowerUp results found for parameters:', params.file.base))
         powerup_results <- NULL
       }
       
@@ -231,7 +231,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         pum_results <- readRDS(file = here::here("Validation/data", pump.filename))
       } else
       {
-        warning(paste('No PUMP found for parameters:', params.file.base))
+        warning(paste('PUMP results not run, no PUMP found for parameters:', params.file.base))
         pum_results <- NULL
       }
 

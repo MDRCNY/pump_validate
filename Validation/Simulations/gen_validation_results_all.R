@@ -9,7 +9,7 @@ overwrite = TRUE
 # if TRUE, only run one power calculation, otherwise run all scenarios of interest
 run.test = TRUE
 # whether or not to run mdes and sample size
-run.mdes.ss = FALSE
+validate.mdes.ss = FALSE
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
@@ -21,7 +21,7 @@ power.results <- validate_power(user.params.list, sim.params.list, design = "blo
 
 if(!run.test)
 {
-  if(run.mdes.ss){ scenarios = 15 } else { scenarios = 24 }
+  if(validate.mdes.ss){ scenarios = 15 } else { scenarios = 24 }
   
   #------------------------------------------------------------------#
   # vary sample size
@@ -118,7 +118,7 @@ if(!run.test)
   # Verify MDES and Sample size
   #------------------------------------------------------------------#
   
-  if(run.mdes.ss)
+  if(validate.mdes.ss)
   {
 
     ## back to defaults

@@ -1,4 +1,4 @@
-for q in $(seq 1 5); do
+for q in $(seq 1 10); do
 
 # print out indexes
 echo “${q}”

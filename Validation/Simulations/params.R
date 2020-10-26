@@ -20,7 +20,8 @@ source(here::here("Validation/Simulations", "misc.R"))
 
 sim.params.list <- list(
   S = 2                   # Number of samples for Monte Carlo Simulation
-  , B = 2                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
+  , Q = 2                 # Number of times entire simulation is repeated, so total iterations = S * Q
+  , B = 10              # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = TRUE           # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05          # Significance level
   , MoE = 0.05            # Margin of error
@@ -31,7 +32,7 @@ sim.params.list <- list(
   , max.iter = 100        # maximum number of iterations for MDES or sample size calculations
   , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                           # Multiple testing procedures
-  , runSim = FALSE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runSim = TRUE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE        # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
   , runPowerUp = TRUE     # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
   , check = FALSE         # Run checks such as printing out quantities
