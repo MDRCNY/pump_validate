@@ -9,6 +9,6 @@ export q
 # Run R script, and produce output files
 sbatch -o /n/home01/khunter33/Power-Under-Multiplicity/%j_${q}.out \
   -e /n/home01/khunter33/Power-Under-Multiplicity/%j_${q}.err \
-  Validation/validate.slurm
+  Validation/validate_parallel.slurm
   sleep 1 # pause to be kind to the scheduler
 done
