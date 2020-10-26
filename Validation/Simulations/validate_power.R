@@ -91,8 +91,8 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       sim_results <- est_power_sim(user.params.list, sim.params.list, design, cl)
       saveRDS(sim_results, file = here("Validation/data", sim.filename))
     } else {
-      message('Reading in simulation results')
       sim.files = grep(paste0(params.file.base, 'simulation_results_'), list.files(here("Validation/data")), value = TRUE)
+      message(paste('Reading in simulation results.', length(sim.files), 'results files found.'))
       sim_results <- NULL
       for(sim.file in sim.files)
       {
