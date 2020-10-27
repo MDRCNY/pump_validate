@@ -70,6 +70,14 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   
   current.file = find_file(params.file.base, type = 'power')
   
+  # store some files in intermediate results file
+  data.dir = here("Validation/data")
+  intermediate.data.dir = paste0(data.dir, "/intermediate_results/")
+  if(!dir.exists(intermediate.data.dir))
+  {
+    dir.create(intermediate.data.dir)
+  }
+  
   if(overwrite | length(current.file) == 0)
   {
 
@@ -90,17 +98,20 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     if(sim.params.list[['runSim']]){
       message('Running simulation')
       adjp.proc <- est_power_sim(user.params.list, sim.params.list, design, cl)
-      saveRDS(adjp.proc, file = here("Validation/data", adjp.filename))
+      saveRDS(adjp.proc, file = paste0(intermediate.data.dir, adjp.filename))
     } else {
-      adjp.files = grep(paste0(params.file.base, 'adjp_'), list.files(here("Validation/data")), value = TRUE)
+      adjp.files = grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
       if(length(adjp.files) > 0)
       {
         message(paste('Reading in simulation adjp results.', length(adjp.files), 'results files found.'))
-        adjp.proc <- readRDS(file = here::here("Validation/data", adjp.files[1]))
-        for(adjp.file in adjp.files[2:length(adjp.files)])
+        adjp.proc <- readRDS(file = paste0(intermediate.data.dir, adjp.files[1]))
+        if(length(adjp.files) > 1)
         {
-          adjp.proc.q <- readRDS(file = here::here("Validation/data", adjp.file))
-          adjp.proc <- abind(adjp.proc, adjp.proc.q, along = 1)
+          for(adjp.file in adjp.files[2:length(adjp.files)])
+          {
+            adjp.proc.q <- readRDS(file = paste0(intermediate.data.dir, adjp.file))
+            adjp.proc <- abind(adjp.proc, adjp.proc.q, along = 1)
+          }
         }
       } else
       {
@@ -114,7 +125,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     {
       sim.filename = paste0(params.file.base, "simulation_results.RDS")
       sim_results <- calc_power(adjp.proc, user.params.list, sim.params.list)
-      saveRDS(sim_results, file = here("Validation/data", sim.filename))
+      saveRDS(sim_results, file = paste0(intermediate.data.dir, sim.filename))
     } else
     {
       warning(paste(
@@ -172,13 +183,13 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         value = c(powerup_results$power, powerup_results$lower_ci, powerup_results$upper_ci),
         value.type = c('adjusted_power', 'ci_lower',  'ci_upper')
       )
-      saveRDS(powerup_results, file = here("Validation/data", powerup.filename))
+      saveRDS(powerup_results, file = paste0(intermediate.data.dir, powerup.filename))
     } else
     {
-      if(file.exists(here::here("Validation/data", powerup.filename)))
+      if(file.exists(paste0(intermediate.data.dir, powerup.filename)))
       {
         message('Reading in PowerUp results')
-        powerup_results <- readRDS(file = here::here("Validation/data", powerup.filename))
+        powerup_results <- readRDS(file = paste0(intermediate.data.dir, powerup.filename))
       } else
       {
         warning(paste('PowerUp results not run, no PowerUp results found for parameters:', params.file.base))
@@ -238,12 +249,12 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       pum_results$method = 'pum'
       pum_results$value.type = 'adjusted_power'
       
-      saveRDS(pum_results, file = here::here("Validation/data", pump.filename))
+      saveRDS(pum_results, file = paste0(intermediate.data.dir, pump.filename))
     } else {
-      if(file.exists(here::here("Validation/data", pump.filename)))
+      if(file.exists(paste0(intermediate.data.dir, pump.filename)))
       {
         message('Reading in PUMP results')
-        pum_results <- readRDS(file = here::here("Validation/data", pump.filename))
+        pum_results <- readRDS(file = paste0(intermediate.data.dir, pump.filename))
       } else
       {
         warning(paste('PUMP results not run, no PUMP found for parameters:', params.file.base))
@@ -258,7 +269,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       compare_results_long <- data.frame(rbind(pum_results, powerup_results, sim_results))
       colnames(compare_results_long) <- c('MTP', 'power_type', 'value', 'method', 'value.type')
       compare_results <- compare_results_long[,c('MTP', 'power_type','method', 'value.type', 'value')]
-      saveRDS(compare_results, file = here::here("Validation/data", compare.filename))
+      saveRDS(compare_results, file = paste(data.dir, compare.filename, sep = "/"))
     } else
     {
       compare_results <- NULL
@@ -359,7 +370,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design, overwrite =
       parallel::stopCluster(cl)
     }
     
-    saveRDS(mdes_compare_results, file = here::here("Validation/data", compare.filename))
+    saveRDS(mdes_compare_results, file = here("Validation/data", compare.filename))
     return(mdes_compare_results)
   } else
   {
@@ -452,7 +463,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
       parallel::stopCluster(cl)
     }
     
-    saveRDS(sample_compare_results, file = here::here("Validation/data", compare.filename))
+    saveRDS(sample_compare_results, file = here("Validation/data", compare.filename))
     return(sample_compare_results)
   } else
   {
