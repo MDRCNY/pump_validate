@@ -25,11 +25,6 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     procs <- "Bonferroni"
   }
   
-  power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + 5)
-  colnames(power.results) = c(paste0("D", 1:M, "indiv"), "min", "1/3", "1/2","2/3", "full")
-  rownames(power.results) = c("rawp", procs)
-  se.power <- CI.lower.power <- CI.upper.power <- power.results
-  
   # true positives and false positives
   nulls <- which(user.params.list[['ATE_ES']] == 0)
   alts <- which(user.params.list[['ATE_ES']] != 0)
@@ -118,6 +113,11 @@ calc_power <- function(adjp.proc, user.params.list, sim.params.list)
   M <- user.params.list[['M']]
   alpha <- sim.params.list[['alpha']]
   procs <- sim.params.list[['procs']]
+  
+  power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + 5)
+  colnames(power.results) = c(paste0("D", 1:M, "indiv"), "min", "1/3", "1/2","2/3", "full")
+  rownames(power.results) = c("rawp", procs)
+  se.power <- CI.lower.power <- CI.upper.power <- power.results
   
   for (p in 1:(length(procs) + 1)) {
     if (M == 1) {
