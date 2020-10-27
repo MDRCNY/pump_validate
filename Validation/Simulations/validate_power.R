@@ -120,6 +120,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         'Number of iterations loaded does not match parameters. Number of adjusted p-values:',
         dim(adjp.proc)[1], '. S =', sim.params.list[['S']], ', Q =', sim.params.list[['Q']]
       ))
+      sim_results <- NULL
     }
     
     ###################
