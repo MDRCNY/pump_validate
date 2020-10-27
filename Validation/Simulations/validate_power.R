@@ -117,7 +117,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     } else
     {
       warning(paste(
-        'Number of iterations loaded does not match parameters. Number of adjusted p-values:',
+        'Number of iterations loaded does not match parameters provided. Number of adjusted p-values:',
         dim(adjp.proc)[1], '. S =', sim.params.list[['S']], ', Q =', sim.params.list[['Q']]
       ))
       sim_results <- NULL
@@ -251,13 +251,18 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
 
     }
   
-    compare.filename <- paste0(params.file.base, "comparison_power_results.RDS")
-    compare_results_long <- data.frame(rbind(pum_results, powerup_results, sim_results))
-    colnames(compare_results_long) <- c('MTP', 'power_type', 'value', 'method', 'value.type')
-    compare_results <- compare_results_long[,c('MTP', 'power_type','method', 'value.type', 'value')]
-    
-    saveRDS(compare_results, file = here::here("Validation/data", compare.filename))
-    
+    if(!is.null(sim_results) | !is.null(powerup_results) | !is.null(sim_results))
+    {
+      compare.filename <- paste0(params.file.base, "comparison_power_results.RDS")
+      compare_results_long <- data.frame(rbind(pum_results, powerup_results, sim_results))
+      colnames(compare_results_long) <- c('MTP', 'power_type', 'value', 'method', 'value.type')
+      compare_results <- compare_results_long[,c('MTP', 'power_type','method', 'value.type', 'value')]
+      saveRDS(compare_results, file = here::here("Validation/data", compare.filename))
+    } else
+    {
+      compare_results <- NULL
+    }
+
     if(sim.params.list[['parallel']])
     {
       parallel::stopCluster(cl)
