@@ -107,11 +107,19 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         adjp.proc <- NULL
       }
     }
-    if(!is.null(adjp.proc))
+    
+    # if we have all the iterations, save it out!
+    if(!is.null(adjp.proc) & dim(adjp.proc)[1] == sim.params.list[['S']]*sim.params.list[['Q']])
     {
       sim.filename = paste0(params.file.base, "simulation_results.RDS")
       sim_results <- calc_power(adjp.proc, user.params.list, sim.params.list)
       saveRDS(sim_results, file = here("Validation/data", sim.filename))
+    } else
+    {
+      warning(paste(
+        'Number of iterations loaded does not match parameters. Number of adjusted p-values:',
+        dim(adjp.proc)[1], '. S =', sim.params.list[['S']], ', Q =', sim.params.list[['Q']]
+      ))
     }
     
     ###################
