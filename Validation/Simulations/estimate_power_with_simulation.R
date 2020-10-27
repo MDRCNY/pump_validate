@@ -24,16 +24,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     print("Multiple testing corrections are not needed when M=1")
     procs <- "Bonferroni"
   }
-  
-  power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + 5)
-  colnames(power.results) = c(paste0("D", 1:M, "indiv"), "min", "1/3", "1/2","2/3", "full")
-  rownames(power.results) = c("rawp", procs)
-  se.power <- CI.lower.power <- CI.upper.power <- power.results
-  
-  # true positives and false positives
-  nulls <- which(user.params.list[['ATE_ES']] == 0)
-  alts <- which(user.params.list[['ATE_ES']] != 0)
-  
+
   # list of adjustment procedures
   adjp.proc <- array(0, c(S, M, length(procs) + 1))
   dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", procs))
@@ -45,7 +36,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   for (s in 1:S) {
     
     t1 <- Sys.time()
-    if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S))}
+    if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
     samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
@@ -78,10 +69,12 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         proc <- "rawp"
       } else {
         t11 <- Sys.time()
+        
         proc <- procs[p-1]
         pvals <- get.adjp(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design, cl)
+        
         t21 <- Sys.time()
-        if (s == 1) {message(paste("One sample of", proc, "took", difftime(t21, t11, units = 'secs')))}
+        if (s == 1) { message(paste("One sample of", proc, "took", difftime(t21, t11, units = 'secs'))) }
       }
       adjp.proc[s,,proc] = pvals
     }
@@ -94,8 +87,36 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         "minutes.\nExpected finish for simulation at", t1 + (t2 - t1) * S,"for S =", S, sep =" ")
       )
     }
-    else if (s %% px == 0) { message(difftime(t2, t1)) }
+    else if (s %% px == 0) { message(paste('Progress: iteration', s, 'of', S, 'complete, running time:', difftime(t2, t1))) }
   } # end loop through samples
+  
+  return(adjp.proc)
+}
+
+#'  Function: calc_power                                       
+#'  
+#'  Calculates power based on adjusted p values
+#'
+#' @param adjp.proc adjusted p values for all procedures
+#' @param user.params.list
+#' @param sim.params.list
+#' 
+#' @return formatted simulation results
+
+calc_power <- function(adjp.proc, user.params.list, sim.params.list)
+{
+  # save out some commonly used variables
+  M <- user.params.list[['M']]
+  S <- sim.params.list[['S']]
+  alpha <- sim.params.list[['alpha']]
+  procs <- sim.params.list[['procs']]
+  
+  power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + 5)
+  colnames(power.results) = c(paste0("D", 1:M, "indiv"), "min", "1/3", "1/2","2/3", "full")
+  rownames(power.results) = c("rawp", procs)
+  se.power <- CI.lower.power <- CI.upper.power <- power.results
+  
+  alts <- which(user.params.list[['ATE_ES']] != 0)
   
   for (p in 1:(length(procs) + 1)) {
     if (M == 1) {
@@ -139,8 +160,9 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   adj_power <- list(power.results, CI.lower.power, CI.upper.power)
   names(adj_power) <- c("adjusted_power", "ci_lower", "ci_upper")
   
-  return(adj_power)
-  
+  # reformat this for easier use
+  sim_results <- format_sim_results(adj_power)
+  return(sim_results)
 }
 
 # --------------------------------------------------------------------- #
@@ -224,7 +246,7 @@ get.pval.Level1 <- function(mod) {
 get.tstat.Level1 <- function(mod) {
 
   if(class(mod)=="lmerMod") {
-    tstat <-summary(mod)$coefficients["Treat.ij","t value"]
+    tstat <- summary(mod)$coefficients["Treat.ij","t value"]
   }
   if (class(mod)=="fastLm") {
     tstat <- summary(mod)$coef["Treat.ij", "t value"]
@@ -235,7 +257,7 @@ get.tstat.Level1 <- function(mod) {
 get.pval.Level2 <- function(mod) {
 
   if(class(mod)=="lmerMod") {
-    pval <-(1-pnorm(abs(summary(mod)$coefficients["Treat.j","t value"])))*2
+    pval <- (1-pnorm(abs(summary(mod)$coefficients["Treat.j","t value"])))*2
   }
   if (class(mod)=="fastLm") {
     pval <- summary(mod)$coef["Treat.j", "Pr(>|t|)"]
@@ -369,18 +391,19 @@ get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list,
     adjp.proc <- adjust_WY(
       data = mdat, rawp = rawp, rawt = rawt,
       clustered = TRUE, blockby = 'block.id',
-      sim.params.list = sim.params.list, model.params.list = model.params.list, design = design,
+      sim.params.list = sim.params.list,
+      model.params.list = model.params.list,
+      design = design,
       cl = cl
     )[,"WY"]
     tw2 <- Sys.time()
     # print(difftime(tw2, tw1))
   }
   else {
-    #return a matrix with m columns (domains) and b rows (samples)
-    #this needs rawp to be a matrix with m columns and was designed for all samples to be a row.
+    # return a matrix with m columns (domains) and b rows (samples)
+    # this needs rawp to be a matrix with m columns and was designed for all samples to be a row.
     mt.out <- mt.rawp2adjp(rawp, proc, sim.params.list[['alpha']])
     adjp.proc <- mt.out$adjp[order(mt.out$index), proc]
-    #mt.rawp2adjp(rawp, proc, alpha)$adjp[,proc]
   }
   return(adjp.proc)
 }

@@ -78,14 +78,14 @@ adjust.allsamps.WYSS <- function(snum, abs.Zs.H0, abs.Zs.H1) {
   
   # creating the matrix to store the adjusted test values with the number of samples &
   # number of M outcomes
-  adjp.WY<-matrix(NA,snum,ncol(abs.Zs.H0))
+  adjp.WY <- matrix(NA, snum, ncol(abs.Zs.H0))
   # looping through all the samples of raw test statistics under the alternative hypothesis
-  doWY<-for (s in 1:snum) {
+  doWY <- for (s in 1:snum) {
     
     # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
-    ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp=abs.Zs.H1[s,]))
+    ind.B <- t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp = abs.Zs.H1[s,]))
     # calculating the p-value for each sample
-    adjp.WY[s,]<-colMeans(ind.B)
+    adjp.WY[s,] <- colMeans(ind.B)
     
   }
   return(adjp.WY)
@@ -185,7 +185,7 @@ t.mean.H1<-function(MDES,J,n.j,R2.1,p) {
 #'
 #' @return the degree of freedom
 
-df <- function(J,n.j,numCovar.1) {
+df <- function(J, n.j, numCovar.1) {
   
   J*n.j - J - numCovar.1 - 1
   
@@ -228,11 +228,12 @@ df <- function(J,n.j,numCovar.1) {
 #'
 #'
 power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
-                                p, alpha, numCovar.1 = 0, numCovar.2 = 0, R2.1, R2.2 = NULL, ICC,
+                                p, alpha, numCovar.1 = 0, numCovar.2 = 0,
+                                R2.1, R2.2 = NULL, ICC,
                                 mod.type, sigma = 0,rho, omega = NULL,
                                 tnum = 10000, snum = 1000, cl = NULL,
                                 updateProgress = NULL) {
-  # parallel = TRUE;
+  # cl = NULL;
   
   if(length(MDES) < M)
   {
@@ -244,7 +245,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   diag(sigma) <- 1
   
   # number of false nulls (i.e they are really not nulls)
-  numfalse <- sum(1*MDES>0)
+  numfalse <- sum(1*MDES > 0)
   
   # compute Q(m) for all false nulls. We are calculating the test statistics for when the alternative hypothesis is true.
   t.shift <- t.mean.H1(MDES, J, n.j, R2.1, p)
@@ -266,14 +267,9 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   
   # 1st call back to progress bar on progress of calculation: P values generation
   if (is.function(updateProgress) & !is.null(abs.Zs.H0)) {
-    msg <- paste0("P-values have been generated!") # Priamry text we want to display
-    updateProgress(message = msg) # Passing back the progress messages onto the callback function
-  } # if the function is being called, run the progress bar
-  
-  # explicit invocation of the function and saving it so that we can pass it along in apply without the
-  # explicit calling inside apply
-  mt.rawp2adjp <- multtest::mt.rawp2adjp
-  
+    updateProgress(message = "P-values have been generated!")
+  }
+
   # seperating out p values that are adjusted by Bonferroni, Holm and Benjamini-Hocheberg
   grab.pval <- function(...,proc) {return(...$adjp[order(...$index),proc])}
   
@@ -282,130 +278,55 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   if (MTP == "Bonferroni"){
     
     adjp <- apply(pvals.H1, 1, multtest::mt.rawp2adjp, proc = "Bonferroni", alpha = alpha)
-    adjp.BF <- do.call(rbind,lapply(adjp, grab.pval, proc = "Bonferroni"))
-    
-    if (is.function(updateProgress) & !is.null(adjp.BF)){
-      
-      msg  <- paste0("Multiple adjustments done for Bonferroni.")
-      # Priamry text we want to display
-      updateProgress(message = msg)
-      
-    } # call back function for updating the progress bar in Shiny
+    adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "Bonferroni"))
     
   } else if (MTP == "Holm") {
     
     adjp <- apply(pvals.H1, 1, multtest::mt.rawp2adjp, proc = "Holm", alpha = alpha)
-    adjp.HO <- do.call(rbind, lapply(adjp, grab.pval, proc = "Holm"))
-    
-    if (is.function(updateProgress) & !is.null(adjp.HO)){
-      
-      msg  <- paste0("Multiple adjustments done for Holms.")
-      # Priamry text we want to display
-      updateProgress(message = msg)
-      
-    } # call back function for updating the progress bar in Shiny
+    adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "Holm"))
     
   } else if (MTP == "BH") {
     
     adjp <- apply(pvals.H1, 1, multtest::mt.rawp2adjp, proc = c("BH"), alpha = alpha)
-    adjp.BH <- do.call(rbind,lapply(adjp, grab.pval, proc = "BH"))
-    
-    if (is.function(updateProgress) & !is.null(adjp.BH)){
-      
-      msg  <- paste0("Multiple adjustments done for Benjamini-Hocheberg.")
-      # Priamry text we want to display
-      updateProgress(message = msg)
-      
-    } # call back function for updating the progress bar in Shiny
-    
-  } # non-Westfall Young choices
-  
+    adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "BH"))
 
-  # adjust p-values for Westfall-Young (single-step and step-down)
-  if(!is.null(cl))
+  } else if(MTP == "rawp") {
+    adjp <- rawp
+  } else if(MTP %in% c("WY-SS", "WY-SD"))
   {
-    clusterExport(
-      cl,
-      list("abs.Zs.H1"),
-      envir = environment()
-    )
-    
-    iter <- 0
-    order.matrix <- NULL
-    while(is.null(order.matrix) & iter < 5)
+    if(!is.null(cl))
     {
-      order.matrix <- tryCatch(
-        t(parallel::parApply(cl, abs.Zs.H1, 1, order, decreasing = TRUE)),
-        error = function(e)
-        {
-          print(paste('Error for order.matrix. Error:', e, 'Iteration:', iter))
-          order.matrix <- NULL
-        }
+      clusterExport(
+        cl,
+        list("abs.Zs.H1"),
+        envir = environment()
       )
-      iter <- iter + 1
-    }
-  } else
-  {
-    order.matrix <- t(apply(abs.Zs.H1, 1, order, decreasing = TRUE))
-  }
- 
-  
-  if (MTP == "WY-SS"){
-    
-    adjp.SS <- adjust.allsamps.WYSS(snum, abs.Zs.H0, abs.Zs.H1)
-    
-    if (is.function(updateProgress) & !is.null(adjp.SS)){
+      order.matrix <- t(parallel::parApply(cl, abs.Zs.H1, 1, order, decreasing = TRUE))
       
-      msg  <- paste0("Multiple adjustments done for Westfall Young Single Step.")
-      # Priamry text we want to display
-      updateProgress(message = msg)
-      
-    } # call back function for updating the progress bar in Shiny
-    
-  } else if (MTP == "WY-SD"){
-    
-    adjp.SD <- adjust.allsamps.WYSD(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl)
-    
-    if (is.function(updateProgress) & !is.null(adjp.SD)){
-      
-      msg  <- paste0("Multiple adjustments done for Westfall Young Step Down.")
-      # Priamry text we want to display
-      updateProgress(message = msg)
-      
+    } else
+    {
+      order.matrix <- t(apply(abs.Zs.H1, 1, order, decreasing = TRUE))
     }
     
-  } # Westfall Young choices
-  
-  
-  # combine all adjusted p-values in list (each entry is a matrix for given MTP)
-  if (MTP == "Bonferroni"){
-    
-    adjp.each <- list(rawp, adjp.BF)
-    
-  } else if (MTP == "Holm"){
-    
-    adjp.each <- list(rawp, adjp.HO)
-    
-  } else if (MTP == "BH"){
-    
-    adjp.each <- list(rawp, adjp.BH)
-    
-  } else if (MTP == "WY-SS"){
-    
-    adjp.each <- list(rawp, adjp.SS)
-    
-  } else if (MTP == "WY-SD"){
-    
-    adjp.each <- list(rawp, adjp.SD)
-    
-  } else if (MTP == "rawp")
-  {
-    adjp.each <- list(rawp, rawp)
-  } else
-  {
-    stop(paste("Unknown MTP", MTP))
+    if (MTP == "WY-SS"){
+      
+      adjp <- adjust.allsamps.WYSS(snum, abs.Zs.H0, abs.Zs.H1)
+      
+    } else if (MTP == "WY-SD"){
+      
+      adjp <- adjust.allsamps.WYSD(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl)
+
+    }
+  } else {
+    stop(paste("Unknown MTP:", MTP))
   }
   
+  if (is.function(updateProgress) & !is.null(adjp)){
+    updateProgress(message = paste("Multiple adjustments done for", MTP))
+  }
+  
+  adjp.each <- list(rawp, adjp)
+
   # for each MTP, get matrix of indicators for whether the adjusted p-value is less than alpha
   reject <- function(x) {as.matrix(1*(x<alpha))}
   reject.each <-lapply(adjp.each,reject)
@@ -423,74 +344,44 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   
   # 3rd call back to progress bar: Individual power calculations are done
   if (is.function(updateProgress) & !is.null(power.ind.each.mat)) {
-    msg  <- paste0("Individual power calculation is done.") # Priamry text we want to display
-    updateProgress(message = msg) # Passing back the progress messages onto the callback function
-  } # if the function is being called, run the progress bar
+    updateProgress(message = "Individual power calculation is done.")
+  }
   
   # Helper function: m-min powers for all MTPs (including complete power when m=M)
-  power.min.fun <- function(x,M) {
+  power.min.fun <- function(x, M) {
     power.min<-numeric(M)
     cnt<-0
     for (m in 1:M) {
-      power.min[m]<-mean(x>cnt)
-      cnt<-cnt+1
+      power.min[m] <- mean(x > cnt)
+      cnt <- cnt+1
     }
     return(power.min)
   } # end of calculating d-minimal power
   
   # calculating d-minimal power
-  power.min<-lapply(lt.alpha.each,power.min.fun,M=M)
-  power.min.mat<-do.call(rbind,power.min)
+  power.min<-lapply(lt.alpha.each,power.min.fun, M = M)
+  power.min.mat<-do.call(rbind, power.min)
   
   # complete power is the power to detect outcomes at least as large as the MDES on all outcomes
   # separating out complete power from d-minimal power by taking the last entry
-  power.cmp<-rep(power.min.mat[1,M],length(power.min)) # should it be numfalse or M?
+  power.cmp<-rep(power.min.mat[1,M], length(power.min)) # should it be numfalse or M?
   
   # combine all power for all definitions
-  all.power.results<-cbind(power.ind.each.mat,power.min.mat[,-M],power.cmp)
+  all.power.results <- cbind(power.ind.each.mat,power.min.mat[,-M], power.cmp)
   
   # calculating average individual power
-  mean.ind.power <- apply(as.matrix(all.power.results[,1:M][,MDES>0]),1,mean)
+  mean.ind.power <- apply(as.matrix(all.power.results[,1:M][,MDES>0]), 1, mean)
   
   # revise final matrix to report this mean individual power and return results
-  all.power.results<-cbind(mean.ind.power,all.power.results)
+  all.power.results <- cbind(mean.ind.power, all.power.results)
   
   # setting the col and row names for all power results table
-  colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
+  colnames(all.power.results) <- c("indiv", paste0("indiv",1:M), paste0("min",1:(M-1)), "complete")
+  rownames(all.power.results) <- c("rawp", MTP)
   
-  if (MTP == "Bonferroni") {
-    
-    rownames(all.power.results) <- c("rawp", "BF")
-    
-  } else if (MTP == "Holm") {
-    
-    rownames(all.power.results) <- c("rawp", "Holm")
-    
-  } else if (MTP == "BH") {
-    
-    rownames(all.power.results) <- c("rawp", "BH")
-    
-  } else if (MTP == "WY-SS") {
-    
-    rownames(all.power.results) <- c("rawp", "WY-SS")
-    
-  } else if (MTP == "WY-SD") {
-    
-    rownames(all.power.results) <- c("rawp", "WY-SD")
-    
-  } else if (MTP == "rawp")
-  {
-    rownames(all.power.results) <- c("rawp", "rawp")
-  } else
-  {
-    stop(paste("Unknown MTP", MTP))
-  }
-  
-  #4th call back to progress bar: All power calculation done
   if (is.function(updateProgress) & !is.null(all.power.results)) {
-    msg  <- paste0("All definitions of power calculation are done.") # Priamry text we want to display
-    updateProgress(message = msg) # Passing back the progress messages onto the callback function
-  } # if the function is being called, run the progress bar
+    updateProgress(message = paste0("All definitions of power calculation are done."))
+  }
   
   return(all.power.results)
   

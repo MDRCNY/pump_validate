@@ -5,8 +5,6 @@
 #SBATCH -p test												    # Partition to submit to
 #SBATCH --mem-per-cpu=4000 										# Memory per cpu in MB (see also --mem-per-cpu)
 #SBATCH --open-mode=append
-#SBATCH -o /n/home01/khunter33/Power-Under-Multiplicity/%j.out 	# Standard out goes to this file
-#SBATCH -e /n/home01/khunter33/Power-Under-Multiplicity/%j.err 	# Standard err goes to this filehostname
 #SBATCH --mail-type=ALL        									# Type of email notification- BEGIN,END,FAIL,ALL
 #SBATCH --mail-user=kristenbhunter@gmail.com 					# Email
 
