@@ -213,16 +213,20 @@ gen.power.results.plot <- function(params.file.base, design)
   power.file <- find_file(params.file.base, type = 'power')
   if(length(power.file) == 0)
   {
-    stop(paste('Results not yet computed for given parameters:', params.file.base))
+    warning(paste('Results not yet computed for given parameters:', params.file.base))
+    results_plot <- NULL
+  } else
+  {
+    power_results <- readRDS(power.file)
+    results_plot <- ggplot(power_results,
+                           aes(x = MTP, y = value, color = method)) +
+      geom_point() +
+      geom_line() +
+      facet_wrap(~power_type, labeller = label_both) +
+      ylab('Power') +
+      ggtitle(paste('Design:', design))
   }
-  power_results <- readRDS(power.file)
-  results_plot <- ggplot(power_results,
-    aes(x = MTP, y = value, color = method)) +
-    geom_point() +
-    geom_line() +
-    facet_wrap(~power_type, labeller = label_both) +
-    ylab('Power') +
-    ggtitle(paste('Design:', design))
+
   return(results_plot)
 }
 

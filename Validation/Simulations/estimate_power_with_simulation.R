@@ -24,10 +24,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     print("Multiple testing corrections are not needed when M=1")
     procs <- "Bonferroni"
   }
-  
-  # true positives and false positives
-  
-  
+
   # list of adjustment procedures
   adjp.proc <- array(0, c(S, M, length(procs) + 1))
   dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", procs))
@@ -90,7 +87,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         "minutes.\nExpected finish for simulation at", t1 + (t2 - t1) * S,"for S =", S, sep =" ")
       )
     }
-    else if (s %% px == 0) { message(difftime(t2, t1)) }
+    else if (s %% px == 0) { message(paste('Progress: iteration', s, 'of', S, 'complete, running time:', difftime(t2, t1))) }
   } # end loop through samples
   
   return(adjp.proc)
