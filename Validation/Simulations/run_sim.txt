@@ -1,4 +1,4 @@
-for q in $(seq 1 10); do
+for q in $(seq 1 5); do
 
 # print out indexes
 echo “${q}”
@@ -10,5 +10,5 @@ export q
 sbatch -o /n/home01/khunter33/Power-Under-Multiplicity/%j_${q}.out \
   -e /n/home01/khunter33/Power-Under-Multiplicity/%j_${q}.err \
   Validation/validate_parallel.slurm
-  sleep 1 # pause to be kind to the scheduler
+  sleep 3 # pause to be kind to the scheduler
 done

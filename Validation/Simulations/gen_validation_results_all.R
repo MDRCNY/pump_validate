@@ -21,7 +21,7 @@ power.results <- validate_power(user.params.list, sim.params.list, design = "blo
 
 if(!run.test)
 {
-  if(validate.mdes.ss){ scenarios = 15 } else { scenarios = 24 }
+  scenarios = ifelse(validate.mdes.ss, 24, 15)
   
   #------------------------------------------------------------------#
   # vary sample size
