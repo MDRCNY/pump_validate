@@ -65,7 +65,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-  print(paste('Power validation for:', params.file.base))
+  message(paste('Power validation for:', params.file.base))
   
   current.file = find_file(params.file.base, type = 'power')
   
@@ -94,12 +94,12 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       adjp.files = grep(paste0(params.file.base, 'adjp_'), list.files(here("Validation/data")), value = TRUE)
       if(length(adjp.files) > 0)
       {
-        adjp.proc <- NULL
         message(paste('Reading in simulation adjp results.', length(adjp.files), 'results files found.'))
-        for(adjp.file in adjp.files)
+        adjp.proc <- readRDS(file = here::here("Validation/data", adjp.files[1]))
+        for(adjp.file in adjp.files[2:length(adjp.files)])
         {
           adjp.proc.q <- readRDS(file = here::here("Validation/data", adjp.file))
-          adjp.proc <- rbind(adjp.proc, adjp.proc)
+          adjp.proc <- abind(adjp.proc, adjp.proc.q, along = 1)
         }
       } else
       {
