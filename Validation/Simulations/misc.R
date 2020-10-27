@@ -299,6 +299,7 @@ find_file <- function(params.file.base, type)
 {
   results.files <- list.files(here::here("Validation/data"), full.names = TRUE)
   results.files <- results.files[grep(params.file.base, results.files)]
+  results.files <- results.files[grep('comparison', results.files)]
   # return file
   ret.file <- results.files[grep(type, results.files)]
   return(ret.file)

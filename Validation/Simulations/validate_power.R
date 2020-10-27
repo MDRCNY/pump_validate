@@ -85,28 +85,33 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     #####################
     
     # simulate and run power calculations
-    sim.filename = paste0(params.file.base, "simulation_results_", q, ".RDS")
+    adjp.filename = paste0(params.file.base, "adjp_", q, ".RDS")
     if(sim.params.list[['runSim']]){
       message('Running simulation')
-      sim_results <- est_power_sim(user.params.list, sim.params.list, design, cl)
-      saveRDS(sim_results, file = here("Validation/data", sim.filename))
+      adjp.proc <- est_power_sim(user.params.list, sim.params.list, design, cl)
+      saveRDS(adjp.proc, file = here("Validation/data", adjp.filename))
     } else {
-      sim.files = grep(paste0(params.file.base, 'simulation_results_'), list.files(here("Validation/data")), value = TRUE)
-      if(length(sim.files) > 0)
+      adjp.files = grep(paste0(params.file.base, 'adjp_'), list.files(here("Validation/data")), value = TRUE)
+      if(length(adjp.files) > 0)
       {
-        sim_results <- NULL
-        message(paste('Reading in simulation results.', length(sim.files), 'results files found.'))
-        for(sim.file in sim.files)
+        adjp.proc <- NULL
+        message(paste('Reading in simulation adjp results.', length(adjp.files), 'results files found.'))
+        for(adjp.file in adjp.files)
         {
-          # sim.file = sim.files[1]
-          sim_results_q <- readRDS(file = here::here("Validation/data", sim.file))
-          sim_results <- rbind(sim_results, sim_results_q)
+          adjp.proc.q <- readRDS(file = here::here("Validation/data", adjp.file))
+          adjp.proc <- rbind(adjp.proc, adjp.proc)
         }
       } else
       {
-        warning(paste('New simulation results not run, no simulation results found for parameters:', params.file.base))
-        sim_results <- NULL
+        warning(paste('New simulation adjp results not run, no simulation adjp results found for parameters:', params.file.base))
+        adjp.proc <- NULL
       }
+    }
+    if(!is.null(adjp.proc))
+    {
+      sim.filename = paste0(params.file.base, "simulation_results.RDS")
+      sim_results <- calc_power(adjp.proc, user.params.list, sim.params.list)
+      saveRDS(sim_results, file = here("Validation/data", sim.filename))
     }
     
     ###################

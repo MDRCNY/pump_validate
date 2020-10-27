@@ -99,6 +99,26 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     else if (s %% px == 0) { message(difftime(t2, t1)) }
   } # end loop through samples
   
+  return(adjp.proc)
+}
+
+#'  Function: calc_power                                       
+#'  
+#'  Calculates power based on adjusted p values
+#'
+#' @param adjp.proc adjusted p values for all procedures
+#' @param user.params.list
+#' @param sim.params.list
+#' 
+#' @return formatted simulation results
+
+calc_power <- function(adjp.proc, user.params.list, sim.params.list)
+{
+  # save out some commonly used variables
+  M <- user.params.list[['M']]
+  alpha <- sim.params.list[['alpha']]
+  procs <- sim.params.list[['procs']]
+  
   for (p in 1:(length(procs) + 1)) {
     if (M == 1) {
       mn.lt.alpha <- mean(adjp.proc[,,p]<alpha)
@@ -143,7 +163,6 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   
   # reformat this for easier use
   sim_results <- format_sim_results(adj_power)
-    
   return(sim_results)
 }
 
