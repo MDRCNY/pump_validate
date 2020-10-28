@@ -6,30 +6,26 @@
 
 #' Adjust.WY: does WY adjustments for a single sample in parallel
 #'
-#' Call to adjust.WY from get.adjp
-#' adjust.WY(data=mdat, B=B, subgroup=NULL, which.mult="pooled",
-#' incl.covar=TRUE, rawp=rawp, ncl=ncl, clustered=TRUE, blockby='block.id', funct)
-#'
 #' @param data A list of length M. Each element in the list is a data frame holding the m'th data set
-#' @param B Number of permutations
 #' @param rawp Vector of length M of the raw p-values
 #' @param rawt Vector of lenght M of the raw test statistics
-#' @param ncl Number of clusters for parallel processing
+#' @param design RCT design (see list/naming convention)
+#' @param proc Single-Step (WY-SS) or Step-Down (WY-SD)
+#' @param sim.params.list simulation parameters
+#' @param model.params.list model parameters
 #' @param clustered True if we are handling a cluster design
 #' @param blockby Variable that designates the clusters or blocks?
-#' @param design the particular RCT design for an experiment: "Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r","Simple_c2_2r"
-#' @param maxT whether to adjust based on ordered rawp values or ordered rawT values
+#' @param cl clusters for parallel processing
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #'
-adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.list,
+adjust_WY <- function(data, rawp, rawt, design, proc, sim.params.list, model.params.list,
                       clustered = TRUE, blockby = 'block.id', cl = NULL) {
   
-  # clustered = TRUE; blockby = 'block.id';
-  # data = mdat;
+  # clustered = TRUE; blockby = 'block.id'; data = mdat; cl = NULL;
   
   B <- sim.params.list[['B']]
   maxT <- sim.params.list[['maxT']]
@@ -40,7 +36,7 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
   p.j <- sim.params.list[['p.j']]
   
   # get order of raw p-values; returns ordered index for the vector "rawp"
-  ifelse(maxT == FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing=TRUE))
+  ifelse(maxT == FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing = TRUE))
   
   assign.vec <- cbind(n.j, p.j)
   permT <- sapply(1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) })
@@ -70,8 +66,15 @@ adjust_WY <- function(data, rawp, rawt, design, sim.params.list, model.params.li
   }
   
   # create dummies for comparisons of null p-values to raw p-values
-  if (maxT == FALSE) ind.B <- apply(nullpt, 1, comp.rawp, rawp = rawp, r.m.r = r.m.r)
-  if (maxT == TRUE)  ind.B <- apply(nullpt, 1, comp.rawt, rawt = rawt, r.m.r = r.m.r)
+  if (maxT == FALSE & proc == 'WY-SD') {
+    ind.B <- apply(nullpt, 1, comp.rawp.sd, rawp, r.m.r)
+  } else if (maxT == FALSE & proc == 'WY-SS') {
+    ind.B <- apply(nullpt, 1, comp.rawp.ss, rawp, r.m.r)
+  } else if (maxT == TRUE & proc == 'WY-SD') {
+    ind.B <- apply(nullpt, 1, comp.rawt.sd, rawt, r.m.r)
+  } else if (maxT == TRUE & proc == 'WY-SS') {
+    ind.B <- apply(nullpt, 1, comp.rawt.ss, rawt, r.m.r)
+  }
   
   # take means of dummies, these are already ordered (by r.m.r) but still need to enforce monotonicity
   pi.p.m <- rowMeans(ind.B)
@@ -144,50 +147,57 @@ perm.regs <- function(permT, data, design, blockby, maxT, n.j, J) {
   return(outpt)
 }
 
-#' Comp.rawp: makes nullp and rawp comparisons and returns indicators
+#' Functions to compare nullp distributions with raw distributions
+#' comp.rawp.sd: makes rawp comparisons for step-down procedure
+#' comp.rawp.ss: makes rawp comparisons for single-step procedure
+#' comp.rawt.sd: makes rawt comparisons for step-down procedure
+#' comp.rawt.ss: makes rawt comparisons for single-step procedure
 #'
 #' The length of nullprow, rawp, and r.m.r are the same. This function is performed on each row of nullp.mat
 #'
-#' @param nullprow row of p-values
-#' @param rawp raw p-values
-#' @param r.m.r vector of indices of rawp in order
+#' @param nullprow OR null trow row of p-values or t stats
+#' @param rawp OR rawt raw p-values or t stats
+#' @param r.m.r vector of indices of rawp or rawt in order
 #'
 #' @return
 #' @export
 #'
 #' @examples
-comp.rawp <- function(nullprow, rawp, r.m.r) {
 
+comp.rawp.sd <- function(nullprow, rawp, r.m.r) {
   num.test <- length(nullprow)
   minp <- rep(NA, num.test)
-  minp[1] <- min(nullprow[r.m.r]) < rawp[r.m.r][1]
+  minp[1] <- min(nullprow) < rawp[r.m.r][1]
   for (h in 2:num.test) {
     minp[h] <- min(nullprow[r.m.r][-(1:(h-1))]) < rawp[r.m.r][h]
   }
   return(as.integer(minp))
 }
 
-#' Comp.rawt: makes nullp and rawt comparisons and returns indicators
-#'
-#' @param nullptrow row of p-values
-#' @param rawt raw t-values
-#' @param r.m.r vector of indices of rawp in order
-#'
-#' @return
-#' @export
-#'
-#' @examples
-comp.rawt <- function(nullptrow, rawt, r.m.r) {
+comp.rawp.ss <- function(nullprow, rawp, r.m.r) {
+  num.test <- length(nullprow)
+  minp <- rep(NA, num.test)
+  for (h in 1:num.test) {
+    minp[h] <- min(nullprow) < rawp[r.m.r][h]
+  }
+  return(as.integer(minp))
+}
 
-  num.test <- length(nullptrow)
+comp.rawt.sd <- function(nulltrow, rawt, r.m.r) {
+  num.test <- length(nulltrow)
   maxt <- rep(NA, num.test)
-  maxt[1] <- max(abs(nullptrow)[r.m.r]) > abs(rawt)[r.m.r][1]
+  maxt[1] <- max(abs(nulltrow)) > abs(rawt)[r.m.r][1]
   for (h in 2:num.test) {
-    maxt[h] <- max(abs(nullptrow)[r.m.r][-(1:(h-1))]) > abs(rawt)[r.m.r][h]
+    maxt[h] <- max(abs(nulltrow)[r.m.r][-(1:(h-1))]) > abs(rawt)[r.m.r][h]
   }
   return(as.integer(maxt))
 }
 
-
-
-
+comp.rawt.ss <- function(nulltrow, rawt, r.m.r) {
+  num.test <- length(nulltrow)
+  maxt <- rep(NA, num.test)
+  for (h in 1:num.test) {
+    maxt[h] <- max(abs(nulltrow)) > abs(rawt)[r.m.r][h]
+  }
+  return(as.integer(maxt))
+}

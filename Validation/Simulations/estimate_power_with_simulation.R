@@ -385,11 +385,12 @@ makelist.samp <-function(M, samp.obs, T.ijk, model.params.list, design) {
 
 get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design, cl = NULL) {
 
-  if(proc == "WY-SD"){
+  if(proc == "WY-SD" | proc == "WY-SS"){
     #print(paste0("working on ", proc, " with ", B, " permutations"))
     tw1 <- Sys.time()
     adjp.proc <- adjust_WY(
       data = mdat, rawp = rawp, rawt = rawt,
+      proc = proc,
       clustered = TRUE, blockby = 'block.id',
       sim.params.list = sim.params.list,
       model.params.list = model.params.list,
