@@ -111,9 +111,9 @@ calc_power <- function(adjp.proc, user.params.list, sim.params.list)
   alpha <- sim.params.list[['alpha']]
   procs <- sim.params.list[['procs']]
   
-  power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + 5)
-  colnames(power.results) <- c(paste0("D", 1:M, "indiv"), "min", "1/3", "1/2","2/3", "full")
-  rownames(power.results) <- c("rawp", procs)
+  power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + M + 2)
+  colnames(power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", paste0("min",1:(M-1)), "complete")
+  rownames(power.results) = c("rawp", procs)
   
   alts <- which(user.params.list[['ATE_ES']] != 0)
   
@@ -134,35 +134,60 @@ calc_power <- function(adjp.proc, user.params.list, sim.params.list)
     }
     
     rejects <- get.rejects(adjp.proc[, , p, drop = FALSE], alpha)
+    rawp.rejects <- get.rejects(adjp.proc[, , 1, drop = FALSE], alpha)
+    
     if (M == 1) {
       if (alts != 0) num.t.pos = rejects
     } else if (length(alts) == 1) {
       num.t.pos <- rejects[, alts, , drop = FALSE]
     } else {
       num.t.pos <- apply(rejects[,alts, , drop = FALSE], 1, sum)
+      num.t.pos.rawp <- apply(rawp.rejects[ , alts, , drop = FALSE], 1, sum)
     }
-    power.results[p, "min"] <- mean(1 * (num.t.pos > 0))
-    # se.power[p, "min"] <- sqrt(mean(1 * (num.t.pos > 0)) * (1 - mean(1 * (num.t.pos > 0)))/S)
-    power.results[p, "1/3"] <- mean(1 * (num.t.pos >= (1/3) * M))
-    # se.power[p, "1/3"] <- sqrt(mean(1 * (num.t.pos >= (1/3) * M)) * (1 - mean(1 * (num.t.pos >= (1/3) * M)))/S)
-    power.results[p, "1/2"] <- mean(1 * (num.t.pos >= (1/2) * M))
-    # se.power[p, "1/2"] <- sqrt(mean(1 * (num.t.pos >= (1/2) * M)) * (1 - mean(1 * (num.t.pos >= (1/2) * M)))/S)
-    power.results[p, "2/3"] <- mean(1 * (num.t.pos >= (2/3) * M))
-    # se.power[p, "2/3"] <- sqrt(mean(1 * (num.t.pos >= (2/3) * M)) * (1 - mean(1 * (num.t.pos >= (2/3) * M)))/S)
-    power.results[p, "full"] <- mean(1 * (num.t.pos == M))
-    # se.power[p, "full"] <- sqrt(mean(1 * (num.t.pos == M)) * (1 - mean(1 * (num.t.pos == M)))/S)
     
-    se.power[p,] <- sqrt(0.25/S) 
+    power.results[p, "min"] <- mean(1 * (num.t.pos > 0))
+    for(m in 1:(M-1))
+    {
+      power.results[p, paste0("min", m)] <- mean(1 * (num.t.pos >= m))
+    }
+    power.results[p, "complete"] <- mean(1 * (num.t.pos.rawp == M))
+    
+    # se.power[p, "min"] <- sqrt(mean(1 * (num.t.pos > 0)) * (1 - mean(1 * (num.t.pos > 0)))/S)
+    # power.results[p, "1/3"] <- mean(1 * (num.t.pos >= (1/3) * M))
+    # # se.power[p, "1/3"] <- sqrt(mean(1 * (num.t.pos >= (1/3) * M)) * (1 - mean(1 * (num.t.pos >= (1/3) * M)))/S)
+    # power.results[p, "1/2"] <- mean(1 * (num.t.pos >= (1/2) * M))
+    # # se.power[p, "1/2"] <- sqrt(mean(1 * (num.t.pos >= (1/2) * M)) * (1 - mean(1 * (num.t.pos >= (1/2) * M)))/S)
+    # power.results[p, "2/3"] <- mean(1 * (num.t.pos >= (2/3) * M))
+    # # se.power[p, "2/3"] <- sqrt(mean(1 * (num.t.pos >= (2/3) * M)) * (1 - mean(1 * (num.t.pos >= (2/3) * M)))/S)
+    # power.results[p, "full"] <- mean(1 * (num.t.pos.rawp == M))
+    # # se.power[p, "full"] <- sqrt(mean(1 * (num.t.pos == M)) * (1 - mean(1 * (num.t.pos == M)))/S)
   }
-  CI.lower.power <- power.results - 1.96 * (se.power)
-  CI.upper.power <- power.results + 1.96 * (se.power)
+  
+  # calculate mean power across all individual powers
+  power.results[,"indiv.mean"] <- apply(as.matrix(power.results[,1:M][,alts]), 1, mean)
+  
+  # confidenceintervals
+  se.power <- sqrt(0.25/S) 
+  CI.lower.power <- power.results - 1.96 * se.power
+  CI.upper.power <- power.results + 1.96 * se.power
   
   adj_power <- list(power.results, CI.lower.power, CI.upper.power)
   names(adj_power) <- c("adjusted_power", "ci_lower", "ci_upper")
   
-  # reformat this for easier use
-  sim_results <- format_sim_results(adj_power)
-  return(sim_results)
+  get_sim_results_melt = function(adj_power)
+  {
+    sim_results <- data.frame(adj_power)
+    sim_results$MTP <- rownames(sim_results)
+    sim_results_melt <- melt(sim_results, id.vars = 'MTP')
+    sim_results_melt$method = 'sim'
+    return(sim_results_melt)
+  }
+  
+  # apply for means and upper and lower bounds of confidence interval
+  sim_results_melt_full <- list.rbind(lapply(adj_power, get_sim_results_melt))
+  sim_results_melt_full$value.type <- sapply(rownames(sim_results_melt_full), function(x){strsplit(x, '\\.')[[1]][1]})
+  
+  return(sim_results_melt_full)
 }
 
 # --------------------------------------------------------------------- #

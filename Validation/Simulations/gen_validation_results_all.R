@@ -7,7 +7,7 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = TRUE
 # if TRUE, only run one power calculation, otherwise run all scenarios of interest
-run.test = FALSE
+run.test = TRUE
 # whether or not to run mdes and sample size
 validate.mdes.ss = FALSE
 
@@ -19,7 +19,19 @@ if(is.na(q)) { q <- 1 }
 
 power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
 
-if(!run.test)
+if(FALSE)
+{
+  results_plot <- ggplot(power.results, aes(x = MTP, y = value, color = method)) +
+    geom_point() +
+    geom_line() +
+    facet_wrap(~power_type, labeller = label_both) +
+    ylab('Power') +
+    ggtitle(paste('Design:', design = "blocked_i1_2c"))
+  print(results_plot)
+}
+
+
+ if(!run.test)
 {
   scenarios = ifelse(validate.mdes.ss, 24, 15)
   
