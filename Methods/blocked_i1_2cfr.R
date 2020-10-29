@@ -315,7 +315,6 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     } else if (MTP == "WY-SD"){
       
       adjp <- adjust.allsamps.WYSD(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl)
-
     }
   } else {
     stop(paste("Unknown MTP:", MTP))
@@ -328,19 +327,19 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   adjp.each <- list(rawp, adjp)
 
   # for each MTP, get matrix of indicators for whether the adjusted p-value is less than alpha
-  reject <- function(x) {as.matrix(1*(x<alpha))}
-  reject.each <-lapply(adjp.each,reject)
+  reject <- function(x) { as.matrix(1*(x < alpha)) }
+  reject.each <- lapply(adjp.each, reject)
   
   # Helper function: In each row for each MTP matrix, count number of p-values less than 0.05,
   # in rows corresponding to false nulls
-  lt.alpha <- function(x) {apply(as.matrix(x[,MDES>0]),1,sum)}
-  lt.alpha.each <- lapply(reject.each,lt.alpha)
+  lt.alpha <- function(x) { apply(as.matrix(x[,MDES > 0]), 1, sum) }
+  lt.alpha.each <- lapply(reject.each, lt.alpha)
   
   # indiv power for WY-SS, WY-SD, BH, HO, BF is mean of columns of booleans of whether adjusted pvalues were less than alpha
   # in other words, the null has been rejected
-  power.ind.fun<-function(x) {apply(x,2,mean)}
-  power.ind.each<-lapply(reject.each,power.ind.fun)
-  power.ind.each.mat<-do.call(rbind,power.ind.each)
+  power.ind.fun <- function(x) { apply(x, 2, mean) }
+  power.ind.each <- lapply(reject.each, power.ind.fun)
+  power.ind.each.mat <- do.call(rbind, power.ind.each)
   
   # 3rd call back to progress bar: Individual power calculations are done
   if (is.function(updateProgress) & !is.null(power.ind.each.mat)) {
@@ -349,8 +348,8 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   
   # Helper function: m-min powers for all MTPs (including complete power when m=M)
   power.min.fun <- function(x, M) {
-    power.min<-numeric(M)
-    cnt<-0
+    power.min <- numeric(M)
+    cnt <- 0
     for (m in 1:M) {
       power.min[m] <- mean(x > cnt)
       cnt <- cnt+1
@@ -359,15 +358,15 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   } # end of calculating d-minimal power
   
   # calculating d-minimal power
-  power.min<-lapply(lt.alpha.each,power.min.fun, M = M)
-  power.min.mat<-do.call(rbind, power.min)
+  power.min <- lapply(lt.alpha.each, power.min.fun, M = M)
+  power.min.mat <- do.call(rbind, power.min)
   
   # complete power is the power to detect outcomes at least as large as the MDES on all outcomes
   # separating out complete power from d-minimal power by taking the last entry
-  power.cmp<-rep(power.min.mat[1,M], length(power.min)) # should it be numfalse or M?
+  power.cmp <- rep(power.min.mat[1,M], length(power.min)) # should it be numfalse or M?
   
   # combine all power for all definitions
-  all.power.results <- cbind(power.ind.each.mat,power.min.mat[,-M], power.cmp)
+  all.power.results <- cbind(power.ind.each.mat, power.min.mat[,-M], power.cmp)
   
   # calculating average individual power
   mean.ind.power <- apply(as.matrix(all.power.results[,1:M][,MDES>0]), 1, mean)
@@ -451,7 +450,7 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
   print(paste("Estimating MDES for", MTP, "for target", power.definition, "power of", round(power, 4)))
   
   # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
-  if (MTP=="WY-SD" & snum < 1000){
+  if (MTP == "WY-SD" & snum < 1000){
     print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
     snum <- 1000
   } # end of if

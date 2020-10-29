@@ -112,9 +112,8 @@ calc_power <- function(adjp.proc, user.params.list, sim.params.list)
   procs <- sim.params.list[['procs']]
   
   power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + 5)
-  colnames(power.results) = c(paste0("D", 1:M, "indiv"), "min", "1/3", "1/2","2/3", "full")
-  rownames(power.results) = c("rawp", procs)
-  se.power <- CI.lower.power <- CI.upper.power <- power.results
+  colnames(power.results) <- c(paste0("D", 1:M, "indiv"), "min", "1/3", "1/2","2/3", "full")
+  rownames(power.results) <- c("rawp", procs)
   
   alts <- which(user.params.list[['ATE_ES']] != 0)
   
@@ -125,7 +124,7 @@ calc_power <- function(adjp.proc, user.params.list, sim.params.list)
       se.power[p,1:M] <- sqrt(mn.lt.alpha * (1 - mn.lt.alpha)/S)
     }
     else {
-      power.results[p, 1:M] <- apply(adjp.proc[,,p, drop = FALSE], 2, function(x) mean(x < alpha))
+      power.results[p, 1:M] <- apply(adjp.proc[,,p,drop = FALSE], 2, function(x) mean(x < alpha))
       # se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
       #   sqrt(0.25/S) 
       # })
@@ -133,6 +132,7 @@ calc_power <- function(adjp.proc, user.params.list, sim.params.list)
       #   sqrt(mean(x < alpha)*(1 - mean(x < alpha))/S) 
       # })
     }
+    
     rejects <- get.rejects(adjp.proc[, , p, drop = FALSE], alpha)
     if (M == 1) {
       if (alts != 0) num.t.pos = rejects
