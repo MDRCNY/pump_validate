@@ -124,7 +124,7 @@ calc_power <- function(adjp.proc, user.params.list, sim.params.list)
       se.power[p,1:M] <- sqrt(mn.lt.alpha * (1 - mn.lt.alpha)/S)
     }
     else {
-      power.results[p, 1:M] <- apply(adjp.proc[,,p, drop = FALSE], 2, function(x) mean(x < alpha))
+      power.results[p, 1:M] <- apply(adjp.proc[,,p,drop = FALSE], 2, function(x) mean(x < alpha))
       # se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
       #   sqrt(0.25/S) 
       # })
@@ -132,6 +132,7 @@ calc_power <- function(adjp.proc, user.params.list, sim.params.list)
       #   sqrt(mean(x < alpha)*(1 - mean(x < alpha))/S) 
       # })
     }
+    
     rejects <- get.rejects(adjp.proc[, , p, drop = FALSE], alpha)
     rawp.rejects <- get.rejects(adjp.proc[, , 1, drop = FALSE], alpha)
     
@@ -409,11 +410,12 @@ makelist.samp <-function(M, samp.obs, T.ijk, model.params.list, design) {
 
 get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list, design, cl = NULL) {
 
-  if(proc == "WY-SD"){
+  if(proc == "WY-SD" | proc == "WY-SS"){
     #print(paste0("working on ", proc, " with ", B, " permutations"))
     tw1 <- Sys.time()
     adjp.proc <- adjust_WY(
       data = mdat, rawp = rawp, rawt = rawt,
+      proc = proc,
       clustered = TRUE, blockby = 'block.id',
       sim.params.list = sim.params.list,
       model.params.list = model.params.list,

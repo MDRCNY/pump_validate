@@ -480,7 +480,7 @@ if(FALSE)
   MTP = 'Bonferroni';
   power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
-  MDES = rep(user.params.list[['ATE_ES']], M);
+  MDES = user.params.list[['ATE_ES']]
   J = user.params.list[['J']];
   n.j = user.params.list[['n.j']];
   power.definition = "indiv";

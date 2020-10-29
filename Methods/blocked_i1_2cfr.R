@@ -315,7 +315,6 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
     } else if (MTP == "WY-SD"){
       
       adjp <- adjust.allsamps.WYSD(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl)
-
     }
   } else {
     stop(paste("Unknown MTP:", MTP))
@@ -333,14 +332,14 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   
   # Helper function: In each row for each MTP matrix, count number of p-values less than 0.05,
   # in rows corresponding to false nulls
-  lt.alpha <- function(x) {apply(as.matrix(x[,MDES>0]),1,sum)}
+  lt.alpha <- function(x) { apply(as.matrix(x[,MDES > 0]), 1, sum) }
   lt.alpha.each <- lapply(reject.each, lt.alpha)
   
   # indiv power for WY-SS, WY-SD, BH, HO, BF is mean of columns of booleans of whether adjusted pvalues were less than alpha
   # in other words, the null has been rejected
-  power.ind.fun<-function(x) {apply(x,2,mean)}
-  power.ind.each<-lapply(reject.each,power.ind.fun)
-  power.ind.each.mat<-do.call(rbind,power.ind.each)
+  power.ind.fun <- function(x) { apply(x, 2, mean) }
+  power.ind.each <- lapply(reject.each, power.ind.fun)
+  power.ind.each.mat <- do.call(rbind, power.ind.each)
   
   # 3rd call back to progress bar: Individual power calculations are done
   if (is.function(updateProgress) & !is.null(power.ind.each.mat)) {
@@ -361,6 +360,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   power.min.mat <- do.call(rbind, power.min)
   power.min0 <- lapply(lt.alpha.each, function(x){ mean(x > 0)})
   power.min0 <- do.call(rbind, power.min0)
+
   
   # complete power is the power to detect outcomes at least as large as the MDES on all outcomes
   # separating out complete power from d-minimal power by taking the last entry
@@ -448,7 +448,7 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
   print(paste("Estimating MDES for", MTP, "for target", power.definition, "power of", round(power, 4)))
   
   # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
-  if (MTP=="WY-SD" & snum < 1000){
+  if (MTP == "WY-SD" & snum < 1000){
     print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
     snum <- 1000
   } # end of if

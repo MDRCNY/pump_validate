@@ -194,7 +194,7 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
     user.params.list[['J']], "_J_",
     user.params.list[['n.j']], "_nj_",
     convert.vec.to.filename(user.params.list[['rho.default']]), "_rho_",
-    user.params.list[['omega.2']], "_omega2_",
+    convert.vec.to.filename(user.params.list[['omega.2']]), "_omega2_",
     convert.vec.to.filename(user.params.list[['R2.1']]),"_R21_",
     convert.vec.to.filename(user.params.list[['R2.2']]),"_R22_"
   )
@@ -218,13 +218,13 @@ gen.power.results.plot <- function(params.file.base, design)
   } else
   {
     power_results <- readRDS(power.file)
-    results_plot <- ggplot(power_results,
-                           aes(x = MTP, y = value, color = method)) +
+    results_plot <- ggplot(power_results, aes(x = MTP, y = value, color = method)) +
       geom_point() +
       geom_line() +
       facet_wrap(~power_type, labeller = label_both) +
       ylab('Power') +
-      ggtitle(paste('Design:', design))
+      ggtitle(paste('Design:', design)) +
+      ylim(0, 1)
   }
 
   return(results_plot)
