@@ -19,9 +19,9 @@ source(here::here("Validation/Simulations", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 2                   # Number of samples for Monte Carlo Simulation
-  , Q = 2                 # Number of times entire simulation is repeated, so total iterations = S * Q
-  , B = 10              # Number of samples for WestFall-Young. The equivalent is snum in our new method.
+  S = 2                  # Number of samples for Monte Carlo Simulation
+  , Q = 1               # Number of times entire simulation is repeated, so total iterations = S * Q
+  , B = 2             # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = TRUE           # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05          # Significance level
   , MoE = 0.05            # Margin of error

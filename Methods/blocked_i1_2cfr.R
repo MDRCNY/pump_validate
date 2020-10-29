@@ -328,13 +328,13 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   adjp.each <- list(rawp, adjp)
 
   # for each MTP, get matrix of indicators for whether the adjusted p-value is less than alpha
-  reject <- function(x) {as.matrix(1*(x<alpha))}
-  reject.each <-lapply(adjp.each,reject)
+  reject <- function(x) { as.matrix(1*(x < alpha)) }
+  reject.each <- lapply(adjp.each, reject)
   
   # Helper function: In each row for each MTP matrix, count number of p-values less than 0.05,
   # in rows corresponding to false nulls
   lt.alpha <- function(x) {apply(as.matrix(x[,MDES>0]),1,sum)}
-  lt.alpha.each <- lapply(reject.each,lt.alpha)
+  lt.alpha.each <- lapply(reject.each, lt.alpha)
   
   # indiv power for WY-SS, WY-SD, BH, HO, BF is mean of columns of booleans of whether adjusted pvalues were less than alpha
   # in other words, the null has been rejected
@@ -350,33 +350,30 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   # Helper function: m-min powers for all MTPs (including complete power when m=M)
   power.min.fun <- function(x, M) {
     power.min<-numeric(M)
-    cnt<-0
     for (m in 1:M) {
-      power.min[m] <- mean(x > cnt)
-      cnt <- cnt+1
+      power.min[m] <- mean(x >= m)
     }
     return(power.min)
   } # end of calculating d-minimal power
   
   # calculating d-minimal power
-  power.min<-lapply(lt.alpha.each,power.min.fun, M = M)
-  power.min.mat<-do.call(rbind, power.min)
+  power.min <- lapply(lt.alpha.each, power.min.fun, M = M)
+  power.min.mat <- do.call(rbind, power.min)
+  power.min0 <- lapply(lt.alpha.each, function(x){ mean(x > 0)})
+  power.min0 <- do.call(rbind, power.min0)
   
   # complete power is the power to detect outcomes at least as large as the MDES on all outcomes
   # separating out complete power from d-minimal power by taking the last entry
-  power.cmp<-rep(power.min.mat[1,M], length(power.min)) # should it be numfalse or M?
-  
-  # combine all power for all definitions
-  all.power.results <- cbind(power.ind.each.mat,power.min.mat[,-M], power.cmp)
+  power.cmp <- rep(power.min.mat[1,M], length(power.min)) # should it be numfalse or M?
   
   # calculating average individual power
-  mean.ind.power <- apply(as.matrix(all.power.results[,1:M][,MDES>0]), 1, mean)
+  mean.ind.power <- apply(as.matrix(power.ind.each.mat[,MDES>0]), 1, mean)
   
-  # revise final matrix to report this mean individual power and return results
-  all.power.results <- cbind(mean.ind.power, all.power.results)
+  # combine all power for all definitions
+  all.power.results <- cbind(power.ind.each.mat, mean.ind.power, power.min0, power.min.mat[,-M], power.cmp)
   
   # setting the col and row names for all power results table
-  colnames(all.power.results) <- c("indiv", paste0("indiv",1:M), paste0("min",1:(M-1)), "complete")
+  colnames(all.power.results) <- c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", paste0("min",1:(M-1)), "complete")
   rownames(all.power.results) <- c("rawp", MTP)
   
   if (is.function(updateProgress) & !is.null(all.power.results)) {

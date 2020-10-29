@@ -178,7 +178,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       
       powerup_results <- data.frame(
         MTP = 'rawp',
-        variable = 'indiv',
+        variable = 'D1indiv',
         method = 'pup',
         value = c(powerup_results$power, powerup_results$lower_ci, powerup_results$upper_ci),
         value.type = c('adjusted_power', 'ci_lower',  'ci_upper')
@@ -242,8 +242,9 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       }
       # adding rownames to the pum_combined_results table
       rownames(pum_results) <- c("rawp", sim.params.list[['procs']])
+      pum_results_table <- pum_results
       
-      pum_results_table <- data.frame(pum_results[,c('indiv', 'min1', 'min2', 'complete')])
+      # pum_results_table <- data.frame(pum_results[,c('indiv', 'min1', 'min2', 'complete')])
       pum_results_table$MTP <- rownames(pum_results_table)
       pum_results <- melt(pum_results_table, id.vars = 'MTP')
       pum_results$method = 'pum'
@@ -475,6 +476,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
 ### DEBUG
 if(FALSE)
 {
+  design = "blocked_i1_2c";
   MTP = 'Bonferroni';
   power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
