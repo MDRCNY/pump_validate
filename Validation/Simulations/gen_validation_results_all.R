@@ -17,6 +17,7 @@ source(here::here("Validation/Simulations", "params.R"))
 q <- as.numeric(as.character(Sys.getenv("q")))
 if(is.na(q)) { q <- 1 }
 
+user.params.list[['omega.2']] <- 0
 power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
 
 if(FALSE)
@@ -39,6 +40,7 @@ if(FALSE)
   #------------------------------------------------------------------#
   # vary sample size
   #------------------------------------------------------------------#
+  user.params.list[['omega.2']] <- 0
   user.params.list[['n.j']] <- 100
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
   user.params.list[['omega.2']] = 0.5
@@ -50,9 +52,9 @@ if(FALSE)
   print('--------------------------------------------------------')
 
   user.params.list[['n.j']] <- 75
-  user.params.list[['omega.2']] = 0
+  user.params.list[['omega.2']] <- 0
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
-  user.params.list[['omega.2']] = 0.5
+  user.params.list[['omega.2']] <- 0.5
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", q = q, overwrite)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
 
@@ -61,9 +63,9 @@ if(FALSE)
   print('--------------------------------------------------------')
 
   user.params.list[['n.j']] <- 50
-  user.params.list[['omega.2']] = 0
+  user.params.list[['omega.2']] <- 0
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
-  user.params.list[['omega.2']] = 0.5
+  user.params.list[['omega.2']] <- 0.5
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", q = q, overwrite)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
   
@@ -76,7 +78,7 @@ if(FALSE)
   #------------------------------------------------------------------#
   
   # vary R2
-  user.params.list[['omega.2']] = 0
+  user.params.list[['omega.2']] <- 0
   user.params.list[['R2.1']] <- rep(0.6, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
   user.params.list[['R2.2']] <- rep(0.6, M)
@@ -112,15 +114,15 @@ if(FALSE)
   # Vary true positives
   #------------------------------------------------------------------#
   
-  user.params.list[['ATE_ES']] = c(0.125, 0, 0)
+  user.params.list[['ATE_ES']] <- c(0.125, 0, 0)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
 
   #------------------------------------------------------------------#
   # Vary ICC
   #------------------------------------------------------------------#
-  user.params.list[['ATE_ES']] = c(0.125, 0.125, 0.125)
-  user.params.list[['ICC.2']] = rep(0.5, M)
-  user.params.list[['omega.2']] = 0.5
+  user.params.list[['ATE_ES']] <- c(0.125, 0.125, 0.125)
+  user.params.list[['ICC.2']] <- rep(0.5, M)
+  user.params.list[['omega.2']] <- 0.5
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
 
   print('--------------------------------------------------------')
@@ -144,10 +146,10 @@ if(FALSE)
     user.params.list[['ATE_ES']] = c(0.125, 0.125, 0.125)
     user.params.list[['R2.1']] <- rep(0, M)
     user.params.list[['R2.2']] <- rep(0, M)
-    user.params.list[['ICC.2']] = rep(0, M)
-    user.params.list[['omega.2']] = 0
+    user.params.list[['ICC.2']] <- rep(0, M)
+    user.params.list[['omega.2']] <- 0
     # don't do WY for now
-    sim.params.list[['procs']] = c("Bonferroni", "BH", "Holm")
+    sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
     
     power.results.2c <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
     mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
@@ -157,7 +159,7 @@ if(FALSE)
     print(paste('Completed mdes and sample size for constant, 18 out of', scenarios))
     print('--------------------------------------------------------')
     
-    user.params.list[['omega.2']] = 0.5
+    user.params.list[['omega.2']] <- 0.5
     power.results.2f <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", q = q, overwrite)
     mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2f", q = q, overwrite)
     sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2f", q = q, overwrite)
@@ -166,7 +168,7 @@ if(FALSE)
     print(paste('Completed mdes and sample size for fixed, 21 out of', scenarios))
     print('--------------------------------------------------------')
     
-    user.params.list[['omega.2']] = 0.5
+    user.params.list[['omega.2']] <- 0.5
     power.results.2r <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
     mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
     sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)

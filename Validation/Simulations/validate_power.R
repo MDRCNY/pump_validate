@@ -67,11 +67,17 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   {
     stop(paste('Please provide a vector of ATE_ES of length M.'))
   }
+  
   if( (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) > 1) |
       (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) == 1 & !('Bonferroni' %in% sim.params.list[['procs']] )))
   {
     stop(print("Multiple testing corrections are not needed when M = 1. Please change multiple testing procedures or increase M."))
-  }  
+  } 
+  
+  if(user.params.list[['omega.2']] > 0 & design == 'blocked_i1_2c')
+  {
+    stop('Omega.2 should be 0 for constant effects')
+  }
     
   t1 = Sys.time()
   
