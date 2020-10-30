@@ -16,6 +16,8 @@ knitr::opts_chunk$set(echo = TRUE)
 - If we have zero/null effects, warn user that min2 and complete power will be low, and possibly don't return those values.
 - Fix for when power = 0 case for MDES and sample size
 - clarify that right now maxT and minP are the SAME method.
+- Tell user that ICC only makes sense for random effects models.
+- For simulations, interval bars are based on normal approximation to binomial, with conservative standard error S/0.25
 
 # UI notes
 

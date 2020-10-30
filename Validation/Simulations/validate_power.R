@@ -62,6 +62,17 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
 
   # design = "blocked_i1_2c"
   
+  # checks
+  if(length(user.params.list[['ATE_ES']]) != user.params.list[['M']])
+  {
+    stop(paste('Please provide a vector of ATE_ES of length M.'))
+  }
+  if( (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) > 1) |
+      (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) == 1 & !('Bonferroni' %in% sim.params.list[['procs']] )))
+  {
+    stop(print("Multiple testing corrections are not needed when M = 1. Please change multiple testing procedures or increase M."))
+  }  
+    
   t1 = Sys.time()
   
   # for saving out and reading in files based on simulation parameters
@@ -124,7 +135,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     if(!is.null(adjp.proc) & dim(adjp.proc)[1] == sim.params.list[['S']]*sim.params.list[['Q']])
     {
       sim.filename = paste0(params.file.base, "simulation_results.RDS")
-      sim_results <- calc_power(adjp.proc, user.params.list, sim.params.list)
+      sim_results <- calc_power(adjp.proc, sim.params.list[['alpha']])
       saveRDS(sim_results, file = paste0(intermediate.data.dir, sim.filename))
     } else
     {
@@ -213,15 +224,17 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         
         if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
         {
-          pum_results_iter <- power_blocked_i1_2c(
+          effect.type = substr(design, nchar(design), nchar(design))
+          pum_results_iter <- power_blocked_i1_2cfr(
+            effect.type = effect.type,
             M = user.params.list[['M']], MTP = MTP,
             MDES = user.params.list[['ATE_ES']],
             J = user.params.list[['J']], n.j = user.params.list[['n.j']],
             p = sim.params.list[['p.j']],
-            alpha = sim.params.list[['alpha']], numCovar.1 = 0, numCovar.2 = 0,
+            alpha = sim.params.list[['alpha']], numCovar.1 = 1, numCovar.2 = 1,
             R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
-            ICC = user.params.list[['ICC']], sigma = NULL,
-            rho = user.params.list[['rho.default']], omega = NULL,
+            ICC.2 = user.params.list[['ICC.2']],
+            rho = user.params.list[['rho.default']], omega.2 = user.params.list[['omega.2']],
             tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
             cl = cl
           )
@@ -503,4 +516,5 @@ if(FALSE)
   two.tailed = TRUE; max.iter = 100; tol = 0.1;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl <- NULL
+  effect.type = 'c';
 }

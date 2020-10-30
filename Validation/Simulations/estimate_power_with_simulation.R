@@ -21,7 +21,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   procs <- sim.params.list[['procs']]
 
   if(M == 1) {
-    print("Multiple testing corrections are not needed when M=1")
+    print("Multiple testing corrections are not needed when M = 1")
     procs <- "Bonferroni"
   }
 
@@ -98,60 +98,53 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
 #'  Calculates power based on adjusted p values
 #'
 #' @param adjp.proc adjusted p values for all procedures
-#' @param user.params.list
-#' @param sim.params.list
+#' @param alpha
 #' 
 #' @return formatted simulation results
 
-calc_power <- function(adjp.proc, user.params.list, sim.params.list)
+calc_power <- function(adjp.proc, alpha)
 {
-  # save out some commonly used variables
-  M <- user.params.list[['M']]
-  S <- sim.params.list[['S']]
-  alpha <- sim.params.list[['alpha']]
-  procs <- sim.params.list[['procs']]
+
+  procs <- dimnames(adjp.proc)[[3]]
+  S <- dim(adjp.proc)[1]
+  M <- dim(adjp.proc)[2]
   
-  power.results <- matrix(NA, nrow = (length(procs) + 1), ncol = M + M + 2)
-  colnames(power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", paste0("min",1:(M-1)), "complete")
-  rownames(power.results) = c("rawp", procs)
+  power.results <- matrix(NA, nrow = length(procs), ncol = M + M + 2)
+  if(M == 1)
+  {
+    colnames(power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", "complete")
+  } else
+  {
+    colnames(power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", paste0("min",1:(M-1)), "complete")
+  }
+  rownames(power.results) = procs
   
   alts <- which(user.params.list[['ATE_ES']] != 0)
   
-  for (p in 1:(length(procs) + 1)) {
-    if (M == 1) {
-      mn.lt.alpha <- mean(adjp.proc[,,p]<alpha)
-      power.results[p,1:M] <- mn.lt.alpha
-      se.power[p,1:M] <- sqrt(mn.lt.alpha * (1 - mn.lt.alpha)/S)
-    }
-    else {
-      power.results[p, 1:M] <- apply(adjp.proc[,,p,drop = FALSE], 2, function(x) mean(x < alpha))
-      # se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
-      #   sqrt(0.25/S) 
-      # })
-      # se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
-      #   sqrt(mean(x < alpha)*(1 - mean(x < alpha))/S) 
-      # })
-    }
-    
-    rejects <- get.rejects(adjp.proc[, , p, drop = FALSE], alpha)
-    rawp.rejects <- get.rejects(adjp.proc[, , 1, drop = FALSE], alpha)
-    
-    if (M == 1) {
-      if (alts != 0) num.t.pos = rejects
-    } else if (length(alts) == 1) {
-      num.t.pos <- rejects[, alts, , drop = FALSE]
-    } else {
-      num.t.pos <- apply(rejects[,alts, , drop = FALSE], 1, sum)
-      num.t.pos.rawp <- apply(rawp.rejects[ , alts, , drop = FALSE], 1, sum)
-    }
-    
+  for (p in 1:length(procs)) {
+    # calculate d-minimial power
+    power.results[p, 1:M] <- apply(adjp.proc[,,p,drop = FALSE], 2, function(x) mean(x < alpha))
+
+    # calculate min, min1, min2, etc. and complete power
+    rejects <- get.rejects(adjp.proc[, , p], alpha)
+    rawp.rejects <- get.rejects(adjp.proc[, , 1], alpha)
+
+    num.t.pos <- apply(rejects[, alts, drop = FALSE], 1, sum)
+    num.t.pos.rawp <- apply(rawp.rejects[, alts, drop = FALSE], 1, sum)
+
     power.results[p, "min"] <- mean(1 * (num.t.pos > 0))
-    for(m in 1:(M-1))
+    if(M > 1)
     {
-      power.results[p, paste0("min", m)] <- mean(1 * (num.t.pos >= m))
+      for(m in 1:(M-1))
+      {
+        power.results[p, paste0("min", m)] <- mean(1 * (num.t.pos >= m))
+      }
     }
     power.results[p, "complete"] <- mean(1 * (num.t.pos.rawp == M))
     
+    # se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
+    #   sqrt(mean(x < alpha)*(1 - mean(x < alpha))/S) 
+    # })
     # se.power[p, "min"] <- sqrt(mean(1 * (num.t.pos > 0)) * (1 - mean(1 * (num.t.pos > 0)))/S)
     # power.results[p, "1/3"] <- mean(1 * (num.t.pos >= (1/3) * M))
     # # se.power[p, "1/3"] <- sqrt(mean(1 * (num.t.pos >= (1/3) * M)) * (1 - mean(1 * (num.t.pos >= (1/3) * M)))/S)
@@ -164,7 +157,7 @@ calc_power <- function(adjp.proc, user.params.list, sim.params.list)
   }
   
   # calculate mean power across all individual powers
-  power.results[,"indiv.mean"] <- apply(as.matrix(power.results[,1:M][,alts]), 1, mean)
+  power.results[,"indiv.mean"] <- apply(as.matrix(power.results[,1:M, drop = FALSE][,alts, drop = FALSE]), 1, mean)
   
   # confidenceintervals
   se.power <- sqrt(0.25/S) 
@@ -443,5 +436,5 @@ get.adjp <- function(proc, rawp, rawt, mdat, sim.params.list, model.params.list,
 
 get.rejects <- function(adjp, alpha) {
   # return a matrix of 1 and 0 (for true/false <alpha)
-  rejects <- 1*(adjp<alpha)
+  rejects <- as.matrix(1*(adjp < alpha), nrow = nrow(adjp), ncol = ncol(adjp))
 }

@@ -21,6 +21,7 @@ power.results <- validate_power(user.params.list, sim.params.list, design = "blo
 
 if(FALSE)
 {
+  design <- "blocked_i1_2c"
   results_plot <- ggplot(power.results, aes(x = MTP, y = value, color = method)) +
     geom_point() +
     geom_line() +
