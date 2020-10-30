@@ -166,13 +166,27 @@ adjust.allsamps.WYSD <- function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl = 
 #' @param J the number of blocks
 #' @param n.j the harmonic means of the number of units per block
 #' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
+#' @param R2.2 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
+#' @param ICC.2
+#' @param omega.2
 #' @param p the proportion of test statistics assigned to treatment within each block group
 #'
 #' @return mean of the test statistics under the joint alternative hypothesis
 
-t.mean.H1<-function(MDES,J,n.j,R2.1,p) {
+t.mean.H1 <- function(MDES, J, n.j, R2.1, R2.2, p, ICC.2, omega.2, effect.type) {
   
-  MDES * sqrt(p*(1-p)*J*n.j) / sqrt(1-R2.1)
+  if(effect.type %in% c('c', 'f'))
+  {
+    se = sqrt(1 - R2.1) / sqrt(p * (1-p) * J * n.j) 
+  } else if (effect.type == 'r')
+  {
+    se = sqrt( (ICC.2 * omega.2 * (1 - R2.2))/J + ((1-ICC.2) * (1 - R2.2))/(p * (1-p) * J * n.j) )
+  } else
+  {
+    stop(paste('Effect type notimplemented:', effect.type))
+  }
+  
+  return(MDES/se)
 }
 
 #' Degrees of Freedom
@@ -212,7 +226,6 @@ df <- function(J, n.j, numCovar.1) {
 #' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
 #' @param ICC intraclass correlation
 #' @param mod.type "c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)
-#' @param sigma correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)
 #' @param omega NULL (parameter in development)
 #' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
@@ -227,13 +240,12 @@ df <- function(J, n.j, numCovar.1) {
 #' @export
 #'
 #'
-power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
-                                p, alpha, numCovar.1 = 0, numCovar.2 = 0,
-                                R2.1, R2.2 = NULL, ICC,
-                                mod.type, sigma = 0,rho, omega = NULL,
-                                tnum = 10000, snum = 1000, cl = NULL,
-                                updateProgress = NULL) {
-  # cl = NULL;
+power_blocked_i1_2cfr <- function(
+  effect.type, M, MTP, MDES, J, n.j, p, alpha, numCovar.1 = 0, numCovar.2 = 0,
+  R2.1, R2.2 = NULL, ICC.2, mod.type, rho, omega.2,
+  tnum = 10000, snum = 1000, cl = NULL, updateProgress = NULL
+)
+{
   
   if(length(MDES) < M)
   {
@@ -244,13 +256,10 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
-  # number of false nulls (i.e they are really not nulls)
-  numfalse <- sum(1*MDES > 0)
-  
   # compute Q(m) for all false nulls. We are calculating the test statistics for when the alternative hypothesis is true.
-  t.shift <- t.mean.H1(MDES, J, n.j, R2.1, p)
+  t.shift <- t.mean.H1(MDES, J, n.j, R2.1, R2.2, p, ICC.2, omega.2, effect.type)
   t.df <- df(J, n.j, numCovar.1)
-  t.shift.mat <- t(matrix(rep(t.shift,tnum), M, tnum)) # repeating shift.beta on every row
+  t.shift.mat <- t(matrix(rep(t.shift, tnum), M, tnum)) # repeating shift.beta on every row
   
   # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
   # rmvt draws from a multivariate t-distribution
@@ -258,8 +267,8 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   Zs.H1 <- Zs.H0 + t.shift.mat
   
   # calculates p values from quantiles and degrees of freedom
-  pvals.H0 <- pt(-abs(Zs.H0),df = t.df) * 2
-  pvals.H1 <- pt(-abs(Zs.H1),df = t.df) * 2
+  pvals.H0 <- pt(-abs(Zs.H0), df = t.df) * 2
+  pvals.H1 <- pt(-abs(Zs.H1), df = t.df) * 2
   
   # getting the absolute values of the test statistics
   abs.Zs.H0 <- abs(Zs.H0)
@@ -360,7 +369,6 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   power.min.mat <- do.call(rbind, power.min)
   power.min0 <- lapply(lt.alpha.each, function(x){ mean(x > 0)})
   power.min0 <- do.call(rbind, power.min0)
-
   
   # complete power is the power to detect outcomes at least as large as the MDES on all outcomes
   # separating out complete power from d-minimal power by taking the last entry
@@ -373,7 +381,13 @@ power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
   all.power.results <- cbind(power.ind.each.mat, mean.ind.power, power.min0, power.min.mat[,-M], power.cmp)
   
   # setting the col and row names for all power results table
-  colnames(all.power.results) <- c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", paste0("min",1:(M-1)), "complete")
+  if(M == 1)
+  {
+    colnames(all.power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", "complete")
+  } else
+  {
+    colnames(all.power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", paste0("min",1:(M-1)), "complete")
+  }
   rownames(all.power.results) <- c("rawp", MTP)
   
   if (is.function(updateProgress) & !is.null(all.power.results)) {
@@ -459,7 +473,7 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
   
   # Compute Q(m)
   Q.m <- sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
-  t.df <- df(J,n.j,numCovar.1)
+  t.df <- df(J, n.j, numCovar.1)
   
   # For raw and BF, compute critical values
   crit.alpha <- qt(p=(1-alpha/2),df=t.df)
@@ -467,8 +481,8 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
   
   # Compute raw and BF MDES for individual power
   crit.beta <- ifelse(power > 0.5, qt(power,df=t.df), qt(1-power,df=t.df))
-  MDES.raw <- ifelse(power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta))
-  MDES.BF <- ifelse(power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta))
+  MDES.raw  <- ifelse(power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta))
+  MDES.BF   <- ifelse(power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta))
   
   # SETTING THE MDES BOUNDS FOR INDIVIDUAL AND OTHER TYPES OF POWER from using raw and bf mdes bounds #
   
@@ -541,7 +555,7 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
     } # if the function is being called, run the progress bar
     
     # Function to calculate the target power to check in with the pre-specified power in the loop
-    runpower <- power_blocked_i1_2c(M = M, MDES = rep(try.MDES, M), MTP = MTP, J = J, n.j = n.j,rho = rho,
+    runpower <- power_blocked_i1_2cfr(M = M, MDES = rep(try.MDES, M), MTP = MTP, J = J, n.j = n.j,rho = rho,
                                     p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2 = 0,
                                     R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                     mod.type = mod.type, sigma = sigma, omega = omega,
@@ -868,7 +882,7 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     
     if (doJ) {
       
-      runpower <- power_blocked_i1_2c(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss, n.j = n.j,
+      runpower <- power_blocked_i1_2cfr(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss, n.j = n.j,
                                       p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
                                       R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
@@ -877,7 +891,7 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     
     if (don.j) {
       
-      runpower <- power_blocked_i1_2c(M, MDES = rep(MDES, M), MTP = MTP, J = J, n.j = try.ss,
+      runpower <- power_blocked_i1_2cfr(M, MDES = rep(MDES, M), MTP = MTP, J = J, n.j = try.ss,
                                       p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
                                       R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
