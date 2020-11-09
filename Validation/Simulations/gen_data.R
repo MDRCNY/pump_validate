@@ -181,8 +181,8 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     Gamma0.ijk <- Xi0        + xi * D.k + w.ijk
     Gamma1.ijk <- Xi1                   + z.ijk
   } else {
-    Gamma0.ijk <- Xi0
-    Gamma1.ijk <- Xi1
+    Gamma0.ijk <- matrix(Xi0, nrow = N, ncol = M, byrow = TRUE)
+    Gamma1.ijk <- matrix(Xi1, nrow = N, ncol = M, byrow = TRUE)
   }
   
   # school level

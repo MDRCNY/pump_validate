@@ -196,7 +196,8 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
     convert.vec.to.filename(user.params.list[['rho.default']]), "_rho_",
     convert.vec.to.filename(user.params.list[['omega.2']]), "_omega2_",
     convert.vec.to.filename(user.params.list[['R2.1']]),"_R21_",
-    convert.vec.to.filename(user.params.list[['R2.2']]),"_R22_"
+    convert.vec.to.filename(user.params.list[['R2.2']]),"_R22_",
+    convert.vec.to.filename(user.params.list[['ICC.2']]),"_ICC2_"
   )
   return(params.file.base)
 }

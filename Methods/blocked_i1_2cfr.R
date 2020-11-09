@@ -167,13 +167,14 @@ adjust.allsamps.WYSD <- function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl = 
 #' @param n.j the harmonic means of the number of units per block
 #' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
 #' @param R2.2 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
-#' @param ICC.2
-#' @param omega.2
+#' @param ICC.2 a vector of length M of school intraclass correlation	
+#' @param omega.2 ratio of school effect size variability to random effects variability
 #' @param p the proportion of test statistics assigned to treatment within each block group
+#' @param effect.type is it constant (c), fixed (f), or random (r)
 #'
 #' @return mean of the test statistics under the joint alternative hypothesis
 
-t.mean.H1 <- function(MDES, J, n.j, R2.1, R2.2, p, ICC.2, omega.2, effect.type) {
+t.mean.H1.blocked_i1_2cfr <- function(MDES, J, n.j, R2.1, R2.2, ICC.2, omega.2, p, effect.type) {
   
   if(effect.type %in% c('c', 'f'))
   {
@@ -189,6 +190,28 @@ t.mean.H1 <- function(MDES, J, n.j, R2.1, R2.2, p, ICC.2, omega.2, effect.type) 
   return(MDES/se)
 }
 
+#' t.mean.h1 function for generating the mean of test statistics under the joint alternative hypothesis
+#'
+#' The function t.mean.H1 computes the means of the test statistics under the joint alternative hypothesis.
+#'
+#' @param MDES  a vector of length M corresponding to the minimum detectable effect sizes (MDESs) for the M outcomes
+#' @param J the number of blocks
+#' @param n.j the harmonic means of the number of units per block
+#' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
+#' @param R2.2 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
+#' @param ICC.2 a vector of length M of school intraclass correlation	
+#' @param omega.2 ratio of school effect size variability to random effects variability
+#' @param p the proportion of test statistics assigned to treatment within each block group
+#' @param effect.type effects are constant (c), fixed (f), or random (r)
+#' 
+#' @return mean of the test statistics under the joint alternative hypothesis
+
+t.mean.H1_simple_c2_2r <- function(MDES, J, n.j, R2.1, R2.2, ICC.2, p, effec.type) {
+  denom <- p * (1-p) * J
+  se <- sqrt( (ICC.2 * (1 - R2.2))/denom + (1 - ICC.2)*(1 - R2.1)/(denom * n.j))
+  return(MDES/se)
+}
+
 #' Degrees of Freedom
 #'
 #' This function calculates the degree of freedom for 2 level RCT block design
@@ -196,13 +219,43 @@ t.mean.H1 <- function(MDES, J, n.j, R2.1, R2.2, p, ICC.2, omega.2, effect.type) 
 #' @param J number of blocks
 #' @param n.j units per block
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
+#' @param effect.type effects are constant (c), fixed (f), or random (r)
 #'
 #' @return the degree of freedom
 
-df <- function(J, n.j, numCovar.1) {
+df.blocked_i1_2cfr <- function(J, n.j, numCovar.1, effect.type) {
   
-  J*n.j - J - numCovar.1 - 1
+  if(effect.type == 'c')
+  {
+    df <- J*n.j - numCovar.1 - J - 1
+  } else if(effect.type == 'f')
+  {
+    df <- J*n.j - numCovar.1 - 2*J
+  } else if(effect.type == 'r')
+  {
+    df <- J - numCovar.1 - 1
+  } else
+  {
+    stop(paste('Effect type unknown:', effect.type))
+  }
   
+  return(df)
+}
+
+#' Degrees of Freedom
+#'
+#' This function calculates the degree of freedom for 2 level RCT cluster design
+#'
+#' @param J number of blocks
+#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
+#' @param effect.type effects are constant (c), fixed (f), or random (r)
+#'
+#' @return the degree of freedom
+
+df.simple_i1_2r <- function(J, numCovar.1, effect.type) {
+  
+  df <- J - numCovar.1 -2
+  return(df)
 }
 
 # blocked_i1_2cfr should be the final name.
@@ -241,7 +294,7 @@ df <- function(J, n.j, numCovar.1) {
 #'
 #'
 power_blocked_i1_2cfr <- function(
-  effect.type, M, MTP, MDES, J, n.j, p, alpha, numCovar.1 = 0, numCovar.2 = 0,
+  design, M, MTP, MDES, J, n.j, p, alpha, numCovar.1 = 0, numCovar.2 = 0,
   R2.1, R2.2 = NULL, ICC.2, mod.type, rho, omega.2,
   tnum = 10000, snum = 1000, cl = NULL, updateProgress = NULL
 )
@@ -256,9 +309,23 @@ power_blocked_i1_2cfr <- function(
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
+  # effect type
+  effect.type <- substr(design, nchar(design), nchar(design))
+  
   # compute Q(m) for all false nulls. We are calculating the test statistics for when the alternative hypothesis is true.
-  t.shift <- t.mean.H1(MDES, J, n.j, R2.1, R2.2, p, ICC.2, omega.2, effect.type)
-  t.df <- df(J, n.j, numCovar.1)
+  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
+  {
+    t.shift <- t.mean.H1.blocked_i1_2cfr(MDES, J, n.j, R2.1, R2.2, ICC.2, omega.2, p, effect.type)
+    t.df <- df.blocked_i1_2cfr(J, n.j, numCovar.1, effect.type)
+  } else if(design %in% c('simple_c2_2r'))
+  {
+    t.shift <- t.mean.H1.cluster_c2_2r(MDES, J, n.j, R2.1, R2.2, ICC.2, omega.2, p, effect.type)
+    t.df <- df.cluster_i1_2r(J, n.j, numCovar.1, effect.type)
+  } else
+  {
+    stop(print(paste('Design', design, 'not implemented yet')))
+  }
+
   t.shift.mat <- t(matrix(rep(t.shift, tnum), M, tnum)) # repeating shift.beta on every row
   
   # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$

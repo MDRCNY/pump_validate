@@ -232,7 +232,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         {
           effect.type = substr(design, nchar(design), nchar(design))
           pum_results_iter <- power_blocked_i1_2cfr(
-            effect.type = effect.type,
+            design = design,
             M = user.params.list[['M']], MTP = MTP,
             MDES = user.params.list[['ATE_ES']],
             J = user.params.list[['J']], n.j = user.params.list[['n.j']],
@@ -509,7 +509,7 @@ if(FALSE)
   numCovar.1 = 1; numCovar.2 = 1;
   R2.1 = user.params.list[['R2.1']];
   R2.2 = user.params.list[['R2.2']];
-  ICC = user.params.list[['ICC.2']];
+  ICC.2 = user.params.list[['ICC.2']];
   mod.type = "constant";
   rho = user.params.list[['rho.default']];
   omega = user.params.list[['omega.2']];
