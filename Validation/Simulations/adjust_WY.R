@@ -22,10 +22,10 @@
 #'
 #' @examples
 #'
-adjust_WY <- function(data, rawp, rawt, design, proc, sim.params.list, model.params.list,
-                      clustered = TRUE, blockby = 'block.id', cl = NULL) {
+adjust_WY <- function(data, rawp, rawt, S.jk, design, proc, sim.params.list, model.params.list,
+                      blockby = 'S.jk', cl = NULL) {
   
-  # clustered = TRUE; blockby = 'block.id'; data = mdat; cl = NULL;
+  # blockby = 'S.jk'; data = mdat; cl = NULL;
   
   B <- sim.params.list[['B']]
   maxT <- sim.params.list[['maxT']]
@@ -38,19 +38,23 @@ adjust_WY <- function(data, rawp, rawt, design, proc, sim.params.list, model.par
   # get order of raw p-values; returns ordered index for the vector "rawp"
   ifelse(maxT == FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing = TRUE))
   
-  assign.vec <- cbind(n.j, p.j)
-  permT <- sapply(1:B, function(x,...) { rep(resamp.by.block(assign.vec), J) })
+  # blocked designs
+  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r')) {
+    permT <- sapply(1:B, function(x) { randomizr::block_ra(blocks = S.jk, prob = p.j)})
+  # cluster designs
+  } else if(design %in% c('simple_c2_2r'))  { 
+    permT <- sapply(1:B, function(x) { randomizr::cluster_ra(clusters = S.jk, prob = p.j)})
+  } else {
+    stop(print(paste('Design', design, 'not implemented yet')))
+  }
   
   if(!is.null(cl))
   {
     clusterExport(cl, list(
       "perm.regs", "make.dummies", "make.model",
       "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2",
-      "fastLm", "lmer"
-      # , "resamp.by.block", "J", "assign.vec"
+      "fastLm", "lmer", "lmerControl"
     ), envir = environment())
-    
-    # permT <- parSapply(cl, 1:B, function(x) { rep(resamp.by.block(assign.vec), J) })
     
     # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
     nullpt <- t(parallel::parApply(
@@ -94,25 +98,12 @@ adjust_WY <- function(data, rawp, rawt, design, proc, sim.params.list, model.par
   return(out.oo)
 }
 
-#' function to help resample for fixed cases
-#' resamples by block
-#'
-#' @param assign.vec c(n.j, p.j)
-#'
-#' @return resampled assignment vector tc
-resamp.by.block <-function(assign.vec)
-{
-  tc <- numeric(assign.vec[1])
-  tc[1:(assign.vec[1]*assign.vec[2])] <- 1
-  return(sample(tc, replace = FALSE))
-}
-
 #' Performs regression with permuted treatment indicator
 #'
 #' @param permT matrix with n.j * J rows and B columns, contains all permutations of treatment indicator
 #' @param data data for all M domains
 #' @param design the particular RCT design for an experiment: "Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r","Simple_c2_2r"
-#' @param blockby blocking variable
+#' @param S.jk blocking variable
 #' @param maxT TRUE if using maxT procedures
 #' @param n.j individuals per block (assume same for all)
 #' @param J number of blocks
@@ -131,17 +122,20 @@ perm.regs <- function(permT, data, design, blockby, maxT, n.j, J) {
   for (m in 1:M) {
     # Mdata is a dataset for one domain (m) for one sample
     Mdata <- data[[m]]
-    Mdata$Treat.ij <- permT
+    Mdata$T.ijk <- permT
     mdum <- make.dummies(Mdata, blockby = blockby, n.j = n.j, J = J) # took this out of perm.reg so doing just once
     fit <- make.model(mdum$fixdat, mdum$dnames, design)
 
-    if (design == "blocked_i1_2c" | design == "blocked_i1_2f" | design == "blocked_i1_2r") {
+    if (design %in%  c("blocked_i1_2c", "blocked_i1_2f", "blocked_i1_2r")) {
 
       ifelse(maxT, outpt[m] <- get.tstat.Level1(fit), outpt[m] <- get.pval.Level1(fit))
 
-    } else if (design == "Simple_c2_2r"){
+    } else if (design == "simple_c2_2r"){
 
       ifelse(maxT, outpt[m] <- get.tstat.Level2(fit), outpt[m] <- get.pval.Level2(fit))
+    } else
+    {
+      stop(paste('Unknown design:', design)) 
     }
   }
   return(outpt)

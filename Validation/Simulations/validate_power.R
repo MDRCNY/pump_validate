@@ -228,29 +228,19 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       
       for (MTP in sim.params.list[['procs']]){
         
-        if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
-        {
-          effect.type = substr(design, nchar(design), nchar(design))
-          pum_results_iter <- power_blocked_i1_2cfr(
-            design = design,
-            M = user.params.list[['M']], MTP = MTP,
-            MDES = user.params.list[['ATE_ES']],
-            J = user.params.list[['J']], n.j = user.params.list[['n.j']],
-            p = sim.params.list[['p.j']],
-            alpha = sim.params.list[['alpha']], numCovar.1 = 1, numCovar.2 = 1,
-            R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
-            ICC.2 = user.params.list[['ICC.2']],
-            rho = user.params.list[['rho.default']], omega.2 = user.params.list[['omega.2']],
-            tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-            cl = cl
-          )
-        } else if(design %in% c('simple_c2_2r'))
-        {
-          stop(paste('Unknown design:', design))
-        } else {
-          stop(paste('Unknown design:', design)) 
-        }
-        
+        pum_results_iter <- power_blocked_i1_2cfr(
+          design = design,
+          M = user.params.list[['M']], MTP = MTP,
+          MDES = user.params.list[['ATE_ES']],
+          J = user.params.list[['J']], n.j = user.params.list[['n.j']],
+          p = sim.params.list[['p.j']],
+          alpha = sim.params.list[['alpha']], numCovar.1 = 1, numCovar.2 = 1,
+          R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
+          ICC.2 = user.params.list[['ICC.2']],
+          rho = user.params.list[['rho.default']], omega.2 = user.params.list[['omega.2']],
+          tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
+          cl = cl
+        )
         pum_results_iter <- data.frame(pum_results_iter)
         if (iterator == 0) {
           pum_results <- pum_results_iter
@@ -495,9 +485,10 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
 ### DEBUG
 if(FALSE)
 {
-  design = "blocked_i1_2c";
+  # design = "blocked_i1_2c";
+  design = 'simple_c2_2r'
   MTP = 'Bonferroni';
-  power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
+  # power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
   MDES = user.params.list[['ATE_ES']]
   J = user.params.list[['J']];
@@ -521,6 +512,5 @@ if(FALSE)
   J0 = 10; n.j0 = 10;
   two.tailed = TRUE; max.iter = 100; tol = 0.1;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
-  cl <- NULL
-  effect.type = 'c';
+  cl = NULL
 }
