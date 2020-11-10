@@ -166,7 +166,6 @@ adjust.allsamps.WYSD <- function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl = 
 #' @param J the number of blocks
 #' @param n.j the harmonic means of the number of units per block
 #' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
-#' @param R2.2 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
 #' @param ICC.2 a vector of length M of school intraclass correlation	
 #' @param omega.2 ratio of school effect size variability to random effects variability
 #' @param p the proportion of test statistics assigned to treatment within each block group
@@ -174,17 +173,17 @@ adjust.allsamps.WYSD <- function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl = 
 #'
 #' @return mean of the test statistics under the joint alternative hypothesis
 
-t.mean.H1.blocked_i1_2cfr <- function(MDES, J, n.j, R2.1, R2.2, ICC.2, omega.2, p, effect.type) {
+t.mean.H1.blocked_i1_2cfr <- function(MDES, J, n.j, R2.1, ICC.2, omega.2, p, effect.type) {
   
   if(effect.type %in% c('c', 'f'))
   {
     se = sqrt(1 - R2.1) / sqrt(p * (1-p) * J * n.j) 
   } else if (effect.type == 'r')
   {
-    se = sqrt( (ICC.2 * omega.2 * (1 - R2.2))/J + ((1-ICC.2) * (1 - R2.2))/(p * (1-p) * J * n.j) )
+    se = sqrt( (ICC.2 * omega.2)/J + ((1-ICC.2) * (1 - R2.1))/(p * (1-p) * J * n.j) )
   } else
   {
-    stop(paste('Effect type notimplemented:', effect.type))
+    stop(paste('Effect type not implemented:', effect.type))
   }
   
   return(MDES/se)
@@ -247,20 +246,16 @@ df.blocked_i1_2cfr <- function(J, n.j, numCovar.1, effect.type) {
 #'
 #' @param J number of blocks
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
-#' @param effect.type effects are constant (c), fixed (f), or random (r)
 #'
 #' @return the degree of freedom
 
-df.simple_i1_2r <- function(J, numCovar.1, effect.type) {
+df.simple_i1_2r <- function(J, numCovar.1) {
   
   df <- J - numCovar.1 -2
   return(df)
 }
 
-# blocked_i1_2cfr should be the final name.
-# power_blocked_i1_2c
-
-#' Power for 2 level blocked designs
+#' Calculate power using PUMP method
 #'
 #' This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
 #' (Bonferroni, Holms, Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down). The function works for
@@ -292,13 +287,12 @@ df.simple_i1_2r <- function(J, numCovar.1, effect.type) {
 #' @export
 #'
 #'
-power_blocked_i1_2cfr <- function(
+pump_power <- function(
   design, M, MTP, MDES, J, n.j, p, alpha, numCovar.1 = 0, numCovar.2 = 0,
   R2.1, R2.2 = NULL, ICC.2, mod.type, rho, omega.2,
   tnum = 10000, snum = 1000, cl = NULL, updateProgress = NULL
 )
 {
-  
   if(length(MDES) < M)
   {
     stop(paste('Please provide a vector of MDES values of length M. Current vector:', MDES, 'M =', M))
@@ -314,12 +308,12 @@ power_blocked_i1_2cfr <- function(
   # compute Q(m) for all false nulls. We are calculating the test statistics for when the alternative hypothesis is true.
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
   {
-    t.shift <- t.mean.H1.blocked_i1_2cfr(MDES, J, n.j, R2.1, R2.2, ICC.2, omega.2, p, effect.type)
+    t.shift <- t.mean.H1.blocked_i1_2cfr(MDES, J, n.j, R2.1, ICC.2, omega.2, p, effect.type)
     t.df <- df.blocked_i1_2cfr(J, n.j, numCovar.1, effect.type)
   } else if(design %in% c('simple_c2_2r'))
   {
     t.shift <- t.mean.H1.simple_c2_2r(MDES, J, n.j, R2.1, R2.2, ICC.2, omega.2, p)
-    t.df <- df.simple_i1_2r(J, n.j, numCovar.1)
+    t.df <- df.simple_i1_2r(J, numCovar.1)
   } else
   {
     stop(print(paste('Design', design, 'not implemented yet')))
@@ -621,7 +615,7 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
     } # if the function is being called, run the progress bar
     
     # Function to calculate the target power to check in with the pre-specified power in the loop
-    runpower <- power_blocked_i1_2cfr(M = M, MDES = rep(try.MDES, M), MTP = MTP, J = J, n.j = n.j,rho = rho,
+    runpower <- pump_power(M = M, MDES = rep(try.MDES, M), MTP = MTP, J = J, n.j = n.j,rho = rho,
                                     p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2 = 0,
                                     R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                     mod.type = mod.type, sigma = sigma, omega = omega,
@@ -948,7 +942,7 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     
     if (doJ) {
       
-      runpower <- power_blocked_i1_2cfr(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss, n.j = n.j,
+      runpower <- pump_power(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss, n.j = n.j,
                                       p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
                                       R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
@@ -957,7 +951,7 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     
     if (don.j) {
       
-      runpower <- power_blocked_i1_2cfr(M, MDES = rep(MDES, M), MTP = MTP, J = J, n.j = try.ss,
+      runpower <- pump_power(M, MDES = rep(MDES, M), MTP = MTP, J = J, n.j = try.ss,
                                       p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
                                       R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
