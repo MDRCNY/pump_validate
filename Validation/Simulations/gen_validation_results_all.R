@@ -192,6 +192,10 @@ if(!run.test & run.blocked)
     print('--------------------------------------------------------')
     print(paste('Completed mdes and sample size for random, 24 out of', scenarios))
     print('--------------------------------------------------------')
+    
+    # reset
+    user.params.list[['omega.2']] <- params.default[['omega.2']]
+    sim.params.list[['procs']] <- params.default[['procs']]
   }
 }
 
@@ -204,7 +208,6 @@ print('-------------------------------------------------------------------------
 if(!run.test & run.cluster)
 {
   scenarios = ifelse(run.mdes.ss, 24, 9)
-  user.params.list[['omega.2']] <- 0.5
   
   #------------------------------------------------------------------#
   # vary sample size
