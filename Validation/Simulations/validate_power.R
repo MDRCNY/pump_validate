@@ -36,7 +36,7 @@ library(tictoc)      # for timing
 ################
 # choose whether to load package code or local code
 source(here::here("Methods", "utils.R"))
-source(here::here("Methods", "blocked_i1_2cfr.R"))
+source(here::here("Methods", "pump_power.R"))
 
 # to install pum from github, generate a personal authentication token 'foo'
 # at https://github.com/settings/tokens
@@ -159,7 +159,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     if(sim.params.list[['runPowerUp']])
     {
       message('Running PowerUp')
-      if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r'))
+      if(design == 'blocked_i1_2c')
       {
         powerup_results <- power.bira2c1(
           es = user.params.list[['ATE_ES']][1],
@@ -171,7 +171,34 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           n = user.params.list[['n.j']],
           J = user.params.list[['J']]
         )
-      } else if(design %in% c('simple_c2_2r'))
+      } else if(design == 'blocked_i1_2f')
+      {
+        powerup_results <- power.bira2f1(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['p.j']],
+          g1 = 1,
+          r21 = user.params.list[['R2.1']][1],
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']]
+        )
+      } else if(design == 'blocked_i1_2r')
+      {
+        powerup_results <- power.bira2r1(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          rho2 = user.params.list[['ICC.2']][1],
+          omega2 = user.params.list[['omega.2']],
+          p = sim.params.list[['p.j']],
+          g1 = 1,
+          r21 = user.params.list[['R2.1']][1],
+          r2t2 = 0,
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']]
+        )
+      } else if(design == c('simple_c2_2r'))
       {
         powerup_results <- power.cra2r2(
           es = user.params.list[['ATE_ES']][1],
@@ -184,6 +211,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           r22 = user.params.list[['R2.2']][1],
           n = user.params.list[['n.j']],
           J = user.params.list[['J']]
+          # mc? nsims? ndraws?
         )
       } else {
         stop(paste('Unknown design:', design)) 
@@ -227,8 +255,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       pum_combined_results <- NULL
       
       for (MTP in sim.params.list[['procs']]){
-        
-        pum_results_iter <- power_blocked_i1_2cfr(
+        pum_results_iter <- pump_power(
           design = design,
           M = user.params.list[['M']], MTP = MTP,
           MDES = user.params.list[['ATE_ES']],

@@ -7,7 +7,7 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = TRUE
 # if TRUE, only run one power calculation, otherwise run all scenarios of interest
-run.test = FALSE
+run.test = TRUE
 # whether or not to run mdes and sample size
 run.mdes.ss = FALSE
 # which designs to run
