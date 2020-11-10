@@ -2,7 +2,7 @@
 #SBATCH -n 8 													# Number of cores requested
 #SBATCH -N 1 													# Ensure that all cores are on one machine
 #SBATCH -t 120													# Runtime in minutes
-#SBATCH -p test												    # Partition to submit to
+#SBATCH -p shared												    # Partition to submit to
 #SBATCH --mem-per-cpu=500 										# Memory per cpu in MB (see also --mem-per-cpu)
 #SBATCH --open-mode=append
 #SBATCH --mail-type=ALL        									# Type of email notification- BEGIN,END,FAIL,ALL
