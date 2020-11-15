@@ -199,12 +199,11 @@ t.mean.H1.blocked_i1_2cfr <- function(MDES, J, n.j, R2.1, ICC.2, omega.2, p, eff
 #' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
 #' @param R2.2 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
 #' @param ICC.2 a vector of length M of school intraclass correlation	
-#' @param omega.2 ratio of school effect size variability to random effects variability
 #' @param p the proportion of test statistics assigned to treatment within each block group
 #' 
 #' @return mean of the test statistics under the joint alternative hypothesis
 
-t.mean.H1.simple_c2_2r <- function(MDES, J, n.j, R2.1, R2.2, ICC.2, omega.2, p) {
+t.mean.H1.simple_c2_2r <- function(MDES, J, n.j, R2.1, R2.2, ICC.2, p) {
   denom <- p * (1-p) * J
   se <- sqrt( (ICC.2 * (1 - R2.2))/denom + (1 - ICC.2)*(1 - R2.1)/(denom * n.j))
   return(MDES/se)
@@ -312,7 +311,7 @@ pump_power <- function(
     t.df <- df.blocked_i1_2cfr(J, n.j, numCovar.1, effect.type)
   } else if(design %in% c('simple_c2_2r'))
   {
-    t.shift <- t.mean.H1.simple_c2_2r(MDES, J, n.j, R2.1, R2.2, ICC.2, omega.2, p)
+    t.shift <- t.mean.H1.simple_c2_2r(MDES, J, n.j, R2.1, R2.2, ICC.2, p)
     t.df <- df.simple_i1_2r(J, numCovar.1)
   } else
   {

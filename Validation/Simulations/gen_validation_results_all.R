@@ -7,12 +7,12 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = TRUE
 # if TRUE, only run one power calculation, otherwise run all scenarios of interest
-run.test = TRUE
+run.test = FALSE
 # whether or not to run mdes and sample size
 run.mdes.ss = FALSE
 # which designs to run
-run.blocked = FALSE
-run.cluster = TRUE
+run.blocked.2l = TRUE
+run.cluster.2l = TRUE
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
@@ -40,7 +40,7 @@ if(FALSE)
 }
 
 
-if(!run.test & run.blocked)
+if(!run.test & run.blocked.2l)
 {
   scenarios = ifelse(run.mdes.ss, 24, 15)
   
@@ -192,19 +192,23 @@ if(!run.test & run.blocked)
     print('--------------------------------------------------------')
     print(paste('Completed mdes and sample size for random, 24 out of', scenarios))
     print('--------------------------------------------------------')
+    
+    # reset
+    user.params.list[['omega.2']] <- params.default[['omega.2']]
+    sim.params.list[['procs']] <- params.default[['procs']]
   }
 }
 
 print('---------------------------------------------------------------------------------')
 print('---------------------------------------------------------------------------------')
-print(paste('Completed blocked scenarios'))
+print(paste('Completed blocked 2 level scenarios'))
 print('---------------------------------------------------------------------------------')
 print('---------------------------------------------------------------------------------')
 
-if(!run.test & run.cluster)
+if(!run.test & run.cluster.2l)
 {
   scenarios = ifelse(run.mdes.ss, 24, 9)
-  user.params.list[['omega.2']] <- 0.5
+  user.params.list <- params.default
   
   #------------------------------------------------------------------#
   # vary sample size
@@ -307,7 +311,7 @@ if(!run.test & run.cluster)
 
 print('---------------------------------------------------------------------------------')
 print('---------------------------------------------------------------------------------')
-print(paste('Completed cluster scenarios'))
+print(paste('Completed cluster 2 level scenarios'))
 print('---------------------------------------------------------------------------------')
 print('---------------------------------------------------------------------------------')
 
