@@ -365,15 +365,29 @@ makelist.samp <-function(samp.obs, T.ijk) {
   mdat.rn <- NULL
   for(m in 1:ncol(samp.obs$Yobs))
   {
-    mdat.rn[[m]] <- data.frame(
-      Yobs        = samp.obs[['Yobs']][,m],
-      D.k         = samp.obs[['D.k']][,m],
-      X.jk        = samp.obs[['X.jk']][,m],
-      C.ijk       = samp.obs[['C.ijk']][,m],
-      T.ijk       = T.ijk,
-      S.jk        = as.factor(samp.obs$ID$S.jk),
-      S.k         = as.factor(samp.obs$ID$S.k)
-    )
+    # level 3
+    if(!is.null(samp.obs[['D.k']]))
+    {
+      mdat.rn[[m]] <- data.frame(
+        Yobs        = samp.obs[['Yobs']][,m],
+        D.k         = samp.obs[['D.k']][,m],
+        X.jk        = samp.obs[['X.jk']][,m],
+        C.ijk       = samp.obs[['C.ijk']][,m],
+        T.ijk       = T.ijk,
+        S.jk        = as.factor(samp.obs$ID$S.jk),
+        S.k         = as.factor(samp.obs$ID$S.k)
+      )
+    } else
+    # level 2
+    {
+      mdat.rn[[m]] <- data.frame(
+        Yobs        = samp.obs[['Yobs']][,m],
+        X.jk        = samp.obs[['X.jk']][,m],
+        C.ijk       = samp.obs[['C.ijk']][,m],
+        T.ijk       = T.ijk,
+        S.jk        = as.factor(samp.obs$ID$S.jk)
+      )
+    }
   }
   return(mdat.rn)
 }

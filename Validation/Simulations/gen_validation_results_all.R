@@ -2,6 +2,8 @@
 # script that produces output results to be put into an r markdown file
 #------------------------------------------------------------------#
 
+# TODO: reset K automaticaly?
+
 library(here)
 
 # overwrite existing results that have already been saved?
@@ -11,10 +13,10 @@ run.test = FALSE
 # whether or not to run mdes and sample size
 run.mdes.ss = FALSE
 # which designs to run
-run.blocked.2l = FALSE
+run.blocked.2l = TRUE
 run.cluster.2l = TRUE
-run.blocked.3l = FALSE
-run.cluster.3l = FALSE
+run.blocked.3l = TRUE
+run.cluster.3l = TRUE
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
@@ -29,6 +31,7 @@ power.results <- validate_power(user.params.list, sim.params.list, design = "blo
 power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c2_2r", q = q, overwrite)
 user.params.list[['omega.2']] <- 0.5
 user.params.list[['omega.3']] <- 0.5
+user.params.list[['K']] <- 4
 power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
 user.params.list[['omega.2']] <- 0
 user.params.list[['omega.3']] <- 0
@@ -56,6 +59,7 @@ if(!run.test & run.blocked.2l)
   # vary sample size
   #------------------------------------------------------------------#
   user.params.list[['n.j']] <- 100
+  user.params.list[['K']] <- 1
   user.params.list[['omega.2']] <- 0
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
   user.params.list[['omega.2']] <- 0.5
@@ -232,6 +236,7 @@ if(!run.test & run.cluster.2l)
   scenarios = ifelse(run.mdes.ss, 24, 9)
   user.params.list <- params.default
   user.params.list[['omega.2']] <- 0
+  user.params.list[['K']] <- 1
   
   #------------------------------------------------------------------#
   # vary sample size
@@ -346,6 +351,7 @@ if(!run.test & run.blocked.3l)
   user.params.list <- params.default
   user.params.list[['omega.2']] <- 0.5
   user.params.list[['omega.3']] <- 0.5
+  user.params.list[['K']] <- 4
   
   #------------------------------------------------------------------#
   # vary sample size
@@ -497,6 +503,7 @@ if(!run.test & run.cluster.3l)
   user.params.list <- params.default
   user.params.list[['omega.2']] <- 0
   user.params.list[['omega.3']] <- 0
+  user.params.list[['K']] <- 4
   
   #------------------------------------------------------------------#
   # vary sample size
