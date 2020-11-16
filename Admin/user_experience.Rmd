@@ -12,14 +12,17 @@ knitr::opts_chunk$set(echo = TRUE)
 # To Do List
 
 - Fix code so that it works for M=1. In that case, just return raw p-values
-- Return a vector of power for all individual outcomes rather than the average, fix downstream effects of this.
 - If we have zero/null effects, warn user that min2 and complete power will be low, and possibly don't return those values.
 - Fix for when power = 0 case for MDES and sample size
-- clarify that right now maxT and minP are the SAME method.
+- Clarify that right now maxT and minP are the SAME method.
 - Tell user that ICC only makes sense for random effects models.
 - For simulations, interval bars are based on normal approximation to binomial, with conservative standard error S/0.25
+- Error bars for PowerUP?
 
 # UI notes
 
 - Update: User is forced to input a ATE_ES vector of length M. So if you are interested in testing some zero effects, input c(0.125, 0, 0)
+- We always assume r2t2 and r2t3 are zero for all models
+- PowerUP requires K > 2.
+
 

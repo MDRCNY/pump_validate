@@ -39,10 +39,10 @@ adjust_WY <- function(data, rawp, rawt, S.jk, design, proc, sim.params.list, mod
   ifelse(maxT == FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing = TRUE))
   
   # blocked designs
-  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r')) {
+  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r')) {
     permT <- sapply(1:B, function(x) { randomizr::block_ra(blocks = S.jk, prob = p.j)})
   # cluster designs
-  } else if(design %in% c('simple_c2_2r'))  { 
+  } else if(design %in% c('simple_c2_2r', 'simple_c2_3r'))  { 
     permT <- sapply(1:B, function(x) { randomizr::cluster_ra(clusters = S.jk, prob = p.j)})
   } else {
     stop(print(paste('Design', design, 'not implemented yet')))
@@ -52,7 +52,7 @@ adjust_WY <- function(data, rawp, rawt, S.jk, design, proc, sim.params.list, mod
   {
     clusterExport(cl, list(
       "perm.regs", "make.dummies", "make.model",
-      "get.tstat.Level1", "get.tstat.Level2", "get.pval.Level1", "get.pval.Level2",
+      "get.tstat", "get.pval",
       "fastLm", "lmer", "lmerControl"
     ), envir = environment())
     
@@ -125,18 +125,7 @@ perm.regs <- function(permT, data, design, blockby, maxT, n.j, J) {
     Mdata$T.ijk <- permT
     mdum <- make.dummies(Mdata, blockby = blockby, n.j = n.j, J = J) # took this out of perm.reg so doing just once
     fit <- make.model(mdum$fixdat, mdum$dnames, design)
-
-    if (design %in%  c("blocked_i1_2c", "blocked_i1_2f", "blocked_i1_2r")) {
-
-      ifelse(maxT, outpt[m] <- get.tstat.Level1(fit), outpt[m] <- get.pval.Level1(fit))
-
-    } else if (design == "simple_c2_2r"){
-
-      ifelse(maxT, outpt[m] <- get.tstat.Level2(fit), outpt[m] <- get.pval.Level2(fit))
-    } else
-    {
-      stop(paste('Unknown design:', design)) 
-    }
+    ifelse(maxT, outpt[m] <- get.tstat(fit), outpt[m] <- get.pval(fit))
   }
   return(outpt)
 }

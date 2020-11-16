@@ -45,10 +45,10 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     S.k  <- samp.full$ID$S.k
     
     # blocked designs
-    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r')) {
+    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r')) {
       T.ijk <- randomizr::block_ra( S.jk, prob = p.j )
     # cluster designs
-    } else if(design %in% c('simple_c2_2r'))  { 
+    } else if(design %in% c('simple_c2_2r', 'simple_c2_3r'))  { 
       T.ijk <- randomizr::cluster_ra( S.jk, prob = p.j )
     } else {
       stop(print(paste('Design', design, 'not implemented yet')))
@@ -164,6 +164,17 @@ calc_power <- function(adjp.proc, alpha)
   se.power <- sqrt(0.25/S) 
   CI.lower.power <- power.results - 1.96 * se.power
   CI.upper.power <- power.results + 1.96 * se.power
+  # make sure that intervals do not produce power below 0 or above 1
+  for(i in 1:nrow(CI.lower.power))
+  {
+    for(j in 1:ncol(CI.lower.power))
+    {
+      CI.lower.power[i,j] <- max(CI.lower.power[i,j], 0)
+      CI.lower.power[i,j] <- min(CI.lower.power[i,j], 1)
+      CI.upper.power[i,j] <- max(CI.upper.power[i,j], 0)
+      CI.upper.power[i,j] <- min(CI.upper.power[i,j], 1)
+    }
+  }
   
   adj_power <- list(power.results, CI.lower.power, CI.upper.power)
   names(adj_power) <- c("adjusted_power", "ci_lower", "ci_upper")
@@ -219,8 +230,20 @@ make.model<-function(dat, dummies, design) {
     # form <- as.formula(paste0("Yobs ~ 1 + T.ijk + X.jk + C.ijk + S.jk + (1 + T.ijk | S.jk)"))
     
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
+  } else if (design == "blocked_i1_3r") {
+    form <- as.formula(paste0("Yobs ~ 1 + T.ijk + D.k + X.jk + C.ijk + (1 + T.ijk | S.jk) + (1 + T.ijk | S.k)"))
+    
+    # proposal
+    # form <- as.formula(paste0("Yobs ~ 1 + T.ijk + X.jk + C.ijk + S.jk + (1 + T.ijk | S.jk)"))
+    
+    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.ijk + X.jk + C.ijk + (1 | S.jk)"))
+    #    form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))
+    #    mod <- lmer(form, data=dat, control = lmerControl(optimizer="bobyqa",calc.derivs = FALSE))
+    mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+  } else if (design == "simple_c2_3r") {
+    form <- as.formula(paste0("Yobs ~ 1 + T.ijk + D.k + X.jk + C.ijk + (1 | S.jk) + (1 | S.k)"))
     #    form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))
     #    mod <- lmer(form, data=dat, control = lmerControl(optimizer="bobyqa",calc.derivs = FALSE))
     mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
@@ -240,7 +263,7 @@ make.model<-function(dat, dummies, design) {
 
 make.dummies <- function(dat, blockby, n.j, J){
 
-  # dat = mdat[[1]]; blockby= "S.jk"
+  # dat = mdat[[1]]; blockby = "S.jk"
 
   block.rep <- matrix(
     data = rep(dat[,blockby], n.j),
@@ -264,45 +287,23 @@ make.dummies <- function(dat, blockby, n.j, J){
 #	Outputs: pvalue 									                                      #
 # --------------------------------------------------------------------- #
 
-get.pval.Level1 <- function(mod) {
+get.pval <- function(mod) {
 
-  if(class(mod)=="lmerMod") {
+  if(class(mod) == "lmerMod") {
     pval <-(1-pnorm(abs(summary(mod)$coefficients["T.ijk","t value"])))*2
   }
-  if (class(mod)=="fastLm") {
+  if (class(mod) == "fastLm") {
     pval <- summary(mod)$coef["T.ijk", "Pr(>|t|)"]
   }
   return(pval)
 }
 
-get.tstat.Level1 <- function(mod) {
+get.tstat <- function(mod) {
 
-  if(class(mod)=="lmerMod") {
+  if(class(mod) == "lmerMod") {
     tstat <- summary(mod)$coefficients["T.ijk","t value"]
   }
-  if (class(mod)=="fastLm") {
-    tstat <- summary(mod)$coef["T.ijk", "t value"]
-  }
-  return(tstat)
-}
-
-get.pval.Level2 <- function(mod) {
-
-  if(class(mod)=="lmerMod") {
-    pval <- (1-pnorm(abs(summary(mod)$coefficients["T.ijk","t value"])))*2
-  }
-  if (class(mod)=="fastLm") {
-    pval <- summary(mod)$coef["T.ijk", "Pr(>|t|)"]
-  }
-  return(pval)
-}
-
-get.tstat.Level2 <- function(mod) {
-
-  if(class(mod)=="lmerMod") {
-    tstat <-summary(mod)$coefficients["T.ijk","t value"]
-  }
-  if (class(mod)=="fastLm") {
+  if (class(mod) == "fastLm") {
     tstat <- summary(mod)$coef["T.ijk", "t value"]
   }
   return(tstat)
@@ -324,15 +325,11 @@ get.rawp <- function(mdat, design, n.j, J) {
   if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
     mdums = lapply(mdat, function(m) make.dummies(m, "S.jk", n.j, J))
     mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
-    rawp = sapply(mods, function(x) get.pval.Level1(x))
+    rawp = sapply(mods, function(x) get.pval(x))
   }
-  if (design == "blocked_i1_2r") {
+  else {
     mods = lapply(mdat, function(m) make.model(m, NULL, design))
-    rawp = sapply(mods, function(x) get.pval.Level1(x))
-  }
-  if (design == "simple_c2_2r") {
-    mods = lapply(mdat, function(m) make.model(m, NULL, design))
-    rawp = sapply(mods, function(x) get.pval.Level2(x))
+    rawp = sapply(mods, function(x) get.pval(x))
   }
 
   return(rawp)
@@ -343,15 +340,10 @@ get.rawt <- function(mdat, design, n.j, J) {
   if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
     mdums = lapply(mdat, function(m) make.dummies(m, "S.jk", n.j, J))
     mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
-    rawt = sapply(mods, function(x) get.tstat.Level1(x))
-  } else if (design == "blocked_i1_2r") {
-    mods = lapply(mdat, function(m) make.model(m,NULL,design))
-    rawt = sapply(mods, function(x) get.tstat.Level1(x))
-  } else if (design == "simple_c2_2r") {
-    mods = lapply(mdat, function(m) make.model(m,NULL,design))
-    rawt = sapply(mods, function(x) get.tstat.Level2(x))
+    rawt = sapply(mods, function(x) get.tstat(x))
   } else {
-    stop(paste('Error: unknown design', design))
+    mods = lapply(mdat, function(m) make.model(m,NULL,design))
+    rawt = sapply(mods, function(x) get.tstat(x))
   }
 
   return(rawt)
@@ -375,10 +367,12 @@ makelist.samp <-function(samp.obs, T.ijk) {
   {
     mdat.rn[[m]] <- data.frame(
       Yobs        = samp.obs[['Yobs']][,m],
+      D.k         = samp.obs[['D.k']][,m],
       X.jk        = samp.obs[['X.jk']][,m],
       C.ijk       = samp.obs[['C.ijk']][,m],
       T.ijk       = T.ijk,
-      S.jk        = as.factor(samp.obs$ID$S.jk)
+      S.jk        = as.factor(samp.obs$ID$S.jk),
+      S.k         = as.factor(samp.obs$ID$S.k)
     )
   }
   return(mdat.rn)

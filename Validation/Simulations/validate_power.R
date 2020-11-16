@@ -59,8 +59,8 @@ source(here::here("Methods", "pump_power.R"))
 #'
 #' @examples
 validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE, gen.wide.results = FALSE) {
-
-  # design = "blocked_i1_2c"
+  
+  # design = "blocked_i1_2c"; design = 'blocked_i1_3r'
   
   # checks
   if(length(user.params.list[['ATE_ES']]) != user.params.list[['M']])
@@ -78,7 +78,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   {
     stop('Omega.2 should be 0 for constant effects')
   }
-    
+  
   t1 = Sys.time()
   
   # for saving out and reading in files based on simulation parameters
@@ -97,7 +97,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   
   if(overwrite | length(current.file) == 0)
   {
-
+    
     if(sim.params.list[['parallel']])
     {
       cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
@@ -198,6 +198,24 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           n = user.params.list[['n.j']],
           J = user.params.list[['J']]
         )
+      } else if(design == 'blocked_i1_3r')
+      {
+        powerup_results <- power.bira3r1(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          rho2 = user.params.list[['ICC.2']][1],
+          rho3 = user.params.list[['ICC.3']][1],
+          omega2 = user.params.list[['omega.2']],
+          omega3 = user.params.list[['omega.3']],
+          p = sim.params.list[['p.j']],
+          g3 = 1,
+          r21 = user.params.list[['R2.1']][1],
+          r2t2 = 0, r2t3 = 0,
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']],
+          K = user.params.list[['K']]
+        )
       } else if(design == c('simple_c2_2r'))
       {
         powerup_results <- power.cra2r2(
@@ -213,21 +231,47 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           J = user.params.list[['J']]
           # mc? nsims? ndraws?
         )
+      } else if(design == c('simple_c2_3r'))
+      {
+        powerup_results <- power.cra3r3(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          g3 = 1,
+          p = sim.params.list[['p.j']],
+          rho2 = user.params.list[['ICC.2']][1],
+          rho3 = user.params.list[['ICC.3']][1],
+          r21 = user.params.list[['R2.1']][1],
+          r22 = user.params.list[['R2.2']][1],
+          r23 = user.params.list[['R2.3']][1],
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']],
+          K = user.params.list[['K']]
+          # mc? nsims? ndraws?
+        )
       } else {
         stop(paste('Unknown design:', design)) 
       }
       # Power_Up_Standard_Error
       powerup_results$se       <- powerup_results$parms$es/powerup_results$ncp
-      powerup_results$lower_ci <- powerup_results$power - (1.96 * powerup_results$se)
-      powerup_results$upper_ci <- powerup_results$power + (1.96 * powerup_results$se)
+      # powerup_results$lower_ci <- powerup_results$power - (1.96 * powerup_results$se)
+      # powerup_results$upper_ci <- powerup_results$power + (1.96 * powerup_results$se)
       
       powerup_results <- data.frame(
         MTP = 'rawp',
         variable = 'D1indiv',
         method = 'pup',
-        value = c(powerup_results$power, powerup_results$lower_ci, powerup_results$upper_ci),
-        value.type = c('adjusted_power', 'ci_lower',  'ci_upper')
+        value = powerup_results$power,
+        value.type = 'adjusted_power'
       )
+      
+      # powerup_results <- data.frame(
+      #   MTP = 'rawp',
+      #   variable = 'D1indiv',
+      #   method = 'pup',
+      #   value = c(powerup_results$power, powerup_results$lower_ci, powerup_results$upper_ci),
+      #   value.type = c('adjusted_power', 'ci_lower',  'ci_upper')
+      # )
       saveRDS(powerup_results, file = paste0(intermediate.data.dir, powerup.filename))
     } else
     {
@@ -259,12 +303,15 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           design = design,
           M = user.params.list[['M']], MTP = MTP,
           MDES = user.params.list[['ATE_ES']],
-          J = user.params.list[['J']], n.j = user.params.list[['n.j']],
+          J = user.params.list[['J']], K = user.params.list[['K']],
+          n.j = user.params.list[['n.j']],
           p = sim.params.list[['p.j']],
-          alpha = sim.params.list[['alpha']], numCovar.1 = 1, numCovar.2 = 1,
-          R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
-          ICC.2 = user.params.list[['ICC.2']],
-          rho = user.params.list[['rho.default']], omega.2 = user.params.list[['omega.2']],
+          alpha = sim.params.list[['alpha']],
+          numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+          R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
+          ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
+          rho = user.params.list[['rho.default']],
+          omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
           tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
           cl = cl
         )
@@ -297,9 +344,9 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         warning(paste('PUMP results not run, no PUMP found for parameters:', params.file.base))
         pum_results <- NULL
       }
-
+      
     }
-  
+    
     if(!is.null(sim_results) | !is.null(powerup_results) | !is.null(sim_results))
     {
       compare.filename <- paste0(params.file.base, "comparison_power_results.RDS")
@@ -311,7 +358,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     {
       compare_results <- NULL
     }
-
+    
     if(sim.params.list[['parallel']])
     {
       parallel::stopCluster(cl)
@@ -319,7 +366,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     
     t2 = Sys.time()
     message(paste('Total time:', difftime(t2, t1, units = 'mins'), 'minutes'))
-
+    
     return(compare_results)
   } else
   {
@@ -506,7 +553,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
   {
     print('Validation already completed.')
   }
-
+  
 } # validate_sample
 
 ### DEBUG
