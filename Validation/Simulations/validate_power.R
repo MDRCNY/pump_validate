@@ -115,7 +115,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     
     # simulate and run power calculations
     adjp.filename = paste0(params.file.base, "adjp_", q, ".RDS")
-    if(overwrite & sim.params.list[['runSim']]){
+    if( (overwrite | length(adjp.files) == 0) & sim.params.list[['runSim']]){
       message('Running simulation')
       adjp.proc <- est_power_sim(user.params.list, sim.params.list, design, cl)
       saveRDS(adjp.proc, file = paste0(intermediate.data.dir, adjp.filename))
@@ -160,7 +160,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     powerup.filename <- paste0(params.file.base, "powerup_results.RDS")
     powerup.file <- paste0(intermediate.data.dir, powerup.filename)
     
-    if(overwrite & sim.params.list[['runPowerUp']])
+    if( (overwrite | !file.exists(powerup.file))  & sim.params.list[['runPowerUp']])
     {
       message('Running PowerUp')
       if(design == 'blocked_i1_2c')
@@ -297,7 +297,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     pump.filename <- paste0(params.file.base, "pump_results.RDS")
     pump.file <- paste0(intermediate.data.dir, pump.filename)
     
-    if(overwrite & sim.params.list[['runPump']]){
+    if((overwrite | !file.exists(pump.file)) & sim.params.list[['runPump']]){
       
       message('Running PUMP')
       
