@@ -58,7 +58,7 @@ source(here::here("Methods", "pump_power.R"))
 #' @export
 #'
 #' @examples
-validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE, gen.wide.results = FALSE) {
+validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
   
   # design = "blocked_i1_2c"; design = 'blocked_i1_3r'
   
@@ -85,7 +85,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
   message(paste('Power validation for:', params.file.base))
   
-  current.file = find_file(params.file.base, type = 'power', intermediate = TRUE)
+  current.file = find_file(params.file.base, type = 'power')
   
   # store some files in intermediate results file
   data.dir = here("Validation/data")
@@ -110,14 +110,16 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     # Simulation Values #
     #####################
     
+    # search for simulation results
+    adjp.files = grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
+    
     # simulate and run power calculations
     adjp.filename = paste0(params.file.base, "adjp_", q, ".RDS")
-    if(sim.params.list[['runSim']]){
+    if(overwrite & sim.params.list[['runSim']]){
       message('Running simulation')
       adjp.proc <- est_power_sim(user.params.list, sim.params.list, design, cl)
       saveRDS(adjp.proc, file = paste0(intermediate.data.dir, adjp.filename))
     } else {
-      adjp.files = grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
       if(length(adjp.files) > 0)
       {
         message(paste('Reading in simulation adjp results.', length(adjp.files), 'results files found.'))
@@ -156,7 +158,9 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     # Power Up Values #
     ###################
     powerup.filename <- paste0(params.file.base, "powerup_results.RDS")
-    if(sim.params.list[['runPowerUp']])
+    powerup.file <- paste0(intermediate.data.dir, powerup.filename)
+    
+    if(overwrite & sim.params.list[['runPowerUp']])
     {
       message('Running PowerUp')
       if(design == 'blocked_i1_2c')
@@ -253,7 +257,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         stop(paste('Unknown design:', design)) 
       }
       # Power_Up_Standard_Error
-      powerup_results$se       <- powerup_results$parms$es/powerup_results$ncp
+      # powerup_results$se       <- powerup_results$parms$es/powerup_results$ncp
       # powerup_results$lower_ci <- powerup_results$power - (1.96 * powerup_results$se)
       # powerup_results$upper_ci <- powerup_results$power + (1.96 * powerup_results$se)
       
@@ -272,13 +276,13 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       #   value = c(powerup_results$power, powerup_results$lower_ci, powerup_results$upper_ci),
       #   value.type = c('adjusted_power', 'ci_lower',  'ci_upper')
       # )
-      saveRDS(powerup_results, file = paste0(intermediate.data.dir, powerup.filename))
+      saveRDS(powerup_results, file = powerup.file)
     } else
     {
-      if(file.exists(paste0(intermediate.data.dir, powerup.filename)))
+      if(file.exists(powerup.file))
       {
         message('Reading in PowerUp results')
-        powerup_results <- readRDS(file = paste0(intermediate.data.dir, powerup.filename))
+        powerup_results <- readRDS(file = powerup.file)
       } else
       {
         warning(paste('PowerUp results not run, no PowerUp results found for parameters:', params.file.base))
@@ -291,15 +295,17 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     # PUMP methods value #
     ######################
     pump.filename <- paste0(params.file.base, "pump_results.RDS")
-    if(sim.params.list[['runPump']]){
+    pump.file <- paste0(intermediate.data.dir, pump.filename)
+    
+    if(overwrite & sim.params.list[['runPump']]){
       
       message('Running PUMP')
       
       iterator <- 0
-      pum_combined_results <- NULL
+      pump_combined_results <- NULL
       
       for (MTP in sim.params.list[['procs']]){
-        pum_results_iter <- pump_power(
+        pump_results_iter <- pump_power(
           design = design,
           M = user.params.list[['M']], MTP = MTP,
           MDES = user.params.list[['ATE_ES']],
@@ -315,42 +321,42 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
           cl = cl
         )
-        pum_results_iter <- data.frame(pum_results_iter)
+        pump_results_iter <- data.frame(pump_results_iter)
         if (iterator == 0) {
-          pum_results <- pum_results_iter
+          pump_results <- pump_results_iter
         } else {
-          pum_results <- dplyr::bind_rows(pum_results, pum_results_iter[2,])
+          pump_results <- dplyr::bind_rows(pump_results, pump_results_iter[2,])
         }
         iterator = iterator + 1
       }
       # adding rownames to the pum_combined_results table
-      rownames(pum_results) <- c("rawp", sim.params.list[['procs']])
-      pum_results_table <- pum_results
+      rownames(pump_results) <- c("rawp", sim.params.list[['procs']])
+      pump_results_table <- pump_results
       
       # pum_results_table <- data.frame(pum_results[,c('indiv', 'min1', 'min2', 'complete')])
-      pum_results_table$MTP <- rownames(pum_results_table)
-      pum_results <- melt(pum_results_table, id.vars = 'MTP')
-      pum_results$method = 'pum'
-      pum_results$value.type = 'adjusted_power'
+      pump_results_table$MTP <- rownames(pump_results_table)
+      pump_results <- melt(pump_results_table, id.vars = 'MTP')
+      pump_results$method = 'pum'
+      pump_results$value.type = 'adjusted_power'
       
-      saveRDS(pum_results, file = paste0(intermediate.data.dir, pump.filename))
+      saveRDS(pump_results, file = pump.file)
     } else {
-      if(file.exists(paste0(intermediate.data.dir, pump.filename)))
+      if(file.exists(pump.file))
       {
         message('Reading in PUMP results')
-        pum_results <- readRDS(file = paste0(intermediate.data.dir, pump.filename))
+        pump_results <- readRDS(pump.file)
       } else
       {
         warning(paste('PUMP results not run, no PUMP found for parameters:', params.file.base))
-        pum_results <- NULL
+        pump_results <- NULL
       }
       
     }
     
-    if(!is.null(sim_results) | !is.null(powerup_results) | !is.null(sim_results))
+    if(!is.null(sim_results) | !is.null(powerup_results) | !is.null(pump_results))
     {
       compare.filename <- paste0(params.file.base, "comparison_power_results.RDS")
-      compare_results_long <- data.frame(rbind(pum_results, powerup_results, sim_results))
+      compare_results_long <- data.frame(rbind(pump_results, powerup_results, sim_results))
       colnames(compare_results_long) <- c('MTP', 'power_type', 'value', 'method', 'value.type')
       compare_results <- compare_results_long[,c('MTP', 'power_type','method', 'value.type', 'value')]
       saveRDS(compare_results, file = paste(data.dir, compare.filename, sep = "/"))
