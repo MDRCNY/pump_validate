@@ -85,7 +85,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
   message(paste('Power validation for:', params.file.base))
   
-  current.file = find_file(params.file.base, type = 'power')
+  current.file = find_file(params.file.base, type = 'power', intermediate = TRUE)
   
   # store some files in intermediate results file
   data.dir = here("Validation/data")

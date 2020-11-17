@@ -2,12 +2,10 @@
 # script that produces output results to be put into an r markdown file
 #------------------------------------------------------------------#
 
-# TODO: reset K automaticaly?
-
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = TRUE
+overwrite = FALSE
 # if TRUE, only run one power calculation, otherwise run all scenarios of interest
 run.test = FALSE
 # whether or not to run mdes and sample size

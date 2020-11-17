@@ -18,6 +18,11 @@ knitr::opts_chunk$set(echo = TRUE)
 - Tell user that ICC only makes sense for random effects models.
 - For simulations, interval bars are based on normal approximation to binomial, with conservative standard error S/0.25
 - Error bars for PowerUP?
+- Standard error for PowerUP??
+
+```
+powerup_results$se       <- powerup_results$parms$es/powerup_results$ncp
+```
 
 # UI notes
 

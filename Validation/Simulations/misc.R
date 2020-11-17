@@ -241,9 +241,16 @@ gen.power.results.plot <- function(params.file.base, design)
 #'
 #' @return comparison.file
 
-find_file <- function(params.file.base, type)
+find_file <- function(params.file.base, type, intermediate = FALSE)
 {
-  results.files <- list.files(here::here("Validation/data"), full.names = TRUE)
+  if(intermediate)
+  {
+    results.files <- list.files(here::here("Validation/data/intermediate_results"), full.names = TRUE)
+  } else
+  {
+    results.files <- list.files(here::here("Validation/data"), full.names = TRUE)
+  }
+  
   results.files <- results.files[grep(params.file.base, results.files)]
   results.files <- results.files[grep('comparison', results.files)]
   # return file
