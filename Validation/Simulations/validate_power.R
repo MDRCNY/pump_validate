@@ -596,9 +596,9 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
 ### DEBUG
 if(FALSE)
 {
-  # design = "blocked_i1_2c";
+  design = "blocked_i1_2c";
   # design = 'simple_c2_2r';
-  design = 'simple_c3_3r';
+  # design = 'simple_c3_3r';
   MTP = 'Bonferroni';
   # power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];

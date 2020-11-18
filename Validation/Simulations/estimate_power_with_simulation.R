@@ -224,8 +224,8 @@ make.model <- function(dat, dummies = NULL, design) {
   # dat = mdat[[1]]$fixdat;
   # dat = mdat[[1]];
   dat$S.jk <- as.factor(dat$S.jk)
-  dat$S.k <- as.factor(dat$S.k)
-  
+  if(!is.null(dat$S.k)){ dat$S.k <- as.factor(dat$S.k) }
+
   if (design == "blocked_i1_2c") {
     form <- as.formula("Yobs ~ 1 + T.ijk + X.jk + C.ijk + S.jk")
     mod <- pkgcond::suppress_messages(lm(form, data = dat))
