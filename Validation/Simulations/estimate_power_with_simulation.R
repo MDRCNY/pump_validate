@@ -263,7 +263,8 @@ make.model <- function(dat, dummies = NULL, design) {
     # form <- as.formula(paste0("Yobs ~ 1 + T.ijk + D.k + X.jk + C.ijk + S.jk + S.k + (1 | S.jk) + (1 | S.k)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.ijk + X.jk + C.ijk + S.jk + S.k + (1 | S.jk) + (1 | S.k)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.ijk + X.jk + C.ijk + (1 | S.jk) + (1 | S.k)"))
+    # form <- as.formula(paste0("Yobs ~ 1 + T.ijk + X.jk + C.ijk + S.jk + S.k + (1 | S.jk) + (1 | S.k)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.ijk + D.k + X.jk + C.ijk + (1 + T.ijk | S.jk) + (1 + T.ijk | S.k)"))
