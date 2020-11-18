@@ -193,10 +193,10 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          rho2 = user.params.list[['ICC.2']][1],
-          omega2 = user.params.list[['omega.2']],
           p = sim.params.list[['p.j']],
           g2 = 1,
+          rho2 = user.params.list[['ICC.2']][1],
+          omega2 = user.params.list[['omega.2']],
           r21 = user.params.list[['R2.1']][1],
           r2t2 = 0,
           n = user.params.list[['n.j']],
@@ -208,12 +208,12 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
+          p = sim.params.list[['p.j']],
+          g3 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           rho3 = user.params.list[['ICC.3']][1],
           omega2 = user.params.list[['omega.2']],
           omega3 = user.params.list[['omega.3']],
-          p = sim.params.list[['p.j']],
-          g3 = 1,
           r21 = user.params.list[['R2.1']][1],
           r2t2 = 0, r2t3 = 0,
           n = user.params.list[['n.j']],
@@ -226,23 +226,22 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          g2 = 1,
           p = sim.params.list[['p.j']],
+          g2 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           r21 = user.params.list[['R2.1']][1],
           r22 = user.params.list[['R2.2']][1],
           n = user.params.list[['n.j']],
           J = user.params.list[['J']]
-          # mc? nsims? ndraws?
         )
-      } else if(design == c('simple_c2_3r'))
+      } else if(design == c('simple_c3_3r'))
       {
         powerup_results <- power.cra3r3(
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          g3 = 1,
           p = sim.params.list[['p.j']],
+          g3 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           rho3 = user.params.list[['ICC.3']][1],
           r21 = user.params.list[['R2.1']][1],
@@ -251,7 +250,39 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           n = user.params.list[['n.j']],
           J = user.params.list[['J']],
           K = user.params.list[['K']]
-          # mc? nsims? ndraws?
+        )
+      } else if(design == c('blocked_c2_3f'))
+      {
+        powerup_results <- power.bcra3f2(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['p.j']],
+          g2 = 1,
+          rho2 = user.params.list[['ICC.2']][1],
+          r21 = user.params.list[['R2.1']][1],
+          r22 = user.params.list[['R2.2']][1],
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']],
+          K = user.params.list[['K']]
+        )
+      } else if(design == c('blocked_c2_3r'))
+      {
+        powerup_results <- power.bcra3r2(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['p.j']],
+          g3 = 1,
+          rho2 = user.params.list[['ICC.2']][1],
+          rho3 = user.params.list[['ICC.3']][1],
+          omega3 = user.params.list[['omega.3']],
+          r21 = user.params.list[['R2.1']][1],
+          r22 = user.params.list[['R2.2']][1],
+          r2t3 = 0,
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']],
+          K = user.params.list[['K']]
         )
       } else {
         stop(paste('Unknown design:', design)) 
@@ -566,7 +597,8 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
 if(FALSE)
 {
   # design = "blocked_i1_2c";
-  design = 'simple_c2_2r'
+  # design = 'simple_c2_2r';
+  design = 'simple_c3_3r';
   MTP = 'Bonferroni';
   # power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
@@ -580,10 +612,13 @@ if(FALSE)
   numCovar.1 = 1; numCovar.2 = 1;
   R2.1 = user.params.list[['R2.1']];
   R2.2 = user.params.list[['R2.2']];
+  R2.3 = user.params.list[['R2.3']];
   ICC.2 = user.params.list[['ICC.2']];
+  ICC.3 = user.params.list[['ICC.3']];
   mod.type = "constant";
   rho = user.params.list[['rho.default']];
-  omega = user.params.list[['omega.2']];
+  omega.2 = user.params.list[['omega.2']];
+  omega.3 = user.params.list[['omega.3']];
   tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
   parallel = sim.params.list[['parallel']]; ncl = sim.params.list[['ncl']];
   max.iter = sim.params.list[['max.iter']];

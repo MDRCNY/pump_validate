@@ -45,12 +45,22 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     S.k  <- samp.full$ID$S.k
     
     # blocked designs
-    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r')) {
+    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r'))
+    {
       T.ijk <- randomizr::block_ra( S.jk, prob = p.j )
     # cluster designs
-    } else if(design %in% c('simple_c2_2r', 'simple_c2_3r'))  { 
+    } else if(design %in% c('simple_c2_2r'))
+    { 
       T.ijk <- randomizr::cluster_ra( S.jk, prob = p.j )
-    } else {
+    } else if(design %in% c('simple_c3_3r'))
+    {
+      T.ijk <- randomizr::cluster_ra( S.k, prob = p.j )
+    # blocked cluster designs
+    } else if(design %in% c('blocked_c2_3f', 'blocked_c2_3r'))
+    {
+      T.ijk <- randomizr::block_and_cluster_ra( blocks = S.k, clusters = S.jk, prob = p.j )
+    } else
+    {
       stop(print(paste('Design', design, 'not implemented yet')))
     }
     
@@ -72,7 +82,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         t11 <- Sys.time()
         
         proc <- procs[p-1]
-        pvals <- get.adjp(proc, rawp, rawt, mdat, S.jk, sim.params.list, model.params.list, design, cl)
+        pvals <- get.adjp(proc, rawp, rawt, mdat, S.jk, S.k, sim.params.list, model.params.list, design, cl)
         
         t21 <- Sys.time()
         if (s == 1) { message(paste("One sample of", proc, "took", difftime(t21, t11, units = 'secs'))) }
@@ -205,15 +215,23 @@ calc_power <- function(adjp.proc, alpha)
 #	Notes: dummies can be output of make.dummies $dnames			              #
 # --------------------------------------------------------------------- #
 
-make.model<-function(dat, dummies, design) {
+make.model <- function(dat, dummies = NULL, design) {
 
-  # dat = mdat[[1]]$fixdat
+  # form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))
+  # mod <- lmer(form, data=dat, control = lmerControl(optimizer="bobyqa",calc.derivs = FALSE))
+  # mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+  
+  # dat = mdat[[1]]$fixdat;
+  # dat = mdat[[1]];
   dat$S.jk <- as.factor(dat$S.jk)
+  dat$S.k <- as.factor(dat$S.k)
   
   if (design == "blocked_i1_2c") {
-    # fixed effects for each block
-    mmat <- cbind(dat[,c("T.ijk", "X.jk", "C.ijk")], dat[,grep("block[0-9]", colnames(dat))])
-    mod <- fastLm(mmat, dat[,"Yobs"])
+    form <- as.formula("Yobs ~ 1 + T.ijk + X.jk + C.ijk + S.jk")
+    mod <- pkgcond::suppress_messages(lm(form, data = dat))
+    # fast LM
+    # mmat <- cbind(dat[,c("T.ijk", "X.jk", "C.ijk")], dat[,grep("dummy\\.[0-9]", colnames(dat))])
+    # mod <- fastLm(mmat, dat[,"Yobs"])
   } else if (design == "blocked_i1_2f") {
 
     form <- as.formula("Yobs ~ 1 + T.ijk + X.jk + C.ijk + (1 | S.jk)")
@@ -239,14 +257,18 @@ make.model<-function(dat, dummies, design) {
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.ijk + X.jk + C.ijk + (1 | S.jk)"))
-    #    form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))
-    #    mod <- lmer(form, data=dat, control = lmerControl(optimizer="bobyqa",calc.derivs = FALSE))
-    mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
-  } else if (design == "simple_c2_3r") {
+    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
+  } else if (design == "simple_c3_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.ijk + D.k + X.jk + C.ijk + (1 | S.jk) + (1 | S.k)"))
-    #    form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))
-    #    mod <- lmer(form, data=dat, control = lmerControl(optimizer="bobyqa",calc.derivs = FALSE))
-    mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+    # form <- as.formula(paste0("Yobs ~ 1 + T.ijk + D.k + X.jk + C.ijk + S.jk + S.k + (1 | S.jk) + (1 | S.k)"))
+    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
+  } else if (design == "blocked_c2_3f") {
+    form <- as.formula(paste0("Yobs ~ 1 + T.ijk + X.jk + C.ijk + S.jk + S.k + (1 | S.jk) + (1 | S.k)"))
+    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
+  } else if (design == "blocked_c2_3r") {
+    form <- as.formula(paste0("Yobs ~ 1 + T.ijk + D.k + X.jk + C.ijk + (1 + T.ijk | S.jk) + (1 + T.ijk | S.k)"))
+    # form <- as.formula(paste0("Yobs ~ 1 + T.ijk + D.k + X.jk + C.ijk + S.jk + S.k + (1 + T.ijk | S.jk) + (1 + T.ijk | S.k)"))
+    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else {
     stop(paste('Unknown design:', design)) 
   }
@@ -256,28 +278,32 @@ make.model<-function(dat, dummies, design) {
 # --------------------------------------------------------------------- #
 #	Function: make.dummies		Inputs:	dat, clusterby, n.j, J
 #		a dataset (dat),
-#		a column name as a string to cluster by (clusterby), ZH: Can this be blockby?    
+#		a column name as a string to make dummy variables for   
 #		n.j, and J 									                                                     
 #	Outputs: dummies (column names), lmedat.fixed (data.frame)		                    
 # --------------------------------------------------------------------- #
 
-make.dummies <- function(dat, blockby, n.j, J){
+make.dummies <- function(dat, dummy.vars, n.j, J){
 
-  # dat = mdat[[1]]; blockby = "S.jk"
+  # dat = mdat[[1]]; dummy.vars = c("S.k","S.jk"); var = dummy.vars[1]
 
-  block.rep <- matrix(
-    data = rep(dat[,blockby], n.j),
-    nrow = length(dat[,blockby]), ncol = J
-  )
-  colnum<-seq(1:J)
-  block.dum.fn<-function(...) {1*(...==colnum)}
-  
-  block.dum <- t(apply(block.rep, 1, block.dum.fn))
-  colnames(block.dum)<-paste("block",1:J,sep="")
-  lmedat.fixed<-cbind(dat,block.dum)
-  dummies<-paste(colnames(block.dum[,-1]),collapse="+")
+  all.dum <- NULL
+  for(i in 1:length(dummy.vars))
+  {
+    block.rep <- matrix(
+      data = rep(dat[,var], n.j),
+      nrow = length(dat[,var]), ncol = J
+    )
+    colnum <- seq(1:J)
+    block.dum <- t(apply(block.rep, 1, function(x) { 1*(x==colnum) }))
+    colnames(block.dum) <- paste("dummy", i, ".", 1:J, sep = "")
+    all.dum <- cbind(all.dum, block.dum)
+  }
 
-  return(list("dnames"=dummies, "fixdat"=lmedat.fixed))
+  lmedat.fixed <- cbind(dat, all.dum)
+  dummies <- paste(colnames(all.dum[,-1]), collapse = "+")
+
+  return(list("dnames" = dummies, "fixdat" = lmedat.fixed))
 }
 
 
@@ -289,6 +315,9 @@ make.dummies <- function(dat, blockby, n.j, J){
 
 get.pval <- function(mod) {
 
+  if(class(mod) == "lm") {
+    pval <- summary(mod)$coefficients["T.ijk","Pr(>|t|)"]
+  }
   if(class(mod) == "lmerMod") {
     pval <-(1-pnorm(abs(summary(mod)$coefficients["T.ijk","t value"])))*2
   }
@@ -299,8 +328,8 @@ get.pval <- function(mod) {
 }
 
 get.tstat <- function(mod) {
-
-  if(class(mod) == "lmerMod") {
+  
+  if(class(mod) %in% c("lmerMod", "lm")) {
     tstat <- summary(mod)$coefficients["T.ijk","t value"]
   }
   if (class(mod) == "fastLm") {
@@ -322,29 +351,29 @@ get.tstat <- function(mod) {
 
 get.rawp <- function(mdat, design, n.j, J) {
 
-  if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
-    mdums = lapply(mdat, function(m) make.dummies(m, "S.jk", n.j, J))
-    mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
-    rawp = sapply(mods, function(x) get.pval(x))
-  }
-  else {
+  # if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
+  #   mdums = lapply(mdat, function(m) make.dummies(m, "S.jk", n.j, J))
+  #   mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
+  #   rawp = sapply(mods, function(x) get.pval(x))
+  # }
+  # else {
     mods = lapply(mdat, function(m) make.model(m, NULL, design))
     rawp = sapply(mods, function(x) get.pval(x))
-  }
+  # }
 
   return(rawp)
 }
 
 get.rawt <- function(mdat, design, n.j, J) {
 
-  if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
-    mdums = lapply(mdat, function(m) make.dummies(m, "S.jk", n.j, J))
-    mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
+  # if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
+  #   mdums = lapply(mdat, function(m) make.dummies(m, "S.jk", n.j, J))
+  #   mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
+  #   rawt = sapply(mods, function(x) get.tstat(x))
+  # } else {
+    mods = lapply(mdat, function(m) make.model(m, NULL, design))
     rawt = sapply(mods, function(x) get.tstat(x))
-  } else {
-    mods = lapply(mdat, function(m) make.model(m,NULL,design))
-    rawt = sapply(mods, function(x) get.tstat(x))
-  }
+  # }
 
   return(rawt)
 }
@@ -402,13 +431,13 @@ makelist.samp <-function(samp.obs, T.ijk) {
 #	Outputs: MxS matrix of adjusted p-values for a single proc 	            #
 # --------------------------------------------------------------------- #
 
-get.adjp <- function(proc, rawp, rawt, mdat, S.jk, sim.params.list, model.params.list, design, cl = NULL) {
+get.adjp <- function(proc, rawp, rawt, mdat, S.jk, S.k, sim.params.list, model.params.list, design, cl = NULL) {
 
   if(proc == "WY-SD" | proc == "WY-SS"){
     #print(paste0("working on ", proc, " with ", B, " permutations"))
     tw1 <- Sys.time()
     adjp.proc <- adjust_WY(
-      data = mdat, rawp = rawp, rawt = rawt, S.jk,
+      data = mdat, rawp = rawp, rawt = rawt, S.jk, S.k,
       proc = proc,
       blockby = 'S.jk',
       sim.params.list = sim.params.list,

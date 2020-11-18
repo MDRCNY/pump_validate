@@ -192,10 +192,16 @@ t.mean.H1 <- function(design, MDES, J, K, n.j, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
   } else if (design == 'simple_c2_2r')
   {
     se <- sqrt( (ICC.2 * (1 - R2.2))/p * (1-p) * J + (1 - ICC.2)*(1 - R2.1)/(p * (1-p) * J * n.j))
-  } else if (design == 'simple_c2_3r')
+  } else if (design == 'simple_c3_3r')
   {
-    se <- sqrt( ICC.2 * (1 - R2.3)/p * (1-p) * K + (ICC.2 * (1 - R2.2))/p*(1-p)*J*K  + (1 - ICC.2)*(1 - R2.1)/p*(1-p) * J * K * n.j )
-  } else
+    se <- sqrt( ICC.2 * (1 - R2.3)/p * (1-p) * K + (ICC.2 * (1 - R2.2))/p * (1-p) * J * K  + (1 - ICC.2) * (1 - R2.1)/p * (1-p) * J * K * n.j )
+  } else if (design == 'blocked_c2_3f')
+  {
+    se <- sqrt( ICC.2 * (1 - R2.2)/p * (1-p) * J + ((1 - ICC.2) * (1 - R2.1)) / p * (1-p) * J * n.j)
+  } else if (design == 'blocked_c2_3r')
+  {
+    se <- sqrt( ICC.3/K + ICC.2 * (1 - R2.2)/p * (1-p) * J * K + ((1 - ICC.2 - ICC.3) * (1 - R2.1))/p * (1-p) * J * K * n.j)
+  }else
   {
     stop(paste('Design not implemented:', design))
   }
@@ -234,9 +240,15 @@ calc.df <- function(design, J, K, n.j, numCovar.1, numCovar.2, numCovar.3) {
   } else if (design == 'simple_c2_2r')
   {
     df <- J - numCovar.1 -2
-  } else if (design == 'simple_c2_3r')
+  } else if (design == 'simple_c3_3r')
   {
     df <- K - numCovar.3 - 2
+  } else if (design == 'blocked_c2_3f')
+  {
+    df <- K * (J - 2) - numCovar.2 - 2
+  }else if (design == 'blocked_c2_3r')
+  {
+    df <- K - numCovar.3 - 1
   } else
   {
     stop(paste('Design not implemented:', design))
