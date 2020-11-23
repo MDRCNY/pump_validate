@@ -51,6 +51,7 @@ validate.mdes.ss = FALSE
 design <- "simple_c2_3r"
 user.params.list[['omega.2']] <- 0
 user.params.list[['omega.3']] <- 0
+user.params.list[['K']] <- 4
 ```
 
 # Power Validation

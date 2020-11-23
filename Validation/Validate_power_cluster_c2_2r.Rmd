@@ -47,9 +47,10 @@ params.default <- user.params.list
 validate.mdes.ss = FALSE
 ```
 
-```{r}
+```{r universal.params}
 design <- "simple_c2_2r"
 user.params.list[['omega.2']] <- 0
+user.params.list[['K']] <- 1
 ```
 
 # Power Validation

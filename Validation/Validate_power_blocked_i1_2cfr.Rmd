@@ -47,6 +47,10 @@ params.default <- user.params.list
 validate.mdes.ss = FALSE
 ```
 
+```{r universal.params}
+user.params.list[['K']] <- 1
+```
+
 
 # Power Validation
 
@@ -258,22 +262,6 @@ design <- "blocked_i1_2c"
 user.params.list[['omega.2']] <- 0
 blocked_i1_2c_mdes0.1250.00.0.00_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_i1_2c_mdes0.1250.00.0.00_power_plot)
-user.params.list[['ATE_ES']] <- params.default[['ATE_ES']]
-```
-
-```{r 2f.MDES0.12500}
-design <- "blocked_i1_2f"
-user.params.list[['omega.2']] <- 0
-blocked_i1_2f_mdes0.1250.00.0.00_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
-print(blocked_i1_2f_mdes0.1250.00.0.00_power_plot)
-user.params.list[['ATE_ES']] <- params.default[['ATE_ES']]
-```
-
-```{r 2r.MDES0.12500}
-design <- "blocked_i1_2r"
-user.params.list[['omega.2']] <- 0.5
-blocked_i1_2r_mdes0.1250.00.0.00_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
-print(blocked_i1_2r_mdes0.1250.00.0.00_power_plot)
 user.params.list[['ATE_ES']] <- params.default[['ATE_ES']]
 ```
 
