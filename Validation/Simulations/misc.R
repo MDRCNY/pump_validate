@@ -192,12 +192,16 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
     sim.params.list[['B']], "_B_",
     convert.vec.to.filename(user.params.list[['ATE_ES']]),"_ATES_",
     user.params.list[['J']], "_J_",
+    user.params.list[['K']], "_K_",
     user.params.list[['n.j']], "_nj_",
     convert.vec.to.filename(user.params.list[['rho.default']]), "_rho_",
     convert.vec.to.filename(user.params.list[['omega.2']]), "_omega2_",
+    convert.vec.to.filename(user.params.list[['omega.3']]), "_omega3_",
     convert.vec.to.filename(user.params.list[['R2.1']]),"_R21_",
     convert.vec.to.filename(user.params.list[['R2.2']]),"_R22_",
-    convert.vec.to.filename(user.params.list[['ICC.2']]),"_ICC2_"
+    convert.vec.to.filename(user.params.list[['R2.3']]),"_R23_",
+    convert.vec.to.filename(user.params.list[['ICC.2']]),"_ICC2_",
+    convert.vec.to.filename(user.params.list[['ICC.3']]),"_ICC3_"
   )
   return(params.file.base)
 }
@@ -237,9 +241,16 @@ gen.power.results.plot <- function(params.file.base, design)
 #'
 #' @return comparison.file
 
-find_file <- function(params.file.base, type)
+find_file <- function(params.file.base, type, intermediate = FALSE)
 {
-  results.files <- list.files(here::here("Validation/data"), full.names = TRUE)
+  if(intermediate)
+  {
+    results.files <- list.files(here::here("Validation/data/intermediate_results"), full.names = TRUE)
+  } else
+  {
+    results.files <- list.files(here::here("Validation/data"), full.names = TRUE)
+  }
+  
   results.files <- results.files[grep(params.file.base, results.files)]
   results.files <- results.files[grep('comparison', results.files)]
   # return file
