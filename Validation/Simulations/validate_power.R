@@ -58,9 +58,9 @@ source(here::here("Methods", "pump_power.R"))
 #' @export
 #'
 #' @examples
-validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE, gen.wide.results = FALSE) {
-
-  # design = "blocked_i1_2c"
+validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
+  
+  # design = "blocked_i1_2c"; design = 'blocked_i1_3r'
   
   # checks
   if(length(user.params.list[['ATE_ES']]) != user.params.list[['M']])
@@ -78,7 +78,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   {
     stop('Omega.2 should be 0 for constant effects')
   }
-    
+  
   t1 = Sys.time()
   
   # for saving out and reading in files based on simulation parameters
@@ -97,7 +97,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   
   if(overwrite | length(current.file) == 0)
   {
-
+    
     if(sim.params.list[['parallel']])
     {
       cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
@@ -110,14 +110,16 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     # Simulation Values #
     #####################
     
+    # search for simulation results
+    adjp.files = grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
+    
     # simulate and run power calculations
     adjp.filename = paste0(params.file.base, "adjp_", q, ".RDS")
-    if(sim.params.list[['runSim']]){
+    if( (overwrite | length(adjp.files) == 0) & sim.params.list[['runSim']]){
       message('Running simulation')
       adjp.proc <- est_power_sim(user.params.list, sim.params.list, design, cl)
       saveRDS(adjp.proc, file = paste0(intermediate.data.dir, adjp.filename))
     } else {
-      adjp.files = grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
       if(length(adjp.files) > 0)
       {
         message(paste('Reading in simulation adjp results.', length(adjp.files), 'results files found.'))
@@ -156,7 +158,9 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     # Power Up Values #
     ###################
     powerup.filename <- paste0(params.file.base, "powerup_results.RDS")
-    if(sim.params.list[['runPowerUp']])
+    powerup.file <- paste0(intermediate.data.dir, powerup.filename)
+    
+    if( (overwrite | !file.exists(powerup.file))  & sim.params.list[['runPowerUp']])
     {
       message('Running PowerUp')
       if(design == 'blocked_i1_2c')
@@ -189,14 +193,32 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          rho2 = user.params.list[['ICC.2']][1],
-          omega2 = user.params.list[['omega.2']],
           p = sim.params.list[['p.j']],
           g2 = 1,
+          rho2 = user.params.list[['ICC.2']][1],
+          omega2 = user.params.list[['omega.2']],
           r21 = user.params.list[['R2.1']][1],
           r2t2 = 0,
           n = user.params.list[['n.j']],
           J = user.params.list[['J']]
+        )
+      } else if(design == 'blocked_i1_3r')
+      {
+        powerup_results <- power.bira3r1(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['p.j']],
+          g3 = 1,
+          rho2 = user.params.list[['ICC.2']][1],
+          rho3 = user.params.list[['ICC.3']][1],
+          omega2 = user.params.list[['omega.2']],
+          omega3 = user.params.list[['omega.3']],
+          r21 = user.params.list[['R2.1']][1],
+          r2t2 = 0, r2t3 = 0,
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']],
+          K = user.params.list[['K']]
         )
       } else if(design == c('simple_c2_2r'))
       {
@@ -204,37 +226,94 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          g2 = 1,
           p = sim.params.list[['p.j']],
+          g2 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           r21 = user.params.list[['R2.1']][1],
           r22 = user.params.list[['R2.2']][1],
           n = user.params.list[['n.j']],
           J = user.params.list[['J']]
-          # mc? nsims? ndraws?
+        )
+      } else if(design == c('simple_c3_3r'))
+      {
+        powerup_results <- power.cra3r3(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['p.j']],
+          g3 = 1,
+          rho2 = user.params.list[['ICC.2']][1],
+          rho3 = user.params.list[['ICC.3']][1],
+          r21 = user.params.list[['R2.1']][1],
+          r22 = user.params.list[['R2.2']][1],
+          r23 = user.params.list[['R2.3']][1],
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']],
+          K = user.params.list[['K']]
+        )
+      } else if(design == c('blocked_c2_3f'))
+      {
+        powerup_results <- power.bcra3f2(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['p.j']],
+          g2 = 1,
+          rho2 = user.params.list[['ICC.2']][1],
+          r21 = user.params.list[['R2.1']][1],
+          r22 = user.params.list[['R2.2']][1],
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']],
+          K = user.params.list[['K']]
+        )
+      } else if(design == c('blocked_c2_3r'))
+      {
+        powerup_results <- power.bcra3r2(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['p.j']],
+          g3 = 1,
+          rho2 = user.params.list[['ICC.2']][1],
+          rho3 = user.params.list[['ICC.3']][1],
+          omega3 = user.params.list[['omega.3']],
+          r21 = user.params.list[['R2.1']][1],
+          r22 = user.params.list[['R2.2']][1],
+          r2t3 = 0,
+          n = user.params.list[['n.j']],
+          J = user.params.list[['J']],
+          K = user.params.list[['K']]
         )
       } else {
         stop(paste('Unknown design:', design)) 
       }
       # Power_Up_Standard_Error
-      powerup_results$se       <- powerup_results$parms$es/powerup_results$ncp
-      powerup_results$lower_ci <- powerup_results$power - (1.96 * powerup_results$se)
-      powerup_results$upper_ci <- powerup_results$power + (1.96 * powerup_results$se)
+      # powerup_results$se       <- powerup_results$parms$es/powerup_results$ncp
+      # powerup_results$lower_ci <- powerup_results$power - (1.96 * powerup_results$se)
+      # powerup_results$upper_ci <- powerup_results$power + (1.96 * powerup_results$se)
       
       powerup_results <- data.frame(
         MTP = 'rawp',
         variable = 'D1indiv',
         method = 'pup',
-        value = c(powerup_results$power, powerup_results$lower_ci, powerup_results$upper_ci),
-        value.type = c('adjusted_power', 'ci_lower',  'ci_upper')
+        value = powerup_results$power,
+        value.type = 'adjusted_power'
       )
-      saveRDS(powerup_results, file = paste0(intermediate.data.dir, powerup.filename))
+      
+      # powerup_results <- data.frame(
+      #   MTP = 'rawp',
+      #   variable = 'D1indiv',
+      #   method = 'pup',
+      #   value = c(powerup_results$power, powerup_results$lower_ci, powerup_results$upper_ci),
+      #   value.type = c('adjusted_power', 'ci_lower',  'ci_upper')
+      # )
+      saveRDS(powerup_results, file = powerup.file)
     } else
     {
-      if(file.exists(paste0(intermediate.data.dir, powerup.filename)))
+      if(file.exists(powerup.file))
       {
         message('Reading in PowerUp results')
-        powerup_results <- readRDS(file = paste0(intermediate.data.dir, powerup.filename))
+        powerup_results <- readRDS(file = powerup.file)
       } else
       {
         warning(paste('PowerUp results not run, no PowerUp results found for parameters:', params.file.base))
@@ -247,63 +326,68 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     # PUMP methods value #
     ######################
     pump.filename <- paste0(params.file.base, "pump_results.RDS")
-    if(sim.params.list[['runPump']]){
+    pump.file <- paste0(intermediate.data.dir, pump.filename)
+    
+    if((overwrite | !file.exists(pump.file)) & sim.params.list[['runPump']]){
       
       message('Running PUMP')
       
       iterator <- 0
-      pum_combined_results <- NULL
+      pump_combined_results <- NULL
       
       for (MTP in sim.params.list[['procs']]){
-        pum_results_iter <- pump_power(
+        pump_results_iter <- pump_power(
           design = design,
           M = user.params.list[['M']], MTP = MTP,
           MDES = user.params.list[['ATE_ES']],
-          J = user.params.list[['J']], n.j = user.params.list[['n.j']],
+          J = user.params.list[['J']], K = user.params.list[['K']],
+          n.j = user.params.list[['n.j']],
           p = sim.params.list[['p.j']],
-          alpha = sim.params.list[['alpha']], numCovar.1 = 1, numCovar.2 = 1,
-          R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']],
-          ICC.2 = user.params.list[['ICC.2']],
-          rho = user.params.list[['rho.default']], omega.2 = user.params.list[['omega.2']],
+          alpha = sim.params.list[['alpha']],
+          numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+          R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
+          ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
+          rho = user.params.list[['rho.default']],
+          omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
           tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
           cl = cl
         )
-        pum_results_iter <- data.frame(pum_results_iter)
+        pump_results_iter <- data.frame(pump_results_iter)
         if (iterator == 0) {
-          pum_results <- pum_results_iter
+          pump_results <- pump_results_iter
         } else {
-          pum_results <- dplyr::bind_rows(pum_results, pum_results_iter[2,])
+          pump_results <- dplyr::bind_rows(pump_results, pump_results_iter[2,])
         }
         iterator = iterator + 1
       }
       # adding rownames to the pum_combined_results table
-      rownames(pum_results) <- c("rawp", sim.params.list[['procs']])
-      pum_results_table <- pum_results
+      rownames(pump_results) <- c("rawp", sim.params.list[['procs']])
+      pump_results_table <- pump_results
       
       # pum_results_table <- data.frame(pum_results[,c('indiv', 'min1', 'min2', 'complete')])
-      pum_results_table$MTP <- rownames(pum_results_table)
-      pum_results <- melt(pum_results_table, id.vars = 'MTP')
-      pum_results$method = 'pum'
-      pum_results$value.type = 'adjusted_power'
+      pump_results_table$MTP <- rownames(pump_results_table)
+      pump_results <- melt(pump_results_table, id.vars = 'MTP')
+      pump_results$method = 'pum'
+      pump_results$value.type = 'adjusted_power'
       
-      saveRDS(pum_results, file = paste0(intermediate.data.dir, pump.filename))
+      saveRDS(pump_results, file = pump.file)
     } else {
-      if(file.exists(paste0(intermediate.data.dir, pump.filename)))
+      if(file.exists(pump.file))
       {
         message('Reading in PUMP results')
-        pum_results <- readRDS(file = paste0(intermediate.data.dir, pump.filename))
+        pump_results <- readRDS(pump.file)
       } else
       {
         warning(paste('PUMP results not run, no PUMP found for parameters:', params.file.base))
-        pum_results <- NULL
+        pump_results <- NULL
       }
-
+      
     }
-  
-    if(!is.null(sim_results) | !is.null(powerup_results) | !is.null(sim_results))
+    
+    if(!is.null(sim_results) | !is.null(powerup_results) | !is.null(pump_results))
     {
       compare.filename <- paste0(params.file.base, "comparison_power_results.RDS")
-      compare_results_long <- data.frame(rbind(pum_results, powerup_results, sim_results))
+      compare_results_long <- data.frame(rbind(pump_results, powerup_results, sim_results))
       colnames(compare_results_long) <- c('MTP', 'power_type', 'value', 'method', 'value.type')
       compare_results <- compare_results_long[,c('MTP', 'power_type','method', 'value.type', 'value')]
       saveRDS(compare_results, file = paste(data.dir, compare.filename, sep = "/"))
@@ -311,7 +395,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     {
       compare_results <- NULL
     }
-
+    
     if(sim.params.list[['parallel']])
     {
       parallel::stopCluster(cl)
@@ -319,7 +403,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     
     t2 = Sys.time()
     message(paste('Total time:', difftime(t2, t1, units = 'mins'), 'minutes'))
-
+    
     return(compare_results)
   } else
   {
@@ -506,14 +590,15 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
   {
     print('Validation already completed.')
   }
-
+  
 } # validate_sample
 
 ### DEBUG
 if(FALSE)
 {
-  # design = "blocked_i1_2c";
-  design = 'simple_c2_2r'
+  design = "blocked_i1_2c";
+  # design = 'simple_c2_2r';
+  # design = 'simple_c3_3r';
   MTP = 'Bonferroni';
   # power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
@@ -527,10 +612,13 @@ if(FALSE)
   numCovar.1 = 1; numCovar.2 = 1;
   R2.1 = user.params.list[['R2.1']];
   R2.2 = user.params.list[['R2.2']];
+  R2.3 = user.params.list[['R2.3']];
   ICC.2 = user.params.list[['ICC.2']];
+  ICC.3 = user.params.list[['ICC.3']];
   mod.type = "constant";
   rho = user.params.list[['rho.default']];
-  omega = user.params.list[['omega.2']];
+  omega.2 = user.params.list[['omega.2']];
+  omega.3 = user.params.list[['omega.3']];
   tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
   parallel = sim.params.list[['parallel']]; ncl = sim.params.list[['ncl']];
   max.iter = sim.params.list[['max.iter']];

@@ -248,10 +248,10 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   ID = data.frame( S.jk = S.jk, S.k = S.k )
   
   if ( has_level_three ) {
-    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = D.k, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
+    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = D.k,  X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
   } else {
     ID$S.k <- NULL
-    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
+    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = NULL, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
   }
 }
 
