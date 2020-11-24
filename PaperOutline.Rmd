@@ -1,0 +1,3 @@
+Power Under Multiplicity Project (PUMP): An R package for estimating statistical power, minimum detectable effect sizes (MDES's) and sample sizes when adjusting for multiple hypothesis tests
+Draft outline
+
