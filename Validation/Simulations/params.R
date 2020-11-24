@@ -21,12 +21,12 @@ source(here::here("Validation/Simulations", "misc.R"))
 sim.params.list <- list(
   S = 2                  # Number of samples for Monte Carlo Simulation
   , Q = 1               # Number of times entire simulation is repeated, so total iterations = S * Q
-  , B = 2             # Number of samples for WestFall-Young. The equivalent is snum in our new method.
+  , B = 2           # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = TRUE           # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05          # Significance level
   , MoE = 0.05            # Margin of error
-  , p.j = 0.5             # Binomial assignment probability
-  , tnum = 10000          # Number of test statistics (samples) for all procedures other than Westfall-Young
+  , Tbar = 0.5             # Binomial assignment probability
+  , tnum = 100          # Number of test statistics (samples) for all procedures other than Westfall-Young
   , parallel = TRUE       # parallelize within each monte carlo iteration
   , ncl = 2               # Number of computer clusters (max on RStudio Server is 16)
   , max.iter = 100        # maximum number of iterations for MDES or sample size calculations
@@ -48,9 +48,9 @@ sim.params.list <- list(
 
 ### school and district assignments
 # N-length vector of individual school assignments i.e. (1,1,2,2,3,3)
-# S.jk <-
+# S.ij <-
 # N-length vector of individual district assignments i.e. (1,1,1,2,2,2)
-# S.k <-
+# S.ik <-
 
 ### covariates
 # rho.D <- 
@@ -79,11 +79,11 @@ default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
-  , K = 1                                 # number of districts (still required for two-level model)
-  , n.j = 75                              # number of individuals per school
+  , K = 1                                 # number of districts (for two-level model, set K = 1)
+  , nbar = 50                              # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
-  , S.jk = NULL                           # N-length vector of indiv school assignments (optional)
-  , S.k = NULL                            # N-length vector of indiv district assignments (optional)
+  , S.ij = NULL                           # N-length vector of indiv school assignments (optional)
+  , S.ik = NULL                           # N-length vector of indiv district assignments (optional)
   ################################################## grand mean otucome and impact
   , Xi0 = 0                               # scalar grand mean outcome under no treatment
   , ATE_ES = rep(0.125, M)                # minimum detectable effect size      

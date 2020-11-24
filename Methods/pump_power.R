@@ -166,7 +166,7 @@ adjust.allsamps.WYSD <- function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl = 
 #' @param MDES  a vector of length M corresponding to the minimum detectable effect sizes (MDESs) for the M outcomes
 #' @param J the number of schools
 #' @param K the number of districts
-#' @param n.j the harmonic means of the number of units per block
+#' @param nbar the harmonic means of the number of units per block
 #' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
 #' @param R2.2 a vector of length M corresponding to R^2 for Level-2 covariates for M outcomes
 #' @param R2.3 a vector of length M corresponding to R^2 for Level-3 covariates for M outcomes
@@ -174,33 +174,33 @@ adjust.allsamps.WYSD <- function(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl = 
 #' @param ICC.3 a vector of length M of district intraclass correlation	
 #' @param omega.2 ratio of school effect size variability to random effects variability
 #' @param omega.3 ratio of district effect size variability to random effects variability
-#' @param p the proportion of test statistics assigned to treatment within each block group
+#' @param Tbar the proportion of test statistics assigned to treatment within each block group
 #'
 #' @return mean of the test statistics under the joint alternative hypothesis
 
-t.mean.H1 <- function(design, MDES, J, K, n.j, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3, p) {
+t.mean.H1 <- function(design, MDES, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3, Tbar) {
   
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    se <- sqrt(1 - R2.1) / sqrt(p * (1-p) * J * n.j) 
+    se <- sqrt(1 - R2.1) / sqrt(Tbar * (1-Tbar) * J * nbar) 
   } else if (design == 'blocked_i1_2r')
   {
-    se <- sqrt( (ICC.2 * omega.2)/J + ((1 - ICC.2) * (1 - R2.1))/(p * (1-p) * J * n.j) )
+    se <- sqrt( (ICC.2 * omega.2)/J + ((1 - ICC.2) * (1 - R2.1))/(Tbar * (1-Tbar) * J * nbar) )
   } else if (design == 'blocked_i1_3r')
   {
-    se <- sqrt( (ICC.3 * omega.3)/K + (ICC.2 * omega.2)/J*K + ((1 - ICC.2) * (1 - R2.1))/(p * (1-p) * J * K * n.j) )
+    se <- sqrt( (ICC.3 * omega.3)/K + (ICC.2 * omega.2)/J*K + ((1 - ICC.2) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
   } else if (design == 'simple_c2_2r')
   {
-    se <- sqrt( (ICC.2 * (1 - R2.2))/p * (1-p) * J + (1 - ICC.2)*(1 - R2.1)/(p * (1-p) * J * n.j))
+    se <- sqrt( (ICC.2 * (1 - R2.2))/Tbar * (1-Tbar) * J + (1 - ICC.2)*(1 - R2.1)/(Tbar * (1-Tbar) * J * nbar))
   } else if (design == 'simple_c3_3r')
   {
-    se <- sqrt( ICC.2 * (1 - R2.3)/p * (1-p) * K + (ICC.2 * (1 - R2.2))/p * (1-p) * J * K  + (1 - ICC.2) * (1 - R2.1)/p * (1-p) * J * K * n.j )
+    se <- sqrt( ICC.2 * (1 - R2.3)/Tbar * (1-Tbar) * K + (ICC.2 * (1 - R2.2))/Tbar * (1-Tbar) * J * K  + (1 - ICC.2) * (1 - R2.1)/Tbar * (1-Tbar) * J * K * nbar )
   } else if (design == 'blocked_c2_3f')
   {
-    se <- sqrt( ICC.2 * (1 - R2.2)/p * (1-p) * J + ((1 - ICC.2) * (1 - R2.1)) / p * (1-p) * J * n.j)
+    se <- sqrt( ICC.2 * (1 - R2.2)/Tbar * (1-Tbar) * J + ((1 - ICC.2) * (1 - R2.1)) / Tbar * (1-Tbar) * J * nbar)
   } else if (design == 'blocked_c2_3r')
   {
-    se <- sqrt( ICC.3/K + ICC.2 * (1 - R2.2)/p * (1-p) * J * K + ((1 - ICC.2 - ICC.3) * (1 - R2.1))/p * (1-p) * J * K * n.j)
+    se <- sqrt( ICC.3/K + ICC.2 * (1 - R2.2)/Tbar * (1-Tbar) * J * K + ((1 - ICC.2 - ICC.3) * (1 - R2.1))/Tbar * (1-Tbar) * J * K * nbar)
   }else
   {
     stop(paste('Design not implemented:', design))
@@ -216,21 +216,21 @@ t.mean.H1 <- function(design, MDES, J, K, n.j, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 #' @param design RCT design (see list/naming convention)
 #' @param J the number of schools
 #' @param K the number of districts
-#' @param n.j units per block
+#' @param nbar units per block
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
 #' @param numCovar.2 number of Level 2 baseline covariates
 #' @param numCovar.3 number of Level 3 baseline covariates
 #'
 #' @return the degree of freedom
 
-calc.df <- function(design, J, K, n.j, numCovar.1, numCovar.2, numCovar.3) {
+calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
   
   if(design == 'blocked_i1_2c')
   {
-    df <- J*n.j - numCovar.1 - J - 1
+    df <- J*nbar - numCovar.1 - J - 1
   } else if (design == 'blocked_i1_2f')
   {
-    df <- J*n.j - numCovar.1 - 2*J
+    df <- J*nbar - numCovar.1 - 2*J
   } else if (design == 'blocked_i1_2r')
   {
     df <- J - numCovar.1 - 1
@@ -266,8 +266,8 @@ calc.df <- function(design, J, K, n.j, numCovar.1, numCovar.2, numCovar.3) {
 #' @param M the number of hypothesis tests (outcomes)
 #' @param MDES a vector of length M corresponding to the MDESs for the M outcomes
 #' @param J the number of blocks
-#' @param n.j the harmonic mean of the number of units per block
-#' @param p the proportion of samples that are assigned to the treatment
+#' @param nbar the harmonic mean of the number of units per block
+#' @param Tbar the proportion of samples that are assigned to the treatment
 #' @param alpha the family wise error rate (FWER)
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
 #' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
@@ -293,7 +293,7 @@ calc.df <- function(design, J, K, n.j, numCovar.1, numCovar.2, numCovar.3) {
 #'
 #'
 pump_power <- function(
-  design, M, MTP, MDES, J, K = 1, n.j, p, alpha, numCovar.1 = 0, numCovar.2 = 0,
+  design, M, MTP, MDES, J, K = 1, nbar, Tbar, alpha, numCovar.1 = 0, numCovar.2 = 0,
   numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
   mod.type, rho, omega.2, omega.3 = NULL,
   tnum = 10000, snum = 1000, cl = NULL, updateProgress = NULL
@@ -309,8 +309,8 @@ pump_power <- function(
   diag(sigma) <- 1
   
   # compute Q(m) for all false nulls. We are calculating the test statistics for when the alternative hypothesis is true.
-  t.shift <- t.mean.H1(design, MDES, J, K, n.j, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3, p)
-  t.df <- calc.df(design, J, K, n.j, numCovar.1, numCovar.2, numCovar.3)
+  t.shift <- t.mean.H1(design, MDES, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3, Tbar)
+  t.df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
 
   t.shift.mat <- t(matrix(rep(t.shift, tnum), M, tnum)) # repeating shift.beta on every row
   
@@ -476,12 +476,12 @@ midpoint<-function(lower,upper) {
 #'
 #' @param M the number of hypothesis tests (outcomes)
 #' @param J the number of blocks
-#' @param n.j the harmonic mean of the number of units per block
+#' @param nbar the harmonic mean of the number of units per block
 #' @param power required statistical power for the experiment
 #' @param power.definition definition of statistical power from individual, d-minimal to complete power
 #' @param MTP type of multiple testing procedure
 #' @param marginError the margin of error for MDES estimation based on targeted power value
-#' @param p the proportion of samples that are assigned to the treatment
+#' @param Tbar the proportion of samples that are assigned to the treatment
 #' @param alpha the family wise error rate (FWER)
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
 #' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
@@ -501,8 +501,8 @@ midpoint<-function(lower,upper) {
 #' @export
 #'
 
-mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginError,
-                              p, alpha, numCovar.1, numCovar.2 = 0, R2.1, R2.2, ICC,
+mdes_blocked_i1_2c <-function(M, J, nbar, power, power.definition, MTP, marginError,
+                              Tbar, alpha, numCovar.1, numCovar.2 = 0, R2.1, R2.2, ICC,
                               mod.type, sigma = 0, rho = 0.99,omega,
                               tnum = 10000, snum = 1000, cl = NULL,
                               max.iter = 20, updateProgress = NULL) {
@@ -525,8 +525,8 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
   # } # end of if
   
   # Compute Q(m)
-  Q.m <- sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
-  t.df <- df(J, n.j, numCovar.1)
+  Q.m <- sqrt( (1-R2.1) / (Tbar*(1-Tbar)*J*nbar) )
+  t.df <- df(J, nbar, numCovar.1)
   
   # For raw and BF, compute critical values
   crit.alpha <- qt(p=(1-alpha/2),df=t.df)
@@ -608,8 +608,8 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
     } # if the function is being called, run the progress bar
     
     # Function to calculate the target power to check in with the pre-specified power in the loop
-    runpower <- pump_power(M = M, MDES = rep(try.MDES, M), MTP = MTP, J = J, n.j = n.j,rho = rho,
-                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2 = 0,
+    runpower <- pump_power(M = M, MDES = rep(try.MDES, M), MTP = MTP, J = J, nbar = nbar, rho = rho,
+                                    Tbar = Tbar, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2 = 0,
                                     R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                     mod.type = mod.type, sigma = sigma, omega = omega,
                                     tnum = tnum, snum = snum, cl = cl)
@@ -666,16 +666,16 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
 #' This is a Helper function for getting Sample Size when no adjustments has been made to the test statistics.
 #' The function starts with PowerUp package function mrss.bira2cl but that function seems to have a bug -
 #' Only works if we pass in numeric values and not if we pass in objects that hold those values.
-#' Additionally, mrss.bira2cl only computes J, not n.j.
+#' Additionally, mrss.bira2cl only computes J, not nbar.
 #'
 #' @param J the number of blocks
-#' @param n.j the harmonic mean of the number of units per block
-#' @param J0 starting values for J0 to look for optimal J and n.j
-#' @param n.j0 starting values for n.j0 to look for optimal J and n.j
-#' @param whichSS which type of sample size to optimize for. J or n.j
+#' @param nbar the harmonic mean of the number of units per block
+#' @param J0 starting values for J0 to look for optimal J and nbar
+#' @param nbar0 starting values for nbar0 to look for optimal J and nbar
+#' @param whichSS which type of sample size to optimize for. J or nbar
 #' @param MDES minimum detectable effect size
 #' @param power required statistical power for the experiment
-#' @param p the proportion of samples that are assigned to the treatment
+#' @param Tbar the proportion of samples that are assigned to the treatment
 #' @param alpha the family wise error rate (FWER)
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
 #' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
@@ -691,8 +691,8 @@ mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginErr
 #' @return raw sample returns
 #' @export
 
-sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
-                                     whichSS, MDES, power, p,
+sample_blocked_i1_2c_raw <- function(J, nbar, J0 = 10, nbar0 = 10,
+                                     whichSS, MDES, power, Tbar,
                                      alpha, numCovar.1, numCovar.2 = 0,
                                      R2.1, R2.2, ICC, mod.type, sigma,
                                      omega, two.tailed = TRUE, max.iter = 100, tol = 0.1) {
@@ -704,10 +704,10 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
   while (i <= max.iter & conv == FALSE) {
     # checking which type of sample we are estimating
     if (whichSS =="J"){
-      df <- J0 * (n.j - 1) - numCovar.1 - 1 # degree of freedom calculation
+      df <- J0 * (nbar - 1) - numCovar.1 - 1 # degree of freedom calculation
     }
-    if (whichSS =="n.j") {
-      df <- J * (n.j0 - 1) - numCovar.1 - 1
+    if (whichSS =="nbar") {
+      df <- J * (nbar0 - 1) - numCovar.1 - 1
     }
     
     if (df < 0 | is.infinite(df)) {
@@ -723,7 +723,7 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
     
     if (whichSS=="J") {
       
-      J1 <- (MT/MDES)^2 * ((1 - R2.1)/(p * (1 - p) * n.j))
+      J1 <- (MT/MDES)^2 * ((1 - R2.1)/(Tbar * (1 - Tbar) * nbar))
       
       if (abs(J1 - J0) < tol) {
         
@@ -731,13 +731,13 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
       }
       J0 <- (J1 + J0)/2
     }
-    if (whichSS=="n.j") {
-      n.j1 <- (MT/MDES)^2 * ((1 - R2.1)/(p * (1 - p) * J))
+    if (whichSS=="nbar") {
+      nbar1 <- (MT/MDES)^2 * ((1 - R2.1)/(Tbar * (1 - Tbar) * J))
       
-      if (abs(n.j1 - n.j0) < tol) {
+      if (abs(nbar1 - nbar0) < tol) {
         conv <- TRUE
       }
-      n.j0 <- (n.j1 + n.j0)/2
+      nbar0 <- (nbar1 + nbar0)/2
     }
     
     i <- i + 1
@@ -746,9 +746,9 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
     J <- ifelse(df > 0, round(J0), NA)
     return(ceiling(J))
   }
-  if (whichSS=="n.j") {
-    n.j <- ifelse(df > 0, round(n.j0), NA)
-    return(ceiling(n.j))
+  if (whichSS=="nbar") {
+    nbar <- ifelse(df > 0, round(nbar0), NA)
+    return(ceiling(nbar))
   }
   
 }
@@ -758,17 +758,17 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
 #' Sample Function
 #'
 #' @param M the number of hypothesis tests (outcomes)
-#' @param typesample the type of the number of sample we would like to estimate: either block J or n.j (harmonic mean within block. For Shiny use)
+#' @param typesample the type of the number of sample we would like to estimate: either block J or nbar (harmonic mean within block. For Shiny use)
 #' @param J the number of blocks (set to NULL if you do not want to estimate this one)
-#' @param n.j the harmonic mean of blocks (set to NULL if you do not want to estimate this one)
+#' @param nbar the harmonic mean of blocks (set to NULL if you do not want to estimate this one)
 #' @param J0 the initial value for the sample number of blocks. The default is set at 10.
-#' @param n.j0 the initial value for the harmonic mean for the number of samples within block. The default is set at 10.
+#' @param nbar0 the initial value for the harmonic mean for the number of samples within block. The default is set at 10.
 #' @param MDES minimum detectable effet size
 #' @param power required statistical power for the experiment
 #' @param power.definition definition of statistical power from individual, d-minimal to complete power
 #' @param MTP type of multiple testing procedure in use from Bonferroni, Benjamini-Hocheberg, Holms, Westfall-Young Single Step, Westfall-Young Step Down
 #' @param marginError the margin of error for MDES estimation based on targeted power value
-#' @param p the proportion of samples that are assigned to the treatment
+#' @param Tbar the proportion of samples that are assigned to the treatment
 #' @param alpha the family wise error rate (FWER)
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
 #' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
@@ -788,9 +788,9 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
 #' @return Sample number returns
 #' @export
 
-sample_blocked_i1_2c <- function(M, typesample, J, n.j,
-                                 J0 = 10, n.j0 = 10, MDES, power, power.definition,
-                                 MTP, marginError,p, alpha, numCovar.1,
+sample_blocked_i1_2c <- function(M, typesample, J, nbar,
+                                 J0 = 10, nbar0 = 10, MDES, power, power.definition,
+                                 MTP, marginError, Tbar, alpha, numCovar.1,
                                  numCovar.2 = 0, R2.1, R2.2, ICC, mod.type,
                                  sigma = 0, rho = 0.99, omega, tnum = 10000,
                                  snum = 2, cl = NULL,
@@ -803,24 +803,24 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
   sigma <- matrix(data = rho, nrow = M, ncol = M)
   diag(sigma) <- 1
   
-  # indicator for which sample to compute. J is for blocks. n.j is for harmonic mean of samples within block
+  # indicator for which sample to compute. J is for blocks. nbar is for harmonic mean of samples within block
   if(typesample == "J"){
     
     doJ <- TRUE
-    don.j <- FALSE
+    donbar <- FALSE
     J = NULL
-    n.j0 = NULL
+    nbar0 = NULL
     
-  } else if (typesample == "n.j") {
+  } else if (typesample == "nbar") {
     
-    don.j <- TRUE
+    donbar <- TRUE
     doJ <- FALSE
-    n.j = NULL
+    nbar = NULL
     J0 = NULL
     
   } # Sample within block
   
-  ifelse(doJ,whichSS<-"J",whichSS<-"n.j")
+  ifelse(doJ,whichSS<-"J",whichSS<-"nbar")
   
   # Progress Message for the Type of Sample we are estimating, the type of power and the targeted power value
   if(is.function(updateProgress)){
@@ -829,26 +829,26 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
   } # For printing via update progress function
   
   
-  # Compute J or n.j for raw and BF SS for INDIVIDUAL POWER. We are estimating bounds like we estimated MDES bounds.
+  # Compute J or nbar for raw and BF SS for INDIVIDUAL POWER. We are estimating bounds like we estimated MDES bounds.
   # for now assuming only two tailed tests
   if (doJ) {
     J.raw <- sample_blocked_i1_2c_raw(
-      J = J, n.j, J0 = J0, n.j0 = n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2 = 0,
+      J = J, nbar, J0 = J0, nbar0 = nbar0, whichSS, MDES, power, Tbar, alpha, numCovar.1, numCovar.2 = 0,
       R2.1, R2.2, ICC, mod.type, sigma, omega, max.iter = 100, tol = 0.1
     )
     J.BF <- sample_blocked_i1_2c_raw(
-      J = J, n.j, J0 = J0, n.j0 = n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2 = 0,
+      J = J, nbar, J0 = J0, nbar0 = nbar0, whichSS, MDES, power, Tbar, alpha/M, numCovar.1, numCovar.2 = 0,
       R2.1, R2.2, ICC, mod.type, sigma, omega, max.iter = 100, tol = 0.1
     )
   }
   
-  if (don.j) {
-    n.j.raw <- sample_blocked_i1_2c_raw(
-      J, n.j = n.j, J0 = J0, n.j0 = n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2 = 0,
+  if (donbar) {
+    nbar.raw <- sample_blocked_i1_2c_raw(
+      J, nbar = nbar, J0 = J0, nbar0 = nbar0, whichSS, MDES, power, Tbar, alpha, numCovar.1, numCovar.2 = 0,
       R2.1, R2.2, ICC, mod.type, sigma, omega, max.iter = 100, tol = 0.1
     )
-    n.j.BF <- sample_blocked_i1_2c_raw(
-      J, n.j = n.j, J0 = J0, n.j0 = n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2 = 0,
+    nbar.BF <- sample_blocked_i1_2c_raw(
+      J, nbar = nbar, J0 = J0, nbar0 = nbar0, whichSS, MDES, power, Tbar, alpha/M, numCovar.1, numCovar.2 = 0,
       R2.1, R2.2, ICC, mod.type, sigma, omega, max.iter = 100, tol = 0.1
     )
   }
@@ -859,9 +859,9 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     ss.BF <- J.BF
   }
   
-  if (don.j) {
-    ss.raw <- n.j.raw
-    ss.BF <- n.j.BF
+  if (donbar) {
+    ss.raw <- nbar.raw
+    ss.BF <- nbar.BF
   }
   
   ### INDIVIDUAL POWER for Raw and BF ###
@@ -896,7 +896,7 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
   # Like the MDES calculation, the sample size would be between raw and Bonferroni. There is no adjustment and there is very
   # conservative adjustment
   
-  # For individual power, other J's or n.j's will be between raw and BF, so make starting value the midpoint
+  # For individual power, other J's or nbar's will be between raw and BF, so make starting value the midpoint
   if (MTP %in% c("Holm","BH","WY-SS","WY-SD") & power.definition == "indiv") {
     
     lowhigh <- c(ss.raw,ss.BF)
@@ -935,20 +935,20 @@ sample_blocked_i1_2c <- function(M, typesample, J, n.j,
     
     if (doJ) {
       
-      runpower <- pump_power(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss, n.j = n.j,
-                                      p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
-                                      R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
-                                      mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
-                                      tnum = tnum, snum = snum, cl = cl)
+      runpower <- pump_power(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss, nbar = nbar,
+                             Tbar = Tbar, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
+                             R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
+                             mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
+                             tnum = tnum, snum = snum, cl = cl)
     }
     
-    if (don.j) {
+    if (donbar) {
       
-      runpower <- pump_power(M, MDES = rep(MDES, M), MTP = MTP, J = J, n.j = try.ss,
-                                      p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
-                                      R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
-                                      mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
-                                      tnum = tnum, snum = snum, cl = cl)
+      runpower <- pump_power(M, MDES = rep(MDES, M), MTP = MTP, J = J, nbar = try.ss,
+                             Tbar = Tbar, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
+                             R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
+                             mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
+                             tnum = tnum, snum = snum, cl = cl)
       
     }
     
