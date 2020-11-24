@@ -1,3 +1,37 @@
 Power Under Multiplicity Project (PUMP): An R package for estimating statistical power, minimum detectable effect sizes (MDES's) and sample sizes when adjusting for multiple hypothesis tests
 Draft outline
 
+# Introduction
+* Available software for estimating statistical power, MDES and sample sizes for RCT's in education research
+* Brief summary of the multiple testing problem
+* Common MTPs in education research and their impact on power, MDES's and sample sizes
+* Important contributions of the PUMP package
+
+# Estimating Power, MDES's and Sample Sizes in Studies of Impacts on Multiple Outcomes 
+* Approach for estimating statistical power
+  + General strategy
+  + Specifications for each RCT design
+* Approach for estimating MDES's and sample size
+* Modeling empirical findings for faster estimation
+* Validation (how much/what should we present?)
+
+# Guidance for practice (or after software section below?)
+* Considerations for study design
+* Considerations for specifying assumptions (or do we go through this when discussing inputs for R functions)
+
+# Software
+* Map of PUMP functions (functions/naming convention for each design)
+* Inputs 
+* Outputs
+ + for shiny, we will create plots - better to make them part of the package?
+* To what extent should we cover Shiny app in the paper? 
+
+# Example(s)
+* maybe one blocked individual RCT and one cluster RCT?
+* maybe one is scenario for designing study and one is scenario for post-hoc power analysis?
+
+# Conclusion and Next Steps
+
+
+
+
