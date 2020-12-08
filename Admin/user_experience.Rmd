@@ -19,9 +19,17 @@ knitr::opts_chunk$set(echo = TRUE)
 - For simulations, interval bars are based on normal approximation to binomial, with conservative standard error S/0.25
 - Error bars for PowerUP?
 - Standard error for PowerUP??
+- Make default ICC 0.2
+- Check that ICC.2 + ICC.3 sum to less than 1
 
 ```
 powerup_results$se       <- powerup_results$parms$es/powerup_results$ncp
+```
+
+
+```
+    # For other scenarios, set low-high intervals and compute midpoint
+    # ?What other scenarios are we talking about?
 ```
 
 # UI notes
