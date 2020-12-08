@@ -169,10 +169,10 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          p = sim.params.list[['p.j']],
+          p = sim.params.list[['Tbar']],
           g1 = 1,
           r21 = user.params.list[['R2.1']][1],
-          n = user.params.list[['n.j']],
+          n = user.params.list[['nbar']],
           J = user.params.list[['J']]
         )
       } else if(design == 'blocked_i1_2f')
@@ -181,10 +181,10 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          p = sim.params.list[['p.j']],
+          p = sim.params.list[['Tbar']],
           g1 = 1,
           r21 = user.params.list[['R2.1']][1],
-          n = user.params.list[['n.j']],
+          n = user.params.list[['nbar']],
           J = user.params.list[['J']]
         )
       } else if(design == 'blocked_i1_2r')
@@ -193,13 +193,13 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          p = sim.params.list[['p.j']],
+          p = sim.params.list[['Tbar']],
           g2 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           omega2 = user.params.list[['omega.2']],
           r21 = user.params.list[['R2.1']][1],
           r2t2 = 0,
-          n = user.params.list[['n.j']],
+          n = user.params.list[['nbar']],
           J = user.params.list[['J']]
         )
       } else if(design == 'blocked_i1_3r')
@@ -208,7 +208,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          p = sim.params.list[['p.j']],
+          p = sim.params.list[['Tbar']],
           g3 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           rho3 = user.params.list[['ICC.3']][1],
@@ -216,7 +216,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           omega3 = user.params.list[['omega.3']],
           r21 = user.params.list[['R2.1']][1],
           r2t2 = 0, r2t3 = 0,
-          n = user.params.list[['n.j']],
+          n = user.params.list[['nbar']],
           J = user.params.list[['J']],
           K = user.params.list[['K']]
         )
@@ -226,12 +226,12 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          p = sim.params.list[['p.j']],
+          p = sim.params.list[['Tbar']],
           g2 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           r21 = user.params.list[['R2.1']][1],
           r22 = user.params.list[['R2.2']][1],
-          n = user.params.list[['n.j']],
+          n = user.params.list[['nbar']],
           J = user.params.list[['J']]
         )
       } else if(design == c('simple_c3_3r'))
@@ -240,14 +240,14 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          p = sim.params.list[['p.j']],
+          p = sim.params.list[['Tbar']],
           g3 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           rho3 = user.params.list[['ICC.3']][1],
           r21 = user.params.list[['R2.1']][1],
           r22 = user.params.list[['R2.2']][1],
           r23 = user.params.list[['R2.3']][1],
-          n = user.params.list[['n.j']],
+          n = user.params.list[['nbar']],
           J = user.params.list[['J']],
           K = user.params.list[['K']]
         )
@@ -257,12 +257,12 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          p = sim.params.list[['p.j']],
+          p = sim.params.list[['Tbar']],
           g2 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           r21 = user.params.list[['R2.1']][1],
           r22 = user.params.list[['R2.2']][1],
-          n = user.params.list[['n.j']],
+          n = user.params.list[['nbar']],
           J = user.params.list[['J']],
           K = user.params.list[['K']]
         )
@@ -272,7 +272,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           es = user.params.list[['ATE_ES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
-          p = sim.params.list[['p.j']],
+          p = sim.params.list[['Tbar']],
           g3 = 1,
           rho2 = user.params.list[['ICC.2']][1],
           rho3 = user.params.list[['ICC.3']][1],
@@ -280,7 +280,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           r21 = user.params.list[['R2.1']][1],
           r22 = user.params.list[['R2.2']][1],
           r2t3 = 0,
-          n = user.params.list[['n.j']],
+          n = user.params.list[['nbar']],
           J = user.params.list[['J']],
           K = user.params.list[['K']]
         )
@@ -341,8 +341,8 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           M = user.params.list[['M']], MTP = MTP,
           MDES = user.params.list[['ATE_ES']],
           J = user.params.list[['J']], K = user.params.list[['K']],
-          n.j = user.params.list[['n.j']],
-          p = sim.params.list[['p.j']],
+          nbar = user.params.list[['nbar']],
+          Tbar = sim.params.list[['Tbar']],
           alpha = sim.params.list[['alpha']],
           numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
           R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
@@ -461,10 +461,10 @@ validate_mdes <- function(user.params.list, sim.params.list, design, overwrite =
         # fixed parameters
         M = user.params.list[['M']],
         J = user.params.list[['J']],
-        n.j = user.params.list[['n.j']],
+        nbar = user.params.list[['nbar']],
         power.definition = "indiv",
         marginError = sim.params.list[['MoE']],
-        p = sim.params.list[['p.j']],
+        p = sim.params.list[['Tbar']],
         alpha = sim.params.list[['alpha']],
         numCovar.1 = 1, numCovar.2 = 1,
         R2.1 = user.params.list[['R2.1']][1], R2.2 = user.params.list[['R2.2']][1],
@@ -545,7 +545,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
     power.results = readRDS(power.file)
     
     sample_compare_results <- NULL
-    for(type in c('J', 'n.j'))
+    for(type in c('J', 'nbar'))
     {
       for (MTP in procs)
       {
@@ -557,10 +557,10 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
           MDES = user.params.list[['ATE_ES']][1],
           M = user.params.list[['M']],
           J = user.params.list[['J']],
-          n.j = user.params.list[['n.j']],
+          nbar = user.params.list[['nbar']],
           power.definition = "indiv",
           marginError = sim.params.list[['MoE']],
-          p = sim.params.list[['p.j']],
+          p = sim.params.list[['Tbar']],
           alpha = sim.params.list[['alpha']],
           numCovar.1 = 1, numCovar.2 = 1,
           R2.1 = user.params.list[['R2.1']][1], R2.2 = user.params.list[['R2.2']][1],
@@ -604,10 +604,10 @@ if(FALSE)
   M = user.params.list[['M']];
   MDES = user.params.list[['ATE_ES']]
   J = user.params.list[['J']];
-  n.j = user.params.list[['n.j']];
+  nbar = user.params.list[['nbar']];
   power.definition = "indiv";
   marginError = sim.params.list[['MoE']];
-  p = sim.params.list[['p.j']];
+  p = sim.params.list[['Tbar']];
   alpha = sim.params.list[['alpha']];
   numCovar.1 = 1; numCovar.2 = 1;
   R2.1 = user.params.list[['R2.1']];
@@ -624,7 +624,7 @@ if(FALSE)
   max.iter = sim.params.list[['max.iter']];
   updateProgress = NULL;
   typesample = 'J';
-  J0 = 10; n.j0 = 10;
+  J0 = 10; nbar0 = 10;
   two.tailed = TRUE; max.iter = 100; tol = 0.1;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl = NULL
