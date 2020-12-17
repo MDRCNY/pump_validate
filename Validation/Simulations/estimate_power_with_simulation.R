@@ -234,7 +234,7 @@ make.model <- function(dat, dummies = NULL, design) {
     # mod <- fastLm(mmat, dat[,"Yobs"])
   } else if (design == "blocked_i1_2f") {
     form <- as.formula("Yobs ~ 1 + T.x*S.ij + C.ijk")
-    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
+    mod <- pkgcond::suppress_messages(lm(form, data = dat))
   } else if (design == "blocked_i1_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.ij)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
