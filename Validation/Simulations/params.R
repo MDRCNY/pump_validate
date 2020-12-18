@@ -19,18 +19,19 @@ source(here::here("Validation/Simulations", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 2                  # Number of samples for Monte Carlo Simulation
-  , Q = 1               # Number of times entire simulation is repeated, so total iterations = S * Q
-  , B = 2           # Number of samples for WestFall-Young. The equivalent is snum in our new method.
+  S = 100                # Number of samples for Monte Carlo Simulation
+  , Q = 1                 # Number of times entire simulation is repeated, so total iterations = S * Q
+  , B = 2                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = TRUE           # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05          # Significance level
-  , MoE = 0.05            # Margin of error
-  , Tbar = 0.5             # Binomial assignment probability
-  , tnum = 100          # Number of test statistics (samples) for all procedures other than Westfall-Young
+  , tol = 0.05            # tolerance for MDES and sample  size calculations
+  , Tbar = 0.5            # Binomial assignment probability
+  , tnum = 100           # Number of test statistics (samples) for all procedures other than Westfall-Young
   , parallel = TRUE       # parallelize within each monte carlo iteration
   , ncl = 2               # Number of computer clusters (max on RStudio Server is 16)
-  , max.iter = 100        # maximum number of iterations for MDES or sample size calculations
-  , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+  , max.steps = 20        # maximum number of iterations for MDES or sample size calculations
+  , max.cum.tnum = 5000   # maximum cumulative tnum for MDES and sample size 
+  , procs = c("Bonferroni", "BH", "Holm")#, "WY-SS", "WY-SD")
                           # Multiple testing procedures
   , runSim = TRUE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE        # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.

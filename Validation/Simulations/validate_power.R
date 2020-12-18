@@ -460,9 +460,9 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
         design = design,
         MTP = MTP,
         M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
-        power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'],
+        target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'],
         power.definition = 'D1indiv',
-        margin.error = sim.params.list[['margin.error']],
+        tol = sim.params.list[['tol']],
         nbar = user.params.list[['nbar']],
         Tbar = sim.params.list[['Tbar']],
         alpha = sim.params.list[['alpha']],
@@ -473,17 +473,17 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
         omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
         tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
         cl = cl,
-        max.iter = sim.params.list[['max.iter']]
+        max.steps = sim.params.list[['max.steps']], max.cum.tnum = sim.params.list[['max.cum.tnum']]
       )
       mdes_compare_results <- rbind(mdes_compare_results, mdes_results$mdes.results)
       plot_data <- rbind(plot_data, mdes_results$tries)
     }
     
-    plot.power = ggplot(plot_data, aes(x = iter, y = power.tries)) +
+    plot.power = ggplot(plot_data, aes(x = step, y = power)) +
       geom_point() + geom_line() +
       facet_wrap(.~MTP) +
-      geom_hline(aes(yintercept = power.goal))
-    plot.mdes = ggplot(plot_data, aes(x = iter, y = mdes.tries)) +
+      geom_hline(aes(yintercept = target.power))
+    plot.mdes = ggplot(plot_data, aes(x = step, y = mdes)) +
       geom_point() + geom_line() +
       facet_wrap(.~MTP)
     print(grid.arrange(plot.power, plot.mdes, top = design))
@@ -568,7 +568,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
           J = user.params.list[['J']],
           nbar = user.params.list[['nbar']],
           power.definition = "indiv",
-          margin.error = sim.params.list[['margin.error']],
+          tol = sim.params.list[['tol']],
           p = sim.params.list[['Tbar']],
           alpha = sim.params.list[['alpha']],
           numCovar.1 = 1, numCovar.2 = 1,
@@ -610,13 +610,13 @@ if(FALSE)
   # design = 'simple_c3_3r';
   # MTP = 'Bonferroni';
   MTP = 'Holm';
-  power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'];
+  target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
   MDES = user.params.list[['ATE_ES']]
   J = user.params.list[['J']];
   nbar = user.params.list[['nbar']];
   power.definition = "D1indiv";
-  margin.error = sim.params.list[['margin.error']];
+  tol = sim.params.list[['tol']];
   Tbar = sim.params.list[['Tbar']];
   alpha = sim.params.list[['alpha']];
   numCovar.1 = 1; numCovar.2 = 1;
@@ -629,12 +629,13 @@ if(FALSE)
   omega.2 = user.params.list[['omega.2']];
   omega.3 = user.params.list[['omega.3']];
   tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
-  max.iter = sim.params.list[['max.iter']];
+  max.steps = sim.params.list[['max.steps']];
+  max.cum.tnum = sim.params.list[['max.cum.tnum']];
   updateProgress = NULL;
   typesample = 'J';
   J0 = 10; nbar0 = 10;
   two.tailed = TRUE;
-  tol = 0.1;
+  # tol = 0.1;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl = NULL
 }

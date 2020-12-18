@@ -460,10 +460,43 @@ midpoint <- function(lower, upper) {
   return(lower + dist(c(lower, upper))[[1]]/2)
 }
 
+# extract roots from quadratic curve based on given evaluated points
+find_best= function(test.pts, alternate = NA)
+{
+  # fit quadratic curve
+  quad.mod <- lm( power ~ 1 + mdes + I(mdes^2), data = test.pts)
+  # extract point where it crosses target power
+  cc <- rev( coef( quad.mod ) )
+  # Using x = [ b pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
+  # first check if root exists
+  rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
+  
+  if ( rt.check > 0 ) {
+    try.mdes <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )
+    hits <- (mdes.low <= try.mdes) & (try.mdes <= mdes.high) 
+    if ( sum( hits ) == 1 ) {
+      try.mdes <- try.mdes[hits]
+    } else {
+      # error
+      cat( "Root concerns\n" )
+      try.mdes <- alternate
+    }
+  } else {
+    cat( "No roots\n" )
+    # error
+    try.mdes <- alternate
+  }
+  return(try.mdes)
+}
+
+scat = function( str, ... ) {
+  cat( sprintf( str, ... ) )
+}
+
 #' MDES (minimum detectable effect size) function
 #'
 #' The minimum detectable effect size function calculates the most feasible minimum detectable effect size
-#' for a given MTP, power and power definition. The goal is to find the MDES value that satisfies the margin of error
+#' for a given MTP, power and power definition. The goal is to find the MDES value that satisfies the tolerance
 #' set in the parameter in the power value.
 #'
 #' @param design RCT design (see list/naming convention)
@@ -474,7 +507,7 @@ midpoint <- function(lower, upper) {
 #' @param K the number of districts
 #' @param power required statistical power for the experiment
 #' @param power.definition definition of statistical power from individual, d-minimal to complete power
-#' @param margin.error the margin of error for MDES estimation based on targeted power value
+#' @param tol the tolerance for MDES estimation based on targeted power value
 #' @param nbar the harmonic mean of the number of units per block
 #' @param Tbar the proportion of samples that are assigned to the treatment
 #' @param alpha the family wise error rate (FWER)
@@ -500,17 +533,18 @@ midpoint <- function(lower, upper) {
 
 pump_mdes <- function(
   design, MTP, M, J, K = 1,
-  power, power.definition, margin.error,
+  target.power, power.definition, tol,
   nbar, Tbar, alpha, numCovar.1 = 0, numCovar.2 = 0,
   numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
   rho, omega.2, omega.3 = NULL,
-  tnum = 10000, snum = 1000, cl = NULL, max.iter = 20, updateProgress = NULL
+  tnum = 10000, snum = 1000, max.steps = 20, max.cum.tnum = 5000,
+  cl = NULL, updateProgress = NULL
 )
 {
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
-  message(paste("Estimating MDES for", MTP, "for target", power.definition, "power of", round(power, 4)))
+  message(paste("Estimating MDES for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
   
   # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
   if (MTP == "WY-SD" & snum < 1000){
@@ -526,19 +560,19 @@ pump_mdes <- function(
   crit.alphaxM <- qt(p = (1-alpha/M/2), df = t.df)
   
   # Compute raw and BF MDES for individual power
-  crit.beta <- ifelse(power > 0.5, qt(power, df = t.df), qt(1 - power, df = t.df))
-  MDES.raw  <- ifelse(power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta))
-  MDES.BF   <- ifelse(power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta))
+  crit.beta <- ifelse(target.power > 0.5, qt(target.power, df = t.df), qt(1 - target.power, df = t.df))
+  mdes.raw  <- ifelse(target.power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta))
+  mdes.bf   <- ifelse(target.power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta))
   
   # SETTING THE MDES BOUNDS FOR INDIVIDUAL AND OTHER TYPES OF POWER from using raw and bf mdes bounds #
   
-  ### INDIVIDUAL POWER ###
+  ### raw or bonferroni ###
   if (power.definition == "D1indiv") {
     
     if (MTP == "rawp"){
       
       # Attaching the MDES result to power results for tabular output
-      mdes.results <- data.frame(MTP, MDES.raw, power) # transpose the MDES raw and power to have the results columnwise
+      mdes.results <- data.frame(MTP, mdes.raw, target.power) # transpose the MDES raw and power to have the results columnwise
       colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
       return (list(mdes.results = mdes.results, tries = NULL))
       
@@ -547,7 +581,7 @@ pump_mdes <- function(
     if (MTP == "Bonferroni"){
       
       # Attaching the MDES result to power results for tabular output
-      mdes.results <- data.frame(MTP, MDES.BF, power) #transpose the MDES raw and power to have the results columnwise
+      mdes.results <- data.frame(MTP, mdes.bf, target.power) #transpose the MDES raw and power to have the results columnwise
       colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
       return(list(mdes.results = mdes.results, tries = NULL))
       
@@ -558,114 +592,205 @@ pump_mdes <- function(
   # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint!
   # MDES for MTP that is not Bonferroni and for individual powers
   
-  if (MTP %in% c("Holm", "BH", "WY-SS", "WY-SD") & power.definition == "indiv") {
-    
-    lowhigh <- c(MDES.raw, MDES.BF)
-    try.MDES <- midpoint(MDES.raw, MDES.BF)
-    
-  } else if (power.definition =="indiv") {
-    
-    # For other scenarios, set low-high intervals and compute midpoint
-    # ?What other scenarios are we talking about?
-    
-    lowhigh <- c(MDES.raw, 1)
-    try.MDES <- midpoint(lowhigh[1], lowhigh[2])
+  if (MTP %in% c("Holm", "BH", "WY-SS", "WY-SD") & power.definition == "D1indiv") {
+    mdes.low <- mdes.raw
+    mdes.high <- mdes.bf
   } else {
-    
-    # For cases where the power definition is not individual power, restrict it between 0 and 1.
-    lowhigh <- c(0, 1)
-    try.MDES <- midpoint(lowhigh[1], lowhigh[2])
+    stop('MDES search only implemented for individual power.')
   }
   
-  # Searching for the right MDES through a while loop
-  ii <- 0 # Iteration counter
-  target.power <- 0 # Initializing a target power
-  
-  # While loop through until the iteration is past max iterations or
-  # we have met the target.power as we search for the right MDES
-  # within the margin of error we have specified.
-  
-  # save out different tries
-  mdes.tries <- try.MDES
-  power.tries <- target.power
-  
-  while (ii < max.iter & (target.power < power - margin.error | target.power > power + margin.error)) {
-    
-    if (is.function(updateProgress)) {
-      text <- paste0("Optimal MDES is currently in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),". ")
-      msg  <- paste0("Trying MDES of ",round(try.MDES,4)," ... ")
-      updateProgress(message = msg, detail = text)
-    }
-    
-    # Function to calculate the target power to check in with the pre-specified power in the loop
-    runpower <- pump_power(design, MTP = MTP, MDES = rep(try.MDES, M), M = M, J = J, K = K,
+  # fit initial quadratic curve
+  # generate a series of points to try
+  current.tnum <- 10
+  test.pts <- data.frame(
+    step = seq(1, 5),
+    mdes = seq(mdes.low, mdes.high, length.out = 5),
+    power = NA,
+    w = current.tnum,
+    MTP = MTP,
+    target.power = target.power
+  )
+  # generate power for all these points
+  for(i in 1:nrow(test.pts))
+  {
+    pt.power.results <- pump_power(design, MTP = MTP,
+                           MDES = rep(test.pts$mdes[i], M),
+                           M = M, J = J, K = K,
                            nbar = nbar, Tbar = Tbar, alpha = alpha,
                            numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                            R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
                            rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
                            tnum = tnum, snum = snum, cl = cl)
-
-    # Pull out the power value corresponding to the MTP and definition of power
-    target.power <- runpower[MTP, power.definition]
-    
-    # Displaying the progress of mdes calculation via target power
-    if (is.function(updateProgress)) {
-      
-      msg <- paste("Estimated power for this MDES is", round(target.power,4)) # Text for estimating power
-      updateProgress(message = msg)
-      
-    } # checking on Progress Update for MDES
-    
-    # save out progress
-    mdes.tries <- c(mdes.tries, try.MDES)
-    power.tries <- c(power.tries, target.power)
-    
-    # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
-    if(target.power > power - margin.error & target.power < power + margin.error){
-      
-      mdes.results <- data.frame(MTP, try.MDES[1], target.power)
-      colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-      tries = data.frame(
-        MTP = MTP, iter = seq(1, length(mdes.tries)),
-        mdes.tries = mdes.tries, power.tries = power.tries,
-        power.goal = power
-      )
-      return(list(mdes.results = mdes.results, tries = tries))
-      
-    } # Return results if our targeted power is within a margin of error of the specified power
-    
-    # Check if the calculated target power is greater than the prescribed power
-    is.over <- target.power > power
-    
-    # if we are overpowered, we can detect EVEN SMALLER effect size so we would shrink the effect range with the
-    # high end of the bound being the current MDES. Else it would be the opposite.
-    
-    if(!is.over) {
-      lowhigh[1] <- try.MDES
-    }
-    if(is.over) {
-      lowhigh[2] <- try.MDES
-    }
-    
-    # re-establish the midpoint and increase iteration
-    try.MDES <- midpoint(lowhigh[1],lowhigh[2])
-    ii <- ii + 1
-    
-  } # end while
-  
-  if (ii == max.iter & !(target.power > power - margin.error & target.power < power + margin.error)) {
-    message("Reached maximum iterations without converging on MDES estimate within margin of error.")
+    test.pts$power[i] <- pt.power.results[MTP, power.definition]
   }
+  
+  current.mdes <- find_best(test.pts, alternate = midpoint(mdes.low, mdes.high))
+  
+  current.power <- 0
+  cum.tnum <- 0
   mdes.results <- data.frame(MTP, NA, NA)
+  step <- 5
+  
+  while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
+  {
+    step <- step + 1
+    current.tnum <- pmin(max.cum.tnum, round(current.tnum * 1.1))
+    cum.tnum <- cum.tnum + current.tnum
+    current.power.results <- pump_power(
+      MDES = rep(current.mdes, M),
+      tnum = current.tnum, snum = snum,
+      design = design, MTP = MTP, M = M, J = J, K = K,
+      nbar = nbar, Tbar = Tbar, alpha = alpha,
+      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+      rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+      cl = cl
+    )
+    current.power <- current.power.results[MTP, power.definition]
+    
+    if(abs(current.power - target.power) < tol) {
+      check.power.tnum <- pmin(10 * current.tnum, max.cum.tnum)
+      check.power.results <- pump_power(
+        MDES = rep(current.mdes, M),
+        tnum = check.power.tnum, snum = snum,
+        design = design, MTP = MTP, M = M, J = J, K = K,
+        nbar = nbar, Tbar = Tbar, alpha = alpha,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+        rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+        cl = cl
+      )
+      check.power <- check.power.results[MTP, power.definition]
+      
+      cum.tnum <- cum.tnum + check.power.tnum
+      # TODO: replace with weighted average?
+      current.power <- check.power
+      mdes.results <- data.frame(MTP, current.mdes, current.power)
+
+      # If still good, go to our final check to see if we are winners!
+      # TODO: && (test_pow_R < MAX_ITER) 
+      # if((abs(current.power - target.power) < tol)) {
+      #   check_power = tester( best_guess, R=MAX_ITER - test_pow_R )
+      #   cum_R = cum_R + MAX_ITER - test_pow_R
+      #   cur_power = ((R+test_pow_R)*cur_power + (MAX_ITER-test_pow_R)*check_power) / (R+MAX_ITER)
+      # }
+    } 
+    
+    iter.results <- data.frame(
+      step = step, mdes = current.mdes, power = current.power, w = current.tnum,
+      MTP = MTP, target.power = target.power
+    )
+    test.pts <- bind_rows(test.pts, iter.results)
+    
+    if(current.mdes < iter.results$mdes) {
+      current.mdes <- find_best(test.pts, alternate = current.mdes + 0.10 * (mdes.high - try.mdes))
+    } else {
+      current.mdes <- find_best(test.pts, alternate = current.mdes - 0.10 * (current.mdes - mdes.low) )
+    }
+    scat("%d\tNew best: %.2f \n", step, current.mdes)
+  }
+  
+  # clean up return values
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-  tries = data.frame(
-    MTP = MTP, iter = seq(1, length(mdes.tries)),
-    mdes.tries = mdes.tries, power.tries = power.tries,
-    power.goal = power
-  )
-  return(list(mdes.results = mdes.results, tries = tries))
   
-  
+  if(cum.tnum == max.cum.tnum & abs(current.power - target.power) > tol) {
+    message("Reached maximum iterations without converging on MDES estimate within tolerance.")
+  }
+
+  return(list(mdes.results = mdes.results, tries = test.pts))
+
+  # 
+  # 
+  # 
+  # # Searching for the right MDES through a while loop
+  # ii <- 0 # Iteration counter
+  # target.power <- 0 # Initializing a target power
+  # 
+  # # While loop through until the iteration is past max iterations or
+  # # we have met the target.power as we search for the right MDES
+  # # within the tolerance we have specified.
+  # 
+  # # save out different tries
+  # mdes.tries <- try.MDES
+  # power.tries <- target.power
+  # 
+  # while (ii < max.iter & (target.power < power - tol | target.power > power + tol)) {
+  #   
+  #   if (is.function(updateProgress)) {
+  #     text <- paste0("Optimal MDES is currently in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),". ")
+  #     msg  <- paste0("Trying MDES of ",round(try.MDES,4)," ... ")
+  #     updateProgress(message = msg, detail = text)
+  #   }
+  #   
+  #   # Function to calculate the target power to check in with the pre-specified power in the loop
+  #   runpower <- pump_power(design, MTP = MTP, MDES = rep(try.MDES, M), M = M, J = J, K = K,
+  #                          nbar = nbar, Tbar = Tbar, alpha = alpha,
+  #                          numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+  #                          R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+  #                          rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+  #                          tnum = tnum, snum = snum, cl = cl)
+  # 
+  #   # Pull out the power value corresponding to the MTP and definition of power
+  #   target.power <- runpower[MTP, power.definition]
+  #   
+  #   # Displaying the progress of mdes calculation via target power
+  #   if (is.function(updateProgress)) {
+  #     
+  #     msg <- paste("Estimated power for this MDES is", round(target.power,4)) # Text for estimating power
+  #     updateProgress(message = msg)
+  #     
+  #   } # checking on Progress Update for MDES
+  #   
+  #   # save out progress
+  #   mdes.tries <- c(mdes.tries, try.MDES)
+  #   power.tries <- c(power.tries, target.power)
+  #   
+  #   # If the calculated target.power is within the tolerance of the prescribed power, break and return the results
+  #   if(target.power > power - tol & target.power < power + tol){
+  #     
+  #     mdes.results <- data.frame(MTP, try.MDES[1], target.power)
+  #     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+  #     tries = data.frame(
+  #       MTP = MTP, iter = seq(1, length(mdes.tries)),
+  #       mdes.tries = mdes.tries, power.tries = power.tries,
+  #       power.goal = power
+  #     )
+  #     return(list(mdes.results = mdes.results, tries = tries))
+  #     
+  #   } # Return results if our targeted power is within a tolerance of the specified power
+  #   
+  #   # Check if the calculated target power is greater than the prescribed power
+  #   is.over <- target.power > power
+  #   
+  #   # if we are overpowered, we can detect EVEN SMALLER effect size so we would shrink the effect range with the
+  #   # high end of the bound being the current MDES. Else it would be the opposite.
+  #   
+  #   if(!is.over) {
+  #     lowhigh[1] <- try.MDES
+  #   }
+  #   if(is.over) {
+  #     lowhigh[2] <- try.MDES
+  #   }
+  #   
+  #   # re-establish the midpoint and increase iteration
+  #   try.MDES <- midpoint(lowhigh[1],lowhigh[2])
+  #   ii <- ii + 1
+  #   
+  # } # end while
+  # 
+  # if (ii == max.iter & !(target.power > power - tol & target.power < power + tol)) {
+  #   message("Reached maximum iterations without converging on MDES estimate within tolerance.")
+  # }
+  # mdes.results <- data.frame(MTP, NA, NA)
+  # colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+  # tries = data.frame(
+  #   MTP = MTP, iter = seq(1, length(mdes.tries)),
+  #   mdes.tries = mdes.tries, power.tries = power.tries,
+  #   power.goal = power
+  # )
+  # return(list(mdes.results = mdes.results, tries = tries))
+  # 
+  # 
 } # MDES blockedRCT 2
 
 #' Calculating Sample for Raw (Unadjusted)
@@ -772,7 +897,7 @@ sample_blocked_i1_2c_raw <- function(J, nbar, J0 = 10, nbar0 = 10,
 #' @param power required statistical power for the experiment
 #' @param power.definition definition of statistical power from individual, d-minimal to complete power
 #' @param MTP type of multiple testing procedure in use from Bonferroni, Benjamini-Hocheberg, Holms, Westfall-Young Single Step, Westfall-Young Step Down
-#' @param margin.error the margin of error for MDES estimation based on targeted power value
+#' @param tol the tolerance for MDES estimation based on targeted power value
 #' @param Tbar the proportion of samples that are assigned to the treatment
 #' @param alpha the family wise error rate (FWER)
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
@@ -793,7 +918,7 @@ sample_blocked_i1_2c_raw <- function(J, nbar, J0 = 10, nbar0 = 10,
 
 sample_blocked_i1_2c <- function(M, typesample, J, nbar,
                                  J0 = 10, nbar0 = 10, MDES, power, power.definition,
-                                 MTP, margin.error, Tbar, alpha, numCovar.1,
+                                 MTP, tol, Tbar, alpha, numCovar.1,
                                  numCovar.2 = 0, R2.1, R2.2, ICC,
                                  rho = 0.99, omega, tnum = 10000,
                                  snum = 2, cl = NULL,
@@ -911,7 +1036,7 @@ sample_blocked_i1_2c <- function(M, typesample, J, nbar,
   }
   ii <- 0
   target.power <- 0
-  while (ii < max.iter & (target.power < power - margin.error | target.power > power + margin.error) ) {
+  while (ii < max.iter & (target.power < power - tol | target.power > power + tol) ) {
     
     if (is.function(updateProgress)) {
       
@@ -963,8 +1088,8 @@ sample_blocked_i1_2c <- function(M, typesample, J, nbar,
     # checking if the estimation is over or not
     is.over <- target.power > power
     
-    # if the target power is within the margin we have set, we will return the estimated sample
-    if(target.power > power - margin.error & target.power < power + margin.error) {
+    # if the target power is within the tolerance we have set, we will return the estimated sample
+    if(target.power > power - tol & target.power < power + tol) {
       
       # estimated sample for a given MTP, type of power
       try.ss.numeric <- ceiling(as.numeric(try.ss))
@@ -994,10 +1119,10 @@ sample_blocked_i1_2c <- function(M, typesample, J, nbar,
     ii <- ii + 1
   } # end while
   
-  if (ii == max.iter & !(target.power > power - margin.error & target.power < power + margin.error)) {
+  if (ii == max.iter & !(target.power > power - tol & target.power < power + tol)) {
     
     text <- paste0(
-      "Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (max.iter)."
+      "Reached maximum iterations without converging on MDES estimate within tolerance. Try increasing maximum number of iterations (max.iter)."
     )
     updateProgress(detail = text)
   }
