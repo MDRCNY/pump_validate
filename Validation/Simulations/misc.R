@@ -193,7 +193,7 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
     convert.vec.to.filename(user.params.list[['ATE_ES']]),"_ATES_",
     user.params.list[['J']], "_J_",
     user.params.list[['K']], "_K_",
-    user.params.list[['n.j']], "_nj_",
+    user.params.list[['nbar']], "_nbar_",
     convert.vec.to.filename(user.params.list[['rho.default']]), "_rho_",
     convert.vec.to.filename(user.params.list[['omega.2']]), "_omega2_",
     convert.vec.to.filename(user.params.list[['omega.3']]), "_omega3_",
