@@ -47,8 +47,8 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # ------------------------------#
   
   M        <- model.params.list[['M']];       J       <- model.params.list[['J']];
-  K        <- model.params.list[['K']];       n.j     <- model.params.list[['n.j']];
-  S.jk     <- model.params.list[['S.jk']];    S.k     <- model.params.list[['S.k']];
+  K        <- model.params.list[['K']];       nbar     <- model.params.list[['nbar']];
+  S.ij     <- model.params.list[['S.ij']];    S.ik     <- model.params.list[['S.ik']];
   Xi0      <- model.params.list[['Xi0']];     Xi1     <- model.params.list[['Xi1']];
   rho.D    <- model.params.list[['rho.D']];   xi      <- model.params.list[['xi']];
   eta0.sq  <- model.params.list[['eta0.sq']]; eta1.sq <- model.params.list[['eta1.sq']];
@@ -76,12 +76,12 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # Generate school and district IDs
   # ------------------------------#
   # generates vector of school and district assignments, assuming equal sizes of everything
-  if ( is.null( S.jk ) ) {
-    assignments <- gen_simple_assignments( J, K, n.j )
-    S.jk        <- assignments[['S.jk']]  # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
-    S.k         <- assignments[['S.k']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
+  if ( is.null( S.ij ) ) {
+    assignments <- gen_simple_assignments( J, K, nbar )
+    S.ij        <- assignments[['S.ij']]  # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
+    S.ik        <- assignments[['S.ik']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
   }
-  N <- length( S.jk )
+  N <- length( S.ij )
   
   
   # ------------------------------#
@@ -160,16 +160,16 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   {
     if ( has_level_three ) {
       # fill in values from district level variables
-      Xi0.ijk[i,] = Xi0[S.k[i]]
-      D.k[i,]     = D[S.k[i],]
-      w.ijk[i,]   = w.k[S.k[i],]
-      z.ijk[i,]   = z.k[S.k[i],]
+      Xi0.ijk[i,] = Xi0[S.ik[i]]
+      D.k[i,]     = D[S.ik[i],]
+      w.ijk[i,]   = w.k[S.ik[i],]
+      z.ijk[i,]   = z.k[S.ik[i],]
     }
     
     # fill in values from school level variables
-    X.jk[i,]    = X[S.jk[i],]
-    u.ijk[i,]   = u.jk[S.jk[i],]
-    v.ijk[i,]   = v.jk[S.jk[i],]
+    X.jk[i,]    = X[S.ij[i],]
+    u.ijk[i,]   = u.jk[S.ij[i],]
+    v.ijk[i,]   = v.jk[S.ij[i],]
   }
   
   # ------------------------------#
@@ -245,12 +245,12 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     # ICC.calc
   }
   
-  ID = data.frame( S.jk = S.jk, S.k = S.k )
+  ID = data.frame( S.ij = S.ij, S.ik = S.ik )
   
   if ( has_level_three ) {
     return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = D.k,  X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
   } else {
-    ID$S.k <- NULL
+    ID$S.ik <- NULL
     return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = NULL, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
   }
 }
@@ -303,7 +303,7 @@ convert.params <- function(user.params.list, check = FALSE) {
     M = user.params.list[['M']]                      # number of outcomes
     , J = user.params.list[['J']]                    # number of schools
     , K = user.params.list[['K']]                    # number of districts
-    , n.j = user.params.list[['n.j']]                # number of individuals per school
+    , nbar = user.params.list[['nbar']]                # number of individuals per school
     , Xi0 = user.params.list[['Xi0']]                # scalar grand mean outcome under no treatment
     , Xi1 = Xi1                                      # scalar grand mean impact
   )
