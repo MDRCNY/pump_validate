@@ -461,7 +461,7 @@ midpoint <- function(lower, upper) {
 }
 
 # extract roots from quadratic curve based on given evaluated points
-find_best= function(test.pts, alternate = NA)
+find_best <- function(test.pts, mdes.low, mdes.high, target.power, alternate = NA)
 {
   # fit quadratic curve
   quad.mod <- lm( power ~ 1 + mdes + I(mdes^2), data = test.pts)
@@ -537,10 +537,14 @@ pump_mdes <- function(
   nbar, Tbar, alpha, numCovar.1 = 0, numCovar.2 = 0,
   numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
   rho, omega.2, omega.3 = NULL,
-  tnum = 10000, snum = 1000, max.steps = 20, max.cum.tnum = 5000,
+  tnum = 10000, snum = 1000,
+  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, max.tnum = 10000,
   cl = NULL, updateProgress = NULL
 )
 {
+  # set some defaults 
+  # max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000
+  
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
@@ -601,9 +605,9 @@ pump_mdes <- function(
   
   # fit initial quadratic curve
   # generate a series of points to try
-  current.tnum <- 10
+  current.tnum <- start.tnum
   test.pts <- data.frame(
-    step = seq(1, 5),
+    step = 0,
     mdes = seq(mdes.low, mdes.high, length.out = 5),
     power = NA,
     w = current.tnum,
@@ -624,12 +628,12 @@ pump_mdes <- function(
     test.pts$power[i] <- pt.power.results[MTP, power.definition]
   }
   
-  current.mdes <- find_best(test.pts, alternate = midpoint(mdes.low, mdes.high))
+  current.mdes <- find_best(test.pts, mdes.low, mdes.high, target.power, alternate = midpoint(mdes.low, mdes.high))
   
   current.power <- 0
   cum.tnum <- 0
   mdes.results <- data.frame(MTP, NA, NA)
-  step <- 5
+  step <- 0
   
   while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
   {
@@ -662,20 +666,27 @@ pump_mdes <- function(
       )
       check.power <- check.power.results[MTP, power.definition]
       
-      cum.tnum <- cum.tnum + check.power.tnum
+      # cum.tnum <- cum.tnum + check.power.tnum
       # TODO: replace with weighted average?
       current.power <- check.power
       mdes.results <- data.frame(MTP, current.mdes, current.power)
 
       # If still good, go to our final check to see if we are winners!
-      # TODO: && (test_pow_R < MAX_ITER) 
-      # if((abs(current.power - target.power) < tol)) {
-      #   check_power = tester( best_guess, R=MAX_ITER - test_pow_R )
-      #   cum_R = cum_R + MAX_ITER - test_pow_R
-      #   cur_power = ((R+test_pow_R)*cur_power + (MAX_ITER-test_pow_R)*check_power) / (R+MAX_ITER)
-      # }
+      # TODO: && (test_pow_R < MAX_ITER)
+      if(abs(current.power - target.power) < tol)
+      {
+        check.power.results <- pump_power(
+          MDES = rep(current.mdes, M),
+          tnum = max.tnum, snum = snum,
+          design = design, MTP = MTP, M = M, J = J, K = K,
+          nbar = nbar, Tbar = Tbar, alpha = alpha,
+          numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+          R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+          rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+          cl = cl
+        )
+      }
     } 
-    
     iter.results <- data.frame(
       step = step, mdes = current.mdes, power = current.power, w = current.tnum,
       MTP = MTP, target.power = target.power
@@ -683,17 +694,17 @@ pump_mdes <- function(
     test.pts <- bind_rows(test.pts, iter.results)
     
     if(current.mdes < iter.results$mdes) {
-      current.mdes <- find_best(test.pts, alternate = current.mdes + 0.10 * (mdes.high - try.mdes))
+      current.mdes <- find_best(test.pts, mdes.low, mdes.high, target.poewr, alternate = current.mdes + 0.10 * (mdes.high - try.mdes))
     } else {
-      current.mdes <- find_best(test.pts, alternate = current.mdes - 0.10 * (current.mdes - mdes.low) )
+      current.mdes <- find_best(test.pts, mdes.low, mdes.high, target.power, alternate = current.mdes - 0.10 * (current.mdes - mdes.low) )
     }
-    scat("%d\tNew best: %.2f \n", step, current.mdes)
+    # scat("%d\tNew best: %.2f \n", step, current.mdes)
   }
   
   # clean up return values
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
   
-  if(cum.tnum == max.cum.tnum & abs(current.power - target.power) > tol) {
+  if( (cum.tnum == max.cum.tnum | step == max.steps) & abs(current.power - target.power) > tol) {
     message("Reached maximum iterations without converging on MDES estimate within tolerance.")
   }
 

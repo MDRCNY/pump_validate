@@ -31,8 +31,10 @@ if(run.test)
   user.params.list[['K']] <- 1
   user.params.list[['omega.2']] <- 0
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
-  mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
-  
+  if(run.mdes.ss)
+  {
+    mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
+  }
   power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c2_2r", q = q, overwrite)
   user.params.list[['omega.2']] <- 0.5
   user.params.list[['omega.3']] <- 0.5

@@ -473,16 +473,19 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
         omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
         tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
         cl = cl,
-        max.steps = sim.params.list[['max.steps']], max.cum.tnum = sim.params.list[['max.cum.tnum']]
+        max.cum.tnum = sim.params.list[['max.cum.tnum']]
       )
       mdes_compare_results <- rbind(mdes_compare_results, mdes_results$mdes.results)
       plot_data <- rbind(plot_data, mdes_results$tries)
     }
     
+    plot_data = plot_data[plot_data$step > 0,]
+    
     plot.power = ggplot(plot_data, aes(x = step, y = power)) +
       geom_point() + geom_line() +
       facet_wrap(.~MTP) +
-      geom_hline(aes(yintercept = target.power))
+      geom_hline(aes(yintercept = target.power)) +
+      ylim(0, 1)
     plot.mdes = ggplot(plot_data, aes(x = step, y = mdes)) +
       geom_point() + geom_line() +
       facet_wrap(.~MTP)
@@ -629,7 +632,6 @@ if(FALSE)
   omega.2 = user.params.list[['omega.2']];
   omega.3 = user.params.list[['omega.3']];
   tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
-  max.steps = sim.params.list[['max.steps']];
   max.cum.tnum = sim.params.list[['max.cum.tnum']];
   updateProgress = NULL;
   typesample = 'J';
