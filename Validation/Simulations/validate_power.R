@@ -54,8 +54,10 @@ source(here::here("Methods", "pump_power.R"))
 #' @param user.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
+#' @param q Index of simulation iteration if parallelizing across simulations
+#' @param overwrite If simulation output files already exist, whether to overwrite
 #'
-#' @return a whole series of power data files for validation
+#' @return NULL. Saves out a series of simulation validation RDS files.
 #' @export
 #'
 #' @examples
@@ -418,8 +420,10 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
 #' @param user.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
+#' @param q Index of simulation iteration if parallelizing across simulations
+#' @param overwrite If simulation output files already exist, whether to overwrite
 #'
-#' @return a whole series of MDES data files for validation
+#' @return NULL. Saves out a series of MDES validation RDS files.
 #' @export
 #'
 #' @examples
@@ -472,8 +476,8 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
         rho = user.params.list[['rho.default']],
         omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
         tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-        cl = cl,
-        max.cum.tnum = sim.params.list[['max.cum.tnum']]
+        max.cum.tnum = sim.params.list[['max.cum.tnum']],
+        cl = cl
       )
       mdes_compare_results <- rbind(mdes_compare_results, mdes_results$mdes.results)
       plot_data <- rbind(plot_data, mdes_results$tries)
@@ -519,12 +523,14 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
 #' @param user.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
+#' @param q Index of simulation iteration if parallelizing across simulations
+#' @param overwrite If simulation output files already exist, whether to overwrite
 #'
-#' @return a whole series of sample size data files for validation
+#' @return NULL. Saves out a series of sample validation RDS files.
 #' @export
 #'
 #' @examples
-validate_sample <- function(user.params.list, sim.params.list, design, overwrite = TRUE) {
+validate_sample <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -534,7 +540,6 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
   
   if(overwrite | length(current.file) == 0)
   {
-    
     if(sim.params.list[['parallel']])
     {
       cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
@@ -546,10 +551,10 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
     procs <- sim.params.list[['procs']]
     if(!("rawp" %in% sim.params.list[['procs']]))
     {
-      procs = c("rawp", procs)
+      procs <- c("rawp", procs)
     }
     
-    power.file = find_file(params.file.base, type = 'power')
+    power.file <- find_file(params.file.base, type = 'power')
     if(length(power.file) == 0)
     {
       stop(paste('Power results table needed for params:', params.file.base))
@@ -561,27 +566,25 @@ validate_sample <- function(user.params.list, sim.params.list, design, overwrite
     {
       for (MTP in procs)
       {
-        sample_results <- sample_blocked_i1_2c(
-          power = power.results[power.results$MTP == MTP & power.results$power_type == 'indiv' & power.results$method == 'pum', 'value'],
+        # type = 'J'; MTP = 'Holm';
+        sample_results <- pump_sample(
+          design = design,
           MTP = MTP,
           typesample = type,
-          # fixed parameters
-          MDES = user.params.list[['ATE_ES']][1],
-          M = user.params.list[['M']],
-          J = user.params.list[['J']],
-          nbar = user.params.list[['nbar']],
-          power.definition = "indiv",
+          M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
+          target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'],
+          power.definition = 'D1indiv',
           tol = sim.params.list[['tol']],
-          p = sim.params.list[['Tbar']],
+          nbar = user.params.list[['nbar']],
+          Tbar = sim.params.list[['Tbar']],
           alpha = sim.params.list[['alpha']],
-          numCovar.1 = 1, numCovar.2 = 1,
-          R2.1 = user.params.list[['R2.1']][1], R2.2 = user.params.list[['R2.2']][1],
-          ICC = user.params.list[['ICC.2']][1],
-          mod.type = "constant",
+          numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+          R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
+          ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
           rho = user.params.list[['rho.default']],
-          omega = user.params.list[['omega.2']],
+          omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
           tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-          max.iter = sim.params.list[['max.iter']],
+          max.cum.tnum = sim.params.list[['max.cum.tnum']],
           cl = cl
         )
         sample_results$type <- type
@@ -615,7 +618,7 @@ if(FALSE)
   MTP = 'Holm';
   target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
-  MDES = user.params.list[['ATE_ES']]
+  ATE_ES = user.params.list[['ATE_ES']]
   J = user.params.list[['J']];
   nbar = user.params.list[['nbar']];
   power.definition = "D1indiv";
@@ -637,7 +640,6 @@ if(FALSE)
   typesample = 'J';
   J0 = 10; nbar0 = 10;
   two.tailed = TRUE;
-  # tol = 0.1;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl = NULL
 }
