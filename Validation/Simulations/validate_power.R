@@ -88,11 +88,11 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
   message(paste('Power validation for:', params.file.base))
   
-  current.file = find_file(params.file.base, type = 'power')
+  current.file <- find_file(params.file.base, type = 'power')
   
   # store some files in intermediate results file
-  data.dir = here("Validation/data")
-  intermediate.data.dir = paste0(data.dir, "/intermediate_results/")
+  data.dir <- here("Validation/data")
+  intermediate.data.dir <- paste0(data.dir, "/intermediate_results/")
   if(!dir.exists(intermediate.data.dir))
   {
     dir.create(intermediate.data.dir)
@@ -114,10 +114,10 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     #####################
     
     # search for simulation results
-    adjp.files = grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
+    adjp.files <- grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
     
     # simulate and run power calculations
-    adjp.filename = paste0(params.file.base, "adjp_", q, ".RDS")
+    adjp.filename <- paste0(params.file.base, "adjp_", q, ".RDS")
     if( (overwrite | length(adjp.files) == 0) & sim.params.list[['runSim']]){
       message('Running simulation')
       adjp.proc <- est_power_sim(user.params.list, sim.params.list, design, cl)
@@ -336,7 +336,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       message('Running PUMP')
       
       iterator <- 0
-      pump_combined_results <- NULL
+      pump_results <- NULL
       
       for (MTP in sim.params.list[['procs']]){
         pump_results_iter <- pump_power(
@@ -448,7 +448,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
     procs <- sim.params.list[['procs']]
     if(!("rawp" %in% sim.params.list[['procs']]))
     {
-      procs = c("rawp", procs)
+      procs <- c("rawp", procs)
     }
     
     power.file <- find_file(params.file.base, type = 'power')
@@ -485,15 +485,15 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
     
     plot_data = plot_data[plot_data$step > 0,]
     
-    plot.power = ggplot(plot_data, aes(x = step, y = power)) +
-      geom_point() + geom_line() +
-      facet_wrap(.~MTP) +
-      geom_hline(aes(yintercept = target.power)) +
-      ylim(0, 1)
-    plot.mdes = ggplot(plot_data, aes(x = step, y = pt)) +
-      geom_point() + geom_line() +
-      facet_wrap(.~MTP)
-    print(grid.arrange(plot.power, plot.mdes, top = design))
+    # plot.power = ggplot(plot_data, aes(x = step, y = power)) +
+    #   geom_point() + geom_line() +
+    #   facet_wrap(.~MTP) +
+    #   geom_hline(aes(yintercept = target.power)) +
+    #   ylim(0, 1)
+    # plot.mdes = ggplot(plot_data, aes(x = step, y = pt)) +
+    #   geom_point() + geom_line() +
+    #   facet_wrap(.~MTP)
+    # print(grid.arrange(plot.power, plot.mdes, top = design))
     
     compare.filename <- paste0(params.file.base, "comparison_mdes_results.RDS")
     

@@ -199,7 +199,7 @@ calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2
   } else if (design == 'blocked_c2_3r')
   {
     Q.m <- sqrt( ICC.3/K + ICC.2 * (1 - R2.2)/Tbar * (1-Tbar) * J * K + ((1 - ICC.2 - ICC.3) * (1 - R2.1))/Tbar * (1-Tbar) * J * K * nbar)
-  }else
+  } else
   {
     stop(paste('Design not implemented:', design))
   }
@@ -222,38 +222,53 @@ calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2
 #'
 #' @return the degree of freedom
 
-calc.J <- function(design, MT, MDES, K, nbar, Tbar, numCovar.1, numCovar.2, numCovar.3, R2.1, R2.2, R2.3) {
+calc.J <- function(design, MT, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2) {
   
-  if(design == 'blocked_i1_2c')
+  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    J <- (MT/MDES)^2 * ((1 - R2.1)/(Tbar * (1 - Tbar) * nbar))
-  # else if (design == 'blocked_i1_2f')
-  # {
-  #   df <- J*nbar - numCovar.1 - 2*J
-  # } else if (design == 'blocked_i1_2r')
-  # {
-  #   df <- J - numCovar.1 - 1
-  # } else if (design == 'blocked_i1_3r')
-  # {
-  #   df <- K - numCovar.3 - 1
-  # } else if (design == 'simple_c2_2r')
-  # {
-  #   df <- J - numCovar.1 -2
-  # } else if (design == 'simple_c3_3r')
-  # {
-  #   df <- K - numCovar.3 - 2
-  # } else if (design == 'blocked_c2_3f')
-  # {
-  #   df <- K * (J - 2) - numCovar.2 - 2
-  # }else if (design == 'blocked_c2_3r')
-  # {
-  #   df <- K - numCovar.3 - 1
+    J <- (MT/MDES)^2 * ( (1 - R2.1)/(Tbar * (1 - Tbar) * nbar) )
+  } else if (design == 'blocked_i1_2r')
+  {
+    J <- (MT/MDES)^2 * ( (ICC.2 * omega.2) +
+                         ((1 - ICC.2)*(1 - R2.1))/(Tbar * (1 - Tbar) * nbar) )
+  } else if (design == 'simple_c2_2r')
+  {
+    J <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar)) +
+                         ((1 - ICC.2)*(1 - R2.1))/(Tbar * (1 - Tbar) * nbar) )
   } else
   {
     stop(paste('Design not implemented:', design))
   }
-  return(J)
 }
+
+calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
+  
+  if(design == 'blocked_i1_3r')
+  {
+    K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
+                         (ICC.2 * omega.2)/J +
+                         ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
+  } else if (design == 'simple_c3_3r')
+  {
+    K <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3))/(Tbar * (1 - Tbar)) +
+                         (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
+                         ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
+  } else if (design == 'blocked_c2_3f')
+  {
+    K <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
+                         ((1 - ICC.2) * (1 - R1.2))/(Tbar * (1 - Tbar) * J * nbar) )
+  } else if (design == 'blocked_c2_3r')
+  {
+    K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
+                         (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
+                         ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
+  } else
+  {
+    stop(paste('Design not implemented:', design))
+  }
+  return(K)
+}
+
 
 #' This function calculates nbar for all implemented designs
 #' @param design RCT design (see list/naming convention)
@@ -271,32 +286,38 @@ calc.J <- function(design, MT, MDES, K, nbar, Tbar, numCovar.1, numCovar.2, numC
 #'
 #' @return the degree of freedom
 
-calc.nbar <- function(design, MT, MDES, J, K, Tbar, numCovar.1, numCovar.2, numCovar.3, R2.1, R2.2, R2.3) {
+calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
   
-  if(design == 'blocked_i1_2c')
+  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
     nbar <- (MT/MDES)^2 * ((1 - R2.1)/(Tbar * (1 - Tbar) * J))
-    # else if (design == 'blocked_i1_2f')
-    # {
-    #   df <- J*nbar - numCovar.1 - 2*J
-    # } else if (design == 'blocked_i1_2r')
-    # {
-    #   df <- J - numCovar.1 - 1
-    # } else if (design == 'blocked_i1_3r')
-    # {
-    #   df <- K - numCovar.3 - 1
-    # } else if (design == 'simple_c2_2r')
-    # {
-    #   df <- J - numCovar.1 -2
-    # } else if (design == 'simple_c3_3r')
-    # {
-    #   df <- K - numCovar.3 - 2
-    # } else if (design == 'blocked_c2_3f')
-    # {
-    #   df <- K * (J - 2) - numCovar.2 - 2
-    # }else if (design == 'blocked_c2_3r')
-    # {
-    #   df <- K - numCovar.3 - 1
+  } else if (design == 'blocked_i1_2r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.2 * omega.2) +
+                           ((1 - ICC.2)*(1 - R2.1))/(Tbar * (1 - Tbar) * J) )
+  } else if (design == 'blocked_i1_3r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
+                           (ICC.2 * omega.2)/J +
+                           ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
+  } else if (design == 'simple_c2_2r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar)) +
+                           ((1 - ICC.2)*(1 - R2.1))/(Tbar * (1 - Tbar) * J) )
+  } else if (design == 'simple_c3_3r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3))/(Tbar * (1 - Tbar)) +
+                           (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
+                           ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
+  } else if (design == 'blocked_c2_3f')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
+                           ((1 - ICC.2) * (1 - R1.2))/(Tbar * (1 - Tbar) * J * K) )
+  }else if (design == 'blocked_c2_3r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
+                           (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
+                           ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
   } else
   {
     stop(paste('Design not implemented:', design))
@@ -562,9 +583,15 @@ midpoint <- function(lower, upper) {
 
 # optimizes power for either MDES, ss.J = sample size J, ss.nbar = sample size nbar
 
-optimize_power <- function(search.type, MTP, target.power,
+optimize_power <- function(search.type, MTP, target.power, power.definition, tol,
                            start.tnum, start.low, start.high,
-                           MDES = NULL, J = NULL, nbar = NULL)
+                           MDES = NULL, J = NULL, K = NULL, nbar = NULL,
+                           M = M, Tbar = Tbar, alpha = alpha,
+                           numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+                           R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+                           rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+                           snum = snum, cl = cl,
+                           max.steps = 20, max.cum.tnum = 5000, max.tnum = 10000)
 {
   # search.type = 'mdes'; start.low = mdes.low; start.high = mdes.high
   
@@ -584,13 +611,14 @@ optimize_power <- function(search.type, MTP, target.power,
   {
     if(search.type == 'mdes'){ MDES <- rep(test.pts$pt[i], M) }
     pt.power.results <- pump_power(
-      design, MTP = MTP,
+      design = design, MTP = MTP,
       MDES = MDES,
-      J = ifelse(search.type == 'ss.J', test.pts$pt[i], J),
-      nbar = ifelse(search.type == 'ss.nbar', test.pts$pt[i], nbar),
+      J = ifelse(search.type == 'J', test.pts$pt[i], J),
+      K = ifelse(search.type == 'K', test.pts$pt[i], K),
+      nbar = ifelse(search.type == 'nbar', test.pts$pt[i], nbar),
       tnum = start.tnum,
       # fixed params
-      M = M, K = K, Tbar = Tbar, alpha = alpha,
+      M = M, Tbar = Tbar, alpha = alpha,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
@@ -616,11 +644,12 @@ optimize_power <- function(search.type, MTP, target.power,
     current.power.results <- pump_power(
       design, MTP = MTP,
       MDES = MDES,
-      J = ifelse(search.type == 'ss.J', current.try, J),
-      nbar = ifelse(search.type == 'ss.nbar', current.try, nbar),
+      J = ifelse(search.type == 'J', current.try, J),
+      K = ifelse(search.type == 'K', current.try, K),
+      nbar = ifelse(search.type == 'nbar', current.try, nbar),
       tnum = current.tnum,
       # fixed params
-      M = M, K = K, Tbar = Tbar, alpha = alpha,
+      M = M, Tbar = Tbar, alpha = alpha,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       rho = rho, omega.2 = omega.2, omega.3 = omega.3, snum = snum, cl = cl
@@ -634,11 +663,12 @@ optimize_power <- function(search.type, MTP, target.power,
       check.power.results <- pump_power(
         design, MTP = MTP,
         MDES = MDES,
-        J = ifelse(search.type == 'ss.J', current.try, J),
-        nbar = ifelse(search.type == 'ss.nbar', current.try, nbar),
+        J = ifelse(search.type == 'J', current.try, J),
+        K = ifelse(search.type == 'K', current.try, K),
+        nbar = ifelse(search.type == 'nbar', current.try, nbar),
         tnum = check.power.tnum,
         # fixed params
-        M = M, K = K, Tbar = Tbar, alpha = alpha,
+        M = M,  Tbar = Tbar, alpha = alpha,
         numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
         R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
         rho = rho, omega.2 = omega.2, omega.3 = omega.3, snum = snum, cl = cl
@@ -656,11 +686,12 @@ optimize_power <- function(search.type, MTP, target.power,
         final.power.results <- pump_power(
           design, MTP = MTP,
           MDES = MDES,
-          J = ifelse(search.type == 'ss.J', current.try, J),
-          nbar = ifelse(search.type == 'ss.nbar', current.try, nbar),
+          J = ifelse(search.type == 'J', current.try, J),
+          K = ifelse(search.type == 'K', current.try, K),
+          nbar = ifelse(search.type == 'nbar', current.try, nbar),
           tnum = max.tnum,
           # fixed params
-          M = M, K = K, Tbar = Tbar, alpha = alpha,
+          M = M, Tbar = Tbar, alpha = alpha,
           numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
           R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
           rho = rho, omega.2 = omega.2, omega.3 = omega.3, snum = snum, cl = cl
@@ -821,9 +852,16 @@ pump_mdes <- function(
     stop('MDES search only implemented for individual power.')
   }
   
-  test.pts <- optimize_power(search.type = 'mdes', MTP, target.power,
+  test.pts <- optimize_power(search.type = 'mdes', MTP, target.power, power.definition, tol,
                              start.tnum, start.low = mdes.low, start.high = mdes.high,
-                             MDES = NULL, J = J, nbar = nbar)
+                             MDES = NULL, J = J, nbar = nbar,
+                             M = M, Tbar = Tbar, alpha = alpha,
+                             numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+                             R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+                             rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+                             snum = snum, cl = cl,
+                             max.steps = max.steps, max.cum.tnum = max.cum.tnum,
+                             max.tnum = max.tnum)
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
 
@@ -845,7 +883,8 @@ pump_mdes <- function(
 #' @param M the number of hypothesis tests (outcomes)
 #' @param J the number of schools
 #' @param K the number of districts
-#' @param J0 starting values for J0 to look for optimal J and nbar
+#' @param J0 starting values for J
+#' @param K0 starting values for K
 #' @param nbar0 starting values for nbar0 to look for optimal J and nbar
 #' @param target.power required statistical power for the experiment
 #' @param power.definition definition of statistical power from individual, d-minimal to complete power
@@ -873,14 +912,13 @@ pump_mdes <- function(
 pump_sample_raw <- function(
   design, MTP, typesample,
   MDES, M, J = NULL, K = 1,
-  J0 = 10, nbar0 = 10,
-  target.power, tol,
+  J0 = 10, K0 = 3, nbar0 = 10,
+  target.power,
   nbar = NULL, Tbar, alpha, two.tailed = TRUE,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2 = NULL, ICC.3 = NULL,
   rho = NULL, omega.2 = NULL, omega.3 = NULL,
-  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, max.tnum = 10000,
-  cl = NULL, updateProgress = NULL
+  tol = 0.1, max.steps = 100
 )
 {
   
@@ -902,25 +940,34 @@ pump_sample_raw <- function(
     
     if (typesample == "J") {
       J1 <- calc.J(
-        design = design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1]
+        design = design, MT = MT, MDES = MDES[1], nbar = nbar, Tbar = Tbar,
+        R2.1 = R2.1[1], R2.2 = R2.2[1], ICC.2 = ICC.2[1], omega.2 = omega.2
       )
       if (abs(J1 - J0) < tol) {
         conv <- TRUE
       }
       J0 <- (J1 + J0)/2
+    } else if (typesample == "K") {
+      K1 <- calc.K(
+        design = design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
+        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1], ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
+        omega.2 = omega.2, omega.3 = omega.3
+      )
+      if (abs(K1 - K0) < tol) {
+        conv <- TRUE
+      }
+      K0 <- (K1 + K0)/2
     } else if (typesample == "nbar") {
       nbar1 <- calc.nbar(
         design = design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1]
+        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1], ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
+        omega.2 = omega.2, omega.3 = omega.3
       )
       if (abs(nbar1 - nbar0) < tol) {
         conv <- TRUE
       }
       nbar0 <- (nbar1 + nbar0)/2
-    }
+    } 
     i <- i + 1
   }
   
@@ -929,10 +976,13 @@ pump_sample_raw <- function(
   }
   
   if (typesample == "J") {
-    J <- ifelse(df > 0, ceiling(J0), NA)
+    J <- ifelse(df > 0, ceiling(J1), NA)
     return(J)
+  } else if (typesample == "K") {
+    K <- ifelse(df > 0, ceiling(K1), NA)
+    return(K)
   } else if (typesample == "nbar") {
-    nbar <- ifelse(df > 0, ceiling(nbar0), NA)
+    nbar <- ifelse(df > 0, ceiling(nbar1), NA)
     return(nbar)
   }
 }
@@ -977,7 +1027,7 @@ pump_sample_raw <- function(
 pump_sample <- function(
   design, MTP, typesample,
   MDES, M, J, K = 1,
-  J0 = 10, nbar0 = 10,
+  J0 = 10, K0 = 2, nbar0 = 10,
   ATE_ES, target.power, power.definition, tol,
   nbar, Tbar, alpha, two.tailed = TRUE,
   numCovar.1 = 0, numCovar.2 = 0,
@@ -998,9 +1048,14 @@ pump_sample <- function(
   if(typesample == "J"){
     J <- NULL
     nbar0 <- NULL
+  } else if (typesample == "K") {
+    K <- NULL
+    J0 <- NULL
+    nbar0 <- NULL
   } else if (typesample == "nbar") {
     nbar <- NULL
     J0 <- NULL
+    K0 <- NULL
   }
   
   # Progress Message for the Type of Sample we are estimating, the type of power and the targeted power value
@@ -1015,27 +1070,23 @@ pump_sample <- function(
   ss.raw <- pump_sample_raw(
     design, MTP, typesample,
     MDES, M, J, K,
-    J0, nbar0,
-    target.power, tol,
+    J0, K0, nbar0,
+    target.power,
     nbar, Tbar, alpha, two.tailed,
     numCovar.1, numCovar.2, numCovar.3,
     R2.1, R2.2, R2.3, ICC.2, ICC.3,
-    rho, omega.2, omega.3,
-    max.steps, max.cum.tnum, start.tnum, max.tnum,
-    cl, updateProgress
+    rho, omega.2, omega.3
   )
   ss.BF <- pump_sample_raw(
     design, MTP, typesample,
     MDES, M, J, K,
-    J0, nbar0,
-    target.power, tol,
+    J0, K0, nbar0,
+    target.power,
     # change alpha for BF
     nbar, Tbar, alpha/M, two.tailed,
     numCovar.1, numCovar.2, numCovar.3,
     R2.1, R2.2, R2.3, ICC.2, ICC.3,
-    rho, omega.2, omega.3,
-    max.steps, max.cum.tnum, start.tnum, max.tnum,
-    cl, updateProgress
+    rho, omega.2, omega.3
   )
   
   ### INDIVIDUAL POWER for Raw and BF ###
@@ -1064,12 +1115,20 @@ pump_sample <- function(
   }
 
   test.pts <- optimize_power(
-    search.type = ifelse(typesample == 'J', 'ss.J', 'ss.nbar'),
-    MTP, target.power,
+    search.type = typesample,
+    MTP, target.power, power.definition, tol,
     start.tnum, start.low = ss.low, start.high = ss.high,
     MDES = MDES,
     J = ifelse(typesample == 'J', NULL, J),
-    nbar = ifelse(typesample == 'nbar', NULL, nbar)
+    K = ifelse(typesample == 'K', NULL, K),
+    nbar = ifelse(typesample == 'nbar', NULL, nbar),
+    M = M, Tbar = Tbar, alpha = alpha,
+    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+    rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+    snum = snum, cl = cl,
+    max.steps = max.steps, max.cum.tnum = max.cum.tnum,
+    max.tnum = max.tnum
   )
   ss.results <- data.frame(MTP, typesample, ceiling(test.pts$pt[nrow(test.pts)]), test.pts$power[nrow(test.pts)])
   colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
