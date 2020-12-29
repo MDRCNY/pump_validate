@@ -19,14 +19,14 @@ source(here::here("Validation/Simulations", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 100                # Number of samples for Monte Carlo Simulation
+  S = 4                # Number of samples for Monte Carlo Simulation
   , Q = 1                 # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = 2                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = TRUE           # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05          # Significance level
   , tol = 0.05            # tolerance for MDES and sample  size calculations
   , Tbar = 0.5            # Binomial assignment probability
-  , tnum = 100           # Number of test statistics (samples) for all procedures other than Westfall-Young
+  , tnum = 100            # Number of test statistics (samples) for all procedures other than Westfall-Young
   , parallel = TRUE       # parallelize within each monte carlo iteration
   , ncl = 2               # Number of computer clusters (max on RStudio Server is 16)
   , max.steps = 20        # maximum number of iterations for MDES or sample size calculations
@@ -80,8 +80,8 @@ default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
-  , K = 1                                 # number of districts (for two-level model, set K = 1)
-  , nbar = 50                              # number of individuals per school
+  , K = 4                                 # number of districts (for two-level model, set K = 1)
+  , nbar = 50                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.ij = NULL                           # N-length vector of indiv school assignments (optional)
   , S.ik = NULL                           # N-length vector of indiv district assignments (optional)
@@ -92,17 +92,17 @@ user.params.list <- list(
   , R2.3 = rep(0, M)                      # percent of district variation explained by district covariates
   # for 2-level model, set to 0
   , rho.D = default.rho.matrix            # MxM correlation matrix of district covariates
-  , ICC.3 = rep(0, M)                     # district intraclass correlation
+  , ICC.3 = rep(0.2, M)                   # district intraclass correlation
   # for 2-level model, set to 0
-  , omega.3 = 0                           # ratio of district effect size variability to random effects variability
+  , omega.3 = 0.2                         # ratio of district effect size variability to random effects variability
   , rho.w = default.rho.matrix            # MxM matrix of correlations for district random effects
   , rho.z = default.rho.matrix            # MxM matrix of correlations for district impacts
   , theta.wz = matrix(0, M, M)            # MxM matrix of correlations between district random effects and impacts
   ################################################## level 2: schools
   , R2.2 = rep(0, M)                      # percent of school variation explained by school covariates
   , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
-  , ICC.2 = rep(0, M)                     # school intraclass correlation	
-  , omega.2 = 0.5                         # ratio of school effect size variability to random effects variability
+  , ICC.2 = rep(0.2, M)                     # school intraclass correlation	
+  , omega.2 = 0.2                         # ratio of school effect size variability to random effects variability
   , rho.u = default.rho.matrix            # MxM matrix of correlations for school random effects
   , rho.v = default.rho.matrix            # MxM matrix of correlations for school impacts
   , theta.uv = matrix(0, M, M)            # MxM matrix of correlations between school random effects and impacts

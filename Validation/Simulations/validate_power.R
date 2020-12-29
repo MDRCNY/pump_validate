@@ -451,12 +451,12 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
       procs = c("rawp", procs)
     }
     
-    power.file = find_file(params.file.base, type = 'power')
+    power.file <- find_file(params.file.base, type = 'power')
     if(length(power.file) == 0)
     {
       stop(paste('Power results table needed for params:', params.file.base))
     }
-    power.results = readRDS(power.file)
+    power.results <- readRDS(power.file)
     
     mdes_compare_results <- plot_data <- NULL
     for (MTP in procs){
@@ -480,7 +480,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
         cl = cl
       )
       mdes_compare_results <- rbind(mdes_compare_results, mdes_results$mdes.results)
-      plot_data <- rbind(plot_data, mdes_results$tries)
+      plot_data <- rbind(plot_data, mdes_results$test.pts)
     }
     
     plot_data = plot_data[plot_data$step > 0,]
@@ -490,7 +490,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
       facet_wrap(.~MTP) +
       geom_hline(aes(yintercept = target.power)) +
       ylim(0, 1)
-    plot.mdes = ggplot(plot_data, aes(x = step, y = mdes)) +
+    plot.mdes = ggplot(plot_data, aes(x = step, y = pt)) +
       geom_point() + geom_line() +
       facet_wrap(.~MTP)
     print(grid.arrange(plot.power, plot.mdes, top = design))
@@ -536,7 +536,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
   print(paste('Sample validation for:', params.file.base))
   
-  current.file = find_file(params.file.base, type = 'sample')
+  current.file <- find_file(params.file.base, type = 'sample')
   
   if(overwrite | length(current.file) == 0)
   {
@@ -559,7 +559,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
     {
       stop(paste('Power results table needed for params:', params.file.base))
     }
-    power.results = readRDS(power.file)
+    power.results <- readRDS(power.file)
     
     sample_compare_results <- NULL
     for(type in c('J', 'nbar'))
@@ -571,6 +571,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
           design = design,
           MTP = MTP,
           typesample = type,
+          MDES = user.params.list[['ATE_ES']],
           M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
           target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'],
           power.definition = 'D1indiv',
@@ -588,7 +589,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
           cl = cl
         )
         sample_results$type <- type
-        sample_compare_results <- rbind(sample_compare_results, sample_results)
+        sample_compare_results <- rbind(sample_compare_results, sample_results$ss.results)
       }
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
@@ -619,7 +620,9 @@ if(FALSE)
   target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
   ATE_ES = user.params.list[['ATE_ES']]
+  MDES = user.params.list[['ATE_ES']]
   J = user.params.list[['J']];
+  K = user.params.list[['K']];
   nbar = user.params.list[['nbar']];
   power.definition = "D1indiv";
   tol = sim.params.list[['tol']];
@@ -642,4 +645,5 @@ if(FALSE)
   two.tailed = TRUE;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl = NULL
+  max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000
 }
