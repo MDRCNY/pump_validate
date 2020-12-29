@@ -186,7 +186,7 @@ calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2
     Q.m <- sqrt( (ICC.2 * omega.2)/J + ((1 - ICC.2) * (1 - R2.1))/(Tbar * (1-Tbar) * J * nbar) )
   } else if (design == 'blocked_i1_3r')
   {
-    Q.m <- sqrt( (ICC.3 * omega.3)/K + (ICC.2 * omega.2)/J*K + ((1 - ICC.2) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
+    Q.m <- sqrt( (ICC.3 * omega.3)/K + (ICC.2 * omega.2)/J*K + ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
   } else if (design == 'simple_c2_2r')
   {
     Q.m <- sqrt( (ICC.2 * (1 - R2.2))/Tbar * (1-Tbar) * J + (1 - ICC.2)*(1 - R2.1)/(Tbar * (1-Tbar) * J * nbar))
