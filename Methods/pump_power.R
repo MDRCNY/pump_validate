@@ -601,7 +601,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
                            rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
                            snum = snum, cl = cl,
-                           max.steps = 20, max.cum.tnum = 5000, max.tnum = 10000)
+                           max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
 {
   # search.type = 'mdes'; start.low = mdes.low; start.high = mdes.high
   
@@ -698,7 +698,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
           J = ifelse(search.type == 'J', current.try, J),
           K = ifelse(search.type == 'K', current.try, K),
           nbar = ifelse(search.type == 'nbar', current.try, nbar),
-          tnum = max.tnum,
+          tnum = final.tnum,
           # fixed params
           M = M, Tbar = Tbar, alpha = alpha,
           numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
@@ -802,12 +802,12 @@ pump_mdes <- function(
   numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
   rho, omega.2, omega.3 = NULL,
   tnum = 10000, snum = 1000,
-  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, max.tnum = 10000,
+  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
   cl = NULL, updateProgress = NULL
 )
 {
   # check if zero power, then return 0 MDES
-  if(target.power == 0)
+  if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
     test.pts <- NULL
@@ -877,7 +877,7 @@ pump_mdes <- function(
                              rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
                              snum = snum, cl = cl,
                              max.steps = max.steps, max.cum.tnum = max.cum.tnum,
-                             max.tnum = max.tnum)
+                             final.tnum = final.tnum)
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
 
@@ -1052,12 +1052,12 @@ pump_sample <- function(
   numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
   rho, omega.2, omega.3 = NULL,
   tnum = 10000, snum = 1000,
-  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, max.tnum = 10000,
+  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
   cl = NULL, updateProgress = NULL
 )
 {
   # check if zero power, then return 0 MDES
-  if(target.power == 0)
+  if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
     test.pts <- NULL
@@ -1162,7 +1162,7 @@ pump_sample <- function(
     rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
     snum = snum, cl = cl,
     max.steps = max.steps, max.cum.tnum = max.cum.tnum,
-    max.tnum = max.tnum
+    final.tnum = final.tnum
   )
   ss.results <- data.frame(MTP, typesample, ceiling(test.pts$pt[nrow(test.pts)]), test.pts$power[nrow(test.pts)])
   colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))

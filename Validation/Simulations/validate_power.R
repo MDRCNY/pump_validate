@@ -480,7 +480,10 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
         rho = user.params.list[['rho.default']],
         omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
         tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
+        start.tnum = sim.params.list[['start.tnum']],
+        final.tnum = sim.params.list[['final.tnum']],
         max.cum.tnum = sim.params.list[['max.cum.tnum']],
+        max.steps = sim.params.list[['max.steps']],
         cl = cl
       )
       mdes_compare_results <- rbind(mdes_compare_results, mdes_results$mdes.results)
@@ -600,7 +603,10 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
           rho = user.params.list[['rho.default']],
           omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
           tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
+          start.tnum = sim.params.list[['start.tnum']],
+          final.tnum = sim.params.list[['final.tnum']],
           max.cum.tnum = sim.params.list[['max.cum.tnum']],
+          max.steps = sim.params.list[['max.steps']],
           cl = cl
         )
         sample_results$type <- type

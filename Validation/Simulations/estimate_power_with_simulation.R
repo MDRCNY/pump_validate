@@ -34,9 +34,9 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   px <- 100
   rawt.all <- matrix(NA, S, M)
   # begin loop through all samples to be generated
+  t1 <- Sys.time()
   for (s in 1:S) {
     
-    t1 <- Sys.time()
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
@@ -85,16 +85,16 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         pvals <- get.adjp(proc, rawp, rawt, mdat, S.ij, S.ik, sim.params.list, model.params.list, design, cl)
         
         t21 <- Sys.time()
-        if (s == 1) { message(paste("One sample of", proc, "took", difftime(t21, t11, units = 'secs'))) }
+        if (s == 1) { message(paste("One sample of", proc, "took", round(difftime(t21, t11, units = 'secs')[[1]], 4), 'seconds')) }
       }
       adjp.proc[s,,proc] = pvals
     }
     
-    t2 <- Sys.time()
-    if (s == 1) {
+    if (s == 10) {
+      t2 <- Sys.time()
       message(paste(
         "Current time:", t2,
-        "\nExpected time diff for simulation of", round(S*(difftime(t2, t1, units = 'secs')[[1]])/60,2),
+        "\nExpected time diff for simulation of", round(S*difftime(t2, t1, units = 'secs')[[1]]/(10*60), 2),
         "minutes.\nExpected finish for simulation at", t1 + (t2 - t1) * S,"for S =", S, sep =" ")
       )
     }
