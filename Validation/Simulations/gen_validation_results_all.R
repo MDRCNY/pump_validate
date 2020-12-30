@@ -5,7 +5,7 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = FALSE
+overwrite = TRUE
 # if TRUE, only run one power calculation, otherwise run all scenarios of interest
 run.test = FALSE
 # whether or not to run power, mdes and sample size
@@ -201,9 +201,10 @@ if(!run.test & run.blocked.2l & run.power)
 
 if(!run.test & run.blocked.2l & run.mdes.ss)
 {
-  scenarios = 3
+  scenarios <- 3
   # back to defaults
   user.params.list <- params.default
+  user.params.list[['K']] <- 1
   # don't do WY for now
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
   
@@ -536,7 +537,7 @@ if(!run.test & run.blocked.3l & run.power)
 
 if(!run.test & run.blocked.3l & run.mdes.ss)
 {
-  scenarios = 1
+  scenarios <- 1
   # back to defaults
   user.params.list <- params.default
   # don't do WY for now

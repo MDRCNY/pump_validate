@@ -428,7 +428,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
 #'
 #' @examples
 validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
-  
+
   if(sim.params.list[['parallel']])
   {
     cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
@@ -441,7 +441,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
   print(paste('MDES validation for:', params.file.base))
   
-  current.file = find_file(params.file.base, type = 'mdes')
+  current.file <- find_file(params.file.base, type = 'mdes')
   
   if(overwrite | length(current.file) == 0)
   {
@@ -561,8 +561,19 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
     }
     power.results <- readRDS(power.file)
     
+    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'simple_c2_2r'))
+    {
+      typesamples = c('J', 'nbar')
+    } else if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
+    {
+      typesamples = c('K', 'nbar')
+    } else
+    {
+      stop('Design not implemented')
+    }
+    
     sample_compare_results <- NULL
-    for(type in c('J', 'nbar'))
+    for(type in typesamples)
     {
       for (MTP in procs)
       {
@@ -637,11 +648,12 @@ if(FALSE)
   rho = user.params.list[['rho.default']];
   omega.2 = user.params.list[['omega.2']];
   omega.3 = user.params.list[['omega.3']];
+  numCovar.1 = 1; numCovar.2 = 1; numCovar.3 = 1;
   tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
   max.cum.tnum = sim.params.list[['max.cum.tnum']];
   updateProgress = NULL;
   typesample = 'J';
-  J0 = 10; nbar0 = 10;
+  J0 = 10; nbar0 = 10; K0 = 2;
   two.tailed = TRUE;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl = NULL

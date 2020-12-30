@@ -180,30 +180,84 @@ calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2
   
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    Q.m <- sqrt(1 - R2.1) / sqrt(Tbar * (1-Tbar) * J * nbar) 
+    Q.m <- sqrt( (1 - R2.1) /(Tbar * (1-Tbar) * J * nbar) )
   } else if (design == 'blocked_i1_2r')
   {
-    Q.m <- sqrt( (ICC.2 * omega.2)/J + ((1 - ICC.2) * (1 - R2.1))/(Tbar * (1-Tbar) * J * nbar) )
+    Q.m <- sqrt( (ICC.2 * omega.2)/J +
+                ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * nbar) )
   } else if (design == 'blocked_i1_3r')
   {
-    Q.m <- sqrt( (ICC.3 * omega.3)/K + (ICC.2 * omega.2)/J*K + ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
+    Q.m <- sqrt( (ICC.3 * omega.3) / K +
+                 (ICC.2 * omega.2) / (J * K) +
+                 ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
   } else if (design == 'simple_c2_2r')
   {
-    Q.m <- sqrt( (ICC.2 * (1 - R2.2))/Tbar * (1-Tbar) * J + (1 - ICC.2)*(1 - R2.1)/(Tbar * (1-Tbar) * J * nbar))
+    Q.m <- sqrt( (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J) +
+                 (1 - ICC.2)*(1 - R2.1) / (Tbar * (1-Tbar) * J * nbar))
   } else if (design == 'simple_c3_3r')
   {
-    Q.m <- sqrt( ICC.2 * (1 - R2.3)/Tbar * (1-Tbar) * K + (ICC.2 * (1 - R2.2))/Tbar * (1-Tbar) * J * K  + (1 - ICC.2) * (1 - R2.1)/Tbar * (1-Tbar) * J * K * nbar )
+    Q.m <- sqrt( (ICC.3 * (1 - R2.3)) / (Tbar * (1-Tbar) * K) +
+                 (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
+                 ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
   } else if (design == 'blocked_c2_3f')
   {
-    Q.m <- sqrt( ICC.2 * (1 - R2.2)/Tbar * (1-Tbar) * J + ((1 - ICC.2) * (1 - R2.1)) / Tbar * (1-Tbar) * J * nbar)
+    Q.m <- sqrt( (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
+                 ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
   } else if (design == 'blocked_c2_3r')
   {
-    Q.m <- sqrt( ICC.3/K + ICC.2 * (1 - R2.2)/Tbar * (1-Tbar) * J * K + ((1 - ICC.2 - ICC.3) * (1 - R2.1))/Tbar * (1-Tbar) * J * K * nbar)
+    Q.m <- sqrt( (ICC.3 * omega.3) / K +
+                 (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K)+
+                 ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / Tbar * (1-Tbar) * J * K * nbar)
   } else
   {
     stop(paste('Design not implemented:', design))
   }
   return(Q.m)
+}
+
+
+#' This function calculates the degree of freedom for all implemented designs
+#' @param design RCT design (see list/naming convention)
+#' @param J the number of schools
+#' @param K the number of districts
+#' @param nbar units per block
+#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
+#' @param numCovar.2 number of Level 2 baseline covariates
+#' @param numCovar.3 number of Level 3 baseline covariates
+#'
+#' @return the degree of freedom
+
+calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
+  
+  if(design == 'blocked_i1_2c')
+  {
+    df <- J * nbar - numCovar.1 - J - 1
+  } else if (design == 'blocked_i1_2f')
+  {
+    df <- J * nbar - numCovar.1 - 2 * J
+  } else if (design == 'blocked_i1_2r')
+  {
+    df <- J - numCovar.1 - 1
+  } else if (design == 'blocked_i1_3r')
+  {
+    df <- K - numCovar.3 - 1
+  } else if (design == 'simple_c2_2r')
+  {
+    df <- J - numCovar.1 - 2
+  } else if (design == 'simple_c3_3r')
+  {
+    df <- K - numCovar.3 - 2
+  } else if (design == 'blocked_c2_3f')
+  {
+    df <- K * (J - 2) - numCovar.2
+  }else if (design == 'blocked_c2_3r')
+  {
+    df <- K - numCovar.3 - 1
+  } else
+  {
+    stop(paste('Design not implemented:', design))
+  }
+  return(df)
 }
 
 #' This function calculates J for all implemented designs
@@ -226,15 +280,15 @@ calc.J <- function(design, MT, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2) {
   
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    J <- (MT/MDES)^2 * ( (1 - R2.1)/(Tbar * (1 - Tbar) * nbar) )
+    J <- (MT/MDES)^2 * ( (1 - R2.1) / (Tbar * (1 - Tbar) * nbar) )
   } else if (design == 'blocked_i1_2r')
   {
     J <- (MT/MDES)^2 * ( (ICC.2 * omega.2) +
-                         ((1 - ICC.2)*(1 - R2.1))/(Tbar * (1 - Tbar) * nbar) )
+                         ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * nbar) )
   } else if (design == 'simple_c2_2r')
   {
-    J <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar)) +
-                         ((1 - ICC.2)*(1 - R2.1))/(Tbar * (1 - Tbar) * nbar) )
+    J <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)) +
+                         ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * nbar) )
   } else
   {
     stop(paste('Design not implemented:', design))
@@ -246,22 +300,22 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   if(design == 'blocked_i1_3r')
   {
     K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                         (ICC.2 * omega.2)/J +
-                         ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
+                         (ICC.2 * omega.2) / J +
+                         ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
   } else if (design == 'simple_c3_3r')
   {
-    K <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3))/(Tbar * (1 - Tbar)) +
-                         (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
-                         ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
+    K <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
+                         (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                         ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
   } else if (design == 'blocked_c2_3f')
   {
-    K <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
-                         ((1 - ICC.2) * (1 - R1.2))/(Tbar * (1 - Tbar) * J * nbar) )
+    K <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                         ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
   } else if (design == 'blocked_c2_3r')
   {
     K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                         (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
-                         ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
+                         (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                         ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
   } else
   {
     stop(paste('Design not implemented:', design))
@@ -290,34 +344,34 @@ calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    nbar <- (MT/MDES)^2 * ((1 - R2.1)/(Tbar * (1 - Tbar) * J))
+    nbar <- (MT/MDES)^2 * ( (1 - R2.1) / (Tbar * (1 - Tbar) * J) )
   } else if (design == 'blocked_i1_2r')
   {
     nbar <- (MT/MDES)^2 * ( (ICC.2 * omega.2) +
-                           ((1 - ICC.2)*(1 - R2.1))/(Tbar * (1 - Tbar) * J) )
+                            ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J) )
   } else if (design == 'blocked_i1_3r')
   {
     nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                           (ICC.2 * omega.2)/J +
-                           ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
+                            (ICC.2 * omega.2) / J +
+                            ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
   } else if (design == 'simple_c2_2r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar)) +
-                           ((1 - ICC.2)*(1 - R2.1))/(Tbar * (1 - Tbar) * J) )
+    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)) +
+                            ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J) )
   } else if (design == 'simple_c3_3r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3))/(Tbar * (1 - Tbar)) +
-                           (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
-                           ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
+    nbar <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
+                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                            ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
   } else if (design == 'blocked_c2_3f')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
-                           ((1 - ICC.2) * (1 - R1.2))/(Tbar * (1 - Tbar) * J * K) )
+    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                           ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
   }else if (design == 'blocked_c2_3r')
   {
     nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                           (ICC.2 * (1 - R2.2))/(Tbar * (1 - Tbar) * J) +
-                           ((1 - ICC.2 - ICC.3)*(1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
+                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                            ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
   } else
   {
     stop(paste('Design not implemented:', design))
@@ -326,50 +380,6 @@ calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
 }
 
 
-
-#' This function calculates the degree of freedom for all implemented designs
-#' @param design RCT design (see list/naming convention)
-#' @param J the number of schools
-#' @param K the number of districts
-#' @param nbar units per block
-#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
-#' @param numCovar.2 number of Level 2 baseline covariates
-#' @param numCovar.3 number of Level 3 baseline covariates
-#'
-#' @return the degree of freedom
-
-calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
-  
-  if(design == 'blocked_i1_2c')
-  {
-    df <- J*nbar - numCovar.1 - J - 1
-  } else if (design == 'blocked_i1_2f')
-  {
-    df <- J*nbar - numCovar.1 - 2*J
-  } else if (design == 'blocked_i1_2r')
-  {
-    df <- J - numCovar.1 - 1
-  } else if (design == 'blocked_i1_3r')
-  {
-    df <- K - numCovar.3 - 1
-  } else if (design == 'simple_c2_2r')
-  {
-    df <- J - numCovar.1 -2
-  } else if (design == 'simple_c3_3r')
-  {
-    df <- K - numCovar.3 - 2
-  } else if (design == 'blocked_c2_3f')
-  {
-    df <- K * (J - 2) - numCovar.2 - 2
-  }else if (design == 'blocked_c2_3r')
-  {
-    df <- K - numCovar.3 - 1
-  } else
-  {
-    stop(paste('Design not implemented:', design))
-  }
-  return(df)
-}
 
 #' Calculate power using PUMP method
 #'
@@ -583,7 +593,7 @@ midpoint <- function(lower, upper) {
 
 # optimizes power for either MDES, ss.J = sample size J, ss.nbar = sample size nbar
 
-optimize_power <- function(search.type, MTP, target.power, power.definition, tol,
+optimize_power <- function(design, search.type, MTP, target.power, power.definition, tol,
                            start.tnum, start.low, start.high,
                            MDES = NULL, J = NULL, K = NULL, nbar = NULL,
                            M = M, Tbar = Tbar, alpha = alpha,
@@ -611,7 +621,7 @@ optimize_power <- function(search.type, MTP, target.power, power.definition, tol
   {
     if(search.type == 'mdes'){ MDES <- rep(test.pts$pt[i], M) }
     pt.power.results <- pump_power(
-      design = design, MTP = MTP,
+      design, MTP = MTP,
       MDES = MDES,
       J = ifelse(search.type == 'J', test.pts$pt[i], J),
       K = ifelse(search.type == 'K', test.pts$pt[i], K),
@@ -631,7 +641,6 @@ optimize_power <- function(search.type, MTP, target.power, power.definition, tol
   current.power <- 0
   current.tnum <- start.tnum
   cum.tnum <- 0
-  pts.results <- data.frame(MTP, NA, NA)
   step <- 0
   
   while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
@@ -797,8 +806,15 @@ pump_mdes <- function(
   cl = NULL, updateProgress = NULL
 )
 {
-  # set some defaults 
-  # max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000
+  # check if zero power, then return 0 MDES
+  if(target.power == 0)
+  {
+    message('Target power of 0 requested')
+    test.pts <- NULL
+    mdes.results <- data.frame(MTP, 0, 0)
+    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+    return(list(mdes.results = mdes.results, test.pts = test.pts))
+  }
   
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
@@ -852,9 +868,9 @@ pump_mdes <- function(
     stop('MDES search only implemented for individual power.')
   }
   
-  test.pts <- optimize_power(search.type = 'mdes', MTP, target.power, power.definition, tol,
+  test.pts <- optimize_power(design, search.type = 'mdes', MTP, target.power, power.definition, tol,
                              start.tnum, start.low = mdes.low, start.high = mdes.high,
-                             MDES = NULL, J = J, nbar = nbar,
+                             MDES = NULL, J = J, K = K, nbar = nbar,
                              M = M, Tbar = Tbar, alpha = alpha,
                              numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                              R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
@@ -912,7 +928,7 @@ pump_mdes <- function(
 pump_sample_raw <- function(
   design, MTP, typesample,
   MDES, M, J = NULL, K = 1,
-  J0 = 10, K0 = 3, nbar0 = 10,
+  J0 = 10, K0 = 4, nbar0 = 10,
   target.power,
   nbar = NULL, Tbar, alpha, two.tailed = TRUE,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
@@ -930,6 +946,8 @@ pump_sample_raw <- function(
     # checking which type of sample we are estimating
     if (typesample == "J"){
       df <- calc.df(design, J0, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+    } else if (typesample == "K"){
+      df <- calc.df(design, J, K0, nbar, numCovar.1, numCovar.2, numCovar.3)
     } else if (typesample == "nbar") {
       df <- calc.df(design, J, K, nbar0, numCovar.1, numCovar.2, numCovar.3)
     }
@@ -940,7 +958,7 @@ pump_sample_raw <- function(
     
     if (typesample == "J") {
       J1 <- calc.J(
-        design = design, MT = MT, MDES = MDES[1], nbar = nbar, Tbar = Tbar,
+        design, MT = MT, MDES = MDES[1], nbar = nbar, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], ICC.2 = ICC.2[1], omega.2 = omega.2
       )
       if (abs(J1 - J0) < tol) {
@@ -949,7 +967,7 @@ pump_sample_raw <- function(
       J0 <- (J1 + J0)/2
     } else if (typesample == "K") {
       K1 <- calc.K(
-        design = design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
+        design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1], ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
         omega.2 = omega.2, omega.3 = omega.3
       )
@@ -959,7 +977,7 @@ pump_sample_raw <- function(
       K0 <- (K1 + K0)/2
     } else if (typesample == "nbar") {
       nbar1 <- calc.nbar(
-        design = design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
+        design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1], ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
         omega.2 = omega.2, omega.3 = omega.3
       )
@@ -1027,7 +1045,7 @@ pump_sample_raw <- function(
 pump_sample <- function(
   design, MTP, typesample,
   MDES, M, J, K = 1,
-  J0 = 10, K0 = 2, nbar0 = 10,
+  J0 = 10, K0 = 4, nbar0 = 10,
   ATE_ES, target.power, power.definition, tol,
   nbar, Tbar, alpha, two.tailed = TRUE,
   numCovar.1 = 0, numCovar.2 = 0,
@@ -1038,8 +1056,15 @@ pump_sample <- function(
   cl = NULL, updateProgress = NULL
 )
 {
-  # set some defaults 
-  # max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000
+  # check if zero power, then return 0 MDES
+  if(target.power == 0)
+  {
+    message('Target power of 0 requested')
+    test.pts <- NULL
+    ss.results <- data.frame(MTP, typesample, 0, 0)
+    colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+    return(list(ss.results = ss.results, test.pts = test.pts))
+  }
   
   # Checks on what we are estimating, sample size
   print(paste("Estimating sample size of type", typesample, "for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
@@ -1068,7 +1093,7 @@ pump_sample <- function(
   # Compute J or nbar for raw and BF SS for INDIVIDUAL POWER. We are estimating bounds like we estimated MDES bounds.
   # for now assuming only two tailed tests
   ss.raw <- pump_sample_raw(
-    design, MTP, typesample,
+    design = design, MTP, typesample,
     MDES, M, J, K,
     J0, K0, nbar0,
     target.power,
@@ -1078,7 +1103,7 @@ pump_sample <- function(
     rho, omega.2, omega.3
   )
   ss.BF <- pump_sample_raw(
-    design, MTP, typesample,
+    design = design, MTP, typesample,
     MDES, M, J, K,
     J0, K0, nbar0,
     target.power,
@@ -1113,9 +1138,18 @@ pump_sample <- function(
   } else {
     stop('Sample size search only implemented for individual power.')
   }
+  
+  # sometimes we already know the answer!
+  if(ss.low == ss.high)
+  {
+    test.pts <- NULL
+    ss.results <- data.frame(MTP, typesample, 1, target.power)
+    colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+    return(list(ss.results = ss.results, test.pts = test.pts))
+  }
 
   test.pts <- optimize_power(
-    search.type = typesample,
+    design = design, search.type = typesample,
     MTP, target.power, power.definition, tol,
     start.tnum, start.low = ss.low, start.high = ss.high,
     MDES = MDES,
