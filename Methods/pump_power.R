@@ -180,33 +180,43 @@ calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2
   
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    Q.m <- sqrt(1 - R2.1) / sqrt(Tbar * (1-Tbar) * J * nbar) 
+    Q.m <- sqrt( (1 - R2.1) /(Tbar * (1-Tbar) * J * nbar) )
   } else if (design == 'blocked_i1_2r')
   {
-    Q.m <- sqrt( (ICC.2 * omega.2)/J + ((1 - ICC.2) * (1 - R2.1))/(Tbar * (1-Tbar) * J * nbar) )
+    Q.m <- sqrt( (ICC.2 * omega.2)/J +
+                ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * nbar) )
   } else if (design == 'blocked_i1_3r')
   {
-    Q.m <- sqrt( (ICC.3 * omega.3)/K + (ICC.2 * omega.2)/J*K + ((1 - ICC.2) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
+    Q.m <- sqrt( (ICC.3 * omega.3) / K +
+                 (ICC.2 * omega.2) / (J * K) +
+                 ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
   } else if (design == 'simple_c2_2r')
   {
-    Q.m <- sqrt( (ICC.2 * (1 - R2.2))/Tbar * (1-Tbar) * J + (1 - ICC.2)*(1 - R2.1)/(Tbar * (1-Tbar) * J * nbar))
+    Q.m <- sqrt( (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J) +
+                 (1 - ICC.2)*(1 - R2.1) / (Tbar * (1-Tbar) * J * nbar))
   } else if (design == 'simple_c3_3r')
   {
-    Q.m <- sqrt( ICC.2 * (1 - R2.3)/Tbar * (1-Tbar) * K + (ICC.2 * (1 - R2.2))/Tbar * (1-Tbar) * J * K  + (1 - ICC.2) * (1 - R2.1)/Tbar * (1-Tbar) * J * K * nbar )
+    Q.m <- sqrt( (ICC.3 * (1 - R2.3)) / (Tbar * (1-Tbar) * K) +
+                 (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
+                 ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
   } else if (design == 'blocked_c2_3f')
   {
-    Q.m <- sqrt( ICC.2 * (1 - R2.2)/Tbar * (1-Tbar) * J + ((1 - ICC.2) * (1 - R2.1)) / Tbar * (1-Tbar) * J * nbar)
+    Q.m <- sqrt( (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
+                 ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
   } else if (design == 'blocked_c2_3r')
   {
-    Q.m <- sqrt( ICC.3/K + ICC.2 * (1 - R2.2)/Tbar * (1-Tbar) * J * K + ((1 - ICC.2 - ICC.3) * (1 - R2.1))/Tbar * (1-Tbar) * J * K * nbar)
-  }else
+    Q.m <- sqrt( (ICC.3 * omega.3) / K +
+                 (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K)+
+                 ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / Tbar * (1-Tbar) * J * K * nbar)
+  } else
   {
     stop(paste('Design not implemented:', design))
   }
   return(Q.m)
 }
 
-#' This function calculates the degree of freedom for 2 level RCT block design
+
+#' This function calculates the degree of freedom for all implemented designs
 #' @param design RCT design (see list/naming convention)
 #' @param J the number of schools
 #' @param K the number of districts
@@ -221,10 +231,10 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
   
   if(design == 'blocked_i1_2c')
   {
-    df <- J*nbar - numCovar.1 - J - 1
+    df <- J * nbar - numCovar.1 - J - 1
   } else if (design == 'blocked_i1_2f')
   {
-    df <- J*nbar - numCovar.1 - 2*J
+    df <- J * nbar - numCovar.1 - 2 * J
   } else if (design == 'blocked_i1_2r')
   {
     df <- J - numCovar.1 - 1
@@ -233,13 +243,13 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
     df <- K - numCovar.3 - 1
   } else if (design == 'simple_c2_2r')
   {
-    df <- J - numCovar.1 -2
+    df <- J - numCovar.1 - 2
   } else if (design == 'simple_c3_3r')
   {
     df <- K - numCovar.3 - 2
   } else if (design == 'blocked_c2_3f')
   {
-    df <- K * (J - 2) - numCovar.2 - 2
+    df <- K * (J - 2) - numCovar.2
   }else if (design == 'blocked_c2_3r')
   {
     df <- K - numCovar.3 - 1
@@ -247,9 +257,129 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
   {
     stop(paste('Design not implemented:', design))
   }
-  
   return(df)
 }
+
+#' This function calculates J for all implemented designs
+#' @param design RCT design (see list/naming convention)
+#' @param J the number of schools
+#' @param K the number of districts
+#' @param nbar units per block
+#' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
+#' @param R2.2 a vector of length M corresponding to R^2 for Level-2 covariates for M outcomes
+#' @param R2.3 a vector of length M corresponding to R^2 for Level-3 covariates for M outcomes
+#' @param ICC.2 a vector of length M of school intraclass correlation	
+#' @param ICC.3 a vector of length M of district intraclass correlation	
+#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
+#' @param numCovar.2 number of Level 2 baseline covariates
+#' @param numCovar.3 number of Level 3 baseline covariates
+#'
+#' @return the degree of freedom
+
+calc.J <- function(design, MT, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2) {
+  
+  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
+  {
+    J <- (MT/MDES)^2 * ( (1 - R2.1) / (Tbar * (1 - Tbar) * nbar) )
+  } else if (design == 'blocked_i1_2r')
+  {
+    J <- (MT/MDES)^2 * ( (ICC.2 * omega.2) +
+                         ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * nbar) )
+  } else if (design == 'simple_c2_2r')
+  {
+    J <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)) +
+                         ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * nbar) )
+  } else
+  {
+    stop(paste('Design not implemented:', design))
+  }
+}
+
+calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
+  
+  if(design == 'blocked_i1_3r')
+  {
+    K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
+                         (ICC.2 * omega.2) / J +
+                         ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
+  } else if (design == 'simple_c3_3r')
+  {
+    K <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
+                         (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                         ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
+  } else if (design == 'blocked_c2_3f')
+  {
+    K <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                         ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
+  } else if (design == 'blocked_c2_3r')
+  {
+    K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
+                         (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                         ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
+  } else
+  {
+    stop(paste('Design not implemented:', design))
+  }
+  return(K)
+}
+
+
+#' This function calculates nbar for all implemented designs
+#' @param design RCT design (see list/naming convention)
+#' @param J the number of schools
+#' @param K the number of districts
+#' @param nbar units per block
+#' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
+#' @param R2.2 a vector of length M corresponding to R^2 for Level-2 covariates for M outcomes
+#' @param R2.3 a vector of length M corresponding to R^2 for Level-3 covariates for M outcomes
+#' @param ICC.2 a vector of length M of school intraclass correlation	
+#' @param ICC.3 a vector of length M of district intraclass correlation	
+#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
+#' @param numCovar.2 number of Level 2 baseline covariates
+#' @param numCovar.3 number of Level 3 baseline covariates
+#'
+#' @return the degree of freedom
+
+calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
+  
+  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
+  {
+    nbar <- (MT/MDES)^2 * ( (1 - R2.1) / (Tbar * (1 - Tbar) * J) )
+  } else if (design == 'blocked_i1_2r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.2 * omega.2) +
+                            ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J) )
+  } else if (design == 'blocked_i1_3r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
+                            (ICC.2 * omega.2) / J +
+                            ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
+  } else if (design == 'simple_c2_2r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)) +
+                            ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J) )
+  } else if (design == 'simple_c3_3r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
+                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                            ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
+  } else if (design == 'blocked_c2_3f')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                           ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
+  }else if (design == 'blocked_c2_3r')
+  {
+    nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
+                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+                            ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
+  } else
+  {
+    stop(paste('Design not implemented:', design))
+  }
+  return(nbar)
+}
+
+
 
 #' Calculate power using PUMP method
 #'
@@ -460,11 +590,148 @@ midpoint <- function(lower, upper) {
   return(lower + dist(c(lower, upper))[[1]]/2)
 }
 
+
+# optimizes power for either MDES, ss.J = sample size J, ss.nbar = sample size nbar
+
+optimize_power <- function(design, search.type, MTP, target.power, power.definition, tol,
+                           start.tnum, start.low, start.high,
+                           MDES = NULL, J = NULL, K = NULL, nbar = NULL,
+                           M = M, Tbar = Tbar, alpha = alpha,
+                           numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+                           R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+                           rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+                           snum = snum, cl = cl,
+                           max.steps = 20, max.cum.tnum = 5000, max.tnum = 10000)
+{
+  # search.type = 'mdes'; start.low = mdes.low; start.high = mdes.high
+  
+  # fit initial quadratic curve
+  # generate a series of points to try
+  test.pts <- data.frame(
+    step = 0,
+    pt = seq(start.low, start.high, length.out = 5),
+    power = NA,
+    w = start.tnum,
+    MTP = MTP,
+    target.power = target.power
+  )
+  
+  # generate power for all these points
+  for(i in 1:nrow(test.pts))
+  {
+    if(search.type == 'mdes'){ MDES <- rep(test.pts$pt[i], M) }
+    pt.power.results <- pump_power(
+      design, MTP = MTP,
+      MDES = MDES,
+      J = ifelse(search.type == 'J', test.pts$pt[i], J),
+      K = ifelse(search.type == 'K', test.pts$pt[i], K),
+      nbar = ifelse(search.type == 'nbar', test.pts$pt[i], nbar),
+      tnum = start.tnum,
+      # fixed params
+      M = M, Tbar = Tbar, alpha = alpha,
+      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+      rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+      snum = snum, cl = cl
+    )
+    test.pts$power[i] <- pt.power.results[MTP, power.definition]
+  }
+  
+  current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = midpoint(start.low, start.high))
+  current.power <- 0
+  current.tnum <- start.tnum
+  cum.tnum <- 0
+  step <- 0
+  
+  while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
+  {
+    step <- step + 1
+    current.tnum <- pmin(max.cum.tnum, round(current.tnum * 1.1))
+    cum.tnum <- cum.tnum + current.tnum
+    
+    if(search.type == 'mdes'){ MDES <- rep(current.try, M) }
+    current.power.results <- pump_power(
+      design, MTP = MTP,
+      MDES = MDES,
+      J = ifelse(search.type == 'J', current.try, J),
+      K = ifelse(search.type == 'K', current.try, K),
+      nbar = ifelse(search.type == 'nbar', current.try, nbar),
+      tnum = current.tnum,
+      # fixed params
+      M = M, Tbar = Tbar, alpha = alpha,
+      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+      rho = rho, omega.2 = omega.2, omega.3 = omega.3, snum = snum, cl = cl
+    )
+    current.power <- current.power.results[MTP, power.definition]
+    
+    if(abs(current.power - target.power) < tol) {
+      check.power.tnum <- pmin(10 * current.tnum, max.cum.tnum)
+      
+      if(search.type == 'mdes'){ MDES <- rep(current.try, M) }
+      check.power.results <- pump_power(
+        design, MTP = MTP,
+        MDES = MDES,
+        J = ifelse(search.type == 'J', current.try, J),
+        K = ifelse(search.type == 'K', current.try, K),
+        nbar = ifelse(search.type == 'nbar', current.try, nbar),
+        tnum = check.power.tnum,
+        # fixed params
+        M = M,  Tbar = Tbar, alpha = alpha,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+        rho = rho, omega.2 = omega.2, omega.3 = omega.3, snum = snum, cl = cl
+      )
+      check.power <- check.power.results[MTP, power.definition]
+      
+      # cum.tnum <- cum.tnum + check.power.tnum
+      # TODO: replace with weighted average?
+      current.power <- check.power
+      # If still good, go to our final check to see if we are winners!
+      # TODO: && (test_pow_R < MAX_ITER)
+      if(abs(current.power - target.power) < tol)
+      {
+        if(search.type == 'mdes'){ MDES <- rep(current.try, M) }
+        final.power.results <- pump_power(
+          design, MTP = MTP,
+          MDES = MDES,
+          J = ifelse(search.type == 'J', current.try, J),
+          K = ifelse(search.type == 'K', current.try, K),
+          nbar = ifelse(search.type == 'nbar', current.try, nbar),
+          tnum = max.tnum,
+          # fixed params
+          M = M, Tbar = Tbar, alpha = alpha,
+          numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+          R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+          rho = rho, omega.2 = omega.2, omega.3 = omega.3, snum = snum, cl = cl
+        )
+      }
+    } 
+    iter.results <- data.frame(
+      step = step, pt = current.try, power = current.power, w = current.tnum,
+      MTP = MTP, target.power = target.power
+    )
+    test.pts <- bind_rows(test.pts, iter.results)
+    
+    if(current.try < iter.results$pt) {
+      current.try <- find_best(test.pts, start.low, start.high, target.poewr, alternate = current.try + 0.10 * (start.high - current.try))
+    } else {
+      current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = current.try - 0.10 * (current.try - start.low) )
+    }
+  }
+  
+  if( (cum.tnum == max.cum.tnum | step == max.steps) & abs(current.power - target.power) > tol) {
+    message("Reached maximum iterations without converging on MDES estimate within tolerance.")
+  }
+  
+  return(test.pts)
+}
+
 # extract roots from quadratic curve based on given evaluated points
-find_best <- function(test.pts, mdes.low, mdes.high, target.power, alternate = NA)
+find_best <- function(test.pts, start.low, start.high, target.power, alternate = NA)
 {
   # fit quadratic curve
-  quad.mod <- lm( power ~ 1 + mdes + I(mdes^2), data = test.pts)
+  quad.mod <- lm( power ~ 1 + pt + I(pt^2), data = test.pts)
   # extract point where it crosses target power
   cc <- rev( coef( quad.mod ) )
   # Using x = [ b pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
@@ -472,25 +739,22 @@ find_best <- function(test.pts, mdes.low, mdes.high, target.power, alternate = N
   rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
   
   if ( rt.check > 0 ) {
-    try.mdes <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )
-    hits <- (mdes.low <= try.mdes) & (try.mdes <= mdes.high) 
+    # point to try
+    try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )
+    hits <- (start.low <= try.pt) & (try.pt <= start.high) 
     if ( sum( hits ) == 1 ) {
-      try.mdes <- try.mdes[hits]
+      try.pt <- try.pt[hits]
     } else {
       # error
       cat( "Root concerns\n" )
-      try.mdes <- alternate
+      try.pt <- alternate
     }
   } else {
     cat( "No roots\n" )
     # error
-    try.mdes <- alternate
+    try.pt <- alternate
   }
-  return(try.mdes)
-}
-
-scat = function( str, ... ) {
-  cat( sprintf( str, ... ) )
+  return(try.pt)
 }
 
 #' MDES (minimum detectable effect size) function
@@ -505,7 +769,7 @@ scat = function( str, ... ) {
 #' @param M the number of hypothesis tests (outcomes)
 #' @param J the number of schools
 #' @param K the number of districts
-#' @param power required statistical power for the experiment
+#' @param target.power required statistical power for the experiment
 #' @param power.definition definition of statistical power from individual, d-minimal to complete power
 #' @param tol the tolerance for MDES estimation based on targeted power value
 #' @param nbar the harmonic mean of the number of units per block
@@ -542,8 +806,15 @@ pump_mdes <- function(
   cl = NULL, updateProgress = NULL
 )
 {
-  # set some defaults 
-  # max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000
+  # check if zero power, then return 0 MDES
+  if(target.power == 0)
+  {
+    message('Target power of 0 requested')
+    test.pts <- NULL
+    mdes.results <- data.frame(MTP, 0, 0)
+    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+    return(list(mdes.results = mdes.results, test.pts = test.pts))
+  }
   
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
@@ -572,26 +843,20 @@ pump_mdes <- function(
   
   ### raw or bonferroni ###
   if (power.definition == "D1indiv") {
-    
     if (MTP == "rawp"){
       
       # Attaching the MDES result to power results for tabular output
       mdes.results <- data.frame(MTP, mdes.raw, target.power) # transpose the MDES raw and power to have the results columnwise
       colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
       return (list(mdes.results = mdes.results, tries = NULL))
-      
-    } #Raw MDES if anybody ever asked for it
-    
-    if (MTP == "Bonferroni"){
+    } else if (MTP == "Bonferroni"){
       
       # Attaching the MDES result to power results for tabular output
       mdes.results <- data.frame(MTP, mdes.bf, target.power) #transpose the MDES raw and power to have the results columnwise
       colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
       return(list(mdes.results = mdes.results, tries = NULL))
-      
-    } # Bonferroni adjusted MDES for Individual Power
-    
-  } # if we are doing power for raw (i.e. unadjusted) and Bonferroni
+    }
+  }
   
   # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint!
   # MDES for MTP that is not Bonferroni and for individual powers
@@ -603,206 +868,22 @@ pump_mdes <- function(
     stop('MDES search only implemented for individual power.')
   }
   
-  # fit initial quadratic curve
-  # generate a series of points to try
-  current.tnum <- start.tnum
-  test.pts <- data.frame(
-    step = 0,
-    mdes = seq(mdes.low, mdes.high, length.out = 5),
-    power = NA,
-    w = current.tnum,
-    MTP = MTP,
-    target.power = target.power
-  )
-  # generate power for all these points
-  for(i in 1:nrow(test.pts))
-  {
-    pt.power.results <- pump_power(design, MTP = MTP,
-                           MDES = rep(test.pts$mdes[i], M),
-                           M = M, J = J, K = K,
-                           nbar = nbar, Tbar = Tbar, alpha = alpha,
-                           numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-                           R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-                           rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
-                           tnum = tnum, snum = snum, cl = cl)
-    test.pts$power[i] <- pt.power.results[MTP, power.definition]
-  }
-  
-  current.mdes <- find_best(test.pts, mdes.low, mdes.high, target.power, alternate = midpoint(mdes.low, mdes.high))
-  
-  current.power <- 0
-  cum.tnum <- 0
-  mdes.results <- data.frame(MTP, NA, NA)
-  step <- 0
-  
-  while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
-  {
-    step <- step + 1
-    current.tnum <- pmin(max.cum.tnum, round(current.tnum * 1.1))
-    cum.tnum <- cum.tnum + current.tnum
-    current.power.results <- pump_power(
-      MDES = rep(current.mdes, M),
-      tnum = current.tnum, snum = snum,
-      design = design, MTP = MTP, M = M, J = J, K = K,
-      nbar = nbar, Tbar = Tbar, alpha = alpha,
-      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-      rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
-      cl = cl
-    )
-    current.power <- current.power.results[MTP, power.definition]
-    
-    if(abs(current.power - target.power) < tol) {
-      check.power.tnum <- pmin(10 * current.tnum, max.cum.tnum)
-      check.power.results <- pump_power(
-        MDES = rep(current.mdes, M),
-        tnum = check.power.tnum, snum = snum,
-        design = design, MTP = MTP, M = M, J = J, K = K,
-        nbar = nbar, Tbar = Tbar, alpha = alpha,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-        R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-        rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
-        cl = cl
-      )
-      check.power <- check.power.results[MTP, power.definition]
-      
-      # cum.tnum <- cum.tnum + check.power.tnum
-      # TODO: replace with weighted average?
-      current.power <- check.power
-      mdes.results <- data.frame(MTP, current.mdes, current.power)
-
-      # If still good, go to our final check to see if we are winners!
-      # TODO: && (test_pow_R < MAX_ITER)
-      if(abs(current.power - target.power) < tol)
-      {
-        check.power.results <- pump_power(
-          MDES = rep(current.mdes, M),
-          tnum = max.tnum, snum = snum,
-          design = design, MTP = MTP, M = M, J = J, K = K,
-          nbar = nbar, Tbar = Tbar, alpha = alpha,
-          numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-          R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-          rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
-          cl = cl
-        )
-      }
-    } 
-    iter.results <- data.frame(
-      step = step, mdes = current.mdes, power = current.power, w = current.tnum,
-      MTP = MTP, target.power = target.power
-    )
-    test.pts <- bind_rows(test.pts, iter.results)
-    
-    if(current.mdes < iter.results$mdes) {
-      current.mdes <- find_best(test.pts, mdes.low, mdes.high, target.poewr, alternate = current.mdes + 0.10 * (mdes.high - try.mdes))
-    } else {
-      current.mdes <- find_best(test.pts, mdes.low, mdes.high, target.power, alternate = current.mdes - 0.10 * (current.mdes - mdes.low) )
-    }
-    # scat("%d\tNew best: %.2f \n", step, current.mdes)
-  }
-  
-  # clean up return values
+  test.pts <- optimize_power(design, search.type = 'mdes', MTP, target.power, power.definition, tol,
+                             start.tnum, start.low = mdes.low, start.high = mdes.high,
+                             MDES = NULL, J = J, K = K, nbar = nbar,
+                             M = M, Tbar = Tbar, alpha = alpha,
+                             numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+                             R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+                             rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+                             snum = snum, cl = cl,
+                             max.steps = max.steps, max.cum.tnum = max.cum.tnum,
+                             max.tnum = max.tnum)
+  mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-  
-  if( (cum.tnum == max.cum.tnum | step == max.steps) & abs(current.power - target.power) > tol) {
-    message("Reached maximum iterations without converging on MDES estimate within tolerance.")
-  }
 
-  return(list(mdes.results = mdes.results, tries = test.pts))
+  return(list(mdes.results = mdes.results, test.pts = test.pts))
 
-  # 
-  # 
-  # 
-  # # Searching for the right MDES through a while loop
-  # ii <- 0 # Iteration counter
-  # target.power <- 0 # Initializing a target power
-  # 
-  # # While loop through until the iteration is past max iterations or
-  # # we have met the target.power as we search for the right MDES
-  # # within the tolerance we have specified.
-  # 
-  # # save out different tries
-  # mdes.tries <- try.MDES
-  # power.tries <- target.power
-  # 
-  # while (ii < max.iter & (target.power < power - tol | target.power > power + tol)) {
-  #   
-  #   if (is.function(updateProgress)) {
-  #     text <- paste0("Optimal MDES is currently in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),". ")
-  #     msg  <- paste0("Trying MDES of ",round(try.MDES,4)," ... ")
-  #     updateProgress(message = msg, detail = text)
-  #   }
-  #   
-  #   # Function to calculate the target power to check in with the pre-specified power in the loop
-  #   runpower <- pump_power(design, MTP = MTP, MDES = rep(try.MDES, M), M = M, J = J, K = K,
-  #                          nbar = nbar, Tbar = Tbar, alpha = alpha,
-  #                          numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-  #                          R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-  #                          rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
-  #                          tnum = tnum, snum = snum, cl = cl)
-  # 
-  #   # Pull out the power value corresponding to the MTP and definition of power
-  #   target.power <- runpower[MTP, power.definition]
-  #   
-  #   # Displaying the progress of mdes calculation via target power
-  #   if (is.function(updateProgress)) {
-  #     
-  #     msg <- paste("Estimated power for this MDES is", round(target.power,4)) # Text for estimating power
-  #     updateProgress(message = msg)
-  #     
-  #   } # checking on Progress Update for MDES
-  #   
-  #   # save out progress
-  #   mdes.tries <- c(mdes.tries, try.MDES)
-  #   power.tries <- c(power.tries, target.power)
-  #   
-  #   # If the calculated target.power is within the tolerance of the prescribed power, break and return the results
-  #   if(target.power > power - tol & target.power < power + tol){
-  #     
-  #     mdes.results <- data.frame(MTP, try.MDES[1], target.power)
-  #     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-  #     tries = data.frame(
-  #       MTP = MTP, iter = seq(1, length(mdes.tries)),
-  #       mdes.tries = mdes.tries, power.tries = power.tries,
-  #       power.goal = power
-  #     )
-  #     return(list(mdes.results = mdes.results, tries = tries))
-  #     
-  #   } # Return results if our targeted power is within a tolerance of the specified power
-  #   
-  #   # Check if the calculated target power is greater than the prescribed power
-  #   is.over <- target.power > power
-  #   
-  #   # if we are overpowered, we can detect EVEN SMALLER effect size so we would shrink the effect range with the
-  #   # high end of the bound being the current MDES. Else it would be the opposite.
-  #   
-  #   if(!is.over) {
-  #     lowhigh[1] <- try.MDES
-  #   }
-  #   if(is.over) {
-  #     lowhigh[2] <- try.MDES
-  #   }
-  #   
-  #   # re-establish the midpoint and increase iteration
-  #   try.MDES <- midpoint(lowhigh[1],lowhigh[2])
-  #   ii <- ii + 1
-  #   
-  # } # end while
-  # 
-  # if (ii == max.iter & !(target.power > power - tol & target.power < power + tol)) {
-  #   message("Reached maximum iterations without converging on MDES estimate within tolerance.")
-  # }
-  # mdes.results <- data.frame(MTP, NA, NA)
-  # colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-  # tries = data.frame(
-  #   MTP = MTP, iter = seq(1, length(mdes.tries)),
-  #   mdes.tries = mdes.tries, power.tries = power.tries,
-  #   power.goal = power
-  # )
-  # return(list(mdes.results = mdes.results, tries = tries))
-  # 
-  # 
-} # MDES blockedRCT 2
+} # MDES
 
 #' Calculating Sample for Raw (Unadjusted)
 #'
@@ -811,154 +892,199 @@ pump_mdes <- function(
 #' Only works if we pass in numeric values and not if we pass in objects that hold those values.
 #' Additionally, mrss.bira2cl only computes J, not nbar.
 #'
-#' @param J the number of blocks
-#' @param nbar the harmonic mean of the number of units per block
-#' @param J0 starting values for J0 to look for optimal J and nbar
+#' @param design RCT design (see list/naming convention)
+#' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
+#'              (we expect inputs in  such order)
+#' @param typesample the type of the number of sample we would like to estimate: either block J or nbar
+#' @param M the number of hypothesis tests (outcomes)
+#' @param J the number of schools
+#' @param K the number of districts
+#' @param J0 starting values for J
+#' @param K0 starting values for K
 #' @param nbar0 starting values for nbar0 to look for optimal J and nbar
-#' @param whichSS which type of sample size to optimize for. J or nbar
-#' @param MDES minimum detectable effect size
-#' @param power required statistical power for the experiment
+#' @param target.power required statistical power for the experiment
+#' @param power.definition definition of statistical power from individual, d-minimal to complete power
+#' @param tol the tolerance for MDES estimation based on targeted power value
+#' @param nbar the harmonic mean of the number of units per block
 #' @param Tbar the proportion of samples that are assigned to the treatment
 #' @param alpha the family wise error rate (FWER)
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
 #' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
+#' @param numCovar.3 number of Level 3 baseline covariates (set to 0 for this design)
 #' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)
 #' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
-#' @param ICC intraclass correlation
-#' @param omega NULL (parameter in development)
-#' @param two.tailed a boolean value for whether we are looking at two-tailed distribution or not
-#' @param max.iter number of iterations to look for sample size. The default is set at 100
-#' @param tol tolerance from initializing sample values
+#' @param ICC.2 school intraclass correlation
+#' @param ICC.3 district intraclass correlation	
+#' @param omega.2 ratio of school effect size variability to random effects variability
+#' @param omega.3 ratio of district effect size variability to random effects variability
+#' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000
+#' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
+#' @param cl clusters object to use for parallel processing.
+#' @param rho correlation between outcomes
+#' @param updateProgress the callback function to update the progress bar (User does not have to input anything)
 #' @return raw sample returns
 #' @export
 
-sample_blocked_i1_2c_raw <- function(J, nbar, J0 = 10, nbar0 = 10,
-                                     whichSS, MDES, power, Tbar,
-                                     alpha, numCovar.1, numCovar.2 = 0,
-                                     R2.1, R2.2, ICC,
-                                     omega, two.tailed = TRUE, max.iter = 100, tol = 0.1) {
+pump_sample_raw <- function(
+  design, MTP, typesample,
+  MDES, M, J = NULL, K = 1,
+  J0 = 10, K0 = 4, nbar0 = 10,
+  target.power,
+  nbar = NULL, Tbar, alpha, two.tailed = TRUE,
+  numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
+  R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2 = NULL, ICC.3 = NULL,
+  rho = NULL, omega.2 = NULL, omega.3 = NULL,
+  tol = 0.1, max.steps = 100
+)
+{
   
+  i <- 0
+  # convergence
+  conv <- FALSE
   
-  i <- 0 # starting the iterator
-  conv <- FALSE # boolean value for convergence
-  
-  while (i <= max.iter & conv == FALSE) {
+  while (i <= max.steps & conv == FALSE) {
     # checking which type of sample we are estimating
-    if (whichSS =="J"){
-      df <- J0 * (nbar - 1) - numCovar.1 - 1 # degree of freedom calculation
-    }
-    if (whichSS =="nbar") {
-      df <- J * (nbar0 - 1) - numCovar.1 - 1
-    }
-    
-    if (df < 0 | is.infinite(df)) {
-      break
+    if (typesample == "J"){
+      df <- calc.df(design, J0, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+    } else if (typesample == "K"){
+      df <- calc.df(design, J, K0, nbar, numCovar.1, numCovar.2, numCovar.3)
+    } else if (typesample == "nbar") {
+      df <- calc.df(design, J, K, nbar0, numCovar.1, numCovar.2, numCovar.3)
     }
     
-    T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)),
-                 abs(qt(alpha, df)))
+    T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), abs(qt(alpha, df)))
+    T2 <- abs(qt(target.power, df))
+    MT <- ifelse(target.power >= 0.5, T1 + T2, T1 - T2)
     
-    T2 <- abs(qt(power, df))
-    
-    MT <- ifelse(power >= 0.5, T1 + T2, T1 - T2)
-    
-    if (whichSS=="J") {
-      
-      J1 <- (MT/MDES)^2 * ((1 - R2.1)/(Tbar * (1 - Tbar) * nbar))
-      
+    if (typesample == "J") {
+      J1 <- calc.J(
+        design, MT = MT, MDES = MDES[1], nbar = nbar, Tbar = Tbar,
+        R2.1 = R2.1[1], R2.2 = R2.2[1], ICC.2 = ICC.2[1], omega.2 = omega.2
+      )
       if (abs(J1 - J0) < tol) {
-        
         conv <- TRUE
       }
       J0 <- (J1 + J0)/2
-    }
-    if (whichSS=="nbar") {
-      nbar1 <- (MT/MDES)^2 * ((1 - R2.1)/(Tbar * (1 - Tbar) * J))
-      
+    } else if (typesample == "K") {
+      K1 <- calc.K(
+        design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
+        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1], ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
+        omega.2 = omega.2, omega.3 = omega.3
+      )
+      if (abs(K1 - K0) < tol) {
+        conv <- TRUE
+      }
+      K0 <- (K1 + K0)/2
+    } else if (typesample == "nbar") {
+      nbar1 <- calc.nbar(
+        design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
+        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1], ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
+        omega.2 = omega.2, omega.3 = omega.3
+      )
       if (abs(nbar1 - nbar0) < tol) {
         conv <- TRUE
       }
       nbar0 <- (nbar1 + nbar0)/2
-    }
-    
+    } 
     i <- i + 1
   }
-  if (whichSS=="J") {
-    J <- ifelse(df > 0, round(J0), NA)
-    return(ceiling(J))
-  }
-  if (whichSS=="nbar") {
-    nbar <- ifelse(df > 0, round(nbar0), NA)
-    return(ceiling(nbar))
+  
+  if(df < 0 | is.infinite(df)) {
+    message('Problem with starting values resulting in impossible df')
   }
   
+  if (typesample == "J") {
+    J <- ifelse(df > 0, ceiling(J1), NA)
+    return(J)
+  } else if (typesample == "K") {
+    K <- ifelse(df > 0, ceiling(K1), NA)
+    return(K)
+  } else if (typesample == "nbar") {
+    nbar <- ifelse(df > 0, ceiling(nbar1), NA)
+    return(nbar)
+  }
 }
 
 #These currently only work if numFalse = M and if MDES is the same or all outcomes.
 
 #' Sample Function
-#'
+
+#' @param design RCT design (see list/naming convention)
+#' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
+#'              (we expect inputs in  such order)
+#' @param typesample the type of the number of sample we would like to estimate: either block J or nbar
 #' @param M the number of hypothesis tests (outcomes)
-#' @param typesample the type of the number of sample we would like to estimate: either block J or nbar (harmonic mean within block. For Shiny use)
-#' @param J the number of blocks (set to NULL if you do not want to estimate this one)
-#' @param nbar the harmonic mean of blocks (set to NULL if you do not want to estimate this one)
-#' @param J0 the initial value for the sample number of blocks. The default is set at 10.
-#' @param nbar0 the initial value for the harmonic mean for the number of samples within block. The default is set at 10.
-#' @param MDES minimum detectable effet size
-#' @param power required statistical power for the experiment
+#' @param J the number of schools
+#' @param K the number of districts
+#' @param J0 starting values for J0 to look for optimal J and nbar
+#' @param nbar0 starting values for nbar0 to look for optimal J and nbar
+#' @param target.power required statistical power for the experiment
 #' @param power.definition definition of statistical power from individual, d-minimal to complete power
-#' @param MTP type of multiple testing procedure in use from Bonferroni, Benjamini-Hocheberg, Holms, Westfall-Young Single Step, Westfall-Young Step Down
 #' @param tol the tolerance for MDES estimation based on targeted power value
+#' @param nbar the harmonic mean of the number of units per block
 #' @param Tbar the proportion of samples that are assigned to the treatment
 #' @param alpha the family wise error rate (FWER)
 #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
 #' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
+#' @param numCovar.3 number of Level 3 baseline covariates (set to 0 for this design)
 #' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)
 #' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
-#' @param ICC intraclass correlation
-#' @param omega NULL (parameter in development)
-#' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.
+#' @param ICC.2 school intraclass correlation
+#' @param ICC.3 district intraclass correlation	
+#' @param omega.2 ratio of school effect size variability to random effects variability
+#' @param omega.3 ratio of district effect size variability to random effects variability
+#' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
-#' @param cl cluster object to use for parallel processing.
-#' @param max.iter the number of iterations to look for the optimal sample size. The default is set at 20
-#' @param updateProgress a call back function for our internal use in our Shiny application
-#' @param rho correlation between outcomes when sigma is generated
+#' @param cl clusters object to use for parallel processing.
+#' @param rho correlation between outcomes
+#' @param updateProgress the callback function to update the progress bar (User does not have to input anything)
 #'
 #' @return Sample number returns
 #' @export
 
-sample_blocked_i1_2c <- function(M, typesample, J, nbar,
-                                 J0 = 10, nbar0 = 10, MDES, power, power.definition,
-                                 MTP, tol, Tbar, alpha, numCovar.1,
-                                 numCovar.2 = 0, R2.1, R2.2, ICC,
-                                 rho = 0.99, omega, tnum = 10000,
-                                 snum = 2, cl = NULL,
-                                 max.iter = 20, updateProgress = NULL) {
+pump_sample <- function(
+  design, MTP, typesample,
+  MDES, M, J, K = 1,
+  J0 = 10, K0 = 4, nbar0 = 10,
+  ATE_ES, target.power, power.definition, tol,
+  nbar, Tbar, alpha, two.tailed = TRUE,
+  numCovar.1 = 0, numCovar.2 = 0,
+  numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
+  rho, omega.2, omega.3 = NULL,
+  tnum = 10000, snum = 1000,
+  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, max.tnum = 10000,
+  cl = NULL, updateProgress = NULL
+)
+{
+  # check if zero power, then return 0 MDES
+  if(target.power == 0)
+  {
+    message('Target power of 0 requested')
+    test.pts <- NULL
+    ss.results <- data.frame(MTP, typesample, 0, 0)
+    colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+    return(list(ss.results = ss.results, test.pts = test.pts))
+  }
   
   # Checks on what we are estimating, sample size
-  print(paste("Estimating sample size of type", typesample, "for", MTP, "for target", power.definition, "power of", round(power, 4)))
+  print(paste("Estimating sample size of type", typesample, "for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
   
   # indicator for which sample to compute. J is for blocks. nbar is for harmonic mean of samples within block
   if(typesample == "J"){
-    
-    doJ <- TRUE
-    donbar <- FALSE
-    J = NULL
-    nbar0 = NULL
-    
+    J <- NULL
+    nbar0 <- NULL
+  } else if (typesample == "K") {
+    K <- NULL
+    J0 <- NULL
+    nbar0 <- NULL
   } else if (typesample == "nbar") {
-    
-    donbar <- TRUE
-    doJ <- FALSE
-    nbar = NULL
-    J0 = NULL
-    
-  } # Sample within block
-  
-  ifelse(doJ,whichSS<-"J",whichSS<-"nbar")
+    nbar <- NULL
+    J0 <- NULL
+    K0 <- NULL
+  }
   
   # Progress Message for the Type of Sample we are estimating, the type of power and the targeted power value
-  if(is.function(updateProgress)){
+  if (is.function(updateProgress)) {
     msg <- (paste("Estimating", whichSS, "for target", power.definition, "power of",round(power,4))) #msg to be displayed in the progress bar
     updateProgress(message = msg)
   } # For printing via update progress function
@@ -966,175 +1092,177 @@ sample_blocked_i1_2c <- function(M, typesample, J, nbar,
   
   # Compute J or nbar for raw and BF SS for INDIVIDUAL POWER. We are estimating bounds like we estimated MDES bounds.
   # for now assuming only two tailed tests
-  if (doJ) {
-    J.raw <- sample_blocked_i1_2c_raw(
-      J = J, nbar, J0 = J0, nbar0 = nbar0, whichSS, MDES, power, Tbar, alpha, numCovar.1, numCovar.2 = 0,
-      R2.1, R2.2, ICC, omega, max.iter = 100, tol = 0.1
-    )
-    J.BF <- sample_blocked_i1_2c_raw(
-      J = J, nbar, J0 = J0, nbar0 = nbar0, whichSS, MDES, power, Tbar, alpha/M, numCovar.1, numCovar.2 = 0,
-      R2.1, R2.2, ICC, omega, max.iter = 100, tol = 0.1
-    )
-  }
-  
-  if (donbar) {
-    nbar.raw <- sample_blocked_i1_2c_raw(
-      J, nbar = nbar, J0 = J0, nbar0 = nbar0, whichSS, MDES, power, Tbar, alpha, numCovar.1, numCovar.2 = 0,
-      R2.1, R2.2, ICC, omega, max.iter = 100, tol = 0.1
-    )
-    nbar.BF <- sample_blocked_i1_2c_raw(
-      J, nbar = nbar, J0 = J0, nbar0 = nbar0, whichSS, MDES, power, Tbar, alpha/M, numCovar.1, numCovar.2 = 0,
-      R2.1, R2.2, ICC, omega, max.iter = 100, tol = 0.1
-    )
-  }
-  
-  # So below we focus on just one type of sample being estimated: Either block or samples within block
-  if (doJ) {
-    ss.raw <- J.raw
-    ss.BF <- J.BF
-  }
-  
-  if (donbar) {
-    ss.raw <- nbar.raw
-    ss.BF <- nbar.BF
-  }
+  ss.raw <- pump_sample_raw(
+    design = design, MTP, typesample,
+    MDES, M, J, K,
+    J0, K0, nbar0,
+    target.power,
+    nbar, Tbar, alpha, two.tailed,
+    numCovar.1, numCovar.2, numCovar.3,
+    R2.1, R2.2, R2.3, ICC.2, ICC.3,
+    rho, omega.2, omega.3
+  )
+  ss.BF <- pump_sample_raw(
+    design = design, MTP, typesample,
+    MDES, M, J, K,
+    J0, K0, nbar0,
+    target.power,
+    # change alpha for BF
+    nbar, Tbar, alpha/M, two.tailed,
+    numCovar.1, numCovar.2, numCovar.3,
+    R2.1, R2.2, R2.3, ICC.2, ICC.3,
+    rho, omega.2, omega.3
+  )
   
   ### INDIVIDUAL POWER for Raw and BF ###
-  if (power.definition == "indiv") {
-    
+  if (power.definition == "D1indiv") {
     if (MTP == "rawp"){
-      
-      # saving the sample estimates for Individual Power with the MTP type
-      raw.ss <- data.frame(MTP, power.definition, ss.raw, power)
-      colnames(raw.ss) <- c("MTP", "Type of Power", "Sample Size", "Target Power")
-      
-      # To check if the function is returning a table
-      
+      raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power)
+      colnames(raw.ss) <- c("MTP", "Type of Power", "Sample Size", "Type", "Target Power")
       return(raw.ss)
-      
-    } #MTP raw
-    
-    if (MTP == "Bonferroni") {
-      
-      # saving the sample estimates for Individual Power with the MTP type
-      ss.BF <- data.frame("Bonferroni", power.definition, ss.BF, power)
-      colnames(ss.BF) <- c("MTP", "Type of Power", "Sample Size", "Target Power")
-      
+    } else if (MTP == "Bonferroni") {
+      ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power)
+      colnames(ss.BF) <- c("MTP", "Type of Power", "Sample Size", "Type", "Target Power")
       return(ss.BF)
-      
-    } #MTP BF
-    
-  } # Individual power
+    }
+  }
   
   ### INDIVIDUAL POWER FOR NON BF MTPs ###
   
   # Like the MDES calculation, the sample size would be between raw and Bonferroni. There is no adjustment and there is very
   # conservative adjustment
   
-  # For individual power, other J's or nbar's will be between raw and BF, so make starting value the midpoint
-  if (MTP %in% c("Holm","BH","WY-SS","WY-SD") & power.definition == "indiv") {
-    
-    lowhigh <- c(ss.raw,ss.BF)
-    try.ss <- midpoint(lowhigh[1],lowhigh[2])
-    
+  if (MTP %in% c("Holm", "BH", "WY-SS", "WY-SD") & power.definition == "D1indiv") {
+    ss.low <- ss.raw
+    ss.high <- ss.BF
+  } else {
+    stop('Sample size search only implemented for individual power.')
   }
-  # For minimal powers, makes starting value = raw
-  if (power.definition != "indiv")  {
-    
-    lowhigh <- c(0,ss.BF)
-    try.ss <- midpoint(lowhigh[1],lowhigh[2])
-    
-  }
-  ii <- 0
-  target.power <- 0
-  while (ii < max.iter & (target.power < power - tol | target.power > power + tol) ) {
-    
-    if (is.function(updateProgress)) {
-      
-      #if statement to get the more apprpriate sample text for progress bar
-      if (whichSS == "J"){
-        typeofsample <- "Number of blocks"
-      } else {
-        typeofsample <- "Samples within blocks"
-      }
-      
-      # Updating the progress of the search for sample
-      text <- paste0(typeofsample, " is in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),".")
-      msg <- paste0("Trying ",typeofsample," of ",round(try.ss,4), " .")
-      updateProgress(message = msg, detail = text)
-      
-    }
-    
-    # We check the Power of the experimental set up with the given estimated sample size to see if it is
-    # within the targeted power
-    
-    if (doJ) {
-      
-      runpower <- pump_power(M = M, MDES = rep(MDES, M), MTP = MTP, J = try.ss, nbar = nbar,
-                             Tbar = Tbar, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
-                             R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
-                             rho = rho, omega = omega,
-                             tnum = tnum, snum = snum, cl = cl)
-    }
-    
-    if (donbar) {
-      
-      runpower <- pump_power(M, MDES = rep(MDES, M), MTP = MTP, J = J, nbar = try.ss,
-                             Tbar = Tbar, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2 = 0,
-                             R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
-                             rho = rho, omega = omega,
-                             tnum = tnum, snum = snum, cl = cl)
-      
-    }
-    
-    # Pulling the power result out from the table
-    target.power <- runpower[MTP,power.definition]
-    
-    # Providing message on current targeted power
-    if (is.function(updateProgress)){
-      text <- paste("Estimated power for this", whichSS, "is", target.power)
-      updateProgress(detail = text)
-    }
-    
-    # checking if the estimation is over or not
-    is.over <- target.power > power
-    
-    # if the target power is within the tolerance we have set, we will return the estimated sample
-    if(target.power > power - tol & target.power < power + tol) {
-      
-      # estimated sample for a given MTP, type of power
-      try.ss.numeric <- ceiling(as.numeric(try.ss))
-      
-      # The estimated sample table with MTP type, Power, Sample Size and the target power
-      est.sample <- data.frame(MTP, power.definition, try.ss.numeric, target.power)
-      colnames(est.sample) <- c("MTP", "Type of Power", "Sample Size", "Target Power")
-      
-      return(est.sample)
-      
-    }
-    
-    # if the test is underpowered or overpowered, repeat the loop with new bounds as below.
-    
-    if(!is.over) {
-      p.off <- (power - target.power) / power
-      lowhigh[1] <- try.ss
-    }
-    
-    if(is.over) {
-      lowhigh[2] <- try.ss
-      p.off <- (target.power - power) / power
-    }
-    
-    lowhigh.dist <- lowhigh[2]-lowhigh[1]
-    try.ss <- ifelse(target.power < power, (try.ss + lowhigh[2])/2, (try.ss + lowhigh[1])/2) # midpoint
-    ii <- ii + 1
-  } # end while
   
-  if (ii == max.iter & !(target.power > power - tol & target.power < power + tol)) {
-    
-    text <- paste0(
-      "Reached maximum iterations without converging on MDES estimate within tolerance. Try increasing maximum number of iterations (max.iter)."
-    )
-    updateProgress(detail = text)
+  # sometimes we already know the answer!
+  if(ss.low == ss.high)
+  {
+    test.pts <- NULL
+    ss.results <- data.frame(MTP, typesample, 1, target.power)
+    colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+    return(list(ss.results = ss.results, test.pts = test.pts))
   }
+
+  test.pts <- optimize_power(
+    design = design, search.type = typesample,
+    MTP, target.power, power.definition, tol,
+    start.tnum, start.low = ss.low, start.high = ss.high,
+    MDES = MDES,
+    J = ifelse(typesample == 'J', NULL, J),
+    K = ifelse(typesample == 'K', NULL, K),
+    nbar = ifelse(typesample == 'nbar', NULL, nbar),
+    M = M, Tbar = Tbar, alpha = alpha,
+    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+    rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+    snum = snum, cl = cl,
+    max.steps = max.steps, max.cum.tnum = max.cum.tnum,
+    max.tnum = max.tnum
+  )
+  ss.results <- data.frame(MTP, typesample, ceiling(test.pts$pt[nrow(test.pts)]), test.pts$power[nrow(test.pts)])
+  colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+  
+  return(list(ss.results = ss.results, test.pts = test.pts))
 }
+
+
+
+
+
+# 
+# 
+# 
+# # Searching for the right MDES through a while loop
+# ii <- 0 # Iteration counter
+# target.power <- 0 # Initializing a target power
+# 
+# # While loop through until the iteration is past max iterations or
+# # we have met the target.power as we search for the right MDES
+# # within the tolerance we have specified.
+# 
+# # save out different tries
+# mdes.tries <- try.MDES
+# power.tries <- target.power
+# 
+# while (ii < max.iter & (target.power < power - tol | target.power > power + tol)) {
+#   
+#   if (is.function(updateProgress)) {
+#     text <- paste0("Optimal MDES is currently in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),". ")
+#     msg  <- paste0("Trying MDES of ",round(try.MDES,4)," ... ")
+#     updateProgress(message = msg, detail = text)
+#   }
+#   
+#   # Function to calculate the target power to check in with the pre-specified power in the loop
+#   runpower <- pump_power(design, MTP = MTP, MDES = rep(try.MDES, M), M = M, J = J, K = K,
+#                          nbar = nbar, Tbar = Tbar, alpha = alpha,
+#                          numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+#                          R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+#                          rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+#                          tnum = tnum, snum = snum, cl = cl)
+# 
+#   # Pull out the power value corresponding to the MTP and definition of power
+#   target.power <- runpower[MTP, power.definition]
+#   
+#   # Displaying the progress of mdes calculation via target power
+#   if (is.function(updateProgress)) {
+#     
+#     msg <- paste("Estimated power for this MDES is", round(target.power,4)) # Text for estimating power
+#     updateProgress(message = msg)
+#     
+#   } # checking on Progress Update for MDES
+#   
+#   # save out progress
+#   mdes.tries <- c(mdes.tries, try.MDES)
+#   power.tries <- c(power.tries, target.power)
+#   
+#   # If the calculated target.power is within the tolerance of the prescribed power, break and return the results
+#   if(target.power > power - tol & target.power < power + tol){
+#     
+#     mdes.results <- data.frame(MTP, try.MDES[1], target.power)
+#     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+#     tries = data.frame(
+#       MTP = MTP, iter = seq(1, length(mdes.tries)),
+#       mdes.tries = mdes.tries, power.tries = power.tries,
+#       power.goal = power
+#     )
+#     return(list(mdes.results = mdes.results, tries = tries))
+#     
+#   } # Return results if our targeted power is within a tolerance of the specified power
+#   
+#   # Check if the calculated target power is greater than the prescribed power
+#   is.over <- target.power > power
+#   
+#   # if we are overpowered, we can detect EVEN SMALLER effect size so we would shrink the effect range with the
+#   # high end of the bound being the current MDES. Else it would be the opposite.
+#   
+#   if(!is.over) {
+#     lowhigh[1] <- try.MDES
+#   }
+#   if(is.over) {
+#     lowhigh[2] <- try.MDES
+#   }
+#   
+#   # re-establish the midpoint and increase iteration
+#   try.MDES <- midpoint(lowhigh[1],lowhigh[2])
+#   ii <- ii + 1
+#   
+# } # end while
+# 
+# if (ii == max.iter & !(target.power > power - tol & target.power < power + tol)) {
+#   message("Reached maximum iterations without converging on MDES estimate within tolerance.")
+# }
+# mdes.results <- data.frame(MTP, NA, NA)
+# colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+# tries = data.frame(
+#   MTP = MTP, iter = seq(1, length(mdes.tries)),
+#   mdes.tries = mdes.tries, power.tries = power.tries,
+#   power.goal = power
+# )
+# return(list(mdes.results = mdes.results, tries = tries))
+# 
+# 
