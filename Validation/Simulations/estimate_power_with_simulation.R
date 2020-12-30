@@ -248,10 +248,10 @@ make.model <- function(dat, dummies = NULL, design) {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.ij) + (1 | S.ik)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x*S.ik + X.jk + C.ijk + (1 | S.ij)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 + T.x | S.ij) + (1 + T.x | S.ik)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 + T.x | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else {
     stop(paste('Unknown design:', design)) 
