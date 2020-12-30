@@ -63,8 +63,6 @@ source(here::here("Methods", "pump_power.R"))
 #' @examples
 validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
   
-  # design = "blocked_i1_2c"; design = 'blocked_i1_3r'
-  
   # checks
   if(length(user.params.list[['ATE_ES']]) != user.params.list[['M']])
   {
@@ -98,6 +96,15 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     dir.create(intermediate.data.dir)
   }
   
+  # search for simulation results
+  adjp.files <- grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
+  
+  # what if we only have some of expected files? then we force overwrite
+  if( (length(adjp.files) > 0) & (length(adjp.files) != sim.params.list[['Q']]) )
+  {
+    overwrite = TRUE
+  }
+  
   if(overwrite | length(current.file) == 0)
   {
     
@@ -112,9 +119,6 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     #####################
     # Simulation Values #
     #####################
-    
-    # search for simulation results
-    adjp.files <- grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
     
     # simulate and run power calculations
     adjp.filename <- paste0(params.file.base, "adjp_", q, ".RDS")
