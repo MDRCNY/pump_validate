@@ -221,27 +221,27 @@ user.params.list[['ATE_ES']] <- params.default[['ATE_ES']]
 
 # Varying ICC
 
-ICC.2 = c(0.8, 0.8, 0.8)
+ICC.2 = c(0.7, 0.7, 0.7)
 
-```{r ICC20.8}
-user.params.list[['ICC.2']] <- rep(0.8, M)
+```{r ICC20.7}
+user.params.list[['ICC.2']] <- rep(0.7, M)
 ```
 
-```{r 3r.ICC20.8}
-blocked_i1_3r_ICC2.0.8_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
-print(blocked_i1_3r_ICC2.0.8_power_plot)
+```{r 3r.ICC20.7}
+blocked_i1_3r_ICC2.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+print(blocked_i1_3r_ICC2.0.7_power_plot)
 user.params.list[['ICC.2']] <- params.default[['ICC.2']]
 ```
 
-ICC.3 = c(0.8, 0.8, 0.8)
+ICC.3 = c(0.7, 0.7, 0.7)
 
-```{r ICC30.8}
-user.params.list[['ICC.3']] <- rep(0.8, M)
+```{r ICC30.7}
+user.params.list[['ICC.3']] <- rep(0.7, M)
 ```
 
-```{r 3r.ICC30.8}
-blocked_i1_3r_ICC3.0.8_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
-print(blocked_i1_3r_ICC3.0.8_power_plot)
+```{r 3r.ICC30.7}
+blocked_i1_3r_ICC3.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+print(blocked_i1_3r_ICC3.0.7_power_plot)
 user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 ```
 
@@ -252,24 +252,24 @@ omega.2 = 0.8, omega.3 = 0.5
 
 ```{r omega20.8}
 user.params.list[['omega.2']] <- 0.8
+user.params.list[['omega.3']] <- 0.2
 ```
 
 ```{r 3r.omega20.8}
 blocked_i1_3r_omega2.0.8_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_i1_3r_omega2.0.8_power_plot)
-user.params.list[['omega.2']] <- params.default[['omega.2']]
 ```
 
 omega.2 = 0.5, omega.3 = 0.8
 
 ```{r omega30.8}
+user.params.list[['omega.2']] <- 0.2
 user.params.list[['omega.3']] <- 0.8
 ```
 
 ```{r 3r.omega30.8}
 blocked_i1_3r_omega3.0.8_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_i1_3r_omega3.0.8_power_plot)
-user.params.list[['omega.3']] <- params.default[['omega.3']]
 ```
 
 omega.2 = 0.8, omega.3 = 0.8

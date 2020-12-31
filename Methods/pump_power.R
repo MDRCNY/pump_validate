@@ -604,6 +604,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
 {
   # search.type = 'mdes'; start.low = mdes.low; start.high = mdes.high
+  # search.type = 'J'; start.low = ss.low; start.high = ss.high;
   
   # fit initial quadratic curve
   # generate a series of points to try

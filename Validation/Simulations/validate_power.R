@@ -147,7 +147,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     }
     
     # if we have all the iterations, save it out!
-    if(!is.null(adjp.proc) & dim(adjp.proc)[1] == sim.params.list[['S']]*sim.params.list[['Q']])
+    if(!is.null(adjp.proc) && dim(adjp.proc)[1] == sim.params.list[['S']]*sim.params.list[['Q']])
     {
       sim.filename = paste0(params.file.base, "simulation_results.RDS")
       sim_results <- calc_power(adjp.proc, sim.params.list[['alpha']])
@@ -418,20 +418,19 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   }
 } # validate_power
 
-#' Estimating MDES
+#' Validate MDES calculations
 #'
 #'
 #' @param user.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
-#' @param q Index of simulation iteration if parallelizing across simulations
 #' @param overwrite If simulation output files already exist, whether to overwrite
 #'
 #' @return NULL. Saves out a series of MDES validation RDS files.
 #' @export
 #'
 #' @examples
-validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
+validate_mdes <- function(user.params.list, sim.params.list, design, plot.path = FALSE, overwrite = TRUE) {
 
   if(sim.params.list[['parallel']])
   {
@@ -490,17 +489,19 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
       plot_data <- rbind(plot_data, mdes_results$test.pts)
     }
     
-    plot_data = plot_data[plot_data$step > 0,]
-    
-    # plot.power = ggplot(plot_data, aes(x = step, y = power)) +
-    #   geom_point() + geom_line() +
-    #   facet_wrap(.~MTP) +
-    #   geom_hline(aes(yintercept = target.power)) +
-    #   ylim(0, 1)
-    # plot.mdes = ggplot(plot_data, aes(x = step, y = pt)) +
-    #   geom_point() + geom_line() +
-    #   facet_wrap(.~MTP)
-    # print(grid.arrange(plot.power, plot.mdes, top = design))
+    if(plot.path)
+    {
+      # plot_data <- plot_data[plot_data$step > 0,]
+      plot.power <- ggplot(plot_data, aes(x = step, y = power)) +
+        geom_point() + geom_line() +
+        facet_wrap(.~MTP) +
+        geom_hline(aes(yintercept = target.power)) +
+        ylim(0, 1)
+      plot.mdes <- ggplot(plot_data, aes(x = step, y = pt)) +
+        geom_point() + geom_line() +
+        facet_wrap(.~MTP)
+      print(grid.arrange(plot.power, plot.mdes, top = design))
+    }
     
     compare.filename <- paste0(params.file.base, "comparison_mdes_results.RDS")
     
@@ -530,14 +531,13 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
 #' @param user.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
-#' @param q Index of simulation iteration if parallelizing across simulations
 #' @param overwrite If simulation output files already exist, whether to overwrite
 #'
 #' @return NULL. Saves out a series of sample validation RDS files.
 #' @export
 #'
 #' @examples
-validate_sample <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
+validate_sample <- function(user.params.list, sim.params.list, design, plot.path = FALSE, overwrite = TRUE) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -579,7 +579,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
       stop('Design not implemented')
     }
     
-    sample_compare_results <- NULL
+    sample_compare_results <- plot_data <- NULL
     for(type in typesamples)
     {
       for (MTP in procs)
@@ -611,10 +611,25 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
         )
         sample_results$type <- type
         sample_compare_results <- rbind(sample_compare_results, sample_results$ss.results)
+        plot_data <- rbind(plot_data, sample_results$test.pts)
       }
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
     compare.filename <- paste0(params.file.base, "comparison_sample_results.RDS")
+    
+    if(plot.path)
+    {
+      # plot_data <- plot_data[plot_data$step > 0,]
+      plot.power = ggplot(plot_data, aes(x = step, y = power)) +
+        geom_point() + geom_line() +
+        facet_wrap(.~MTP) +
+        geom_hline(aes(yintercept = target.power)) +
+        ylim(0, 1)
+      plot.mdes = ggplot(plot_data, aes(x = step, y = pt)) +
+        geom_point() + geom_line() +
+        facet_wrap(.~MTP)
+      print(grid.arrange(plot.power, plot.mdes, top = design))
+    }
     
     if(sim.params.list[['parallel']])
     {
