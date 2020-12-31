@@ -271,7 +271,7 @@ convert.params <- function(user.params.list, check = FALSE) {
   ICC.2 = user.params.list[['ICC.2']]
   ICC.3 = user.params.list[['ICC.3']]
   
-  if( ICC.2 + ICC.3 < 1 )
+  if( ICC.2[1] + ICC.3[1] >= 1 )
   {
     stop(paste('ICC.2 + ICC.3 must be less than 1. ICC.2:', ICC.2, 'ICC3:', ICC.3))
   }
@@ -292,14 +292,18 @@ convert.params <- function(user.params.list, check = FALSE) {
     K = 1
   }
   
+  # random intercepts variances
   eta0.sq <- sqrt( ( ICC.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.1) ))
   tau0.sq <- sqrt( ( ICC.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.1) ))
-  eta1.sq <- omega.3 * (eta0.sq + xi^2)
-  tau1.sq <- omega.2 * (tau0.sq + delta^2)
+  # covariate coefficients
   delta   <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
   # psi     <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
   xi      <- sqrt( ( ICC.3*R2.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.3)*(1-R2.1) ))
   gamma   <- sqrt( R2.1/(1-R2.1) )
+  # random impacts variances
+  eta1.sq <- omega.3 * (eta0.sq + xi^2)
+  tau1.sq <- omega.2 * (tau0.sq + delta^2)
+  # grand mean impact
   Xi1 <- user.params.list[['ATE_ES']] * sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
   
   model.params.list <- list(
