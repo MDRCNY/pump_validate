@@ -49,6 +49,8 @@ validate.mdes.ss = FALSE
 
 ```{r universal.params}
 user.params.list[['K']] <- 1
+user.params.list[['ICC.3']] <- rep(0, M)
+user.params.list[['omega.3']] <- 0
 ```
 
 

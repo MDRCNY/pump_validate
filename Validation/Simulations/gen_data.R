@@ -190,7 +190,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   
   ##-------temp
   # allow for school-level covariate to influence treatment
-  beta.ijk   <- Gamma1.ijk + psi * X.jk + v.ijk
+  beta.ijk   <- Gamma1.ijk + psi   * X.jk + v.ijk
   # beta.ijk   <- Gamma1.ijk                 + v.ijk
   ##-------temp
   
@@ -271,7 +271,10 @@ convert.params <- function(user.params.list, check = FALSE) {
   ICC.2 = user.params.list[['ICC.2']]
   ICC.3 = user.params.list[['ICC.3']]
   
-  stopifnot( ICC.2 + ICC.3 < 1 )
+  if( ICC.2 + ICC.3 < 1 )
+  {
+    stop(paste('ICC.2 + ICC.3 must be less than 1. ICC.2:', ICC.2, 'ICC3:', ICC.3))
+  }
   
   R2.1 = user.params.list[['R2.1']]
   R2.2 = user.params.list[['R2.2']]
@@ -291,8 +294,8 @@ convert.params <- function(user.params.list, check = FALSE) {
   
   eta0.sq <- sqrt( ( ICC.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.1) ))
   tau0.sq <- sqrt( ( ICC.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.1) ))
-  eta1.sq <- omega.3 * eta0.sq
-  tau1.sq <- omega.2 * tau0.sq
+  eta1.sq <- omega.3 * (eta0.sq + xi^2)
+  tau1.sq <- omega.2 * (tau0.sq + delta^2)
   delta   <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
   # psi     <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
   xi      <- sqrt( ( ICC.3*R2.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.3)*(1-R2.1) ))

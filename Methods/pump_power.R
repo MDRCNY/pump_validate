@@ -480,6 +480,10 @@ pump_power <- function(
     adjp <- rawp
   } else if(MTP %in% c("WY-SS", "WY-SD"))
   {
+    if(snum > tnum)
+    {
+      stop('snum must be less than tnum')
+    }
     if(!is.null(cl))
     {
       clusterExport(
@@ -488,7 +492,6 @@ pump_power <- function(
         envir = environment()
       )
       order.matrix <- t(parallel::parApply(cl, abs.Zs.H1, 1, order, decreasing = TRUE))
-      
     } else
     {
       order.matrix <- t(apply(abs.Zs.H1, 1, order, decreasing = TRUE))
