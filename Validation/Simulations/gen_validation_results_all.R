@@ -5,7 +5,7 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = FALSE
+overwrite = TRUE
 # if TRUE, only run one power calculation, otherwise run all scenarios of interest
 run.test = FALSE
 # whether or not to run power, mdes and sample size
@@ -269,7 +269,7 @@ print('-------------------------------------------------------------------------
 
 if(!run.test & run.cluster.2l & run.power)
 {
-  scenarios <- 9
+  scenarios <- 10
   user.params.list <- params.default
   
   # assumptions
@@ -279,7 +279,7 @@ if(!run.test & run.cluster.2l & run.power)
   
   # params to help have a decent power
   user.params.list[['ICC.2']] <- rep(0.1, M)
-  user.params.list[['J']] <- 40
+  user.params.list[['J']] <- 60
  
   #------------------------------------------------------------------#
   # vary sample size
@@ -374,7 +374,11 @@ if(!run.test & run.cluster.2l & run.power)
   
   user.params.list[['ICC.2']] <- rep(0.7, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c2_2r", q = q, overwrite)
+  
+  user.params.list[['ICC.2']] <- rep(0, M)
+  power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c2_2r", q = q, overwrite)
   user.params.list[['ICC.2']] <- params.default[['ICC.2']]
+  
   
   print('-----------------------------------------------------------------------------')
   print(paste('Completed true positives and ICC, 9 out of', scenarios))

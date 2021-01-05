@@ -12,8 +12,13 @@
 # }
 # BiocManager::install("multtest")
 
+# blkvar package
+# install.packages("remotes")
+# remotes::install_github("lmiratrix/blkvar")
+
 # Loading the libraries
 library(abind)
+library(blkvar)
 library(dplyr)       # for combing data frames
 library(foreach)
 library(ggplot2)

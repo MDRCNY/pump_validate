@@ -20,12 +20,9 @@ output:
     fig_width: 10
     toc: yes
 ---
-# Purpose
 
 This document lays out results for estimating statistical power and minimum detectable effect size (MDES) for:
-Cluster RCT, with 2 levels, and randomization done at level 2 (school level). This document contains models assuming constant treatment effects, fixed treatment effects, and random treatment effects.
-
-We compare results of the derived methods against Monte Carlo Simulations & the PowerUp R package on power. The methods are derived by Kristin Porter as outlined in the paper/s here (Add reference section).
+Cluster RCT, with 3 levels, and randomization done at level 3 (district level). This document contains models assuming random treatment effects.
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
@@ -49,17 +46,20 @@ validate.mdes.ss = FALSE
 
 ```{r}
 design <- "simple_c3_3r"
+# assumptions
 user.params.list[['omega.2']] <- 0
 user.params.list[['omega.3']] <- 0
+
+# param settings to have a decent level of power
+user.params.list[['J']] <- 40
+user.params.list[['K']] <- 20
+user.params.list[['ATE_ES']] <- rep(0.25, M)
+user.params.list[['ICC.3']] <- rep(0, M)
+user.params.list[['ICC.2']] <- rep(0.1, M)
+user.params.list[['ICC.3']] <- rep(0.1, M)
 ```
 
 # Power Validation
-
-In this section, we validate power results for different definitions of power and different adjustment procedures.
-
-If you are previewing this in html, please click on the code section to review more detailed parameters.
-
-This section sets up the simulation-level parameters, such as how many monte carlo samples to draw.
 
 ```{r sim.params}
 # print(sim.params.list)
@@ -69,29 +69,24 @@ This section sets up the simulation-level parameters, such as how many monte car
 # print(user.params.list)
 ```
 
-### Setup 1: School size 100
+Default parameters:
 
-Main parameters:
+* M = `r user.params.list[['M']]`
+* J = `r user.params.list[['J']]`
+* K = `r user.params.list[['K']]`
+* rho: $\rho$ =  `r user.params.list[['rho.default']]`
+* ATE ES = `r user.params.list[['ATE_ES']]`
+* R2: $R^2_1$ = `r user.params.list[['R2.1']]`, $R^2_2$ = `r user.params.list[['R2.2']]`, $R^2_3$ = `r user.params.list[['R2.3']]`
+* ICC: $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`, $\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
+* Omega: $\omega_2$ = `r user.params.list[['omega.2']]`, $\omega_3$ = `r user.params.list[['omega.3']]`
 
-* n.j = 100
-* M = 3
-* J = 20
-* K = 4
-* rho = (0.5, 0.5, 0.5)
-* MDES = (0.125, 0.125, 0.125)
-* R2.1 = (0, 0, 0)
-* R2.2 = (0, 0, 0)
-* R2.3 = (0, 0, 0)
-* ICC.2 = (0, 0, 0)
-* ICC.3 = (0, 0, 0)
-* Omega.2 = 0
-* Omega.3 = 0
-
-`r colorize("Individual Statistical power is estimated to be around 0.8. Please check the table below for estimations of other definitions of statistical power. Across all power definitions, estimation results across the __PUMP__ package, __Monte Carlo Simulation__ results and __PowerUp__ package are about the same as detailed below.", "green")`
+## Varying school size
 
 ```{r nj100}
 user.params.list[['n.j']] <- 100
 ```
+
+$\bar{n}$ = `r user.params.list[['nbar']]`
 
 ```{r 3r.nj100}
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -99,27 +94,22 @@ cluster_c3_3r_nj100_power_plot <- gen.power.results.plot(params.file.base, desig
 print(cluster_c3_3r_nj100_power_plot)
 ```
 
-### Setup 2: School size 75
-
-* n.j = 75
-
 ```{r nj75}
 user.params.list[['n.j']] <- 75
 ```
+
+$\bar{n}$ = `r user.params.list[['nbar']]`
 
 ```{r 3r.nj75}
 cluster_c3_3r_nj75_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c3_3r_nj75_power_plot)
 ```
 
-### Setup 3: School size 50
-
-* n.j = 50
-
 ```{r nj50}
 user.params.list[['n.j']] <- 50
 ```
 
+$\bar{n}$ = `r user.params.list[['nbar']]`
 
 ```{r 3r.nj50}
 cluster_c3_3r_nj50_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
@@ -127,13 +117,13 @@ print(cluster_c3_3r_nj50_power_plot)
 ```
 
 
-# Varying R2
-
-R2.1 = 0.6, 0.6, 0.6
+## Varying R2
 
 ```{r r2.10.6}
 user.params.list[['R2.1']] <- rep(0.6, M)  
 ```
+
+$R^2_1 =$ `r user.params.list[['R2.1']]`
 
 ```{r 3r.r2.10.6}
 cluster_c3_3r_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
@@ -141,12 +131,11 @@ print(cluster_c3_3r_r2.1_power_plot)
 user.params.list[['R2.1']] <- params.default[['R2.1']]  
 ```
 
-
-R2.2 = 0.6, 0.6, 0.6
-
 ```{r r2.20.6}
 user.params.list[['R2.2']] <- rep(0.6, M)  
 ```
+
+$R^2_2 =$ `r user.params.list[['R2.2']]`
 
 ```{r 3r.r2.20.6}
 cluster_c3_3r_r2.2_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
@@ -154,11 +143,11 @@ print(cluster_c3_3r_r2.2_power_plot)
 user.params.list[['R2.2']] <- params.default[['R2.2']]  
 ```
 
-R2.3 = 0.6, 0.6, 0.6
-
 ```{r r2.30.6}
 user.params.list[['R2.3']] <- rep(0.6, M)  
 ```
+
+$R^2_3 =$ `r user.params.list[['R2.3']]`
 
 ```{r 3r.r2.30.6}
 cluster_c3_3r_r2.3_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
@@ -167,9 +156,7 @@ user.params.list[['R2.3']] <- params.default[['R2.3']]
 ```
 
 
-# Varying rho
-
-rho.default = 0.2
+## Varying rho
 
 ```{r rho0.2}
 rho.default <- 0.2
@@ -179,12 +166,12 @@ user.params.list[['rho.X']] <- user.params.list[['rho.C']] <-rho.default
 user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <- rho.default
 ```
 
+$\rho =$ `r user.params.list[['rho.default']]`
+
 ```{r 3r.rho0.2}
 cluster_c3_3r_rho0.2_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c3_3r_rho0.2_power_plot)
 ```
-
-rho.default = 0.8
 
 ```{r rho0.8}
 rho.default <- 0.8
@@ -193,6 +180,8 @@ user.params.list[['rho.default']] <- rho.default
 user.params.list[['rho.X']] <- user.params.list[['rho.C']] <-rho.default
 user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <-rho.default
 ```
+
+$\rho =$ `r user.params.list[['rho.default']]`
 
 ```{r 3r.rho0.8}
 cluster_c3_3r_rho0.8_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
@@ -206,14 +195,13 @@ user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[[
 ```
 
 
-# Varying true positives
-
-MDES = 0.125, 0, 0
+## Varying true positives
 
 ```{r MDES0.12500}
 user.params.list[['ATE_ES']] <- c(0.125, 0, 0)
 ```
 
+ATE (ES) = `r user.params.list[['ATE_ES']]`
 
 ```{r 3r.MDES0.12500}
 cluster_c3_3r_mdes0.1250.00.0.00_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
@@ -221,13 +209,13 @@ print(cluster_c3_3r_mdes0.1250.00.0.00_power_plot)
 user.params.list[['ATE_ES']] <- params.default[['ATE_ES']]
 ```
 
-# Varying ICC for relevant models
-
-ICC.2 = c(0.7, 0.7, 0.7)
+## Varying ICC
 
 ```{r ICC20.8}
 user.params.list[['ICC.2']] <- rep(0.7, M)
 ```
+
+$\text{ICC}_2$ = `r user.params.list[['ICC.2']]`
 
 ```{r 3r.ICC20.7}
 cluster_c3_3r_ICC2.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
@@ -235,13 +223,13 @@ print(cluster_c3_3r_ICC2.0.7_power_plot)
 user.params.list[['ICC.2']] <- params.default[['ICC.2']]
 ```
 
-ICC.3 = c(0.7, 0.7, 0.7)
-
-```{r ICC30.8}
+```{r ICC30.7}
 user.params.list[['ICC.3']] <- rep(0.7, M)
 ```
 
-```{r 3r.ICC30.8}
+$\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
+
+```{r 3r.ICC30.7}
 cluster_c3_3r_ICC3.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c3_3r_ICC3.0.7_power_plot)
 user.params.list[['ICC.3']] <- params.default[['ICC.3']]

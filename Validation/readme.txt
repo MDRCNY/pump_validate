@@ -15,4 +15,7 @@ runSim = FALSE
 runPump = TRUE
 runPowerUp = TRUE
 
+In gen_validation_results_all.R
+make sure overwrite = TRUE or delete all old files in Validation/data/*.RDS
+
 Run Validation/validate.slurm

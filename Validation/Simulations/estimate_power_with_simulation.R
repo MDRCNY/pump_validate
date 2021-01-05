@@ -217,12 +217,9 @@ calc_power <- function(adjp.proc, alpha)
 
 make.model <- function(dat, dummies = NULL, design) {
 
-  # form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))
-  # mod <- lmer(form, data=dat, control = lmerControl(optimizer="bobyqa",calc.derivs = FALSE))
   # mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
-  
-  # dat = mdat[[1]]$fixdat;
   # dat = mdat[[1]];
+  
   dat$S.ij <- as.factor(dat$S.ij)
   if(!is.null(dat$S.ik)){ dat$S.ik <- as.factor(dat$S.ik) }
 
@@ -233,8 +230,9 @@ make.model <- function(dat, dummies = NULL, design) {
     # mmat <- cbind(dat[,c("T.x", "X.jk", "C.ijk")], dat[,grep("dummy\\.[0-9]", colnames(dat))])
     # mod <- fastLm(mmat, dat[,"Yobs"])
   } else if (design == "blocked_i1_2f") {
-    form <- as.formula("Yobs ~ 1 + T.x*S.ij + C.ijk")
-    mod <- pkgcond::suppress_messages(lm(form, data = dat))
+    mod <- blkvar::interacted_linear_estimators(Yobs, Z = T.x, B = S.ij, data = dat, control_formula = ~ C.ijk)
+    # form <- as.formula("Yobs ~ 1 + T.x*S.ij + C.ijk")
+    # mod <- pkgcond::suppress_messages(lm(form, data = dat))
   } else if (design == "blocked_i1_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.ij)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
@@ -248,8 +246,9 @@ make.model <- function(dat, dummies = NULL, design) {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x*S.ik + X.jk + C.ijk + (1 | S.ij)"))
-    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
+    mod <- blkvar::interacted_linear_estimators(Yobs, Z = T.x, B = S.ij, data = dat, control_formula = ~ C.ijk)
+    # form <- as.formula(paste0("Yobs ~ 1 + T.x*S.ik + X.jk + C.ijk + (1 | S.ij)"))
+    # mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 + T.x | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
@@ -301,12 +300,14 @@ get.pval <- function(mod) {
 
   if(class(mod) == "lm") {
     pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
-  }
-  if(class(mod) == "lmerMod") {
-    pval <-(1-pnorm(abs(summary(mod)$coefficients["T.x","t value"])))*2
-  }
-  if (class(mod) == "fastLm") {
+  } else if(class(mod) == "lmerMod") {
+    pval <- (1 - pnorm(abs(summary(mod)$coefficients["T.x","t value"])))*2
+  } else if (class(mod) == "fastLm") {
     pval <- summary(mod)$coef["T.x", "Pr(>|t|)"]
+  } else if (class(mod) == "data.frame") {
+    # fixed effects models
+    tstat <- mod$ATE_hat[1]/mod$SE[1]
+    pval <- (1 - pnorm(abs(tstat)))*2
   }
   return(pval)
 }
@@ -315,9 +316,11 @@ get.tstat <- function(mod) {
   
   if(class(mod) %in% c("lmerMod", "lm")) {
     tstat <- summary(mod)$coefficients["T.x","t value"]
-  }
-  if (class(mod) == "fastLm") {
+  } else if (class(mod) == "fastLm") {
     tstat <- summary(mod)$coef["T.x", "t value"]
+  } else if (class(mod) == "data.frame") {
+    # fixed effects models
+    tstat <- mod$ATE_hat[1]/mod$SE[1]
   }
   return(tstat)
 }
