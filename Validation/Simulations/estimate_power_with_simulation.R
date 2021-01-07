@@ -246,7 +246,7 @@ make.model <- function(dat, dummies = NULL, design) {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
-    mod <- blkvar::interacted_linear_estimators(Yobs, Z = T.x, B = S.ij, data = dat, control_formula = ~ C.ijk)
+    mod <- blkvar::interacted_linear_estimators(Yobs, Z = T.x, B = S.ij, data = dat, control_formula = ~ (1|C.ijk))
     # form <- as.formula(paste0("Yobs ~ 1 + T.x*S.ik + X.jk + C.ijk + (1 | S.ij)"))
     # mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3r") {

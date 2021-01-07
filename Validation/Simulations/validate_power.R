@@ -512,7 +512,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design, plot.path =
     
     mdes_compare_results[,2:3] <- apply(mdes_compare_results[,2:3], 2, as.numeric)
     mdes_compare_results = cbind(mdes_compare_results, user.params.list[['ATE_ES']][1])
-    colnames(mdes_compare_results) = c('MTP', 'Adjusted MDES', 'Indiv Power', 'Targeted MDES')
+    colnames(mdes_compare_results) = c('MTP', 'Adjusted MDES', 'Indiv Power', 'Target MDES')
     rownames(mdes_compare_results) <- NULL
     
     if(sim.params.list[['parallel']])
@@ -614,7 +614,6 @@ validate_sample <- function(user.params.list, sim.params.list, design, plot.path
           max.steps = sim.params.list[['max.steps']],
           cl = cl
         )
-        sample_results$type <- type
         sample_compare_results <- rbind(sample_compare_results, sample_results$ss.results)
         plot_data <- rbind(plot_data, sample_results$test.pts)
       }
@@ -687,5 +686,5 @@ if(FALSE)
   two.tailed = TRUE;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl = NULL
-  max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000
+  max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000; final.tnum = 10000
 }

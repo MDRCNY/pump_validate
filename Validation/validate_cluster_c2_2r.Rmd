@@ -1,6 +1,7 @@
 ---
 title: "Validate Power: cluster_c2_2r"
 author: "Kristin Porter, Zarni Htet, Kristen Hunter"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   html_document:
     code_folding: hide
@@ -21,8 +22,9 @@ output:
     toc: yes
 ---
 
-This document lays out results for estimating statistical power and minimum detectable effect size (MDES) for:
-Cluster RCT, with 2 levels, and randomization done at level 2 (school level). This document contains models assuming random treatment effects.
+Design: Cluster RCT, with 2 levels, and randomization done at level 2 (school level).
+
+Models: random treatment effects.
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
@@ -38,10 +40,6 @@ panderOptions('round', 3)
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
-params.default <- user.params.list
-
-# validate MDES and sample size?
-validate.mdes.ss = FALSE
 ```
 
 ```{r universal.params}
@@ -52,19 +50,12 @@ user.params.list[['K']] <- 1
 user.params.list[['ICC.3']] <- rep(0, M)
 
 # params to help have a decent power
-user.params.list[['ICC.2']] <- rep(0.1, M)
+user.params.list[['ICC.2']] <- rep(0.05, M)
 user.params.list[['J']] <- 40
+params.default <- user.params.list
 ```
 
 # Power Validation
-
-```{r sim.params}
-# print(sim.params.list)
-```
-
-```{r user.params}
-# print(user.params.list)
-```
 
 Default parameters:
 
@@ -74,12 +65,16 @@ Default parameters:
 * ATE ES = `r user.params.list[['ATE_ES']]`
 * R2: $R^2_1$ = `r user.params.list[['R2.1']]`, $R^2_2$ = `r user.params.list[['R2.2']]`
 * Omega: $\omega_2 = 0$
-* ICC: $\text{ICC}_2$ = `r user.params.list[['ICC.2']]` 
+* ICC: $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`
+
+Assumptions
+
+* Two-level design: $\text{ICC}_3 = 0$,  $\omega_3 = 0$, $K = 1$
 
 ## Varying school size
 
 ```{r nj100}
-user.params.list[['n.j']] <- 100
+user.params.list[['nbar']] <- 100
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -91,7 +86,7 @@ print(cluster_c2_2r_nj100_power_plot)
 ```
 
 ```{r nj75}
-user.params.list[['n.j']] <- 75
+user.params.list[['nbar']] <- 75
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -102,7 +97,7 @@ print(cluster_c2_2r_nj75_power_plot)
 ```
 
 ```{r nj50}
-user.params.list[['n.j']] <- 50
+user.params.list[['nbar']] <- 50
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -112,7 +107,6 @@ $\bar{n}$ = `r user.params.list[['nbar']]`
 cluster_c2_2r_nj50_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c2_2r_nj50_power_plot)
 ```
-
 
 ## Varying R2
 
@@ -196,14 +190,70 @@ user.params.list[['ATE_ES']] <- params.default[['ATE_ES']]
 
 ## Varying ICC
 
-```{r ICC20.8}
+```{r ICC20.7}
 user.params.list[['ICC.2']] <- rep(0.7, M)
 ```
 
 $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`
 
-```{r 2r.ICC20.8}
+```{r 2r.ICC20.7}
 cluster_c2_2r_ICC2.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c2_2r_ICC2.0.7_power_plot)
 user.params.list[['ICC.2']] <- params.default[['ICC.2']]
+```
+
+
+```{r ICC20}
+user.params.list[['ICC.2']] <- rep(0, M)
+```
+
+$\text{ICC}_2$ = `r user.params.list[['ICC.2']]`
+
+```{r 2r.ICC20}
+cluster_c2_2r_ICC2.0_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+print(cluster_c2_2r_ICC2.0_power_plot)
+user.params.list[['ICC.2']] <- params.default[['ICC.2']]
+```
+
+
+# MDES validation
+
+```{r}
+# reset to defaults
+user.params.list <- params.default 
+```
+
+```{r 2r.mdesCombined}
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  cluster_c2_2r_mdes_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    cluster_c2_2r_mdes_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+# Sample size validation
+
+```{r 2c.sampleCombined}
+sample.file <- find_file(params.file.base, type = 'sample')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  cluster_c2_2r_sample_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    cluster_c2_2r_sample_results,
+    style = "grid", split.tables = 100, row.names = FALSE,
+    caption = design
+  )
+}
 ```

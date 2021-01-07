@@ -1,6 +1,7 @@
 ---
 title: "Validate Power: blocked_i1_3r"
 author: "Kristin Porter, Zarni Htet, Kristen Hunter"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   html_document:
     code_folding: hide
@@ -21,8 +22,9 @@ output:
     toc: yes
 ---
 
-This document lays out results for estimating statistical power and minimum detectable effect size (MDES) for:
-Blocked RCT, with 3 levels, and randomization done at level 1 (individual level). This document contains models assuming random treatment effects.
+Design: Blocked RCT, with 3 levels, and randomization done at level 1 (individual level).
+
+Models: random treatment effects.
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
@@ -38,15 +40,13 @@ panderOptions('round', 3)
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
-params.default <- user.params.list
-
-# validate MDES and sample size?
-validate.mdes.ss = FALSE
 ```
 
 ```{r}
 # set document-level parameters
 design <- "blocked_i1_3r"
+user.params.list[['K']] <- 10
+params.default <- user.params.list
 ```
 
 
@@ -60,14 +60,6 @@ design <- "blocked_i1_3r"
 * R2: $R^2_1$ = `r user.params.list[['R2.1']]`, $R^2_2$ = `r user.params.list[['R2.2']]`, $R^2_3$ = `r user.params.list[['R2.3']]`
 * ICC: $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`, $\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
 * Omega: $\omega_2$ = `r user.params.list[['omega.2']]`, $\omega_3$ = `r user.params.list[['omega.3']]`
-
-```{r sim.params}
-# print(sim.params.list)
-```
-
-```{r user.params}
-# print(user.params.list)
-```
 
 ## Varying school size
 
@@ -263,4 +255,47 @@ blocked_i1_3r_omega2.0.8omega3.0.8_power_plot <- gen.power.results.plot(gen_para
 print(blocked_i1_3r_omega2.0.8omega3.0.8_power_plot)
 user.params.list[['omega.3']] <- params.default[['omega.3']]
 user.params.list[['omega.2']] <- params.default[['omega.2']]
+```
+
+
+# MDES validation
+
+```{r}
+# reset to defaults
+user.params.list <- params.default 
+```
+
+```{r 3r.mdesCombined}
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_i1_3r_mdes_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    blocked_i1_3r_mdes_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+# Sample size validation
+
+```{r 3r.sampleCombined}
+sample.file <- find_file(params.file.base, type = 'sample')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_i1_3r_sample_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    blocked_i1_3r_sample_results,
+    style = "grid", split.tables = 100, row.names = FALSE,
+    caption = design
+  )
+}
 ```

@@ -21,8 +21,9 @@ output:
     toc: yes
 ---
 
-This document lays out results for estimating statistical power and minimum detectable effect size (MDES) for:
-Cluster RCT, with 3 levels, and randomization done at level 3 (district level). This document contains models assuming random treatment effects.
+Design: Cluster RCT, with 3 levels, and randomization done at level 3 (district level).
+
+Models: random treatment effects.
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
@@ -38,10 +39,6 @@ panderOptions('round', 3)
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
-params.default <- user.params.list
-
-# validate MDES and sample size?
-validate.mdes.ss = FALSE
 ```
 
 ```{r}
@@ -57,17 +54,11 @@ user.params.list[['ATE_ES']] <- rep(0.25, M)
 user.params.list[['ICC.3']] <- rep(0, M)
 user.params.list[['ICC.2']] <- rep(0.1, M)
 user.params.list[['ICC.3']] <- rep(0.1, M)
+
+params.default <- user.params.list
 ```
 
 # Power Validation
-
-```{r sim.params}
-# print(sim.params.list)
-```
-
-```{r user.params}
-# print(user.params.list)
-```
 
 Default parameters:
 
@@ -233,4 +224,46 @@ $\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
 cluster_c3_3r_ICC3.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c3_3r_ICC3.0.7_power_plot)
 user.params.list[['ICC.3']] <- params.default[['ICC.3']]
+```
+
+# MDES validation
+
+```{r}
+# reset to defaults
+user.params.list <- params.default 
+```
+
+```{r 3r.mdesCombined}
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  cluster_c3_3r_mdes_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    cluster_c3_3r_mdes_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+# Sample size validation
+
+```{r 3r.sampleCombined}
+sample.file <- find_file(params.file.base, type = 'sample')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  cluster_c3_3r_sample_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    cluster_c3_3r_sample_results,
+    style = "grid", split.tables = 100, row.names = FALSE,
+    caption = design
+  )
+}
 ```

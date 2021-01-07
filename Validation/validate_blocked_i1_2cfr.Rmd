@@ -21,10 +21,9 @@ output:
     toc: yes
 ---
 
-This document lays out results for estimating statistical power and minimum detectable effect size (MDES) for:
-Blocked RCT, with 2 levels, and randomization done at level 1 (individual level). This document contains models assuming constant treatment effects, fixed treatment effects, and random treatment effects.
+Design: Blocked RCT, with 2 levels, and randomization done at level 1 (individual level).
 
-We compare results of the derived methods against Monte Carlo Simulations & the PowerUp R package on power.
+Models: Constant treatment effects, fixed treatment effects, and random treatment effects.
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
@@ -40,22 +39,16 @@ panderOptions('round', 3)
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
-params.default <- user.params.list
-
-# validate MDES and sample size?
-validate.mdes.ss = FALSE
 ```
 
 ```{r universal.params}
 user.params.list[['K']] <- 1
 user.params.list[['ICC.3']] <- rep(0, M)
 user.params.list[['omega.3']] <- 0
+params.default <- user.params.list
 ```
 
-
 # Power Validation
-
-In this section, we validate power results for different definitions of power and different adjustment procedures.
 
 Default parameters:
 
@@ -69,6 +62,10 @@ Parameters by model type:
 
 * Omega: $\omega_2 = 0$ for constant effects, $\omega_2$ = `r user.params.list[['omega.s']]` for fixed and random
 * ICC: $\text{ICC}_2 = 0$ for constant and fixed effects, $\text{ICC}_2$ = `r user.params.list[['ICC.2']]` for random effects
+
+Assumptions:
+
+* Two-level design: $\text{ICC}_3 = 0$,  $\omega_3 = 0$, $K = 1$
 
 ```{r sim.params}
 # print(sim.params.list)
@@ -291,8 +288,6 @@ user.params.list[['ICC.2']] <- params.default[['ICC.2']]
 
 # MDES validation
 
-In this section, we validate the minimum detectable effect size (MDES) across different __MTP__.  The validation is carried out by generating power values for the specific __MTP__ and __power__ definitions for a specific __MDES__. Then, we supply the generated estimate __power__ as an input parameter to see if the specified __MDES__ is returned.
-
 ```{r}
 # reset to defaults
 user.params.list <- params.default 
@@ -302,6 +297,7 @@ user.params.list <- params.default
 ```{r 2c.mdesCombined}
 design <- "blocked_i1_2c"
 user.params.list[['omega.2']] <- 0
+user.params.list[['ICC.2']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 mdes.file <- find_file(params.file.base, type = 'mdes')
 if(length(mdes.file) == 0)
@@ -309,9 +305,9 @@ if(length(mdes.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2c_mdes_results_nj50 <- readRDS(mdes.file)
+  blocked_i1_2c_mdes_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    blocked_i1_2c_mdes_results_nj50,
+    blocked_i1_2c_mdes_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = design
   )
@@ -321,6 +317,7 @@ if(length(mdes.file) == 0)
 ```{r 2f.mdesCombined}
 design <- "blocked_i1_2f"
 user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['ICC.2']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 mdes.file <- find_file(params.file.base, type = 'mdes')
 if(length(mdes.file) == 0)
@@ -328,9 +325,9 @@ if(length(mdes.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2f_mdes_results_nj50 <- readRDS(mdes.file)
+  blocked_i1_2f_mdes_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    blocked_i1_2f_mdes_results_nj50,
+    blocked_i1_2f_mdes_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = design
   )    
@@ -340,6 +337,7 @@ if(length(mdes.file) == 0)
 ```{r 2r.mdesCombined}
 design <- "blocked_i1_2r"
 user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['ICC.2']] <- params.default[['ICC.2']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 mdes.file <- find_file(params.file.base, type = 'mdes')
 if(length(mdes.file) == 0)
@@ -347,9 +345,9 @@ if(length(mdes.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2r_mdes_results_nj50 <- readRDS(mdes.file)
+  blocked_i1_2r_mdes_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    blocked_i1_2r_mdes_results_nj50,
+    blocked_i1_2r_mdes_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = design
   )
@@ -358,11 +356,10 @@ if(length(mdes.file) == 0)
 
 # Sample size validation
 
-In this section, we validate the derived sample size across different __MTP__. The validation is carried out by generating power values for the specific __MTP__ and __power__ definitions for a specific __MDES__. Then, we supply the generated estimate __power__ and MDES as an input parameter to see if the specified sample size is returned.
-
 ```{r 2c.sampleCombined}
 design <- "blocked_i1_2c"
-user.params.list[['omega.2']] = 0
+user.params.list[['omega.2']] <- 0
+user.params.list[['ICC.2']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample')
 if(length(sample.file) == 0)
@@ -370,9 +367,9 @@ if(length(sample.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2c_sample_results_nj50 <- readRDS(sample.file)
+  blocked_i1_2c_sample_results <- readRDS(sample.file)
   pander::pandoc.table(
-    blocked_i1_2c_sample_results_nj50,
+    blocked_i1_2c_sample_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -382,7 +379,8 @@ if(length(sample.file) == 0)
 
 ```{r 2f.sampleCombined}
 design <- "blocked_i1_2f"
-user.params.list[['omega.2']] = 0.5
+user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['ICC.2']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample')
 if(length(sample.file) == 0)
@@ -390,9 +388,9 @@ if(length(sample.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2f_sample_results_nj50 <- readRDS(sample.file)
+  blocked_i1_2f_sample_results <- readRDS(sample.file)
   pander::pandoc.table(
-    blocked_i1_2f_sample_results_nj50,
+    blocked_i1_2f_sample_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -401,7 +399,8 @@ if(length(sample.file) == 0)
 
 ```{r 2r.sampleCombined}
 design <- "blocked_i1_2r"
-user.params.list[['omega.2']] = 0.5
+user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['ICC.2']] <- params.default[['ICC.2']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample')
 if(length(sample.file) == 0)
@@ -409,9 +408,9 @@ if(length(sample.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2r_sample_results_nj50 <- readRDS(sample.file)
+  blocked_i1_2r_sample_results <- readRDS(sample.file)
   pander::pandoc.table(
-    blocked_i1_2r_sample_results_nj50,
+    blocked_i1_2r_sample_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )

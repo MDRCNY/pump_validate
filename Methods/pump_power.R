@@ -818,6 +818,15 @@ pump_mdes <- function(
     mdes.results <- data.frame(MTP, 0, 0)
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
     return(list(mdes.results = mdes.results, test.pts = test.pts))
+  } 
+  # check if zero power, then return 0 MDES
+  if(round(target.power, 2) == 1)
+  {
+    message('Target power of 1 requested')
+    test.pts <- NULL
+    mdes.results <- data.frame(MTP, Inf, 1)
+    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+    return(list(mdes.results = mdes.results, test.pts = test.pts))
   }
   
   sigma <- matrix(rho, M, M)
@@ -1060,13 +1069,25 @@ pump_sample <- function(
   cl = NULL, updateProgress = NULL
 )
 {
+  # save out target sample size
+  if(typesample == 'J'){
+    target.ss <- J
+  } else if(typesample == 'K')
+  {
+    target.ss <- K
+  } else if(typesample == 'nbar')
+  {
+    target.ss <- nbar
+  }
+  output.colnames <- c("MTP", "Sample type", "Sample size", paste(power.definition, "power"), "Target sample size") 
+  
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
     test.pts <- NULL
-    ss.results <- data.frame(MTP, typesample, 0, 0)
-    colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+    ss.results <- data.frame(MTP, typesample, 0, 0, target.ss)
+    colnames(ss.results) <- output.colnames
     return(list(ss.results = ss.results, test.pts = test.pts))
   }
   
@@ -1121,12 +1142,12 @@ pump_sample <- function(
   ### INDIVIDUAL POWER for Raw and BF ###
   if (power.definition == "D1indiv") {
     if (MTP == "rawp"){
-      raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power)
-      colnames(raw.ss) <- c("MTP", "Type of Power", "Sample Size", "Type", "Target Power")
+      raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
+      colnames(raw.ss) <- output.colnames
       return(raw.ss)
     } else if (MTP == "Bonferroni") {
-      ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power)
-      colnames(ss.BF) <- c("MTP", "Type of Power", "Sample Size", "Type", "Target Power")
+      ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power, target.ss)
+      colnames(ss.BF) <- output.colnames
       return(ss.BF)
     }
   }
@@ -1147,8 +1168,8 @@ pump_sample <- function(
   if(ss.low == ss.high)
   {
     test.pts <- NULL
-    ss.results <- data.frame(MTP, typesample, 1, target.power)
-    colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+    ss.results <- data.frame(MTP, typesample, 1, target.power, target.ss)
+    colnames(ss.results) <- output.colnames
     return(list(ss.results = ss.results, test.pts = test.pts))
   }
 
@@ -1168,8 +1189,8 @@ pump_sample <- function(
     max.steps = max.steps, max.cum.tnum = max.cum.tnum,
     final.tnum = final.tnum
   )
-  ss.results <- data.frame(MTP, typesample, ceiling(test.pts$pt[nrow(test.pts)]), test.pts$power[nrow(test.pts)])
-  colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+  ss.results <- data.frame(MTP, typesample, ceiling(test.pts$pt[nrow(test.pts)]), test.pts$power[nrow(test.pts)], target.ss)
+  colnames(ss.results) <- output.colnames
   
   return(list(ss.results = ss.results, test.pts = test.pts))
 }

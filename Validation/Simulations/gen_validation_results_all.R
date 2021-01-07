@@ -12,11 +12,11 @@ run.test = FALSE
 run.power = TRUE
 run.mdes.ss = FALSE
 # which designs to run
-run.blocked.2l = TRUE
+run.blocked.2l = FALSE
 run.cluster.2l = FALSE
 run.blocked.3l = FALSE
 run.cluster.3l = FALSE
-run.blocked.cluster = FALSE
+run.blocked.cluster = TRUE
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
@@ -34,8 +34,10 @@ if(run.test)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
   if(run.mdes.ss)
   {
-    mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
-    sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
+    sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
+    mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
+    sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
+    sim.params.list[['procs']] <- default.params[['procs']]
   }
   
   user.params.list[['ICC.2']] <- params.default[['ICC.2']]
@@ -278,7 +280,7 @@ if(!run.test & run.cluster.2l & run.power)
   user.params.list[['ICC.3']] <- rep(0, M)
   
   # params to help have a decent power
-  user.params.list[['ICC.2']] <- rep(0.1, M)
+  user.params.list[['ICC.2']] <- rep(0.05, M)
   user.params.list[['J']] <- 60
  
   #------------------------------------------------------------------#
@@ -405,7 +407,7 @@ if(!run.test & run.cluster.2l & run.mdes.ss)
   user.params.list[['ICC.3']] <- rep(0, M)
   
   # param settings to have a decent power
-  user.params.list[['ICC.2']] <- 0.1
+  user.params.list[['ICC.2']] <- rep(0.05, M)
   user.params.list[['J']] <- 40
   
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "simple_c2_2r", overwrite = overwrite)
@@ -433,7 +435,7 @@ if(!run.test & run.blocked.3l & run.power)
   # assumptions
   user.params.list[['omega.2']] <- params.default[['omega.2']]
   user.params.list[['omega.3']] <- params.default[['omega.3']]
-  user.params.list[['K']] <- params.default[['K']]
+  user.params.list[['K']] <- 10
 
   #------------------------------------------------------------------#
   # vary sample size
@@ -553,12 +555,12 @@ if(!run.test & run.blocked.3l & run.power)
   # Vary Omega
   #------------------------------------------------------------------#
   
-  user.params.list[['omega.2']] <- 0.2
+  user.params.list[['omega.2']] <- params.default[['omega.2']]
   user.params.list[['omega.3']] <- 0.8
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
   
   user.params.list[['omega.2']] <- 0.8
-  user.params.list[['omega.3']] <- 0.2
+  user.params.list[['omega.3']] <- params.default[['omega.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
   
   user.params.list[['omega.2']] <- 0.8
@@ -591,7 +593,7 @@ if(!run.test & run.blocked.3l & run.mdes.ss)
   
   user.params.list[['omega.2']] <- params.default[['omega.2']]
   user.params.list[['omega.3']] <- params.default[['omega.3']]
-  user.params.list[['K']] <- params.default[['K']]
+  user.params.list[['K']] <- 10
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_3r", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_3r", overwrite = overwrite)
   
