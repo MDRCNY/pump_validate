@@ -669,7 +669,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     )
     current.power <- current.power.results[MTP, power.definition]
     
-    if(abs(current.power - target.power) < tol) {
+    if(abs(current.power - target.power) < tol)
+    {
       check.power.tnum <- pmin(10 * current.tnum, max.cum.tnum)
       
       if(search.type == 'mdes'){ MDES <- rep(current.try, M) }
@@ -710,15 +711,16 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
           rho = rho, omega.2 = omega.2, omega.3 = omega.3, snum = snum, cl = cl
         )
       }
-    } 
+    } # end if within tolerance
+    
     iter.results <- data.frame(
       step = step, pt = current.try, power = current.power, w = current.tnum,
       MTP = MTP, target.power = target.power
     )
     test.pts <- bind_rows(test.pts, iter.results)
     
-    if(current.try < iter.results$pt) {
-      current.try <- find_best(test.pts, start.low, start.high, target.poewr, alternate = current.try + 0.10 * (start.high - current.try))
+    if(current.power < target.power) {
+      current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = current.try + 0.10 * (start.high - current.try))
     } else {
       current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = current.try - 0.10 * (current.try - start.low) )
     }
@@ -726,6 +728,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   
   if( (cum.tnum == max.cum.tnum | step == max.steps) & abs(current.power - target.power) > tol) {
     message("Reached maximum iterations without converging on MDES estimate within tolerance.")
+    test.pts <- bind_rows(test.pts, c(step, NA, NA, NA, MTP, target.power))
   }
   
   return(test.pts)
@@ -1092,7 +1095,7 @@ pump_sample <- function(
   }
   
   # Checks on what we are estimating, sample size
-  print(paste("Estimating sample size of type", typesample, "for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
+  message(paste("Estimating sample size of type", typesample, "for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
   
   # indicator for which sample to compute. J is for blocks. nbar is for harmonic mean of samples within block
   if(typesample == "J"){

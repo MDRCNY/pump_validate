@@ -104,7 +104,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     Sigma.wz.full <- gen_RE_cov_matrix( Sigma.w, Sigma.z, Sigma.wz )
     
     # generate full vector of district random effects and impacts
-    wz.k <- mvrnorm(K, mu = rep(0,2*M), Sigma = Sigma.wz.full)
+    wz.k <- mvrnorm(K, mu = rep(0, 2*M), Sigma = Sigma.wz.full)
     w.k  <- wz.k[,1:M, drop = FALSE]
     z.k  <- wz.k[,(M+1):(2*M), drop = FALSE]
   } else {
@@ -284,7 +284,7 @@ convert.params <- function(user.params.list, check = FALSE) {
   
   # If no district info, set district parameters to 0
   has_level_three = TRUE
-  if ( is.null( ICC.3 ) ) {
+  if ( is.null( ICC.3 ) | ICC.3 == 0 ) {
     has_level_three = FALSE
     ICC.3 = 0
     R2.3 = 0
@@ -293,13 +293,14 @@ convert.params <- function(user.params.list, check = FALSE) {
   }
   
   # random intercepts variances
-  eta0.sq <- sqrt( ( ICC.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.1) ))
-  tau0.sq <- sqrt( ( ICC.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.1) ))
+  eta0.sq <- sqrt( ( ICC.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1 - R2.1) ))
+  tau0.sq <- sqrt( ( ICC.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1 - R2.1) ))
   # covariate coefficients
-  delta   <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
+  delta   <- sqrt( ( ICC.2*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1 - R2.2)*(1 - R2.1) ))
   # psi     <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
-  xi      <- sqrt( ( ICC.3*R2.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.3)*(1-R2.1) ))
+  xi      <- sqrt( ( ICC.3*R2.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1 - R2.3)*(1 - R2.1) ))
   gamma   <- sqrt( R2.1/(1-R2.1) )
+  
   # random impacts variances
   eta1.sq <- omega.3 * (eta0.sq + xi^2)
   tau1.sq <- omega.2 * (tau0.sq + delta^2)

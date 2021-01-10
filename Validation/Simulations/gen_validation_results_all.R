@@ -12,7 +12,7 @@ run.test = FALSE
 run.power = TRUE
 run.mdes.ss = FALSE
 # which designs to run
-run.blocked.2l = FALSE
+run.blocked.2l = TRUE
 run.cluster.2l = FALSE
 run.blocked.3l = FALSE
 run.cluster.3l = FALSE
@@ -406,9 +406,10 @@ if(!run.test & run.cluster.2l & run.mdes.ss)
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- rep(0, M)
   
-  # param settings to have a decent power
+  # params to help have a decent power
   user.params.list[['ICC.2']] <- rep(0.05, M)
-  user.params.list[['J']] <- 40
+  user.params.list[['J']] <- 60
+  
   
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "simple_c2_2r", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "simple_c2_2r", overwrite = overwrite)
