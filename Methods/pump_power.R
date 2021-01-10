@@ -480,6 +480,10 @@ pump_power <- function(
     adjp <- rawp
   } else if(MTP %in% c("WY-SS", "WY-SD"))
   {
+    if(snum > tnum)
+    {
+      stop('snum must be less than tnum')
+    }
     if(!is.null(cl))
     {
       clusterExport(
@@ -488,7 +492,6 @@ pump_power <- function(
         envir = environment()
       )
       order.matrix <- t(parallel::parApply(cl, abs.Zs.H1, 1, order, decreasing = TRUE))
-      
     } else
     {
       order.matrix <- t(apply(abs.Zs.H1, 1, order, decreasing = TRUE))
@@ -601,9 +604,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
                            rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
                            snum = snum, cl = cl,
-                           max.steps = 20, max.cum.tnum = 5000, max.tnum = 10000)
+                           max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
 {
   # search.type = 'mdes'; start.low = mdes.low; start.high = mdes.high
+  # search.type = 'J'; start.low = ss.low; start.high = ss.high;
   
   # fit initial quadratic curve
   # generate a series of points to try
@@ -665,7 +669,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     )
     current.power <- current.power.results[MTP, power.definition]
     
-    if(abs(current.power - target.power) < tol) {
+    if(abs(current.power - target.power) < tol)
+    {
       check.power.tnum <- pmin(10 * current.tnum, max.cum.tnum)
       
       if(search.type == 'mdes'){ MDES <- rep(current.try, M) }
@@ -698,7 +703,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
           J = ifelse(search.type == 'J', current.try, J),
           K = ifelse(search.type == 'K', current.try, K),
           nbar = ifelse(search.type == 'nbar', current.try, nbar),
-          tnum = max.tnum,
+          tnum = final.tnum,
           # fixed params
           M = M, Tbar = Tbar, alpha = alpha,
           numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
@@ -706,15 +711,16 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
           rho = rho, omega.2 = omega.2, omega.3 = omega.3, snum = snum, cl = cl
         )
       }
-    } 
+    } # end if within tolerance
+    
     iter.results <- data.frame(
       step = step, pt = current.try, power = current.power, w = current.tnum,
       MTP = MTP, target.power = target.power
     )
     test.pts <- bind_rows(test.pts, iter.results)
     
-    if(current.try < iter.results$pt) {
-      current.try <- find_best(test.pts, start.low, start.high, target.poewr, alternate = current.try + 0.10 * (start.high - current.try))
+    if(current.power < target.power) {
+      current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = current.try + 0.10 * (start.high - current.try))
     } else {
       current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = current.try - 0.10 * (current.try - start.low) )
     }
@@ -722,6 +728,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   
   if( (cum.tnum == max.cum.tnum | step == max.steps) & abs(current.power - target.power) > tol) {
     message("Reached maximum iterations without converging on MDES estimate within tolerance.")
+    test.pts <- bind_rows(test.pts, c(step, NA, NA, NA, MTP, target.power))
   }
   
   return(test.pts)
@@ -802,16 +809,25 @@ pump_mdes <- function(
   numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
   rho, omega.2, omega.3 = NULL,
   tnum = 10000, snum = 1000,
-  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, max.tnum = 10000,
+  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
   cl = NULL, updateProgress = NULL
 )
 {
   # check if zero power, then return 0 MDES
-  if(target.power == 0)
+  if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
     test.pts <- NULL
     mdes.results <- data.frame(MTP, 0, 0)
+    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+    return(list(mdes.results = mdes.results, test.pts = test.pts))
+  } 
+  # check if zero power, then return 0 MDES
+  if(round(target.power, 2) == 1)
+  {
+    message('Target power of 1 requested')
+    test.pts <- NULL
+    mdes.results <- data.frame(MTP, Inf, 1)
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
     return(list(mdes.results = mdes.results, test.pts = test.pts))
   }
@@ -877,7 +893,7 @@ pump_mdes <- function(
                              rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
                              snum = snum, cl = cl,
                              max.steps = max.steps, max.cum.tnum = max.cum.tnum,
-                             max.tnum = max.tnum)
+                             final.tnum = final.tnum)
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
 
@@ -1052,22 +1068,34 @@ pump_sample <- function(
   numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
   rho, omega.2, omega.3 = NULL,
   tnum = 10000, snum = 1000,
-  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, max.tnum = 10000,
+  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
   cl = NULL, updateProgress = NULL
 )
 {
+  # save out target sample size
+  if(typesample == 'J'){
+    target.ss <- J
+  } else if(typesample == 'K')
+  {
+    target.ss <- K
+  } else if(typesample == 'nbar')
+  {
+    target.ss <- nbar
+  }
+  output.colnames <- c("MTP", "Sample type", "Sample size", paste(power.definition, "power"), "Target sample size") 
+  
   # check if zero power, then return 0 MDES
-  if(target.power == 0)
+  if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
     test.pts <- NULL
-    ss.results <- data.frame(MTP, typesample, 0, 0)
-    colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+    ss.results <- data.frame(MTP, typesample, 0, 0, target.ss)
+    colnames(ss.results) <- output.colnames
     return(list(ss.results = ss.results, test.pts = test.pts))
   }
   
   # Checks on what we are estimating, sample size
-  print(paste("Estimating sample size of type", typesample, "for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
+  message(paste("Estimating sample size of type", typesample, "for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
   
   # indicator for which sample to compute. J is for blocks. nbar is for harmonic mean of samples within block
   if(typesample == "J"){
@@ -1117,12 +1145,12 @@ pump_sample <- function(
   ### INDIVIDUAL POWER for Raw and BF ###
   if (power.definition == "D1indiv") {
     if (MTP == "rawp"){
-      raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power)
-      colnames(raw.ss) <- c("MTP", "Type of Power", "Sample Size", "Type", "Target Power")
+      raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
+      colnames(raw.ss) <- output.colnames
       return(raw.ss)
     } else if (MTP == "Bonferroni") {
-      ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power)
-      colnames(ss.BF) <- c("MTP", "Type of Power", "Sample Size", "Type", "Target Power")
+      ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power, target.ss)
+      colnames(ss.BF) <- output.colnames
       return(ss.BF)
     }
   }
@@ -1143,8 +1171,8 @@ pump_sample <- function(
   if(ss.low == ss.high)
   {
     test.pts <- NULL
-    ss.results <- data.frame(MTP, typesample, 1, target.power)
-    colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+    ss.results <- data.frame(MTP, typesample, 1, target.power, target.ss)
+    colnames(ss.results) <- output.colnames
     return(list(ss.results = ss.results, test.pts = test.pts))
   }
 
@@ -1162,10 +1190,10 @@ pump_sample <- function(
     rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
     snum = snum, cl = cl,
     max.steps = max.steps, max.cum.tnum = max.cum.tnum,
-    max.tnum = max.tnum
+    final.tnum = final.tnum
   )
-  ss.results <- data.frame(MTP, typesample, ceiling(test.pts$pt[nrow(test.pts)]), test.pts$power[nrow(test.pts)])
-  colnames(ss.results) <- c("MTP", "Sample Type", "Sample Size", paste(power.definition, "power"))
+  ss.results <- data.frame(MTP, typesample, ceiling(test.pts$pt[nrow(test.pts)]), test.pts$power[nrow(test.pts)], target.ss)
+  colnames(ss.results) <- output.colnames
   
   return(list(ss.results = ss.results, test.pts = test.pts))
 }
