@@ -34,9 +34,9 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   px <- 100
   rawt.all <- matrix(NA, S, M)
   # begin loop through all samples to be generated
+  t1 <- Sys.time()
   for (s in 1:S) {
     
-    t1 <- Sys.time()
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
@@ -85,16 +85,16 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         pvals <- get.adjp(proc, rawp, rawt, mdat, S.ij, S.ik, sim.params.list, model.params.list, design, cl)
         
         t21 <- Sys.time()
-        if (s == 1) { message(paste("One sample of", proc, "took", difftime(t21, t11, units = 'secs'))) }
+        if (s == 1) { message(paste("One sample of", proc, "took", round(difftime(t21, t11, units = 'secs')[[1]], 4), 'seconds')) }
       }
       adjp.proc[s,,proc] = pvals
     }
     
-    t2 <- Sys.time()
-    if (s == 1) {
+    if (s == 10) {
+      t2 <- Sys.time()
       message(paste(
         "Current time:", t2,
-        "\nExpected time diff for simulation of", round(S*(difftime(t2, t1, units = 'secs')[[1]])/60,2),
+        "\nExpected time diff for simulation of", round(S*difftime(t2, t1, units = 'secs')[[1]]/(10*60), 2),
         "minutes.\nExpected finish for simulation at", t1 + (t2 - t1) * S,"for S =", S, sep =" ")
       )
     }
@@ -217,12 +217,9 @@ calc_power <- function(adjp.proc, alpha)
 
 make.model <- function(dat, dummies = NULL, design) {
 
-  # form <- as.formula(paste0("D~Treat.j+Covar.j+(1+Covar.ij|cluster.id)"))
-  # mod <- lmer(form, data=dat, control = lmerControl(optimizer="bobyqa",calc.derivs = FALSE))
   # mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
-  
-  # dat = mdat[[1]]$fixdat;
   # dat = mdat[[1]];
+  
   dat$S.ij <- as.factor(dat$S.ij)
   if(!is.null(dat$S.ik)){ dat$S.ik <- as.factor(dat$S.ik) }
 
@@ -233,8 +230,9 @@ make.model <- function(dat, dummies = NULL, design) {
     # mmat <- cbind(dat[,c("T.x", "X.jk", "C.ijk")], dat[,grep("dummy\\.[0-9]", colnames(dat))])
     # mod <- fastLm(mmat, dat[,"Yobs"])
   } else if (design == "blocked_i1_2f") {
-    form <- as.formula("Yobs ~ 1 + T.x*S.ij + C.ijk")
-    mod <- pkgcond::suppress_messages(lm(form, data = dat))
+    mod <- blkvar::interacted_linear_estimators(Yobs, Z = T.x, B = S.ij, data = dat, control_formula = ~ C.ijk)
+    # form <- as.formula("Yobs ~ 1 + T.x*S.ij + C.ijk")
+    # mod <- pkgcond::suppress_messages(lm(form, data = dat))
   } else if (design == "blocked_i1_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.ij)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
@@ -248,6 +246,7 @@ make.model <- function(dat, dummies = NULL, design) {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
+    # mod <- blkvar::interacted_linear_estimators(Yobs, Z = T.x, B = S.ij, data = dat, control_formula = ~ (1|C.ijk))
     form <- as.formula(paste0("Yobs ~ 1 + T.x*S.ik + X.jk + C.ijk + (1 | S.ij)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3r") {
@@ -301,12 +300,14 @@ get.pval <- function(mod) {
 
   if(class(mod) == "lm") {
     pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
-  }
-  if(class(mod) == "lmerMod") {
-    pval <-(1-pnorm(abs(summary(mod)$coefficients["T.x","t value"])))*2
-  }
-  if (class(mod) == "fastLm") {
+  } else if(class(mod) == "lmerMod") {
+    pval <- (1 - pnorm(abs(summary(mod)$coefficients["T.x","t value"])))*2
+  } else if (class(mod) == "fastLm") {
     pval <- summary(mod)$coef["T.x", "Pr(>|t|)"]
+  } else if (class(mod) == "data.frame") {
+    # fixed effects models
+    tstat <- mod$ATE_hat[1]/mod$SE[1]
+    pval <- (1 - pnorm(abs(tstat)))*2
   }
   return(pval)
 }
@@ -315,9 +316,11 @@ get.tstat <- function(mod) {
   
   if(class(mod) %in% c("lmerMod", "lm")) {
     tstat <- summary(mod)$coefficients["T.x","t value"]
-  }
-  if (class(mod) == "fastLm") {
+  } else if (class(mod) == "fastLm") {
     tstat <- summary(mod)$coef["T.x", "t value"]
+  } else if (class(mod) == "data.frame") {
+    # fixed effects models
+    tstat <- mod$ATE_hat[1]/mod$SE[1]
   }
   return(tstat)
 }
@@ -335,14 +338,13 @@ get.tstat <- function(mod) {
 
 get.rawp <- function(mdat, design, nbar, J) {
 
+  mods = lapply(mdat, function(m) make.model(m, NULL, design))
+  rawp = sapply(mods, function(x) get.pval(x))
+  
   # if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
   #   mdums = lapply(mdat, function(m) make.dummies(m, "S.ij", nbar, J))
   #   mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
   #   rawp = sapply(mods, function(x) get.pval(x))
-  # }
-  # else {
-    mods = lapply(mdat, function(m) make.model(m, NULL, design))
-    rawp = sapply(mods, function(x) get.pval(x))
   # }
 
   return(rawp)

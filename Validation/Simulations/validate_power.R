@@ -12,8 +12,13 @@
 # }
 # BiocManager::install("multtest")
 
+# blkvar package
+# install.packages("remotes")
+# remotes::install_github("lmiratrix/blkvar")
+
 # Loading the libraries
 library(abind)
+library(blkvar)
 library(dplyr)       # for combing data frames
 library(foreach)
 library(ggplot2)
@@ -63,8 +68,6 @@ source(here::here("Methods", "pump_power.R"))
 #' @examples
 validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
   
-  # design = "blocked_i1_2c"; design = 'blocked_i1_3r'
-  
   # checks
   if(length(user.params.list[['ATE_ES']]) != user.params.list[['M']])
   {
@@ -98,6 +101,15 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     dir.create(intermediate.data.dir)
   }
   
+  # search for simulation results
+  adjp.files <- grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
+  
+  # what if we only have some of expected files? then we force overwrite
+  if( (length(adjp.files) > 0) & (length(adjp.files) != sim.params.list[['Q']]) )
+  {
+    overwrite = TRUE
+  }
+  
   if(overwrite | length(current.file) == 0)
   {
     
@@ -112,9 +124,6 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     #####################
     # Simulation Values #
     #####################
-    
-    # search for simulation results
-    adjp.files <- grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
     
     # simulate and run power calculations
     adjp.filename <- paste0(params.file.base, "adjp_", q, ".RDS")
@@ -143,7 +152,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     }
     
     # if we have all the iterations, save it out!
-    if(!is.null(adjp.proc) & dim(adjp.proc)[1] == sim.params.list[['S']]*sim.params.list[['Q']])
+    if(!is.null(adjp.proc) && dim(adjp.proc)[1] == sim.params.list[['S']]*sim.params.list[['Q']])
     {
       sim.filename = paste0(params.file.base, "simulation_results.RDS")
       sim_results <- calc_power(adjp.proc, sim.params.list[['alpha']])
@@ -414,20 +423,19 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   }
 } # validate_power
 
-#' Estimating MDES
+#' Validate MDES calculations
 #'
 #'
 #' @param user.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
-#' @param q Index of simulation iteration if parallelizing across simulations
 #' @param overwrite If simulation output files already exist, whether to overwrite
 #'
 #' @return NULL. Saves out a series of MDES validation RDS files.
 #' @export
 #'
 #' @examples
-validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
+validate_mdes <- function(user.params.list, sim.params.list, design, plot.path = FALSE, overwrite = TRUE) {
 
   if(sim.params.list[['parallel']])
   {
@@ -476,30 +484,35 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
         rho = user.params.list[['rho.default']],
         omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
         tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
+        start.tnum = sim.params.list[['start.tnum']],
+        final.tnum = sim.params.list[['final.tnum']],
         max.cum.tnum = sim.params.list[['max.cum.tnum']],
+        max.steps = sim.params.list[['max.steps']],
         cl = cl
       )
       mdes_compare_results <- rbind(mdes_compare_results, mdes_results$mdes.results)
       plot_data <- rbind(plot_data, mdes_results$test.pts)
     }
     
-    plot_data = plot_data[plot_data$step > 0,]
-    
-    # plot.power = ggplot(plot_data, aes(x = step, y = power)) +
-    #   geom_point() + geom_line() +
-    #   facet_wrap(.~MTP) +
-    #   geom_hline(aes(yintercept = target.power)) +
-    #   ylim(0, 1)
-    # plot.mdes = ggplot(plot_data, aes(x = step, y = pt)) +
-    #   geom_point() + geom_line() +
-    #   facet_wrap(.~MTP)
-    # print(grid.arrange(plot.power, plot.mdes, top = design))
+    if(plot.path)
+    {
+      # plot_data <- plot_data[plot_data$step > 0,]
+      plot.power <- ggplot(plot_data, aes(x = step, y = power)) +
+        geom_point() + geom_line() +
+        facet_wrap(.~MTP) +
+        geom_hline(aes(yintercept = target.power)) +
+        ylim(0, 1)
+      plot.mdes <- ggplot(plot_data, aes(x = step, y = pt)) +
+        geom_point() + geom_line() +
+        facet_wrap(.~MTP)
+      print(grid.arrange(plot.power, plot.mdes, top = design))
+    }
     
     compare.filename <- paste0(params.file.base, "comparison_mdes_results.RDS")
     
     mdes_compare_results[,2:3] <- apply(mdes_compare_results[,2:3], 2, as.numeric)
     mdes_compare_results = cbind(mdes_compare_results, user.params.list[['ATE_ES']][1])
-    colnames(mdes_compare_results) = c('MTP', 'Adjusted MDES', 'Indiv Power', 'Targeted MDES')
+    colnames(mdes_compare_results) = c('MTP', 'Adjusted MDES', 'Indiv Power', 'Target MDES')
     rownames(mdes_compare_results) <- NULL
     
     if(sim.params.list[['parallel']])
@@ -523,14 +536,13 @@ validate_mdes <- function(user.params.list, sim.params.list, design, q = 1, over
 #' @param user.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
-#' @param q Index of simulation iteration if parallelizing across simulations
 #' @param overwrite If simulation output files already exist, whether to overwrite
 #'
 #' @return NULL. Saves out a series of sample validation RDS files.
 #' @export
 #'
 #' @examples
-validate_sample <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
+validate_sample <- function(user.params.list, sim.params.list, design, plot.path = FALSE, overwrite = TRUE) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -572,7 +584,7 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
       stop('Design not implemented')
     }
     
-    sample_compare_results <- NULL
+    sample_compare_results <- plot_data <- NULL
     for(type in typesamples)
     {
       for (MTP in procs)
@@ -596,15 +608,32 @@ validate_sample <- function(user.params.list, sim.params.list, design, q = 1, ov
           rho = user.params.list[['rho.default']],
           omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
           tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
+          start.tnum = sim.params.list[['start.tnum']],
+          final.tnum = sim.params.list[['final.tnum']],
           max.cum.tnum = sim.params.list[['max.cum.tnum']],
+          max.steps = sim.params.list[['max.steps']],
           cl = cl
         )
-        sample_results$type <- type
         sample_compare_results <- rbind(sample_compare_results, sample_results$ss.results)
+        plot_data <- rbind(plot_data, sample_results$test.pts)
       }
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
     compare.filename <- paste0(params.file.base, "comparison_sample_results.RDS")
+    
+    if(plot.path)
+    {
+      # plot_data <- plot_data[plot_data$step > 0,]
+      plot.power = ggplot(plot_data, aes(x = step, y = power)) +
+        geom_point() + geom_line() +
+        facet_wrap(.~MTP) +
+        geom_hline(aes(yintercept = target.power)) +
+        ylim(0, 1)
+      plot.mdes = ggplot(plot_data, aes(x = step, y = pt)) +
+        geom_point() + geom_line() +
+        facet_wrap(.~MTP)
+      print(grid.arrange(plot.power, plot.mdes, top = design))
+    }
     
     if(sim.params.list[['parallel']])
     {
@@ -657,5 +686,5 @@ if(FALSE)
   two.tailed = TRUE;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl = NULL
-  max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000
+  max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000; final.tnum = 10000
 }

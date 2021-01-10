@@ -59,7 +59,7 @@ adjust_WY <- function(data, rawp, rawt, S.jk, S.k, design, proc, sim.params.list
     clusterExport(cl, list(
       "perm.regs", "make.dummies", "make.model",
       "get.tstat", "get.pval",
-      "fastLm", "lmer", "lmerControl"
+      "fastLm", "lmer", "lmerControl", "interacted_linear_estimators"
     ), envir = environment())
     
     # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
