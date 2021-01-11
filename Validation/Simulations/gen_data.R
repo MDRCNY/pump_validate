@@ -284,7 +284,7 @@ convert.params <- function(user.params.list, check = FALSE) {
   
   # If no district info, set district parameters to 0
   has_level_three = TRUE
-  if ( is.null( ICC.3 ) | ICC.3 == 0 ) {
+  if ( is.null( ICC.3 ) | ICC.3[1] == 0 ) {
     has_level_three = FALSE
     ICC.3 = 0
     R2.3 = 0

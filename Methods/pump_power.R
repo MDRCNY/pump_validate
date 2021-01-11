@@ -728,7 +728,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   
   if( (cum.tnum == max.cum.tnum | step == max.steps) & abs(current.power - target.power) > tol) {
     message("Reached maximum iterations without converging on MDES estimate within tolerance.")
-    test.pts <- bind_rows(test.pts, c(step, NA, NA, NA, MTP, target.power))
+    test.pts <- rbind(test.pts, c(step, NA, NA, NA, MTP, target.power))
   }
   
   return(test.pts)
@@ -1192,7 +1192,10 @@ pump_sample <- function(
     max.steps = max.steps, max.cum.tnum = max.cum.tnum,
     final.tnum = final.tnum
   )
-  ss.results <- data.frame(MTP, typesample, ceiling(test.pts$pt[nrow(test.pts)]), test.pts$power[nrow(test.pts)], target.ss)
+  ss.results <- data.frame(
+    MTP, typesample, ifelse(is.na(test.pts$pt[nrow(test.pts)]), NA, ceiling(test.pts$pt[nrow(test.pts)])),
+    test.pts$power[nrow(test.pts)], target.ss
+  )
   colnames(ss.results) <- output.colnames
   
   return(list(ss.results = ss.results, test.pts = test.pts))
