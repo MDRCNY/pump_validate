@@ -230,7 +230,7 @@ make.model <- function(dat, dummies = NULL, design) {
     # mmat <- cbind(dat[,c("T.x", "X.jk", "C.ijk")], dat[,grep("dummy\\.[0-9]", colnames(dat))])
     # mod <- fastLm(mmat, dat[,"Yobs"])
   } else if (design == "blocked_i1_2f") {
-    mod <- interacted_linear_estimators(Yobs, Z = T.x, B = S.ij, data = dat, control_formula = ~ C.ijk, lmer = FALSE)
+    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.ij, data = dat, control_formula = "C.ijk", lmer = FALSE)
     # form <- as.formula("Yobs ~ 1 + T.x*S.ij + C.ijk")
     # mod <- pkgcond::suppress_messages(lm(form, data = dat))
   } else if (design == "blocked_i1_2r") {
@@ -246,7 +246,7 @@ make.model <- function(dat, dummies = NULL, design) {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
-    mod <- interacted_linear_estimators(Yobs, Z = T.x, B = S.ik, data = dat, control_formula = ~ X.jk + C.ijk + (1 | S.ij))
+    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.ik, data = dat, control_formula = "X.jk + C.ijk + (1 | S.ij)", lmer = TRUE)
     # form <- as.formula(paste0("Yobs ~ 1 + T.x*S.ik + X.jk + C.ijk + (1 | S.ij)"))
     # mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3r") {
@@ -313,6 +313,9 @@ get.pval <- function(mod, design, user.params.list) {
                   user.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- mod$ATE_hat[1]/mod$SE[1]
     pval <- (1 - pt(abs(tstat), df = df))*2
+  } else
+  {
+    stop('Unknown model type')
   }
   return(pval)
 }
@@ -471,6 +474,9 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
     stopifnot(!missing( "Yobs"))
   }
   
+  # siteID = NULL;
+  # Yobs = dat$Yobs; Z = T.x; B = S.ik; data = dat; control_formula = "X.jk + C.ijk + (1 | S.ij)"
+  
   # This code block takes the parameters of
   # Yobs, Z, B, siteID = NULL, data=NULL, ...
   # and makes a dataframe with canonical Yobs, Z, B, and siteID columns.
@@ -504,19 +510,22 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
   nj <- table(data$B)
   n <- nrow(data)
   
-  formula <- make_FE_int_formula("Yobs", "Z", "B", control_formula, data)
+  formula <- as.formula(sprintf( "%s ~ 0 + %s * %s - %s + %s", "Yobs", "Z", "B", "Z", control_formula))
+  
   if(lmer)
   {
     M0.int <- lmer(formula, data = data)
+    ids <- grep( "Z:", rownames(summary(M0.int)$coefficients))
+    stopifnot(length(ids) == J)
   } else
   {
     M0.int <- lm(formula, data = data)
+    ids <- grep( "Z:", names(coef(M0.int)))
+    stopifnot(length(ids) == J)
   }
-  ids <- grep( "Z:", names(coef(M0.int)))
-  stopifnot(length(ids) == J)
+
   VC <- vcov(M0.int)
-  ATE_hats <- coef(M0.int)[ids]
-  
+  ATE_hats <- summary(M0.int)$coefficients[ids,1]
   wts <- rep(1 / J, J)
   
   # the block SEs from our linear model
@@ -530,30 +539,4 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
     interactModels$method <- paste0(interactModels$method, "-adj")
   }
   interactModels
-}
-
-
-# #' Make a canonical fixed effect formula, possibly with control variables.
-# #'
-# #' @inheritParams make_base_formula
-# #'
-# #' @return Something like "Yobs ~ 0 + Z * B - Z" or "Yobs ~ 0 + Z * B - Z + X"
-
-make_FE_int_formula <- function(Yobs = "Yobs", Z = "Z", B = "B", control_formula = NULL, data = NULL) {
-  if (is.null(control_formula)) {
-    new.form <- sprintf( "%s ~ 0 + %s * %s - %s", Yobs, Z, B, Z)
-    return(as.formula(new.form))
-  }
-  if (length(formula.tools::lhs.vars(control_formula)) != 0 | length(formula.tools::rhs.vars(control_formula)) < 1) {
-    stop("The control_formula argument must be of the form ~ X1 + X2 + ... + XN. (nothing on left hand side of ~)")
-  }
-  if (!is.null(data)) {
-    control.vars <- formula.tools::get.vars(control_formula, data = data)
-    if (any(!(control.vars %in% colnames(data)))) {
-      stop("Some variables in control_formula are not present in your data.")
-    }
-  }
-  c.names <- formula.tools::rhs.vars(control_formula)
-  new.form = sprintf( "%s ~ 0 + %s * %s - %s + %s", Yobs, Z, B, Z, paste( c.names, collapse =" + " ))
-  return(as.formula(new.form))
 }

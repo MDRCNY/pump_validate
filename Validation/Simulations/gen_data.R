@@ -271,6 +271,16 @@ convert.params <- function(user.params.list, check = FALSE) {
   ICC.2 = user.params.list[['ICC.2']]
   ICC.3 = user.params.list[['ICC.3']]
   
+  # If no district info, set district parameters to 0
+  has_level_three = TRUE
+  if ( is.null( ICC.3 ) ) {
+    has_level_three = FALSE
+    ICC.3 = rep(0, 3)
+    R2.3 = rep(0, 3)
+    omega.3 = 0
+    K = 1
+  }
+  
   if( ICC.2[1] + ICC.3[1] >= 1 )
   {
     stop(paste('ICC.2 + ICC.3 must be less than 1. ICC.2:', ICC.2, 'ICC3:', ICC.3))
@@ -281,16 +291,6 @@ convert.params <- function(user.params.list, check = FALSE) {
   R2.3 = user.params.list[['R2.3']]
   omega.2 = user.params.list[['omega.2']]
   omega.3 = user.params.list[['omega.3']]
-  
-  # If no district info, set district parameters to 0
-  has_level_three = TRUE
-  if ( is.null( ICC.3 ) | ICC.3[1] == 0 ) {
-    has_level_three = FALSE
-    ICC.3 = 0
-    R2.3 = 0
-    omega.3 = 0
-    K = 1
-  }
   
   # random intercepts variances
   eta0.sq <- sqrt( ( ICC.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1 - R2.1) ))
