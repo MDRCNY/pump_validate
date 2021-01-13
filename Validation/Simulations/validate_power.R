@@ -681,10 +681,11 @@ if(FALSE)
   tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
   max.cum.tnum = sim.params.list[['max.cum.tnum']];
   updateProgress = NULL;
-  typesample = 'J';
-  J0 = 10; nbar0 = 10; K0 = 2;
+  typesample = 'nbar';
+  # typesample = 'J';
+  J0 = 10; nbar0 = 10; K0 = 4;
   two.tailed = TRUE;
   # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
   cl = NULL
-  max.tnum = 10000; start.tnum = 200; max.steps = 20; max.cum.tnum = 5000; final.tnum = 10000
+  start.tnum = 1000; max.steps = 30; max.cum.tnum = 50000; final.tnum = 20000 
 }

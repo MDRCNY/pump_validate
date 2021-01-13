@@ -45,7 +45,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # ------------------------------#
   # setup: convert model params.list to variables
   # ------------------------------#
-  
+  has.level.three <- model.params.list[['has.level.three']]
   M        <- model.params.list[['M']];       J       <- model.params.list[['J']];
   K        <- model.params.list[['K']];       nbar     <- model.params.list[['nbar']];
   S.ij     <- model.params.list[['S.ij']];    S.ik     <- model.params.list[['S.ik']];
@@ -65,13 +65,6 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   rho.C    <- model.params.list[['rho.C']];   gamma   <- model.params.list[['gamma']];
   rho.r    <- model.params.list[['rho.r']]
   
-  has_level_three = FALSE
-  if ( !is.null( K ) && K > 1 ) {
-    has_level_three <- TRUE
-  } else {
-    K <- 1
-  }
-  
   # ------------------------------#
   # Generate school and district IDs
   # ------------------------------#
@@ -88,7 +81,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # Districts: Level 3
   # ------------------------------#
   
-  if ( has_level_three ) {
+  if ( has.level.three ) {
     
     # generate district covariates
     Sigma.D  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.D)
@@ -158,7 +151,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # loop through each individual student
   for(i in 1:N)
   {
-    if ( has_level_three ) {
+    if ( has.level.three ) {
       # fill in values from district level variables
       Xi0.ijk[i,] = Xi0[S.ik[i]]
       D.k[i,]     = D[S.ik[i],]
@@ -177,9 +170,9 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # ------------------------------#
   
   # district level
-  if ( has_level_three ) {
-    Gamma0.ijk <- Xi0        + xi * D.k + w.ijk
-    Gamma1.ijk <- Xi1                   + z.ijk
+  if ( has.level.three ) {
+    Gamma0.ijk <- matrix(Xi0, nrow = N, ncol = M, byrow = TRUE)       + xi * D.k + w.ijk
+    Gamma1.ijk <- matrix(Xi1, nrow = N, ncol = M, byrow = TRUE)                  + z.ijk
   } else {
     Gamma0.ijk <- matrix(Xi0, nrow = N, ncol = M, byrow = TRUE)
     Gamma1.ijk <- matrix(Xi1, nrow = N, ncol = M, byrow = TRUE)
@@ -247,7 +240,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   
   ID = data.frame( S.ij = S.ij, S.ik = S.ik )
   
-  if ( has_level_three ) {
+  if ( has.level.three ) {
     return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = D.k,  X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
   } else {
     ID$S.ik <- NULL
@@ -272,13 +265,13 @@ convert.params <- function(user.params.list, check = FALSE) {
   ICC.3 = user.params.list[['ICC.3']]
   
   # If no district info, set district parameters to 0
-  has_level_three = TRUE
+  has.level.three <- TRUE
   if ( is.null( ICC.3 ) ) {
-    has_level_three = FALSE
-    ICC.3 = rep(0, 3)
-    R2.3 = rep(0, 3)
-    omega.3 = 0
-    K = 1
+    has.level.three <- FALSE
+    ICC.3 <- rep(0, 3)
+    R2.3 <- rep(0, 3)
+    omega.3 <- 0
+    K <- 1
   }
   
   if( ICC.2[1] + ICC.3[1] >= 1 )
@@ -308,7 +301,8 @@ convert.params <- function(user.params.list, check = FALSE) {
   Xi1 <- user.params.list[['ATE_ES']] * sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
   
   model.params.list <- list(
-    M = user.params.list[['M']]                      # number of outcomes
+    has.level.three = has.level.three
+    , M = user.params.list[['M']]                      # number of outcomes
     , J = user.params.list[['J']]                    # number of schools
     , K = user.params.list[['K']]                    # number of districts
     , nbar = user.params.list[['nbar']]                # number of individuals per school
@@ -317,7 +311,7 @@ convert.params <- function(user.params.list, check = FALSE) {
   )
   
   
-  if ( has_level_three ) {
+  if ( has.level.three ) {
     model.params.list <- c( model.params.list, list( 
       # -------------------------------------------- level 3
       xi = xi                                          # M-vector of coefficient of district covariates

@@ -344,34 +344,35 @@ calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    nbar <- (MT/MDES)^2 * ( (1 - R2.1) / (Tbar * (1 - Tbar) * J) )
+    nbar <- (MT/MDES)^2 * ( (1 - R2.1) /
+            (Tbar * (1 - Tbar) * J) )
   } else if (design == 'blocked_i1_2r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.2 * omega.2) +
-                            ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J) )
+    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
+            (Tbar * (1 - Tbar))*(J*(MDES/MT)^2 - (ICC.2 * omega.2))
   } else if (design == 'blocked_i1_3r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                            (ICC.2 * omega.2) / J +
-                            ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
+    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
+            (Tbar * (1 - Tbar))*(K*(MDES/MT)^2 - (ICC.3 * omega.3) -
+                                                 (ICC.2 * omega.2) / J)
   } else if (design == 'simple_c2_2r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)) +
-                            ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J) )
+    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
+            (Tbar * (1 - Tbar))*(J*(MDES/MT)^2 - (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)))
   } else if (design == 'simple_c3_3r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
-                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                            ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
+    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
+            (Tbar * (1 - Tbar) * J)*(K*(MDES/MT)^2 - (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)) -
+                                                     (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)))
   } else if (design == 'blocked_c2_3f')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                           ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
-  }else if (design == 'blocked_c2_3r')
+    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
+            (Tbar * (1 - Tbar) * J)*(K*(MDES/MT)^2 - (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J))
+  } else if (design == 'blocked_c2_3r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                            ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
+    nbar <- ((1 - ICC.2 - ICC.3)*(1 - R2.1)) /
+            (Tbar * (1 - Tbar) * J)*(K*(MDES/MT)^2 - (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J)) -
+                                                     (ICC.3 * omega.3)
   } else
   {
     stop(paste('Design not implemented:', design))

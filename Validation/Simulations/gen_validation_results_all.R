@@ -10,13 +10,13 @@ overwrite = TRUE
 run.test = FALSE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
-run.mdes.ss = FALSE
+run.mdes.ss = TRUE
 # which designs to run
 run.blocked.2l = TRUE
-run.cluster.2l = FALSE
+run.cluster.2l = TRUE
 run.blocked.3l = FALSE
 run.cluster.3l = FALSE
-run.blocked.cluster = TRUE
+run.blocked.cluster = FALSE
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
@@ -782,7 +782,7 @@ if(!run.test & run.cluster.3l & run.power)
 
 if(!run.test & run.cluster.3l & run.mdes.ss)
 {
-  scenarios = 1
+  scenarios <- 1
   # back to defaults
   user.params.list <- params.default
   # don't do WY for now
@@ -990,7 +990,7 @@ if(!run.test & run.blocked.cluster & run.power)
 
 if(!run.test & run.blocked.cluster & run.mdes.ss)
 {
-  scenarios = 2
+  scenarios <- 2
   # back to defaults
   user.params.list <- params.default
   # don't do WY for now

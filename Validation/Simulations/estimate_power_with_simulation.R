@@ -133,7 +133,7 @@ calc_power <- function(adjp.proc, alpha)
   alts <- which(user.params.list[['ATE_ES']] != 0)
   
   for (p in 1:length(procs)) {
-    # calculate d-minimial power
+    # calculate d-minimal power
     power.results[p, 1:M] <- apply(adjp.proc[,,p,drop = FALSE], 2, function(x) mean(x < alpha))
 
     # calculate min, min1, min2, etc. and complete power
@@ -216,8 +216,6 @@ calc_power <- function(adjp.proc, alpha)
 # --------------------------------------------------------------------- #
 
 make.model <- function(dat, dummies = NULL, design) {
-
-  # mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
   # dat = mdat[[1]];
   
   dat$S.ij <- as.factor(dat$S.ij)
@@ -226,13 +224,8 @@ make.model <- function(dat, dummies = NULL, design) {
   if (design == "blocked_i1_2c") {
     form <- as.formula("Yobs ~ 1 + T.x + C.ijk + S.ij")
     mod <- pkgcond::suppress_messages(lm(form, data = dat))
-    # fast LM
-    # mmat <- cbind(dat[,c("T.x", "X.jk", "C.ijk")], dat[,grep("dummy\\.[0-9]", colnames(dat))])
-    # mod <- fastLm(mmat, dat[,"Yobs"])
   } else if (design == "blocked_i1_2f") {
     mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.ij, data = dat, control_formula = "C.ijk", lmer = FALSE)
-    # form <- as.formula("Yobs ~ 1 + T.x*S.ij + C.ijk")
-    # mod <- pkgcond::suppress_messages(lm(form, data = dat))
   } else if (design == "blocked_i1_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.ij)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
@@ -247,14 +240,17 @@ make.model <- function(dat, dummies = NULL, design) {
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
     mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.ik, data = dat, control_formula = "X.jk + C.ijk + (1 | S.ij)", lmer = TRUE)
-    # form <- as.formula(paste0("Yobs ~ 1 + T.x*S.ik + X.jk + C.ijk + (1 | S.ij)"))
-    # mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 + T.x | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else {
     stop(paste('Unknown design:', design)) 
   }
+  
+  # mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+  # fast LM
+  # mmat <- cbind(dat[,c("T.x", "X.jk", "C.ijk")], dat[,grep("dummy\\.[0-9]", colnames(dat))])
+  # mod <- fastLm(mmat, dat[,"Yobs"])
   return(mod)
 }
 
