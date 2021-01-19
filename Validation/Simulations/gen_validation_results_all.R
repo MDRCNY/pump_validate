@@ -288,7 +288,7 @@ if(!run.test & run.cluster.2l & run.power)
   user.params.list[['omega.3']] <- NULL
   
   # params to help have a decent power
-  user.params.list[['ICC.2']] <- rep(0, M)
+  user.params.list[['ICC.2']] <- rep(0.1, M)
   user.params.list[['J']] <- 60
   
   #------------------------------------------------------------------#
@@ -652,9 +652,8 @@ if(!run.test & run.cluster.3l & run.power)
   user.params.list[['J']] <- 40
   user.params.list[['K']] <- 20
   user.params.list[['ATE_ES']] <- rep(0.25, M)
-  user.params.list[['ICC.3']] <- rep(0, M)
-  user.params.list[['ICC.2']] <- rep(0.1, M)
   user.params.list[['ICC.3']] <- rep(0.1, M)
+  user.params.list[['ICC.2']] <- rep(0.1, M)
 
   #------------------------------------------------------------------#
   # vary sample size

@@ -145,24 +145,26 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # for example, D is K x M, now I populate D.k, which is N x M,
   # by filling in district information for each individual
   
-  Xi0.ijk = D.k = w.ijk = z.ijk =
-    X.jk = u.ijk = v.ijk = matrix(NA, N, M)
+  D.k = w.ijk = z.ijk =
+  X.jk = u.ijk = v.ijk = matrix(NA, N, M)
+  
+  Xi0.ijk <- matrix(Xi0, nrow = N, ncol = M, byrow = TRUE) 
+  Xi1.ijk <- matrix(Xi1, nrow = N, ncol = M, byrow = TRUE) 
   
   # loop through each individual student
   for(i in 1:N)
   {
     if ( has.level.three ) {
       # fill in values from district level variables
-      Xi0.ijk[i,] = Xi0[S.ik[i]]
-      D.k[i,]     = D[S.ik[i],]
-      w.ijk[i,]   = w.k[S.ik[i],]
-      z.ijk[i,]   = z.k[S.ik[i],]
+      D.k[i,]     <- D[S.ik[i],]
+      w.ijk[i,]   <- w.k[S.ik[i],]
+      z.ijk[i,]   <- z.k[S.ik[i],]
     }
     
     # fill in values from school level variables
-    X.jk[i,]    = X[S.ij[i],]
-    u.ijk[i,]   = u.jk[S.ij[i],]
-    v.ijk[i,]   = v.jk[S.ij[i],]
+    X.jk[i,]    <- X[S.ij[i],]
+    u.ijk[i,]   <- u.jk[S.ij[i],]
+    v.ijk[i,]   <- v.jk[S.ij[i],]
   }
   
   # ------------------------------#
@@ -171,11 +173,11 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   
   # district level
   if ( has.level.three ) {
-    Gamma0.ijk <- matrix(Xi0, nrow = N, ncol = M, byrow = TRUE)       + xi * D.k + w.ijk
-    Gamma1.ijk <- matrix(Xi1, nrow = N, ncol = M, byrow = TRUE)                  + z.ijk
+    Gamma0.ijk <- Xi0.ijk  + xi * D.k + w.ijk
+    Gamma1.ijk <- Xi1.ijk             + z.ijk
   } else {
-    Gamma0.ijk <- matrix(Xi0, nrow = N, ncol = M, byrow = TRUE)
-    Gamma1.ijk <- matrix(Xi1, nrow = N, ncol = M, byrow = TRUE)
+    Gamma0.ijk <- Xi0.ijk
+    Gamma1.ijk <- Xi1.ijk
   }
   
   # school level
@@ -183,8 +185,8 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   
   ##-------temp
   # allow for school-level covariate to influence treatment
-  beta.ijk   <- Gamma1.ijk + psi   * X.jk + v.ijk
-  # beta.ijk   <- Gamma1.ijk                 + v.ijk
+  # beta.ijk   <- Gamma1.ijk + psi   * X.jk + v.ijk
+  beta.ijk   <- Gamma1.ijk                 + v.ijk
   ##-------temp
   
   # individual level

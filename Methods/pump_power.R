@@ -352,13 +352,13 @@ calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
             (Tbar * (1 - Tbar))*(J*(MDES/MT)^2 - (ICC.2 * omega.2))
   } else if (design == 'blocked_i1_3r')
   {
-    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar))*(K*(MDES/MT)^2 - (ICC.3 * omega.3) -
+    nbar <- ((1 - ICC.2 - ICC.3)*(1 - R2.1)) /
+            (J * Tbar * (1 - Tbar))*(K*(MDES/MT)^2 - (ICC.3 * omega.3) -
                                                  (ICC.2 * omega.2) / J)
   } else if (design == 'simple_c2_2r')
   {
     nbar <- ((1 - ICC.2)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar))*(J*(MDES/MT)^2 - (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)))
+            ((Tbar * (1 - Tbar)*J*(MDES/MT)^2) - (ICC.2 * (1 - R2.2)))
   } else if (design == 'simple_c3_3r')
   {
     nbar <- ((1 - ICC.2)*(1 - R2.1)) /
