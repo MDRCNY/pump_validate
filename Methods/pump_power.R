@@ -6,14 +6,13 @@ if(!exists("grab.pval", mode = "function")) source(here::here("R", "utils.R"))
 #' The  function  comp.rawt.SS is  needed  to  implement  the  Westfall-Young single-step multiple
 #' testing procedure (MTP). It operates on one row of null test statistics.
 #'
-#' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
+#' @param abs.Zs.H0.1row A vector of permuted test statistics values under H0
 #' @param abs.Zs.H1.1samp One sample of raw statistics
-#' @param oo Order matrix of test statistics in descending order (Only used in Step Down)
 #'
 #' @return returns a vector of 1s and 0s with length of M outcomes
 #'
 #'
-comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
+comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp) {
   
   # getting the number of M outcomes from 1 row of H0
   M <- length(abs.Zs.H0.1row)
@@ -86,7 +85,7 @@ adjust.allsamps.WYSS <- function(snum, abs.Zs.H0, abs.Zs.H1) {
     ind.B <- t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp = abs.Zs.H1[s,]))
     # calculating the p-value for each sample
     adjp.WY[s,] <- colMeans(ind.B)
-    
+
   }
   return(adjp.WY)
 }
@@ -349,30 +348,35 @@ calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   } else if (design == 'blocked_i1_2r')
   {
     nbar <- ((1 - ICC.2)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar))*(J*(MDES/MT)^2 - (ICC.2 * omega.2))
+            (Tbar * (1 - Tbar))*(J*(MDES/MT)^2 -
+                                (ICC.2 * omega.2))
   } else if (design == 'blocked_i1_3r')
   {
     nbar <- ((1 - ICC.2 - ICC.3)*(1 - R2.1)) /
-            (J * Tbar * (1 - Tbar))*(K*(MDES/MT)^2 - (ICC.3 * omega.3) -
-                                                 (ICC.2 * omega.2) / J)
+            (Tbar * (1 - Tbar)) * (J * K * (MDES/MT)^2 -
+                                  (J * ICC.3 * omega.3) -
+                                  (ICC.2 * omega.2))
   } else if (design == 'simple_c2_2r')
   {
     nbar <- ((1 - ICC.2)*(1 - R2.1)) /
-            ((Tbar * (1 - Tbar)*J*(MDES/MT)^2) - (ICC.2 * (1 - R2.2)))
+            ((Tbar * (1 - Tbar) * J * (MDES/MT)^2) -
+            (ICC.2 * (1 - R2.2)))
   } else if (design == 'simple_c3_3r')
   {
-    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar) * J)*(K*(MDES/MT)^2 - (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)) -
-                                                     (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)))
+    nbar <- ((1 - ICC.2 - ICC.3)*(1 - R2.1)) /
+            ( (Tbar * (1 - Tbar) * J * K * (MDES/MT)^2) -
+              J * ICC.3 * (1 - R2.3) - (ICC.2 * (1 - R2.2)) )
   } else if (design == 'blocked_c2_3f')
   {
     nbar <- ((1 - ICC.2)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar) * J)*(K*(MDES/MT)^2 - (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J))
+            (Tbar * (1 - Tbar) * J * K * (MDES/MT)^2 -
+            (ICC.2 * (1 - R2.2)))
   } else if (design == 'blocked_c2_3r')
   {
     nbar <- ((1 - ICC.2 - ICC.3)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar) * J)*(K*(MDES/MT)^2 - (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J)) -
-                                                     (ICC.3 * omega.3)
+            (Tbar * (1 - Tbar) * J * 
+            (K * (MDES/MT)^2 - (ICC.3 * omega.3)) -
+            (ICC.2 * (1 - R2.2)))
   } else
   {
     stop(paste('Design not implemented:', design))
@@ -483,7 +487,8 @@ pump_power <- function(
   {
     if(snum > tnum)
     {
-      stop('snum must be less than tnum')
+      message('snum must be less than tnum, increasing tnum to match snum')
+      tnum <- snum
     }
     if(!is.null(cl))
     {
