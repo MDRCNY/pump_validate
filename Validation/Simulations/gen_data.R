@@ -240,7 +240,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     # ICC.calc
   }
   
-  ID = data.frame( S.ij = S.ij, S.ik = S.ik )
+  ID <- data.frame( S.ij = S.ij, S.ik = S.ik )
   
   if ( has.level.three ) {
     return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = D.k,  X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
@@ -263,8 +263,8 @@ convert.params <- function(user.params.list, check = FALSE) {
   
   if(check){ print(user.params.list) }
   
-  ICC.2 = user.params.list[['ICC.2']]
-  ICC.3 = user.params.list[['ICC.3']]
+  ICC.2 <- user.params.list[['ICC.2']]
+  ICC.3 <- user.params.list[['ICC.3']]
   
   # If no district info, set district parameters to 0
   has.level.three <- TRUE

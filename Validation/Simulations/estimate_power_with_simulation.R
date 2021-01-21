@@ -15,10 +15,10 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   # save out some commonly used variables
   M <- model.params.list[['M']]
   S <- sim.params.list[['S']]
-  J <- model.params.list[['J']]
-  nbar <- model.params.list[['nbar']]
+  # J <- model.params.list[['J']]
+  # nbar <- model.params.list[['nbar']]
   Tbar <- sim.params.list[['Tbar']]
-  alpha <- sim.params.list[['alpha']]
+  # alpha <- sim.params.list[['alpha']]
   procs <- sim.params.list[['procs']]
 
   if(M == 1) {
