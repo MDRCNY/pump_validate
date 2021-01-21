@@ -288,12 +288,12 @@ convert.params <- function(user.params.list, check = FALSE) {
   omega.3 = user.params.list[['omega.3']]
   
   # random intercepts variances
-  eta0.sq <- sqrt( ( ICC.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1 - R2.1) ))
-  tau0.sq <- sqrt( ( ICC.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1 - R2.1) ))
+  eta0.sq <- ( ICC.3*(1 - R2.3) )/( (1 - ICC.2 - ICC.3)*(1 - R2.1) )
+  tau0.sq <- ( ICC.2*(1 - R2.2) )/( (1 - ICC.2 - ICC.3)*(1 - R2.1) )
   # covariate coefficients
-  delta   <- sqrt( ( ICC.2*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1 - R2.2)*(1 - R2.1) ))
-  # psi     <- sqrt( ( ICC.3*R2.2*(R2.2 - 1) )/( (ICC.2 + ICC.3 - 1)*(1-R2.2)*(1-R2.1) ))
-  xi      <- sqrt( ( ICC.3*R2.3*(R2.3 - 1) )/( (ICC.2 + ICC.3 - 1)*(1 - R2.3)*(1 - R2.1) ))
+  delta   <- sqrt( ( ICC.2*R2.2)/( (1 - ICC.2 - ICC.3)*(1 - R2.1) ))
+  # psi     <- 
+  xi      <- sqrt( ( ICC.3*R2.3 )/( (1 - ICC.2 -  ICC.3)*(1 - R2.1) ))
   gamma   <- sqrt( R2.1/(1-R2.1) )
   
   # random impacts variances
