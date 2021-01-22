@@ -74,7 +74,7 @@ Default parameters:
 ## Varying school size
 
 ```{r nj100}
-user.params.list[['n.j']] <- 100
+user.params.list[['nbar']] <- 100
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -86,7 +86,7 @@ print(cluster_c3_3r_nj100_power_plot)
 ```
 
 ```{r nj75}
-user.params.list[['n.j']] <- 75
+user.params.list[['nbar']] <- 75
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -97,7 +97,7 @@ print(cluster_c3_3r_nj75_power_plot)
 ```
 
 ```{r nj50}
-user.params.list[['n.j']] <- 50
+user.params.list[['nbar']] <- 50
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -143,6 +143,24 @@ $R^2_3 =$ `r user.params.list[['R2.3']]`
 ```{r 3r.r2.30.6}
 cluster_c3_3r_r2.3_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c3_3r_r2.3_power_plot)
+user.params.list[['R2.3']] <- params.default[['R2.3']]  
+```
+
+```{r r2.10r2.20r2.30}
+user.params.list[['R2.1']] <- rep(0, M)  
+user.params.list[['R2.2']] <- rep(0, M)  
+user.params.list[['R2.3']] <- rep(0, M)  
+```
+
+$R^2_1 =$ `r user.params.list[['R2.1']]`
+$R^2_2 =$ `r user.params.list[['R2.2']]`
+$R^2_3 =$ `r user.params.list[['R2.3']]`
+
+```{r 3r.r2.10r2.20r2.30}
+cluster_c3_3r_r2.3_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+print(cluster_c3_3r_r2.3_power_plot)
+user.params.list[['R2.1']] <- params.default[['R2.1']]  
+user.params.list[['R2.2']] <- params.default[['R2.2']]  
 user.params.list[['R2.3']] <- params.default[['R2.3']]  
 ```
 

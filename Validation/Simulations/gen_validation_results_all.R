@@ -6,8 +6,6 @@ library(here)
 
 # overwrite existing results that have already been saved?
 overwrite = TRUE
-# if TRUE, only run one power calculation, otherwise run all scenarios of interest
-run.test = TRUE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
 run.mdes.ss = TRUE
@@ -25,53 +23,13 @@ q <- as.numeric(as.character(Sys.getenv("q")))
 if(is.na(q)) { q <- 1 }
 
 params.default <- user.params.list
-
-if(run.test)
-{
-  user.params.list[['K']] <- 1
-  user.params.list[['omega.2']] <- 0
-  user.params.list[['ICC.2']] <- rep(0, M)
-  user.params.list[['ICC.3']] <- NULL
-  user.params.list[['omega.3']] <- NULL
-  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
-  if(run.mdes.ss)
-  {
-    sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
-    mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
-    sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
-    sim.params.list[['procs']] <- default.params[['procs']]
-  }
-  
-  user.params.list[['ICC.2']] <- params.default[['ICC.2']]
-  power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c2_2r", q = q, overwrite)
-  user.params.list[['omega.2']] <- params.default[['omega.2']]
-  user.params.list[['omega.3']] <- params.default[['omega.3']]
-  user.params.list[['K']] <- params.default[['K']]
-  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
-  user.params.list[['omega.2']] <- 0
-  user.params.list[['omega.3']] <- 0
-  power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c3_3r", q = q, overwrite)
-  user.params.list[['ICC.2']] <- rep(0, M)
-  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
-}
-
-if(FALSE)
-{
-  design <- "blocked_i1_2r"
-  results_plot <- ggplot(power.results, aes(x = MTP, y = value, color = method)) +
-    geom_point() +
-    geom_line() +
-    facet_wrap(~power_type, labeller = label_both) +
-    ylab('Power') +
-    ggtitle(paste('Design:', design = design))
-  print(results_plot)
-}
+sim.params.default <- sim.params.list
 
 #------------------------------------------------------------------#
 # Blocked 2 level: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.2l & run.power)
+if(run.blocked.2l & run.power)
 {
   scenarios <- 16
   
@@ -226,7 +184,7 @@ if(!run.test & run.blocked.2l & run.power)
 # Blocked 2 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.2l & run.mdes.ss)
+if(run.blocked.2l & run.mdes.ss)
 {
   scenarios <- 3
   # back to defaults
@@ -267,6 +225,7 @@ if(!run.test & run.blocked.2l & run.mdes.ss)
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')
@@ -279,7 +238,7 @@ print('-------------------------------------------------------------------------
 # Cluster 2 level: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.cluster.2l & run.power)
+if(run.cluster.2l & run.power)
 {
   scenarios <- 10
   user.params.list <- params.default
@@ -412,7 +371,7 @@ if(!run.test & run.cluster.2l & run.power)
 # Cluster 2 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.cluster.2l & run.mdes.ss)
+if(run.cluster.2l & run.mdes.ss)
 {
   scenarios <- 1
   # back to defaults
@@ -424,17 +383,18 @@ if(!run.test & run.cluster.2l & run.mdes.ss)
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
   user.params.list[['omega.3']] <- NULL
+  user.params.list[['omega.2']] <- 0
   
   # params to help have a decent power
-  user.params.list[['ICC.2']] <- rep(0, M)
+  user.params.list[['ICC.2']] <- rep(0.1, M)
   user.params.list[['J']] <- 60
-  
   
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "simple_c2_2r", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "simple_c2_2r", overwrite = overwrite)
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')
@@ -447,7 +407,7 @@ print('-------------------------------------------------------------------------
 # Blocked 3 level: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.3l & run.power)
+if(run.blocked.3l & run.power)
 {
   scenarios <- 15
   user.params.list <- params.default
@@ -613,7 +573,7 @@ if(!run.test & run.blocked.3l & run.power)
 # Blocked 3 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.3l & run.mdes.ss)
+if(run.blocked.3l & run.mdes.ss)
 {
   scenarios <- 1
   # back to defaults
@@ -629,6 +589,7 @@ if(!run.test & run.blocked.3l & run.mdes.ss)
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')
@@ -641,7 +602,7 @@ print('-------------------------------------------------------------------------
 # Cluster 3 level: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.cluster.3l & run.power)
+if(run.cluster.3l & run.power)
 {
   
   scenarios <- 11
@@ -782,7 +743,7 @@ if(!run.test & run.cluster.3l & run.power)
 # Cluster 3 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.cluster.3l & run.mdes.ss)
+if(run.cluster.3l & run.mdes.ss)
 {
   scenarios <- 1
   # back to defaults
@@ -807,6 +768,7 @@ if(!run.test & run.cluster.3l & run.mdes.ss)
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')
@@ -819,7 +781,7 @@ print('-------------------------------------------------------------------------
 # Blocked cluster: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.cluster & run.power)
+if(run.blocked.cluster & run.power)
 {
   scenarios <- 17
   user.params.list <- params.default
@@ -990,7 +952,7 @@ if(!run.test & run.blocked.cluster & run.power)
 # Cluster 3 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.cluster & run.mdes.ss)
+if(run.blocked.cluster & run.mdes.ss)
 {
   scenarios <- 2
   # back to defaults
@@ -1014,6 +976,7 @@ if(!run.test & run.blocked.cluster & run.mdes.ss)
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')

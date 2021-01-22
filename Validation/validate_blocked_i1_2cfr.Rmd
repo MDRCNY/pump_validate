@@ -43,8 +43,8 @@ source(here::here("Validation/Simulations", "params.R"))
 
 ```{r universal.params}
 user.params.list[['K']] <- 1
-user.params.list[['ICC.3']] <- rep(0, M)
-user.params.list[['omega.3']] <- 0
+user.params.list[['ICC.3']] <- NULL
+user.params.list[['omega.3']] <- NULL
 params.default <- user.params.list
 ```
 
@@ -67,18 +67,10 @@ Assumptions:
 
 * Two-level design: $\text{ICC}_3 = 0$,  $\omega_3 = 0$, $K = 1$
 
-```{r sim.params}
-# print(sim.params.list)
-```
-
-```{r user.params}
-# print(user.params.list)
-```
-
 ## Varying school size
 
 ```{r nj100}
-user.params.list[['n.j']] <- 100
+user.params.list[['nbar']] <- 100
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -112,7 +104,7 @@ print(blocked_i1_2r_nj100_power_plot)
 ```
 
 ```{r nj75}
-user.params.list[['n.j']] <- 75
+user.params.list[['nbar']] <- 75
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -143,7 +135,7 @@ print(blocked_i1_2r_nj75_power_plot)
 ```
 
 ```{r nj50}
-user.params.list[['n.j']] <- 50
+user.params.list[['nbar']] <- 50
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -208,6 +200,24 @@ print(blocked_i1_2c_r2.2_power_plot)
 user.params.list[['R2.2']] <- params.default[['R2.2']]  
 ```
 
+
+```{r r2.10r2.20}
+user.params.list[['R2.1']] <- rep(0, M)  
+user.params.list[['R2.2']] <- rep(0, M)  
+```
+
+$R^2_1 =$ `r user.params.list[['R2.2']]`
+$R^2_2 =$ `r user.params.list[['R2.1']]`
+
+```{r 2c.r2.10r2.20}
+design <- "blocked_i1_2c"
+user.params.list[['omega.2']] <- 0
+user.params.list[['ICC.2']] <- rep(0, M)
+blocked_i1_2c_r2.2_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+print(blocked_i1_2c_r2.2_power_plot)
+user.params.list[['R2.1']] <- params.default[['R2.1']]  
+user.params.list[['R2.2']] <- params.default[['R2.2']]  
+```
 
 ## Varying rho
 

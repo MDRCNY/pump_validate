@@ -343,40 +343,49 @@ calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    nbar <- (MT/MDES)^2 * ( (1 - R2.1) /
-            (Tbar * (1 - Tbar) * J) )
+    nbar <- (MT/MDES)^2 * ((1 - R2.1) /
+            ( Tbar * (1 - Tbar) * J) )
   } else if (design == 'blocked_i1_2r')
   {
-    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar))*(J*(MDES/MT)^2 -
-                                (ICC.2 * omega.2))
+    nbar <- ( (1 - ICC.2) * (1 - R2.1) ) /
+            ( (Tbar * (1 - Tbar) ) * (
+              (J / (MT / MDES)^2 ) -
+              (ICC.2 * omega.2) ) )
   } else if (design == 'blocked_i1_3r')
   {
-    nbar <- ((1 - ICC.2 - ICC.3)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar)) * (J * K * (MDES/MT)^2 -
-                                  (J * ICC.3 * omega.3) -
-                                  (ICC.2 * omega.2))
+    nbar <- ( (1 - ICC.2 - ICC.3) * (1 - R2.1) ) /
+            ( (Tbar * (1 - Tbar) ) * (
+            ( (J * K) / (MT / MDES)^2 ) -
+              (J * ICC.3 * omega.3) -
+              (ICC.2 * omega.2) ) )
   } else if (design == 'simple_c2_2r')
   {
-    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
-            ((Tbar * (1 - Tbar) * J * (MDES/MT)^2) -
-            (ICC.2 * (1 - R2.2)))
+    nbar <- (   (1 - ICC.2) * (1 - R2.1) ) /
+            ( ( (Tbar * (1 - Tbar) ) * 
+                (J / (MT / MDES)^2 ) ) -
+                (ICC.2 * (1 - R2.2)) ) 
+
   } else if (design == 'simple_c3_3r')
   {
-    nbar <- ((1 - ICC.2 - ICC.3)*(1 - R2.1)) /
-            ( (Tbar * (1 - Tbar) * J * K * (MDES/MT)^2) -
-              J * ICC.3 * (1 - R2.3) - (ICC.2 * (1 - R2.2)) )
+    nbar <- (   (1 - ICC.2 - ICC.3) * (1 - R2.1) ) /
+            ( ( (Tbar * (1 - Tbar) ) * 
+              ( (J * K) / (MT / MDES)^2 ) ) -
+                (J * ICC.3 * (1 - R2.3)) -
+                (ICC.2 * (1 - R2.2)) ) 
   } else if (design == 'blocked_c2_3f')
   {
-    nbar <- ((1 - ICC.2)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar) * J * K * (MDES/MT)^2 -
-            (ICC.2 * (1 - R2.2)))
+    nbar <- (   (1 - ICC.2) * (1 - R2.1) ) /
+            ( ( (Tbar * (1 - Tbar) ) * 
+              ( (J * K) / (MT / MDES)^2 ) ) -
+                (ICC.2 * (1 - R2.2)) ) 
   } else if (design == 'blocked_c2_3r')
   {
-    nbar <- ((1 - ICC.2 - ICC.3)*(1 - R2.1)) /
-            (Tbar * (1 - Tbar) * J * 
-            (K * (MDES/MT)^2 - (ICC.3 * omega.3)) -
-            (ICC.2 * (1 - R2.2)))
+    
+    nbar <- (   (1 - ICC.2 - ICC.3) * (1 - R2.1) ) /
+            (  (Tbar * (1 - Tbar) * J ) * 
+             ( (K / (MT / MDES)^2 )  -
+               (ICC.3 * omega.3) 
+               (ICC.2 * (1 - R2.2)) ) ) 
   } else
   {
     stop(paste('Design not implemented:', design))
@@ -978,6 +987,11 @@ pump_sample_raw <- function(
     T2 <- abs(qt(target.power, df))
     MT <- ifelse(target.power >= 0.5, T1 + T2, T1 - T2)
     
+    # T1 <- ifelse(two.tailed == TRUE, qt(alpha/2, df), qt(alpha, df))
+    # T2 <- qt(1 - target.power, df)
+    # MT <- T1 + T2
+    
+    
     if (typesample == "J") {
       J1 <- calc.J(
         design, MT = MT, MDES = MDES[1], nbar = nbar, Tbar = Tbar,
@@ -1000,7 +1014,8 @@ pump_sample_raw <- function(
     } else if (typesample == "nbar") {
       nbar1 <- calc.nbar(
         design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
-        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1], ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
+        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
+        ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
         omega.2 = omega.2, omega.3 = omega.3
       )
       if (abs(nbar1 - nbar0) < tol) {
