@@ -239,7 +239,7 @@ make.model <- function(dat, dummies = NULL, design) {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
-    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.ik, data = dat, control_formula = "X.jk + C.ijk + (1 | S.ij)", lmer = TRUE)
+    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.ik, data = dat, control_formula = "X.jk + C.ijk + S.ik + (1 | S.ij)", lmer = TRUE)
   } else if (design == "blocked_c2_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 + T.x | S.ik)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))

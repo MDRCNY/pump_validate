@@ -621,8 +621,11 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            snum = snum, cl = cl,
                            max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
 {
-  # search.type = 'mdes'; start.low = mdes.low; start.high = mdes.high
-  # search.type = 'J'; start.low = ss.low; start.high = ss.high;
+  # search.type = 'mdes';
+  # start.low = mdes.low; start.high = mdes.high
+  # search.type = 'J';
+  # search.type = 'nbar';
+  # start.low = ss.low; start.high = ss.high;
   
   # fit initial quadratic curve
   # generate a series of points to try
@@ -655,6 +658,28 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     )
     test.pts$power[i] <- pt.power.results[MTP, power.definition]
   }
+  
+  ggplot(test.pts, aes(x = pt, y = power)) + geom_point()
+  # start.tnum = 10000
+  # for(i in 1:10)
+  # {
+  #   pt.power.results <- pump_power(
+  #     design, MTP = MTP,
+  #     MDES = MDES,
+  #     J = ifelse(search.type == 'J', test.pts$pt[i], J),
+  #     K = ifelse(search.type == 'K', test.pts$pt[i], K),
+  #     nbar = 50,
+  #     tnum = start.tnum,
+  #     # fixed params
+  #     M = M, Tbar = Tbar, alpha = alpha,
+  #     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+  #     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+  #     rho = rho, omega.2 = omega.2, omega.3 = omega.3, 
+  #     snum = snum, cl = cl
+  #   )
+  #   print(pt.power.results[2,1])
+  # }
+
   
   current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = midpoint(start.low, start.high))
   current.power <- 0
