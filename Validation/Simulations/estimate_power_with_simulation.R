@@ -10,15 +10,11 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   
   # convert user-inputted parameters into model parameters
   model.params.list <- convert.params(user.params.list)
-  if(sim.params.list[['check']]){ print(model.params.list) }
   
   # save out some commonly used variables
   M <- model.params.list[['M']]
   S <- sim.params.list[['S']]
-  # J <- model.params.list[['J']]
-  # nbar <- model.params.list[['nbar']]
   Tbar <- sim.params.list[['Tbar']]
-  # alpha <- sim.params.list[['alpha']]
   procs <- sim.params.list[['procs']]
 
   if(M == 1) {
@@ -40,7 +36,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
-    samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
+    samp.full <- gen_full_data(model.params.list)
     S.id <- samp.full$ID$S.id
     D.id  <- samp.full$ID$D.id
     
@@ -230,18 +226,18 @@ make.model <- function(dat, dummies = NULL, design) {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_i1_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c3_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
-    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = D.id, data = dat, control_formula = "X.jk + C.ijk + D.id + (1 | S.id)", lmer = TRUE)
+    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = D.id, data = dat, control_formula = "X.jk + C.ijk + (1 | S.id)", lmer = TRUE)
   } else if (design == "blocked_c2_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else {
     stop(paste('Unknown design:', design)) 
@@ -369,16 +365,16 @@ makelist.samp <-function(samp.obs, T.x) {
   for(m in 1:ncol(samp.obs$Yobs))
   {
     # level 3
-    if(!is.null(samp.obs[['D.k']]))
+    if(!is.null(samp.obs[['V.k']]))
     {
       mdat.rn[[m]] <- data.frame(
         Yobs        = samp.obs[['Yobs']][,m],
-        D.k         = samp.obs[['D.k']][,m],
+        V.k         = samp.obs[['V.k']][,m],
         X.jk        = samp.obs[['X.jk']][,m],
         C.ijk       = samp.obs[['C.ijk']][,m],
-        T.x       = T.x,
+        T.x         = T.x,
         S.id        = as.factor(samp.obs$ID$S.id),
-        D.id         = as.factor(samp.obs$ID$D.id)
+        D.id        = as.factor(samp.obs$ID$D.id)
       )
     } else
     # level 2

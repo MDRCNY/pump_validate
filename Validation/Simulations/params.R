@@ -19,14 +19,14 @@ source(here::here("Validation/Simulations", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 1000                  # Number of samples for Monte Carlo Simulation
+  S = 10                # Number of samples for Monte Carlo Simulation
   , Q = 1                 # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = 2                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = TRUE           # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05          # Significance level
-  , tol = 0.05            # tolerance for MDES and sample  size calculations
+  , tol = 0.01            # tolerance for MDES and sample  size calculations
   , Tbar = 0.5            # Binomial assignment probability
-  , tnum = 100            # Number of test statistics (samples) for all procedures other than Westfall-Young
+  , tnum = 10           # Number of test statistics (samples) for all procedures other than Westfall-Young
   , parallel = TRUE       # parallelize within each monte carlo iteration
   , ncl = 2               # Number of computer clusters (max on RStudio Server is 16)
   , start.tnum = 1000     # number of iterations for starting to testing mdes and power
@@ -36,10 +36,9 @@ sim.params.list <- list(
   , procs = c("Bonferroni", "BH", "Holm")
   # , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                           # Multiple testing procedures
-  , runSim = TRUE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runSim = TRUE        # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE        # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
   , runPowerUp = TRUE     # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
-  , check = FALSE         # Run checks such as printing out quantities
 )
 
 #------------------------------------------------------------------#
@@ -52,12 +51,12 @@ sim.params.list <- list(
 
 ### school and district assignments
 # N-length vector of individual school assignments i.e. (1,1,2,2,3,3)
-# S.ij <-
+# S.id <-
 # N-length vector of individual district assignments i.e. (1,1,1,2,2,2)
-# S.ik <-
+# D.id <-
 
 ### covariates
-# rho.D <- 
+# rho.V <- 
 # rho.X <- 
 # rho.C <- 
 
@@ -86,29 +85,29 @@ user.params.list <- list(
   , K = 5                                 # number of districts (for two-level model, set K = 1)
   , nbar = 50                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
-  , S.ij = NULL                           # N-length vector of indiv school assignments (optional)
-  , S.ik = NULL                           # N-length vector of indiv district assignments (optional)
+  , S.id = NULL                           # N-length vector of indiv school assignments (optional)
+  , D.id = NULL                           # N-length vector of indiv district assignments (optional)
   ################################################## grand mean otucome and impact
   , Xi0 = 0                               # scalar grand mean outcome under no treatment
   , ATE_ES = rep(0.125, M)                # minimum detectable effect size      
   ################################################## level 3: districts
   , R2.3 = rep(0.1, M)                    # percent of district variation explained by district covariates
   # for 2-level model, set to 0
-  , rho.D = default.rho.matrix            # MxM correlation matrix of district covariates
+  , rho.V = default.rho.matrix            # MxM correlation matrix of district covariates
   , ICC.3 = rep(0.2, M)                   # district intraclass correlation
   # for 2-level model, set to 0
   , omega.3 = 0.1                         # ratio of district effect size variability to random effects variability
-  , rho.w = default.rho.matrix            # MxM matrix of correlations for district random effects
-  , rho.z = default.rho.matrix            # MxM matrix of correlations for district impacts
-  , theta.wz = matrix(0, M, M)            # MxM matrix of correlations between district random effects and impacts
+  , rho.w0 = default.rho.matrix           # MxM matrix of correlations for district random effects
+  , rho.w1 = default.rho.matrix           # MxM matrix of correlations for district impacts
+  , theta.w = matrix(0, M, M)             # MxM matrix of correlations between district random effects and impacts
   ################################################## level 2: schools
   , R2.2 = rep(0.1, M)                    # percent of school variation explained by school covariates
   , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
   , ICC.2 = rep(0.2, M)                   # school intraclass correlation	
   , omega.2 = 0.1                         # ratio of school effect size variability to random effects variability
-  , rho.u = default.rho.matrix            # MxM matrix of correlations for school random effects
-  , rho.v = default.rho.matrix            # MxM matrix of correlations for school impacts
-  , theta.uv = matrix(0, M, M)            # MxM matrix of correlations between school random effects and impacts
+  , rho.u0 = default.rho.matrix           # MxM matrix of correlations for school random effects
+  , rho.u1 = default.rho.matrix           # MxM matrix of correlations for school impacts
+  , theta.u = matrix(0, M, M)             # MxM matrix of correlations between school random effects and impacts
   ################################################## level 1: individuals
   , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
   , rho.C = default.rho.matrix            # MxM correlation matrix of individual covariates
