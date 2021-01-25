@@ -6,8 +6,6 @@ library(here)
 
 # overwrite existing results that have already been saved?
 overwrite = TRUE
-# if TRUE, only run one power calculation, otherwise run all scenarios of interest
-run.test = FALSE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
 run.mdes.ss = FALSE
@@ -16,7 +14,7 @@ run.blocked.2l = TRUE
 run.cluster.2l = FALSE
 run.blocked.3l = FALSE
 run.cluster.3l = FALSE
-run.blocked.cluster = TRUE
+run.blocked.cluster = FALSE
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
@@ -25,58 +23,20 @@ q <- as.numeric(as.character(Sys.getenv("q")))
 if(is.na(q)) { q <- 1 }
 
 params.default <- user.params.list
-
-if(run.test)
-{
-  user.params.list[['K']] <- 1
-  user.params.list[['omega.2']] <- 0
-  user.params.list[['ICC.2']] <- rep(0, M)
-  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
-  if(run.mdes.ss)
-  {
-    sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
-    mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
-    sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite)
-    sim.params.list[['procs']] <- default.params[['procs']]
-  }
-  
-  user.params.list[['ICC.2']] <- params.default[['ICC.2']]
-  power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c2_2r", q = q, overwrite)
-  user.params.list[['omega.2']] <- params.default[['omega.2']]
-  user.params.list[['omega.3']] <- params.default[['omega.3']]
-  user.params.list[['K']] <- params.default[['K']]
-  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
-  user.params.list[['omega.2']] <- 0
-  user.params.list[['omega.3']] <- 0
-  power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c3_3r", q = q, overwrite)
-  user.params.list[['ICC.2']] <- rep(0, M)
-  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
-}
-
-if(FALSE)
-{
-  design <- "blocked_i1_2r"
-  results_plot <- ggplot(power.results, aes(x = MTP, y = value, color = method)) +
-    geom_point() +
-    geom_line() +
-    facet_wrap(~power_type, labeller = label_both) +
-    ylab('Power') +
-    ggtitle(paste('Design:', design = design))
-  print(results_plot)
-}
+sim.params.default <- sim.params.list
 
 #------------------------------------------------------------------#
 # Blocked 2 level: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.2l & run.power)
+if(run.blocked.2l & run.power)
 {
   scenarios <- 16
   
   # assumptions
   user.params.list[['K']] <- 1
-  user.params.list[['ICC.3']] <- rep(0, M)
-  user.params.list[['omega.3']] <- 0
+  user.params.list[['ICC.3']] <- NULL
+  user.params.list[['omega.3']] <- NULL
   
   #------------------------------------------------------------------#
   # vary sample size
@@ -141,6 +101,14 @@ if(!run.test & run.blocked.2l & run.power)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
   # reset
   user.params.list[['R2.2']] <- params.default[['R2.2']]
+  
+  # set both to 0
+  user.params.list[['R2.1']] <- rep(0, M)
+  user.params.list[['R2.2']] <- rep(0, M)
+  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
+  # reset
+  user.params.list[['R2.2']] <- params.default[['R2.2']]
+  user.params.list[['R2.1']] <- params.default[['R2.1']]
   
   print('-----------------------------------------------------------------------------')
   print(paste('Completed R2 scenarios, 11 out of', scenarios))
@@ -216,47 +184,90 @@ if(!run.test & run.blocked.2l & run.power)
 # Blocked 2 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.2l & run.mdes.ss)
+if(run.blocked.2l & run.mdes.ss)
 {
-  scenarios <- 3
+  scenarios <- 6
   # back to defaults
   user.params.list <- params.default
   # assumptions
   user.params.list[['K']] <- 1
-  user.params.list[['ICC.3']] <- rep(0, M)
-  user.params.list[['omega.3']] <- 0
+  user.params.list[['ICC.3']] <- NULL
+  user.params.list[['omega.3']] <- NULL
   
   # don't do WY for now
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
   
   user.params.list[['omega.2']] <- 0
   user.params.list[['ICC.2']] <- rep(0, M)
-  mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite = overwrite)
-  sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2c", overwrite = overwrite)
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list, design = "blocked_i1_2c", 
+    power.definition = 'D1indiv', overwrite = overwrite
+  )
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list, design = "blocked_i1_2c", 
+    power.definition = 'min2', overwrite = overwrite
+  )
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list, design = "blocked_i1_2c",
+    power.definition = 'D1indiv', overwrite = overwrite
+  )
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list, design = "blocked_i1_2c",
+    power.definition = 'min2', overwrite = overwrite
+  )
   
   print('-----------------------------------------------------------------------------')
-  print(paste('Completed mdes and sample size for constant, 1 out of', scenarios))
+  print(paste('Completed mdes and sample size for constant, 2 out of', scenarios))
   print('-----------------------------------------------------------------------------')
   
   user.params.list[['omega.2']] <- params.default[['omega.2']]
-  mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2f", overwrite = overwrite)
-  sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2f", overwrite = overwrite)
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list, design = "blocked_i1_2f",
+    power.definition = 'D1indiv', overwrite = overwrite
+  )
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list, design = "blocked_i1_2f",
+    power.definition = 'min2', overwrite = overwrite
+  )
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list, design = "blocked_i1_2f",
+    power.definition = 'D1indiv', overwrite = overwrite
+  )
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list, design = "blocked_i1_2f",
+    power.definition = 'min2', overwrite = overwrite
+  )
   
   print('-----------------------------------------------------------------------------')
-  print(paste('Completed mdes and sample size for fixed, 2 out of', scenarios))
+  print(paste('Completed mdes and sample size for fixed, 4 out of', scenarios))
   print('-----------------------------------------------------------------------------')
   
   user.params.list[['omega.2']] <- params.default[['omega.2']]
   user.params.list[['ICC.2']] <- params.default[['ICC.2']]
-  mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_2r", overwrite = overwrite)
-  sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_2r", overwrite = overwrite)
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list, design = "blocked_i1_2r",
+    power.definition = 'D1indiv', overwrite = overwrite
+  )
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list, design = "blocked_i1_2r",
+    power.definition = 'min2', overwrite = overwrite
+  )
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list, design = "blocked_i1_2r",
+    power.definition = 'D1indiv', overwrite = overwrite
+  )
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list, design = "blocked_i1_2r",
+    power.definition = 'min2', overwrite = overwrite
+  )
   
   print('-----------------------------------------------------------------------------')
-  print(paste('Completed mdes and sample size for random, 3 out of', scenarios))
+  print(paste('Completed mdes and sample size for random, 6 out of', scenarios))
   print('-----------------------------------------------------------------------------')
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')
@@ -269,20 +280,21 @@ print('-------------------------------------------------------------------------
 # Cluster 2 level: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.cluster.2l & run.power)
+if(run.cluster.2l & run.power)
 {
   scenarios <- 10
   user.params.list <- params.default
-  
+
   # assumptions
-  user.params.list[['omega.2']] <- 0
   user.params.list[['K']] <- 1
-  user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- NULL
+  user.params.list[['omega.3']] <- NULL
+  user.params.list[['omega.2']] <- 0
   
   # params to help have a decent power
-  user.params.list[['ICC.2']] <- rep(0.05, M)
+  user.params.list[['ICC.2']] <- rep(0.1, M)
   user.params.list[['J']] <- 60
- 
+  
   #------------------------------------------------------------------#
   # vary sample size
   #------------------------------------------------------------------#
@@ -325,6 +337,14 @@ if(!run.test & run.cluster.2l & run.power)
   user.params.list[['R2.2']] <- rep(0.6, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c2_2r", q = q, overwrite)
   # reset
+  user.params.list[['R2.2']] <- params.default[['R2.2']]
+  
+  # set both to 0
+  user.params.list[['R2.1']] <- rep(0, M)
+  user.params.list[['R2.2']] <- rep(0, M)
+  power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c2_2r", q = q, overwrite)
+  # reset
+  user.params.list[['R2.1']] <- params.default[['R2.1']]
   user.params.list[['R2.2']] <- params.default[['R2.2']]
   
   print('-----------------------------------------------------------------------------')
@@ -393,7 +413,7 @@ if(!run.test & run.cluster.2l & run.power)
 # Cluster 2 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.cluster.2l & run.mdes.ss)
+if(run.cluster.2l & run.mdes.ss)
 {
   scenarios <- 1
   # back to defaults
@@ -402,20 +422,21 @@ if(!run.test & run.cluster.2l & run.mdes.ss)
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
   
   # assumptions
-  user.params.list[['omega.2']] <- 0
   user.params.list[['K']] <- 1
-  user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- NULL
+  user.params.list[['omega.3']] <- NULL
+  user.params.list[['omega.2']] <- 0
   
   # params to help have a decent power
-  user.params.list[['ICC.2']] <- rep(0.05, M)
+  user.params.list[['ICC.2']] <- rep(0.1, M)
   user.params.list[['J']] <- 60
-  
   
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "simple_c2_2r", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "simple_c2_2r", overwrite = overwrite)
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')
@@ -428,7 +449,7 @@ print('-------------------------------------------------------------------------
 # Blocked 3 level: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.3l & run.power)
+if(run.blocked.3l & run.power)
 {
   scenarios <- 15
   user.params.list <- params.default
@@ -486,6 +507,16 @@ if(!run.test & run.blocked.3l & run.power)
   user.params.list[['R2.3']] <- rep(0.6, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
   # reset
+  user.params.list[['R2.3']] <- params.default[['R2.3']]
+  
+  # set all to 0
+  user.params.list[['R2.1']] <- rep(0, M)
+  user.params.list[['R2.2']] <- rep(0, M)
+  user.params.list[['R2.3']] <- rep(0, M)
+  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
+  # reset
+  user.params.list[['R2.1']] <- params.default[['R2.1']]
+  user.params.list[['R2.2']] <- params.default[['R2.2']]
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   
   
@@ -584,7 +615,7 @@ if(!run.test & run.blocked.3l & run.power)
 # Blocked 3 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.3l & run.mdes.ss)
+if(run.blocked.3l & run.mdes.ss)
 {
   scenarios <- 1
   # back to defaults
@@ -600,6 +631,7 @@ if(!run.test & run.blocked.3l & run.mdes.ss)
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')
@@ -612,7 +644,7 @@ print('-------------------------------------------------------------------------
 # Cluster 3 level: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.cluster.3l & run.power)
+if(run.cluster.3l & run.power)
 {
   
   scenarios <- 11
@@ -626,9 +658,8 @@ if(!run.test & run.cluster.3l & run.power)
   user.params.list[['J']] <- 40
   user.params.list[['K']] <- 20
   user.params.list[['ATE_ES']] <- rep(0.25, M)
-  user.params.list[['ICC.3']] <- rep(0, M)
-  user.params.list[['ICC.2']] <- rep(0.1, M)
   user.params.list[['ICC.3']] <- rep(0.1, M)
+  user.params.list[['ICC.2']] <- rep(0.1, M)
 
   #------------------------------------------------------------------#
   # vary sample size
@@ -678,6 +709,16 @@ if(!run.test & run.cluster.3l & run.power)
   user.params.list[['R2.3']] <- rep(0.6, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c3_3r", q = q, overwrite)
   # reset
+  user.params.list[['R2.3']] <- params.default[['R2.3']]
+  
+  # set all to 0
+  user.params.list[['R2.1']] <- rep(0, M)
+  user.params.list[['R2.2']] <- rep(0, M)
+  user.params.list[['R2.3']] <- rep(0, M)
+  power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c3_3r", q = q, overwrite)
+  # reset
+  user.params.list[['R2.1']] <- params.default[['R2.1']]
+  user.params.list[['R2.2']] <- params.default[['R2.2']]
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   
   print('-----------------------------------------------------------------------------')
@@ -744,9 +785,9 @@ if(!run.test & run.cluster.3l & run.power)
 # Cluster 3 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.cluster.3l & run.mdes.ss)
+if(run.cluster.3l & run.mdes.ss)
 {
-  scenarios = 1
+  scenarios <- 1
   # back to defaults
   user.params.list <- params.default
   # don't do WY for now
@@ -769,6 +810,7 @@ if(!run.test & run.cluster.3l & run.mdes.ss)
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')
@@ -781,7 +823,7 @@ print('-------------------------------------------------------------------------
 # Blocked cluster: power
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.cluster & run.power)
+if(run.blocked.cluster & run.power)
 {
   scenarios <- 17
   user.params.list <- params.default
@@ -797,7 +839,7 @@ if(!run.test & run.blocked.cluster & run.power)
   # vary sample size
   #------------------------------------------------------------------#
   user.params.list[['nbar']] <- 100
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
@@ -807,7 +849,7 @@ if(!run.test & run.blocked.cluster & run.power)
   print('-----------------------------------------------------------------------------')
   
   user.params.list[['nbar']] <- 75
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
@@ -817,7 +859,7 @@ if(!run.test & run.blocked.cluster & run.power)
   print('-----------------------------------------------------------------------------')
   
   user.params.list[['nbar']] <- 50
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
@@ -836,23 +878,34 @@ if(!run.test & run.blocked.cluster & run.power)
   
   # vary R2.1
   user.params.list[['R2.1']] <- rep(0.6, M)
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   # reset
   user.params.list[['R2.1']] <- params.default[['R2.1']]
   
   # vary R2.2
   user.params.list[['R2.2']] <- rep(0.6, M)
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   # reset
   user.params.list[['R2.2']] <- params.default[['R2.2']]
   
   # vary R3.2
   user.params.list[['R2.3']] <- rep(0.6, M)
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   # reset
+  user.params.list[['R2.3']] <- params.default[['R2.3']]
+  
+  # set all to 0
+  user.params.list[['R2.1']] <- rep(0, M)
+  user.params.list[['R2.2']] <- rep(0, M)
+  user.params.list[['R2.3']] <- rep(0, M)
+  # user.params.list[['ICC.3']] <- rep(0, 3)
+  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
+  # reset
+  user.params.list[['R2.1']] <- params.default[['R2.1']]
+  user.params.list[['R2.2']] <- params.default[['R2.2']]
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   
   print('-----------------------------------------------------------------------------')
@@ -868,7 +921,7 @@ if(!run.test & run.blocked.cluster & run.power)
   user.params.list[['rho.default']] <- rho.default
   user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
   user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <- default.rho.matrix
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   
   rho.default <- 0.8
@@ -876,7 +929,7 @@ if(!run.test & run.blocked.cluster & run.power)
   default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
   user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
   user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <- default.rho.matrix
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   
   # reset
@@ -895,7 +948,7 @@ if(!run.test & run.blocked.cluster & run.power)
   #------------------------------------------------------------------#
   
   user.params.list[['ATE_ES']] <- c(0.125, 0, 0)
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   
   # reset
@@ -906,7 +959,7 @@ if(!run.test & run.blocked.cluster & run.power)
   #------------------------------------------------------------------#
   
   user.params.list[['ICC.2']] <- rep(0.7, M)
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
@@ -925,7 +978,7 @@ if(!run.test & run.blocked.cluster & run.power)
   #------------------------------------------------------------------#
   
   user.params.list[['omega.3']] <- 0.8
-  user.params.list[['ICC.3']] <- 0
+  # user.params.list[['ICC.3']] <- rep(0, 3)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
@@ -941,9 +994,9 @@ if(!run.test & run.blocked.cluster & run.power)
 # Cluster 3 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(!run.test & run.blocked.cluster & run.mdes.ss)
+if(run.blocked.cluster & run.mdes.ss)
 {
-  scenarios = 2
+  scenarios <- 2
   # back to defaults
   user.params.list <- params.default
   # don't do WY for now
@@ -956,7 +1009,7 @@ if(!run.test & run.blocked.cluster & run.mdes.ss)
   # param settings for a decent power
   user.params.list[['K']] <- 10
 
-  user.params.list[['ICC.3']] <- 0
+  user.params.list[['ICC.3']] <- rep(0, 3)
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_c2_3f", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_c2_3f", overwrite = overwrite)
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
@@ -965,6 +1018,7 @@ if(!run.test & run.blocked.cluster & run.mdes.ss)
   
   # reset
   user.params.list <- params.default
+  sim.params.list[['procs']] <- sim.params.default[['procs']]
 }
 
 print('---------------------------------------------------------------------------------')

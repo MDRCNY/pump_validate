@@ -10,15 +10,11 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   
   # convert user-inputted parameters into model parameters
   model.params.list <- convert.params(user.params.list)
-  if(sim.params.list[['check']]){ print(model.params.list) }
   
   # save out some commonly used variables
   M <- model.params.list[['M']]
   S <- sim.params.list[['S']]
-  J <- model.params.list[['J']]
-  nbar <- model.params.list[['nbar']]
   Tbar <- sim.params.list[['Tbar']]
-  alpha <- sim.params.list[['alpha']]
   procs <- sim.params.list[['procs']]
 
   if(M == 1) {
@@ -40,25 +36,25 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
-    samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
-    S.ij <- samp.full$ID$S.ij
-    S.ik  <- samp.full$ID$S.ik
+    samp.full <- gen_full_data(model.params.list)
+    S.id <- samp.full$ID$S.id
+    D.id  <- samp.full$ID$D.id
     
     # blocked designs
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r'))
     {
-      T.x <- randomizr::block_ra( S.ij, prob = Tbar )
+      T.x <- randomizr::block_ra( S.id, prob = Tbar )
     # cluster designs
     } else if(design %in% c('simple_c2_2r'))
     { 
-      T.x <- randomizr::cluster_ra( S.ij, prob = Tbar )
+      T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
     } else if(design %in% c('simple_c3_3r'))
     {
-      T.x <- randomizr::cluster_ra( S.ik, prob = Tbar )
+      T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
     # blocked cluster designs
     } else if(design %in% c('blocked_c2_3f', 'blocked_c2_3r'))
     {
-      T.x <- randomizr::block_and_cluster_ra( blocks = S.ik, clusters = S.ij, prob = Tbar )
+      T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
     } else
     {
       stop(print(paste('Design', design, 'not implemented yet')))
@@ -69,8 +65,8 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     samp.obs$Yobs <- gen_Yobs(samp.full, T.x)
     
     mdat <- makelist.samp(samp.obs, T.x) # list length M
-    rawp <- get.rawp(mdat, design = design, nbar = nbar, J = J) # vector length M
-    rawt <- get.rawt(mdat, design = design, nbar = nbar, J = J) # vector length M
+    rawp <- get.rawp(mdat, design = design, user.params.list = user.params.list) # vector length M
+    rawt <- get.rawt(mdat, design = design) # vector length M
     rawt.all[s,] <- rawt
     
     # loop through adjustment procedures (adding 'rawp' as default in all cases)
@@ -82,7 +78,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         t11 <- Sys.time()
         
         proc <- procs[p-1]
-        pvals <- get.adjp(proc, rawp, rawt, mdat, S.ij, S.ik, sim.params.list, model.params.list, design, cl)
+        pvals <- get.adjp(proc, rawp, rawt, mdat, S.id, D.id, sim.params.list, model.params.list, design, cl)
         
         t21 <- Sys.time()
         if (s == 1) { message(paste("One sample of", proc, "took", round(difftime(t21, t11, units = 'secs')[[1]], 4), 'seconds')) }
@@ -133,7 +129,7 @@ calc_power <- function(adjp.proc, alpha)
   alts <- which(user.params.list[['ATE_ES']] != 0)
   
   for (p in 1:length(procs)) {
-    # calculate d-minimial power
+    # calculate d-minimal power
     power.results[p, 1:M] <- apply(adjp.proc[,,p,drop = FALSE], 2, function(x) mean(x < alpha))
 
     # calculate min, min1, min2, etc. and complete power
@@ -216,41 +212,32 @@ calc_power <- function(adjp.proc, alpha)
 # --------------------------------------------------------------------- #
 
 make.model <- function(dat, dummies = NULL, design) {
-
-  # mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
   # dat = mdat[[1]];
   
-  dat$S.ij <- as.factor(dat$S.ij)
-  if(!is.null(dat$S.ik)){ dat$S.ik <- as.factor(dat$S.ik) }
+  dat$S.id <- as.factor(dat$S.id)
+  if(!is.null(dat$D.id)){ dat$D.id <- as.factor(dat$D.id) }
 
   if (design == "blocked_i1_2c") {
-    form <- as.formula("Yobs ~ 1 + T.x + C.ijk + S.ij")
+    form <- as.formula("Yobs ~ 1 + T.x + C.ijk + S.id")
     mod <- pkgcond::suppress_messages(lm(form, data = dat))
-    # fast LM
-    # mmat <- cbind(dat[,c("T.x", "X.jk", "C.ijk")], dat[,grep("dummy\\.[0-9]", colnames(dat))])
-    # mod <- fastLm(mmat, dat[,"Yobs"])
   } else if (design == "blocked_i1_2f") {
-    mod <- blkvar::interacted_linear_estimators(Yobs, Z = T.x, B = S.ij, data = dat, control_formula = ~ C.ijk)
-    # form <- as.formula("Yobs ~ 1 + T.x*S.ij + C.ijk")
-    # mod <- pkgcond::suppress_messages(lm(form, data = dat))
+    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.id, data = dat, control_formula = "C.ijk", lmer = FALSE)
   } else if (design == "blocked_i1_2r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.ij)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_i1_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 + T.x | S.ij) + (1 + T.x | S.ik)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c2_2r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.ij)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c3_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 | S.ik)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
-    # mod <- blkvar::interacted_linear_estimators(Yobs, Z = T.x, B = S.ij, data = dat, control_formula = ~ (1|C.ijk))
-    form <- as.formula(paste0("Yobs ~ 1 + T.x*S.ik + X.jk + C.ijk + (1 | S.ij)"))
-    mod <- pkgcond::suppress_messages(lmer(form, data = dat))
+    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = D.id, data = dat, control_formula = "X.jk + C.ijk + (1 | S.id)", lmer = TRUE)
   } else if (design == "blocked_c2_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 + T.x | S.ik)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else {
     stop(paste('Unknown design:', design)) 
@@ -268,7 +255,7 @@ make.model <- function(dat, dummies = NULL, design) {
 
 make.dummies <- function(dat, dummy.vars, nbar, J){
 
-  # dat = mdat[[1]]; dummy.vars = c("S.ik","S.ij"); var = dummy.vars[1]
+  # dat = mdat[[1]]; dummy.vars = c("D.id","S.id"); var = dummy.vars[1]
 
   all.dum <- NULL
   for(i in 1:length(dummy.vars))
@@ -296,18 +283,26 @@ make.dummies <- function(dat, dummy.vars, nbar, J){
 #	Outputs: pvalue 									                                      #
 # --------------------------------------------------------------------- #
 
-get.pval <- function(mod) {
+get.pval <- function(mod, design, user.params.list) {
 
   if(class(mod) == "lm") {
     pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
   } else if(class(mod) == "lmerMod") {
-    pval <- (1 - pnorm(abs(summary(mod)$coefficients["T.x","t value"])))*2
+    df <- calc.df(design, user.params.list[['J']], user.params.list[['K']],
+                  user.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
+    tstat <- summary(mod)$coefficients["T.x","t value"]
+    pval <- (1 - pt(abs(tstat), df = df))*2
   } else if (class(mod) == "fastLm") {
     pval <- summary(mod)$coef["T.x", "Pr(>|t|)"]
   } else if (class(mod) == "data.frame") {
     # fixed effects models
+    df <- calc.df(design, user.params.list[['J']], user.params.list[['K']],
+                  user.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- mod$ATE_hat[1]/mod$SE[1]
-    pval <- (1 - pnorm(abs(tstat)))*2
+    pval <- (1 - pt(abs(tstat), df = df))*2
+  } else
+  {
+    stop('Unknown model type')
   }
   return(pval)
 }
@@ -336,31 +331,15 @@ get.tstat <- function(mod) {
 #	Notes: gets raw p-vals for a single dataset and funct at a time	        #
 # --------------------------------------------------------------------- #
 
-get.rawp <- function(mdat, design, nbar, J) {
-
+get.rawp <- function(mdat, design, user.params.list) {
   mods = lapply(mdat, function(m) make.model(m, NULL, design))
-  rawp = sapply(mods, function(x) get.pval(x))
-  
-  # if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
-  #   mdums = lapply(mdat, function(m) make.dummies(m, "S.ij", nbar, J))
-  #   mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
-  #   rawp = sapply(mods, function(x) get.pval(x))
-  # }
-
+  rawp = sapply(mods, function(x) get.pval(x, design, user.params.list))
   return(rawp)
 }
 
-get.rawt <- function(mdat, design, nbar, J) {
-
-  # if (design %in% c("blocked_i1_2c","blocked_i1_2f")) {
-  #   mdums = lapply(mdat, function(m) make.dummies(m, "S.ij", nbar, J))
-  #   mods = lapply(mdums, function(m) make.model(m$fixdat, m$dnames, design))
-  #   rawt = sapply(mods, function(x) get.tstat(x))
-  # } else {
-    mods = lapply(mdat, function(m) make.model(m, NULL, design))
-    rawt = sapply(mods, function(x) get.tstat(x))
-  # }
-
+get.rawt <- function(mdat, design) {
+  mods = lapply(mdat, function(m) make.model(m, NULL, design))
+  rawt = sapply(mods, function(x) get.tstat(x))
   return(rawt)
 }
 
@@ -381,16 +360,16 @@ makelist.samp <-function(samp.obs, T.x) {
   for(m in 1:ncol(samp.obs$Yobs))
   {
     # level 3
-    if(!is.null(samp.obs[['D.k']]))
+    if(!is.null(samp.obs[['V.k']]))
     {
       mdat.rn[[m]] <- data.frame(
         Yobs        = samp.obs[['Yobs']][,m],
-        D.k         = samp.obs[['D.k']][,m],
+        V.k         = samp.obs[['V.k']][,m],
         X.jk        = samp.obs[['X.jk']][,m],
         C.ijk       = samp.obs[['C.ijk']][,m],
-        T.x       = T.x,
-        S.ij        = as.factor(samp.obs$ID$S.ij),
-        S.ik         = as.factor(samp.obs$ID$S.ik)
+        T.x         = T.x,
+        S.id        = as.factor(samp.obs$ID$S.id),
+        D.id        = as.factor(samp.obs$ID$D.id)
       )
     } else
     # level 2
@@ -400,7 +379,7 @@ makelist.samp <-function(samp.obs, T.x) {
         X.jk        = samp.obs[['X.jk']][,m],
         C.ijk       = samp.obs[['C.ijk']][,m],
         T.x       = T.x,
-        S.ij        = as.factor(samp.obs$ID$S.ij)
+        S.id        = as.factor(samp.obs$ID$S.id)
       )
     }
   }
@@ -417,15 +396,15 @@ makelist.samp <-function(samp.obs, T.x) {
 #	Outputs: MxS matrix of adjusted p-values for a single proc 	            #
 # --------------------------------------------------------------------- #
 
-get.adjp <- function(proc, rawp, rawt, mdat, S.ij, S.ik, sim.params.list, model.params.list, design, cl = NULL) {
+get.adjp <- function(proc, rawp, rawt, mdat, S.id, D.id, sim.params.list, model.params.list, design, cl = NULL) {
 
   if(proc == "WY-SD" | proc == "WY-SS"){
     #print(paste0("working on ", proc, " with ", B, " permutations"))
     tw1 <- Sys.time()
     adjp.proc <- adjust_WY(
-      data = mdat, rawp = rawp, rawt = rawt, S.ij, S.ik,
+      data = mdat, rawp = rawp, rawt = rawt, S.id, D.id,
       proc = proc,
-      blockby = 'S.ij',
+      blockby = 'S.id',
       sim.params.list = sim.params.list,
       model.params.list = model.params.list,
       design = design,
@@ -453,4 +432,98 @@ get.adjp <- function(proc, rawp, rawt, mdat, S.ij, S.ik, sim.params.list, model.
 get.rejects <- function(adjp, alpha) {
   # return a matrix of 1 and 0 (for true/false <alpha)
   rejects <- as.matrix(1*(adjp < alpha), nrow = nrow(adjp), ncol = ncol(adjp))
+}
+
+
+
+#' Interacted linear regression models
+#' https://github.com/lmiratrix/blkvar/blob/master/R/linear_model_method.R
+#'
+#' These linear models have block by treatment interaction terms.  The final ATE
+#' estimates are then weighted average of the block (site) specific ATE
+#' estimates.
+#'
+#'#' If siteID passed, it will weight the RA blocks within site and then average
+#' these site estimates.
+#'
+#' SEs come from the overall variance-covariance matrix.
+#'
+#' @inheritParams linear_model_estimators
+#'
+#' @return Dataframe of the different versions of this estimator (person and
+#'   site weighted)
+#' @family linear model estimators
+#' @export
+interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
+                                         control_formula = NULL, lmer = FALSE) {
+  if (!is.null(control_formula)) {
+    stopifnot(!is.null(data))
+    stopifnot(!missing( "Yobs"))
+  }
+  
+  # siteID = NULL;
+  # Yobs = dat$Yobs; Z = T.x; B = D.id; data = dat; control_formula = "X.jk + C.ijk + (1 | S.id)"
+  
+  # This code block takes the parameters of
+  # Yobs, Z, B, siteID = NULL, data=NULL, ...
+  # and makes a dataframe with canonical Yobs, Z, B, and siteID columns.
+  if (!is.null(data)) {
+    if (missing( "Yobs")) {
+      data <- data.frame( Yobs = data[[1]], Z = data[[2]], B = data[[3]])
+      n.tx.lvls <- length(unique(data$Z))
+      stopifnot(n.tx.lvls == 2)
+      stopifnot(is.numeric(data$Yobs))
+    } else {
+      d2 <- data
+      if (!is.null(siteID)) {
+        d2$siteID <- data[[siteID]]
+        stopifnot(!is.null(d2$siteID))
+      }
+      d2$Yobs <- eval(substitute(Yobs), data)
+      d2$Z <- eval(substitute(Z), data)
+      d2$B <- eval(substitute(B), data)
+      data <- d2
+      rm(d2)
+    }
+  } else {
+    data <- data.frame(Yobs = Yobs, Z = Z, B = B)
+    if (!is.null( siteID)) {
+      data$siteID = siteID
+    }
+  }
+  
+  data$B <- droplevels(as.factor(data$B))
+  J <- length(unique(data$B))
+  nj <- table(data$B)
+  n <- nrow(data)
+  
+  formula <- as.formula(sprintf( "%s ~ 0 + %s * %s - %s + %s", "Yobs", "Z", "B", "Z", control_formula))
+  
+  if(lmer)
+  {
+    M0.int <- lmer(formula, data = data)
+    ids <- grep( "Z:", rownames(summary(M0.int)$coefficients))
+    stopifnot(length(ids) == J)
+  } else
+  {
+    M0.int <- lm(formula, data = data)
+    ids <- grep( "Z:", names(coef(M0.int)))
+    stopifnot(length(ids) == J)
+  }
+
+  VC <- vcov(M0.int)
+  ATE_hats <- summary(M0.int)$coefficients[ids,1]
+  wts <- rep(1 / J, J)
+  
+  # the block SEs from our linear model
+  SE_hat <- diag(VC)[ids]
+  ATE_hat_site <- weighted.mean(ATE_hats, wts)
+  # Calculate SE for ATE_hat_site
+  SE_site <- sqrt(sum(wts ^ 2 * SE_hat))
+  
+  interactModels <- data.frame(method = c("FE-Int-Sites"), ATE_hat = c(ATE_hat_site), SE = c(SE_site), stringsAsFactors = FALSE)
+  if (!is.null(control_formula)) {
+    interactModels$method <- paste0(interactModels$method, "-adj")
+  }
+  interactModels
 }

@@ -6,14 +6,13 @@ if(!exists("grab.pval", mode = "function")) source(here::here("R", "utils.R"))
 #' The  function  comp.rawt.SS is  needed  to  implement  the  Westfall-Young single-step multiple
 #' testing procedure (MTP). It operates on one row of null test statistics.
 #'
-#' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
+#' @param abs.Zs.H0.1row A vector of permuted test statistics values under H0
 #' @param abs.Zs.H1.1samp One sample of raw statistics
-#' @param oo Order matrix of test statistics in descending order (Only used in Step Down)
 #'
 #' @return returns a vector of 1s and 0s with length of M outcomes
 #'
 #'
-comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
+comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp) {
   
   # getting the number of M outcomes from 1 row of H0
   M <- length(abs.Zs.H0.1row)
@@ -86,7 +85,7 @@ adjust.allsamps.WYSS <- function(snum, abs.Zs.H0, abs.Zs.H1) {
     ind.B <- t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp = abs.Zs.H1[s,]))
     # calculating the p-value for each sample
     adjp.WY[s,] <- colMeans(ind.B)
-    
+
   }
   return(adjp.WY)
 }
@@ -201,13 +200,13 @@ calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2
                  ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
   } else if (design == 'blocked_c2_3f')
   {
-    Q.m <- sqrt( (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
-                 ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
+    Q.m <- sqrt( ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
+                 ( ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar) ) )
   } else if (design == 'blocked_c2_3r')
   {
-    Q.m <- sqrt( (ICC.3 * omega.3) / K +
-                 (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K)+
-                 ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / Tbar * (1-Tbar) * J * K * nbar)
+    Q.m <- sqrt( ( (ICC.3 * omega.3) / K ) +
+                 ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
+                 ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar)))
   } else
   {
     stop(paste('Design not implemented:', design))
@@ -344,34 +343,49 @@ calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    nbar <- (MT/MDES)^2 * ( (1 - R2.1) / (Tbar * (1 - Tbar) * J) )
+    nbar <- (MT/MDES)^2 * ((1 - R2.1) /
+            ( Tbar * (1 - Tbar) * J) )
   } else if (design == 'blocked_i1_2r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.2 * omega.2) +
-                            ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J) )
+    nbar <- ( (1 - ICC.2) * (1 - R2.1) ) /
+            ( (Tbar * (1 - Tbar) ) * (
+              (J / (MT / MDES)^2 ) -
+              (ICC.2 * omega.2) ) )
   } else if (design == 'blocked_i1_3r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                            (ICC.2 * omega.2) / J +
-                            ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * K) )
+    nbar <- ( (1 - ICC.2 - ICC.3) * (1 - R2.1) ) /
+            ( (Tbar * (1 - Tbar) ) * (
+            ( (J * K) / (MT / MDES)^2 ) -
+              (J * ICC.3 * omega.3) -
+              (ICC.2 * omega.2) ) )
   } else if (design == 'simple_c2_2r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)) +
-                            ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J) )
+    nbar <- (   (1 - ICC.2) * (1 - R2.1) ) /
+            ( ( (Tbar * (1 - Tbar) ) * 
+                (J / (MT / MDES)^2 ) ) -
+                (ICC.2 * (1 - R2.2)) ) 
+
   } else if (design == 'simple_c3_3r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
-                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                            ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
+    nbar <- (   (1 - ICC.2 - ICC.3) * (1 - R2.1) ) /
+            ( ( (Tbar * (1 - Tbar) ) * 
+              ( (J * K) / (MT / MDES)^2 ) ) -
+                (J * ICC.3 * (1 - R2.3)) -
+                (ICC.2 * (1 - R2.2)) ) 
   } else if (design == 'blocked_c2_3f')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                           ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
-  }else if (design == 'blocked_c2_3r')
+    nbar <- (   (1 - ICC.2) * (1 - R2.1) ) /
+            ( ( (Tbar * (1 - Tbar) ) * 
+              ( (J * K) / (MT / MDES)^2 ) ) -
+                (ICC.2 * (1 - R2.2)) ) 
+  } else if (design == 'blocked_c2_3r')
   {
-    nbar <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                            ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K) )
+    
+    nbar <- (   (1 - ICC.2 - ICC.3) * (1 - R2.1) ) /
+            (  (Tbar * (1 - Tbar) * J ) * 
+             ( (K / (MT / MDES)^2 )  -
+               (ICC.3 * omega.3) 
+               (ICC.2 * (1 - R2.2)) ) ) 
   } else
   {
     stop(paste('Design not implemented:', design))
@@ -482,7 +496,8 @@ pump_power <- function(
   {
     if(snum > tnum)
     {
-      stop('snum must be less than tnum')
+      message('snum must be less than tnum, increasing tnum to match snum')
+      tnum <- snum
     }
     if(!is.null(cl))
     {
@@ -606,8 +621,11 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            snum = snum, cl = cl,
                            max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
 {
-  # search.type = 'mdes'; start.low = mdes.low; start.high = mdes.high
-  # search.type = 'J'; start.low = ss.low; start.high = ss.high;
+  # search.type = 'mdes';
+  # start.low = mdes.low; start.high = mdes.high
+  # search.type = 'J';
+  # search.type = 'nbar';
+  # start.low = ss.low; start.high = ss.high;
   
   # fit initial quadratic curve
   # generate a series of points to try
@@ -728,7 +746,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   
   if( (cum.tnum == max.cum.tnum | step == max.steps) & abs(current.power - target.power) > tol) {
     message("Reached maximum iterations without converging on MDES estimate within tolerance.")
-    test.pts <- bind_rows(test.pts, c(step, NA, NA, NA, MTP, target.power))
+    test.pts <- rbind(test.pts, c(step, NA, NA, NA, MTP, target.power))
   }
   
   return(test.pts)
@@ -858,31 +876,19 @@ pump_mdes <- function(
   # SETTING THE MDES BOUNDS FOR INDIVIDUAL AND OTHER TYPES OF POWER from using raw and bf mdes bounds #
   
   ### raw or bonferroni ###
-  if (power.definition == "D1indiv") {
-    if (MTP == "rawp"){
-      
-      # Attaching the MDES result to power results for tabular output
-      mdes.results <- data.frame(MTP, mdes.raw, target.power) # transpose the MDES raw and power to have the results columnwise
-      colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-      return (list(mdes.results = mdes.results, tries = NULL))
-    } else if (MTP == "Bonferroni"){
-      
-      # Attaching the MDES result to power results for tabular output
-      mdes.results <- data.frame(MTP, mdes.bf, target.power) #transpose the MDES raw and power to have the results columnwise
-      colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-      return(list(mdes.results = mdes.results, tries = NULL))
-    }
+  if (MTP == "rawp"){
+    mdes.results <- data.frame(MTP, mdes.raw, target.power) 
+    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+    return (list(mdes.results = mdes.results, tries = NULL))
+  } else if (MTP == "Bonferroni"){
+    mdes.results <- data.frame(MTP, mdes.bf, target.power) 
+    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+    return(list(mdes.results = mdes.results, tries = NULL))
   }
-  
-  # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint!
-  # MDES for MTP that is not Bonferroni and for individual powers
-  
-  if (MTP %in% c("Holm", "BH", "WY-SS", "WY-SD") & power.definition == "D1indiv") {
-    mdes.low <- mdes.raw
-    mdes.high <- mdes.bf
-  } else {
-    stop('MDES search only implemented for individual power.')
-  }
+
+  # MDES will be between MDES.raw and MDES.BF
+  mdes.low <- mdes.raw
+  mdes.high <- mdes.bf
   
   test.pts <- optimize_power(design, search.type = 'mdes', MTP, target.power, power.definition, tol,
                              start.tnum, start.low = mdes.low, start.high = mdes.high,
@@ -994,7 +1000,8 @@ pump_sample_raw <- function(
     } else if (typesample == "nbar") {
       nbar1 <- calc.nbar(
         design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
-        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1], ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
+        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
+        ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
         omega.2 = omega.2, omega.3 = omega.3
       )
       if (abs(nbar1 - nbar0) < tol) {
@@ -1142,30 +1149,20 @@ pump_sample <- function(
     rho, omega.2, omega.3
   )
   
-  ### INDIVIDUAL POWER for Raw and BF ###
-  if (power.definition == "D1indiv") {
-    if (MTP == "rawp"){
-      raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
-      colnames(raw.ss) <- output.colnames
-      return(raw.ss)
-    } else if (MTP == "Bonferroni") {
-      ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power, target.ss)
-      colnames(ss.BF) <- output.colnames
-      return(ss.BF)
-    }
+  if (MTP == "rawp"){
+    raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
+    colnames(raw.ss) <- output.colnames
+    return(raw.ss)
+  } else if (MTP == "Bonferroni") {
+    ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power, target.ss)
+    colnames(ss.BF) <- output.colnames
+    return(ss.BF)
   }
-  
-  ### INDIVIDUAL POWER FOR NON BF MTPs ###
   
   # Like the MDES calculation, the sample size would be between raw and Bonferroni. There is no adjustment and there is very
   # conservative adjustment
-  
-  if (MTP %in% c("Holm", "BH", "WY-SS", "WY-SD") & power.definition == "D1indiv") {
-    ss.low <- ss.raw
-    ss.high <- ss.BF
-  } else {
-    stop('Sample size search only implemented for individual power.')
-  }
+  ss.low <- ss.raw
+  ss.high <- ss.BF
   
   # sometimes we already know the answer!
   if(ss.low == ss.high)
@@ -1192,7 +1189,10 @@ pump_sample <- function(
     max.steps = max.steps, max.cum.tnum = max.cum.tnum,
     final.tnum = final.tnum
   )
-  ss.results <- data.frame(MTP, typesample, ceiling(test.pts$pt[nrow(test.pts)]), test.pts$power[nrow(test.pts)], target.ss)
+  ss.results <- data.frame(
+    MTP, typesample, ifelse(is.na(test.pts$pt[nrow(test.pts)]), NA, ceiling(test.pts$pt[nrow(test.pts)])),
+    test.pts$power[nrow(test.pts)], target.ss
+  )
   colnames(ss.results) <- output.colnames
   
   return(list(ss.results = ss.results, test.pts = test.pts))

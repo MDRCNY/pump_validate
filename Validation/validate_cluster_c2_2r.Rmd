@@ -45,13 +45,15 @@ source(here::here("Validation/Simulations", "params.R"))
 ```{r universal.params}
 design <- "simple_c2_2r"
 # assumptions
-user.params.list[['omega.2']] <- 0
 user.params.list[['K']] <- 1
-user.params.list[['ICC.3']] <- rep(0, M)
-
+user.params.list[['ICC.3']] <- NULL
+user.params.list[['omega.3']] <- NULL
+user.params.list[['omega.2']] <- 0
+  
 # params to help have a decent power
-user.params.list[['ICC.2']] <- rep(0.05, M)
-user.params.list[['J']] <- 40
+user.params.list[['ICC.2']] <- rep(0.1, M)
+user.params.list[['J']] <- 60
+
 params.default <- user.params.list
 ```
 
@@ -64,12 +66,12 @@ Default parameters:
 * rho: $\rho$ =  `r user.params.list[['rho.default']]`
 * ATE ES = `r user.params.list[['ATE_ES']]`
 * R2: $R^2_1$ = `r user.params.list[['R2.1']]`, $R^2_2$ = `r user.params.list[['R2.2']]`
-* Omega: $\omega_2 = 0$
 * ICC: $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`
 
 Assumptions
 
 * Two-level design: $\text{ICC}_3 = 0$,  $\omega_3 = 0$, $K = 1$
+* Constant treatment effects: $\omega_2 = 0$
 
 ## Varying school size
 
@@ -131,6 +133,20 @@ $R^2_2 =$ `r user.params.list[['R2.2']]`
 ```{r 2r.r2.20.6}
 cluster_c2_2r_r2.2_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c2_2r_r2.2_power_plot)
+user.params.list[['R2.2']] <- params.default[['R2.2']]  
+```
+
+```{r r2.10r2.20}
+user.params.list[['R2.1']] <- rep(0, M)  
+user.params.list[['R2.2']] <- rep(0, M)  
+```
+
+$R^2_2 =$ `r user.params.list[['R2.2']]`
+
+```{r 2r.r2.10r2.20}
+cluster_c2_2r_r2.2_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+print(cluster_c2_2r_r2.2_power_plot)
+user.params.list[['R2.1']] <- params.default[['R2.1']]  
 user.params.list[['R2.2']] <- params.default[['R2.2']]  
 ```
 

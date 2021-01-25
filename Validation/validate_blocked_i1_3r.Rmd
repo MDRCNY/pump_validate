@@ -45,7 +45,7 @@ source(here::here("Validation/Simulations", "params.R"))
 ```{r}
 # set document-level parameters
 design <- "blocked_i1_3r"
-user.params.list[['K']] <- 10
+user.params.list[['K']] <- 15
 params.default <- user.params.list
 ```
 
@@ -64,7 +64,7 @@ params.default <- user.params.list
 ## Varying school size
 
 ```{r nj100}
-user.params.list[['n.j']] <- 100
+user.params.list[['nbar']] <- 100
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -76,7 +76,7 @@ print(blocked_i1_3r_nj100_power_plot)
 ```
 
 ```{r nj75}
-user.params.list[['n.j']] <- 75
+user.params.list[['nbar']] <- 75
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -87,7 +87,7 @@ print(blocked_i1_3r_nj75_power_plot)
 ```
 
 ```{r nj50}
-user.params.list[['n.j']] <- 50
+user.params.list[['nbar']] <- 50
 ```
 
 $\bar{n}$ = `r user.params.list[['nbar']]`
@@ -97,6 +97,10 @@ blocked_i1_3r_nj50_power_plot <- gen.power.results.plot(gen_params_file_base(use
 print(blocked_i1_3r_nj50_power_plot)
 ```
 
+
+```{r}
+user.params.list[['nbar']] <- 100
+```
 
 ## Varying R2
 
@@ -136,6 +140,24 @@ print(blocked_i1_3r_r2.3_power_plot)
 user.params.list[['R2.3']] <- params.default[['R2.3']]  
 ```
 
+```{r r2.10r2.20r2.30}
+user.params.list[['R2.1']] <- rep(0, M)  
+user.params.list[['R2.2']] <- rep(0, M)  
+user.params.list[['R2.3']] <- rep(0, M)  
+```
+
+$R^2_1 =$ `r user.params.list[['R2.1']]`
+$R^2_2 =$ `r user.params.list[['R2.2']]`
+$R^2_3 =$ `r user.params.list[['R2.3']]`
+
+```{r 3r.r2.10r2.20r2.30}
+blocked_i1_3r_r2.3_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+print(blocked_i1_3r_r2.3_power_plot)
+user.params.list[['R2.1']] <- params.default[['R2.1']]  
+user.params.list[['R2.2']] <- params.default[['R2.2']]  
+user.params.list[['R2.3']] <- params.default[['R2.3']]  
+```
+
 
 ## Varying rho
 
@@ -143,16 +165,16 @@ user.params.list[['R2.3']] <- params.default[['R2.3']]
 rho.default <- 0.2
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list[['rho.default']] <- rho.default
-user.params.list[['rho.X']] <- user.params.list[['rho.C']] <-rho.default
+user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- rho.default
 user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[['rho.r']] <- rho.default
 ```
+
+$\rho =$ `r user.params.list[['rho.default']]`
 
 ```{r 3r.rho0.2}
 blocked_i1_3r_rho0.2_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_i1_3r_rho0.2_power_plot)
 ```
-
-$\rho =$ `r user.params.list[['rho.default']]`
 
 ```{r rho0.8}
 rho.default <- 0.8
@@ -221,7 +243,7 @@ user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 
 ```{r omega20.8}
 user.params.list[['omega.2']] <- 0.8
-user.params.list[['omega.3']] <- 0.2
+user.params.list[['omega.3']] <- params.default[['omega.3']]
 ```
 
 $\omega_2$ = `r user.params.list[['omega.2']]`, $\omega_3$ = `r user.params.list[['omega.3']]`
@@ -232,7 +254,7 @@ print(blocked_i1_3r_omega2.0.8_power_plot)
 ```
 
 ```{r omega30.8}
-user.params.list[['omega.2']] <- 0.2
+user.params.list[['omega.2']] <- params.default[['omega.2']]
 user.params.list[['omega.3']] <- 0.8
 ```
 
