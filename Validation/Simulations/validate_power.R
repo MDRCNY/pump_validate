@@ -435,7 +435,8 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
 #' @export
 #'
 #' @examples
-validate_mdes <- function(user.params.list, sim.params.list, design, plot.path = FALSE, overwrite = TRUE) {
+validate_mdes <- function(user.params.list, sim.params.list, design,
+                          power.definition = 'D1indiv', plot.path = FALSE, overwrite = TRUE) {
 
   if(sim.params.list[['parallel']])
   {
@@ -468,12 +469,17 @@ validate_mdes <- function(user.params.list, sim.params.list, design, plot.path =
     
     mdes_compare_results <- plot_data <- NULL
     for (MTP in procs){
+      target.power <- power.results$value[
+        power.results$MTP == MTP &
+        power.results$power_type == power.definition &
+        power.results$method == 'pum'
+      ]
       mdes_results <- pump_mdes(
         design = design,
         MTP = MTP,
         M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
-        target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'],
-        power.definition = 'D1indiv',
+        target.power = target.power,
+        power.definition = power.definition,
         tol = sim.params.list[['tol']],
         nbar = user.params.list[['nbar']],
         Tbar = sim.params.list[['Tbar']],
@@ -542,7 +548,8 @@ validate_mdes <- function(user.params.list, sim.params.list, design, plot.path =
 #' @export
 #'
 #' @examples
-validate_sample <- function(user.params.list, sim.params.list, design, plot.path = FALSE, overwrite = TRUE) {
+validate_sample <- function(user.params.list, sim.params.list, design,
+                            power.definition = 'D1indiv', plot.path = FALSE, overwrite = TRUE) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -590,14 +597,19 @@ validate_sample <- function(user.params.list, sim.params.list, design, plot.path
       for (MTP in procs)
       {
         # type = 'J'; MTP = 'Holm';
+        target.power <- power.results$value[
+          power.results$MTP == MTP &
+          power.results$power_type == power.definition &
+          power.results$method == 'pum'
+        ]
         sample_results <- pump_sample(
           design = design,
           MTP = MTP,
           typesample = type,
           MDES = user.params.list[['ATE_ES']],
           M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
-          target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'],
-          power.definition = 'D1indiv',
+          target.power = target.power,
+          power.definition = power.definition,
           tol = sim.params.list[['tol']],
           nbar = user.params.list[['nbar']],
           Tbar = sim.params.list[['Tbar']],
