@@ -242,11 +242,6 @@ make.model <- function(dat, dummies = NULL, design) {
   } else {
     stop(paste('Unknown design:', design)) 
   }
-  
-  # mod <- lmer(form, data = dat, control = lmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
-  # fast LM
-  # mmat <- cbind(dat[,c("T.x", "X.jk", "C.ijk")], dat[,grep("dummy\\.[0-9]", colnames(dat))])
-  # mod <- fastLm(mmat, dat[,"Yobs"])
   return(mod)
 }
 
