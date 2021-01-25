@@ -762,7 +762,7 @@ if(run.cluster.3l & run.power)
   power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c3_3r", q = q, overwrite)
   
   # reset
-  user.params.list[['ATE_ES']] <- params.default[['ATE_ES']]
+  user.params.list[['ATE_ES']] <- rep(0.25, M)
   
   #------------------------------------------------------------------#
   # Vary ICC

@@ -514,11 +514,11 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
       print(grid.arrange(plot.power, plot.mdes, top = design))
     }
     
-    compare.filename <- paste0(params.file.base, "comparison_mdes_results.RDS")
+    mdes.filename <- paste0(params.file.base, 'comparison_mdes_', power.definition, '_results.RDS')
     
     mdes_compare_results[,2:3] <- apply(mdes_compare_results[,2:3], 2, as.numeric)
     mdes_compare_results = cbind(mdes_compare_results, user.params.list[['ATE_ES']][1])
-    colnames(mdes_compare_results) = c('MTP', 'Adjusted MDES', 'Indiv Power', 'Target MDES')
+    colnames(mdes_compare_results) <- c('MTP', 'Adjusted MDES', paste(power.definition, 'Power'), 'Target MDES')
     rownames(mdes_compare_results) <- NULL
     
     if(sim.params.list[['parallel']])
@@ -526,7 +526,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
       parallel::stopCluster(cl)
     }
     
-    saveRDS(mdes_compare_results, file = here("Validation/data", compare.filename))
+    saveRDS(mdes_compare_results, file = here("Validation/data", mdes.filename))
     return(mdes_compare_results)
   } else
   {
@@ -631,7 +631,7 @@ validate_sample <- function(user.params.list, sim.params.list, design,
       }
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
-    compare.filename <- paste0(params.file.base, "comparison_sample_results.RDS")
+    sample.filename <- paste0(params.file.base, 'comparison_sample_', power.definition, '_results.RDS')
     
     if(plot.path)
     {
@@ -652,7 +652,7 @@ validate_sample <- function(user.params.list, sim.params.list, design,
       parallel::stopCluster(cl)
     }
     
-    saveRDS(sample_compare_results, file = here("Validation/data", compare.filename))
+    saveRDS(sample_compare_results, file = here("Validation/data", sample.filename))
     return(sample_compare_results)
   } else
   {
