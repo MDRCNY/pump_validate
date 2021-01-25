@@ -898,31 +898,19 @@ pump_mdes <- function(
   # SETTING THE MDES BOUNDS FOR INDIVIDUAL AND OTHER TYPES OF POWER from using raw and bf mdes bounds #
   
   ### raw or bonferroni ###
-  if (power.definition == "D1indiv") {
-    if (MTP == "rawp"){
-      
-      # Attaching the MDES result to power results for tabular output
-      mdes.results <- data.frame(MTP, mdes.raw, target.power) # transpose the MDES raw and power to have the results columnwise
-      colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-      return (list(mdes.results = mdes.results, tries = NULL))
-    } else if (MTP == "Bonferroni"){
-      
-      # Attaching the MDES result to power results for tabular output
-      mdes.results <- data.frame(MTP, mdes.bf, target.power) #transpose the MDES raw and power to have the results columnwise
-      colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-      return(list(mdes.results = mdes.results, tries = NULL))
-    }
+  if (MTP == "rawp"){
+    mdes.results <- data.frame(MTP, mdes.raw, target.power) 
+    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+    return (list(mdes.results = mdes.results, tries = NULL))
+  } else if (MTP == "Bonferroni"){
+    mdes.results <- data.frame(MTP, mdes.bf, target.power) 
+    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+    return(list(mdes.results = mdes.results, tries = NULL))
   }
-  
-  # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint!
-  # MDES for MTP that is not Bonferroni and for individual powers
-  
-  if (MTP %in% c("Holm", "BH", "WY-SS", "WY-SD") & power.definition == "D1indiv") {
-    mdes.low <- mdes.raw
-    mdes.high <- mdes.bf
-  } else {
-    stop('MDES search only implemented for individual power.')
-  }
+
+  # MDES will be between MDES.raw and MDES.BF
+  mdes.low <- mdes.raw
+  mdes.high <- mdes.bf
   
   test.pts <- optimize_power(design, search.type = 'mdes', MTP, target.power, power.definition, tol,
                              start.tnum, start.low = mdes.low, start.high = mdes.high,
@@ -1188,30 +1176,20 @@ pump_sample <- function(
     rho, omega.2, omega.3
   )
   
-  ### INDIVIDUAL POWER for Raw and BF ###
-  if (power.definition == "D1indiv") {
-    if (MTP == "rawp"){
-      raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
-      colnames(raw.ss) <- output.colnames
-      return(raw.ss)
-    } else if (MTP == "Bonferroni") {
-      ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power, target.ss)
-      colnames(ss.BF) <- output.colnames
-      return(ss.BF)
-    }
+  if (MTP == "rawp"){
+    raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
+    colnames(raw.ss) <- output.colnames
+    return(raw.ss)
+  } else if (MTP == "Bonferroni") {
+    ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power, target.ss)
+    colnames(ss.BF) <- output.colnames
+    return(ss.BF)
   }
-  
-  ### INDIVIDUAL POWER FOR NON BF MTPs ###
   
   # Like the MDES calculation, the sample size would be between raw and Bonferroni. There is no adjustment and there is very
   # conservative adjustment
-  
-  if (MTP %in% c("Holm", "BH", "WY-SS", "WY-SD") & power.definition == "D1indiv") {
-    ss.low <- ss.raw
-    ss.high <- ss.BF
-  } else {
-    stop('Sample size search only implemented for individual power.')
-  }
+  ss.low <- ss.raw
+  ss.high <- ss.BF
   
   # sometimes we already know the answer!
   if(ss.low == ss.high)
