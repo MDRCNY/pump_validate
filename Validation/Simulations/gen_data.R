@@ -169,15 +169,15 @@ gen_full_data <- function(model.params.list) {
   
   # district level
   if ( has.level.three ) {
-    mu0.ijk <- Xi0.ijk  + xi * V.k + w0.ijk
-    mu1.ijk <- Xi1.ijk             + w1.ijk
+    mu0.ijk <- Xi0.ijk  + xi * V.ijk + w0.ijk
+    mu1.ijk <- Xi1.ijk               + w1.ijk
   } else {
     mu0.ijk <- Xi0.ijk
     mu1.ijk <- Xi1.ijk
   }
   
   # school level
-  theta0.ijk <- mu0.ijk + delta * X.jk + u0.ijk
+  theta0.ijk <- mu0.ijk + delta * X.ijk + u0.ijk
   
   ##-------temp
   # allow for school-level covariate to influence treatment
