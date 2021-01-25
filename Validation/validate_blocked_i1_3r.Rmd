@@ -55,6 +55,7 @@ params.default <- user.params.list
 * M = `r user.params.list[['M']]`
 * J = `r user.params.list[['J']]`
 * K = `r user.params.list[['K']]`
+* \bar{n} = 100 (unless otherwise noted)
 * rho: $\rho$ =  `r user.params.list[['rho.default']]`
 * ATE ES = `r user.params.list[['ATE_ES']]`
 * R2: $R^2_1$ = `r user.params.list[['R2.1']]`, $R^2_2$ = `r user.params.list[['R2.2']]`, $R^2_3$ = `r user.params.list[['R2.3']]`

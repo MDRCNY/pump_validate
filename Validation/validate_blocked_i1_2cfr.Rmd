@@ -304,7 +304,7 @@ user.params.list <- params.default
 ```
 
 
-```{r 2c.mdesCombined}
+```{r 2c.mdes.D1}
 design <- "blocked_i1_2c"
 user.params.list[['omega.2']] <- 0
 user.params.list[['ICC.2']] <- rep(0, M)
@@ -324,7 +324,27 @@ if(length(mdes.file) == 0)
 }
 ```
 
-```{r 2f.mdesCombined}
+```{r 2c.mdes.min2}
+design <- "blocked_i1_2c"
+user.params.list[['omega.2']] <- 0
+user.params.list[['ICC.2']] <- rep(0, M)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_i1_2c_mdes_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    blocked_i1_2c_mdes_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+```{r 2f.mdes.D1}
 design <- "blocked_i1_2f"
 user.params.list[['omega.2']] <- params.default[['omega.2']]
 user.params.list[['ICC.2']] <- rep(0, M)
