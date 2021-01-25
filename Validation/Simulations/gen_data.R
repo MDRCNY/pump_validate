@@ -32,7 +32,7 @@ gen_RE_cov_matrix = function( Sigma.w, Sigma.z, Sigma.wz ) {
 #' @param check boolean indicating whether to conduct checks
 #'
 #' @return list of: potential outcomes given control y0, treatment y1,
-#'         covariates D.k, X.jk, C.ijk
+#'         covariates V.k, X.jk, C.ijk
 #'         
 #'         Each block has 1 column for each outcome (called "domain")
 #'
@@ -48,9 +48,9 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   has.level.three <- model.params.list[['has.level.three']]
   M        <- model.params.list[['M']];       J       <- model.params.list[['J']];
   K        <- model.params.list[['K']];       nbar     <- model.params.list[['nbar']];
-  S.ij     <- model.params.list[['S.ij']];    S.ik     <- model.params.list[['S.ik']];
+  S.id     <- model.params.list[['S.id']];    D.id     <- model.params.list[['D.id']];
   Xi0      <- model.params.list[['Xi0']];     Xi1     <- model.params.list[['Xi1']];
-  rho.D    <- model.params.list[['rho.D']];   xi      <- model.params.list[['xi']];
+  rho.V    <- model.params.list[['rho.V']];   xi      <- model.params.list[['xi']];
   eta0.sq  <- model.params.list[['eta0.sq']]; eta1.sq <- model.params.list[['eta1.sq']];
   rho.w    <- model.params.list[['rho.w']];   rho.z   <- model.params.list[['rho.z']];
   theta.wz <- model.params.list[['theta.wz']];
@@ -69,12 +69,12 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # Generate school and district IDs
   # ------------------------------#
   # generates vector of school and district assignments, assuming equal sizes of everything
-  if ( is.null( S.ij ) ) {
+  if ( is.null( S.id ) ) {
     assignments <- gen_simple_assignments( J, K, nbar )
-    S.ij        <- assignments[['S.ij']]  # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
-    S.ik        <- assignments[['S.ik']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
+    S.id        <- assignments[['S.id']]  # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
+    D.id        <- assignments[['D.id']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
   }
-  N <- length( S.ij )
+  N <- length( S.id )
   
   
   # ------------------------------#
@@ -84,8 +84,8 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   if ( has.level.three ) {
     
     # generate district covariates
-    Sigma.D  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.D)
-    D        <- matrix(mvrnorm(K, mu = rep(0, M), Sigma = Sigma.D), K, M)
+    Sigma.V  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.V)
+    V        <- matrix(mvrnorm(K, mu = rep(0, M), Sigma = Sigma.V), K, M)
     
     # covariance of random district effects
     Sigma.w       <- gen_cov_matrix(M, eta0.sq, eta0.sq, rho.w)
@@ -101,7 +101,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     w.k  <- wz.k[,1:M, drop = FALSE]
     z.k  <- wz.k[,(M+1):(2*M), drop = FALSE]
   } else {
-    D = NULL
+    V = NULL
   }
   
   # ------------------------------#
@@ -142,10 +142,10 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   # reformat everything into N x M matrices
   # ------------------------------#
   
-  # for example, D is K x M, now I populate D.k, which is N x M,
+  # for example, D is K x M, now I populate V.k, which is N x M,
   # by filling in district information for each individual
   
-  D.k = w.ijk = z.ijk =
+  V.k = w.ijk = z.ijk =
   X.jk = u.ijk = v.ijk = matrix(NA, N, M)
   
   Xi0.ijk <- matrix(Xi0, nrow = N, ncol = M, byrow = TRUE) 
@@ -156,15 +156,15 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   {
     if ( has.level.three ) {
       # fill in values from district level variables
-      D.k[i,]     <- D[S.ik[i],]
-      w.ijk[i,]   <- w.k[S.ik[i],]
-      z.ijk[i,]   <- z.k[S.ik[i],]
+      V.k[i,]     <- V[D.id[i],]
+      w.ijk[i,]   <- w.k[D.id[i],]
+      z.ijk[i,]   <- z.k[D.id[i],]
     }
     
     # fill in values from school level variables
-    X.jk[i,]    <- X[S.ij[i],]
-    u.ijk[i,]   <- u.jk[S.ij[i],]
-    v.ijk[i,]   <- v.jk[S.ij[i],]
+    X.jk[i,]    <- X[S.id[i],]
+    u.ijk[i,]   <- u.jk[S.id[i],]
+    v.ijk[i,]   <- v.jk[S.id[i],]
   }
   
   # ------------------------------#
@@ -173,7 +173,7 @@ gen_full_data <- function(model.params.list, check = FALSE) {
   
   # district level
   if ( has.level.three ) {
-    Gamma0.ijk <- Xi0.ijk  + xi * D.k + w.ijk
+    Gamma0.ijk <- Xi0.ijk  + xi * V.k + w.ijk
     Gamma1.ijk <- Xi1.ijk             + z.ijk
   } else {
     Gamma0.ijk <- Xi0.ijk
@@ -240,13 +240,13 @@ gen_full_data <- function(model.params.list, check = FALSE) {
     # ICC.calc
   }
   
-  ID <- data.frame( S.ij = S.ij, S.ik = S.ik )
+  ID <- data.frame( S.id = S.id, D.id = D.id )
   
   if ( has.level.three ) {
-    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = D.k,  X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
+    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = V.k,  X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
   } else {
-    ID$S.ik <- NULL
-    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, D.k = NULL, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
+    ID$D.id <- NULL
+    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = NULL, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
   }
 }
 
@@ -318,7 +318,7 @@ convert.params <- function(user.params.list, check = FALSE) {
     model.params.list <- c( model.params.list, list( 
       # -------------------------------------------- level 3
       xi = xi                                          # M-vector of coefficient of district covariates
-      , rho.D = user.params.list[['rho.D']]            # MxM correlation matrix of district covariates
+      , rho.V = user.params.list[['rho.V']]            # MxM correlation matrix of district covariates
       , eta0.sq = eta0.sq                              # M-vector of variances of district random effects
       , eta1.sq = eta1.sq                              # M-vector of variances of district impacts
       , rho.w = user.params.list[['rho.w']]            # MxM matrix of correlations for district random effects

@@ -45,7 +45,7 @@ source(here::here("Validation/Simulations", "params.R"))
 ```{r}
 # set document-level parameters
 design <- "blocked_i1_3r"
-user.params.list[['K']] <- 10
+user.params.list[['K']] <- 15
 params.default <- user.params.list
 ```
 
@@ -97,6 +97,10 @@ blocked_i1_3r_nj50_power_plot <- gen.power.results.plot(gen_params_file_base(use
 print(blocked_i1_3r_nj50_power_plot)
 ```
 
+
+```{r}
+user.params.list[['nbar']] <- 100
+```
 
 ## Varying R2
 

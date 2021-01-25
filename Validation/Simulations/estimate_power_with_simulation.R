@@ -41,24 +41,24 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     
     # generate full, unobserved sample data
     samp.full <- gen_full_data(model.params.list, check = sim.params.list[['check']])
-    S.ij <- samp.full$ID$S.ij
-    S.ik  <- samp.full$ID$S.ik
+    S.id <- samp.full$ID$S.id
+    D.id  <- samp.full$ID$D.id
     
     # blocked designs
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r'))
     {
-      T.x <- randomizr::block_ra( S.ij, prob = Tbar )
+      T.x <- randomizr::block_ra( S.id, prob = Tbar )
     # cluster designs
     } else if(design %in% c('simple_c2_2r'))
     { 
-      T.x <- randomizr::cluster_ra( S.ij, prob = Tbar )
+      T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
     } else if(design %in% c('simple_c3_3r'))
     {
-      T.x <- randomizr::cluster_ra( S.ik, prob = Tbar )
+      T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
     # blocked cluster designs
     } else if(design %in% c('blocked_c2_3f', 'blocked_c2_3r'))
     {
-      T.x <- randomizr::block_and_cluster_ra( blocks = S.ik, clusters = S.ij, prob = Tbar )
+      T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
     } else
     {
       stop(print(paste('Design', design, 'not implemented yet')))
@@ -82,7 +82,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         t11 <- Sys.time()
         
         proc <- procs[p-1]
-        pvals <- get.adjp(proc, rawp, rawt, mdat, S.ij, S.ik, sim.params.list, model.params.list, design, cl)
+        pvals <- get.adjp(proc, rawp, rawt, mdat, S.id, D.id, sim.params.list, model.params.list, design, cl)
         
         t21 <- Sys.time()
         if (s == 1) { message(paste("One sample of", proc, "took", round(difftime(t21, t11, units = 'secs')[[1]], 4), 'seconds')) }
@@ -218,30 +218,30 @@ calc_power <- function(adjp.proc, alpha)
 make.model <- function(dat, dummies = NULL, design) {
   # dat = mdat[[1]];
   
-  dat$S.ij <- as.factor(dat$S.ij)
-  if(!is.null(dat$S.ik)){ dat$S.ik <- as.factor(dat$S.ik) }
+  dat$S.id <- as.factor(dat$S.id)
+  if(!is.null(dat$D.id)){ dat$D.id <- as.factor(dat$D.id) }
 
   if (design == "blocked_i1_2c") {
-    form <- as.formula("Yobs ~ 1 + T.x + C.ijk + S.ij")
+    form <- as.formula("Yobs ~ 1 + T.x + C.ijk + S.id")
     mod <- pkgcond::suppress_messages(lm(form, data = dat))
   } else if (design == "blocked_i1_2f") {
-    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.ij, data = dat, control_formula = "C.ijk", lmer = FALSE)
+    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.id, data = dat, control_formula = "C.ijk", lmer = FALSE)
   } else if (design == "blocked_i1_2r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.ij)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_i1_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 + T.x | S.ij) + (1 + T.x | S.ik)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c2_2r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.ij)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "simple_c3_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 | S.ik)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else if (design == "blocked_c2_3f") {
-    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.ik, data = dat, control_formula = "X.jk + C.ijk + S.ik + (1 | S.ij)", lmer = TRUE)
+    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = D.id, data = dat, control_formula = "X.jk + C.ijk + D.id + (1 | S.id)", lmer = TRUE)
   } else if (design == "blocked_c2_3r") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.ij) + (1 + T.x | S.ik)"))
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + D.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
     mod <- pkgcond::suppress_messages(lmer(form, data = dat))
   } else {
     stop(paste('Unknown design:', design)) 
@@ -264,7 +264,7 @@ make.model <- function(dat, dummies = NULL, design) {
 
 make.dummies <- function(dat, dummy.vars, nbar, J){
 
-  # dat = mdat[[1]]; dummy.vars = c("S.ik","S.ij"); var = dummy.vars[1]
+  # dat = mdat[[1]]; dummy.vars = c("D.id","S.id"); var = dummy.vars[1]
 
   all.dum <- NULL
   for(i in 1:length(dummy.vars))
@@ -377,8 +377,8 @@ makelist.samp <-function(samp.obs, T.x) {
         X.jk        = samp.obs[['X.jk']][,m],
         C.ijk       = samp.obs[['C.ijk']][,m],
         T.x       = T.x,
-        S.ij        = as.factor(samp.obs$ID$S.ij),
-        S.ik         = as.factor(samp.obs$ID$S.ik)
+        S.id        = as.factor(samp.obs$ID$S.id),
+        D.id         = as.factor(samp.obs$ID$D.id)
       )
     } else
     # level 2
@@ -388,7 +388,7 @@ makelist.samp <-function(samp.obs, T.x) {
         X.jk        = samp.obs[['X.jk']][,m],
         C.ijk       = samp.obs[['C.ijk']][,m],
         T.x       = T.x,
-        S.ij        = as.factor(samp.obs$ID$S.ij)
+        S.id        = as.factor(samp.obs$ID$S.id)
       )
     }
   }
@@ -405,15 +405,15 @@ makelist.samp <-function(samp.obs, T.x) {
 #	Outputs: MxS matrix of adjusted p-values for a single proc 	            #
 # --------------------------------------------------------------------- #
 
-get.adjp <- function(proc, rawp, rawt, mdat, S.ij, S.ik, sim.params.list, model.params.list, design, cl = NULL) {
+get.adjp <- function(proc, rawp, rawt, mdat, S.id, D.id, sim.params.list, model.params.list, design, cl = NULL) {
 
   if(proc == "WY-SD" | proc == "WY-SS"){
     #print(paste0("working on ", proc, " with ", B, " permutations"))
     tw1 <- Sys.time()
     adjp.proc <- adjust_WY(
-      data = mdat, rawp = rawp, rawt = rawt, S.ij, S.ik,
+      data = mdat, rawp = rawp, rawt = rawt, S.id, D.id,
       proc = proc,
-      blockby = 'S.ij',
+      blockby = 'S.id',
       sim.params.list = sim.params.list,
       model.params.list = model.params.list,
       design = design,
@@ -471,7 +471,7 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
   }
   
   # siteID = NULL;
-  # Yobs = dat$Yobs; Z = T.x; B = S.ik; data = dat; control_formula = "X.jk + C.ijk + (1 | S.ij)"
+  # Yobs = dat$Yobs; Z = T.x; B = D.id; data = dat; control_formula = "X.jk + C.ijk + (1 | S.id)"
   
   # This code block takes the parameters of
   # Yobs, Z, B, siteID = NULL, data=NULL, ...
