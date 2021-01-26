@@ -582,53 +582,57 @@ validate_sample <- function(user.params.list, sim.params.list, design,
     
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'simple_c2_2r'))
     {
-      typesamples = c('J', 'nbar')
+      typesample = c('J')
     } else if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
     {
-      typesamples = c('K', 'nbar')
+      typesample = c('K')
     } else
     {
       stop('Design not implemented')
     }
     
     sample_compare_results <- plot_data <- NULL
-    for(type in typesamples)
+    for (MTP in procs)
     {
-      for (MTP in procs)
-      {
-        # type = 'J'; MTP = 'Holm';
-        target.power <- power.results$value[
-          power.results$MTP == MTP &
-          power.results$power_type == power.definition &
-          power.results$method == 'pum'
-        ]
-        sample_results <- pump_sample(
-          design = design,
-          MTP = MTP,
-          typesample = type,
-          MDES = user.params.list[['ATE_ES']],
-          M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
-          target.power = target.power,
-          power.definition = power.definition,
-          tol = sim.params.list[['tol']],
-          nbar = user.params.list[['nbar']],
-          Tbar = sim.params.list[['Tbar']],
-          alpha = sim.params.list[['alpha']],
-          numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
-          R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
-          ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
-          rho = user.params.list[['rho.default']],
-          omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
-          tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-          start.tnum = sim.params.list[['start.tnum']],
-          final.tnum = sim.params.list[['final.tnum']],
-          max.cum.tnum = sim.params.list[['max.cum.tnum']],
-          max.steps = sim.params.list[['max.steps']],
-          cl = cl
-        )
-        sample_compare_results <- rbind(sample_compare_results, sample_results$ss.results)
-        plot_data <- rbind(plot_data, sample_results$test.pts)
-      }
+      # type = 'J'; MTP = 'Holm';
+      target.power <- power.results$value[
+        power.results$MTP == MTP &
+        power.results$power_type == power.definition &
+        power.results$method == 'pum'
+      ]
+      sample_results <- pump_sample(
+        design = design,
+        MTP = MTP,
+        typesample = typesample,
+        MDES = user.params.list[['ATE_ES']],
+        M = user.params.list[['M']],
+        J = user.params.list[['J']],
+        K = user.params.list[['K']],
+        target.power = target.power,
+        power.definition = power.definition,
+        tol = sim.params.list[['tol']],
+        nbar = user.params.list[['nbar']],
+        Tbar = sim.params.list[['Tbar']],
+        alpha = sim.params.list[['alpha']],
+        numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+        R2.1 = user.params.list[['R2.1']],
+        R2.2 = user.params.list[['R2.2']],
+        R2.3 = user.params.list[['R2.3']],
+        ICC.2 = user.params.list[['ICC.2']],
+        ICC.3 = user.params.list[['ICC.3']],
+        rho = user.params.list[['rho.default']],
+        omega.2 = user.params.list[['omega.2']],
+        omega.3 = user.params.list[['omega.3']],
+        tnum = sim.params.list[['tnum']],
+        snum = sim.params.list[['B']],
+        start.tnum = sim.params.list[['start.tnum']],
+        final.tnum = sim.params.list[['final.tnum']],
+        max.cum.tnum = sim.params.list[['max.cum.tnum']],
+        max.steps = sim.params.list[['max.steps']],
+        cl = cl
+      )
+      sample_compare_results <- rbind(sample_compare_results, sample_results$ss.results)
+      plot_data <- rbind(plot_data, sample_results$test.pts)
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
     sample.filename <- paste0(params.file.base, 'comparison_sample_', power.definition, '_results.RDS')
