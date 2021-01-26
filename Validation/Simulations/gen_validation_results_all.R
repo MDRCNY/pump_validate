@@ -37,6 +37,7 @@ if(run.blocked.2l & run.power)
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
   user.params.list[['omega.3']] <- NULL
+  user.params.list[['R2.3']] <- NULL
   
   #------------------------------------------------------------------#
   # vary sample size
@@ -193,6 +194,7 @@ if(run.blocked.2l & run.mdes.ss)
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
   user.params.list[['omega.3']] <- NULL
+  user.params.list[['R2.3']] <- NULL
   
   # don't do WY for now
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
@@ -289,6 +291,7 @@ if(run.cluster.2l & run.power)
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
   user.params.list[['omega.3']] <- NULL
+  user.params.list[['R2.3']] <- NULL
   user.params.list[['omega.2']] <- 0
   
   # params to help have a decent power
@@ -425,6 +428,7 @@ if(run.cluster.2l & run.mdes.ss)
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
   user.params.list[['omega.3']] <- NULL
+  user.params.list[['R2.3']] <- NULL
   user.params.list[['omega.2']] <- 0
   
   # params to help have a decent power
@@ -454,10 +458,9 @@ if(run.blocked.3l & run.power)
   scenarios <- 15
   user.params.list <- params.default
   
-  # assumptions
-  user.params.list[['omega.2']] <- params.default[['omega.2']]
-  user.params.list[['omega.3']] <- params.default[['omega.3']]
-  user.params.list[['K']] <- 10
+  # for sufficient power and stability
+  user.params.list[['K']] <- 15
+  user.params.list[['nbar']] <- 100
 
   #------------------------------------------------------------------#
   # vary sample size
@@ -480,7 +483,7 @@ if(run.blocked.3l & run.power)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
   
   # reset
-  user.params.list[['nbar']] <- params.default[['nbar']]
+  user.params.list[['nbar']] <- 100
   
   print('-----------------------------------------------------------------------------')
   print(paste('Completed sample size scenarios, 3 out of', scenarios))
@@ -620,12 +623,13 @@ if(run.blocked.3l & run.mdes.ss)
   scenarios <- 1
   # back to defaults
   user.params.list <- params.default
+  
+  # for sufficient power and stability
+  user.params.list[['K']] <- 15
+  user.params.list[['nbar']] <- 100
   # don't do WY for now
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
   
-  user.params.list[['omega.2']] <- params.default[['omega.2']]
-  user.params.list[['omega.3']] <- params.default[['omega.3']]
-  user.params.list[['K']] <- 10
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_3r", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_3r", overwrite = overwrite)
   
@@ -830,10 +834,9 @@ if(run.blocked.cluster & run.power)
   
   # assumptions
   user.params.list[['omega.2']] <- 0
-  user.params.list[['omega.3']] <- params.default[['omega.3']]
   
-  # param settings for a decent power
-  user.params.list[['K']] <- 10
+  # for stability
+  user.params.list[['K']] <- 15
   
   #------------------------------------------------------------------#
   # vary sample size
@@ -999,15 +1002,12 @@ if(run.blocked.cluster & run.mdes.ss)
 
   # assumptions
   user.params.list[['omega.2']] <- 0
-  user.params.list[['omega.3']] <- params.default[['omega.3']]
   
-  # param settings for a decent power
-  user.params.list[['K']] <- 10
+  # for stability
+  user.params.list[['K']] <- 15
 
-  user.params.list[['ICC.3']] <- rep(0, 3)
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_c2_3f", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_c2_3f", overwrite = overwrite)
-  user.params.list[['ICC.3']] <- params.default[['ICC.3']]
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_c2_3r", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_c2_3r", overwrite = overwrite)
   

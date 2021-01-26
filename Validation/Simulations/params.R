@@ -19,24 +19,24 @@ source(here::here("Validation/Simulations", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 10                # Number of samples for Monte Carlo Simulation
+  S = 1000                # Number of samples for Monte Carlo Simulation
   , Q = 1                 # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = 2                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , maxT = TRUE           # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05          # Significance level
   , tol = 0.01            # tolerance for MDES and sample  size calculations
   , Tbar = 0.5            # Binomial assignment probability
-  , tnum = 10           # Number of test statistics (samples) for all procedures other than Westfall-Young
+  , tnum = 1000           # Number of test statistics (samples) for all procedures other than Westfall-Young
   , parallel = TRUE       # parallelize within each monte carlo iteration
   , ncl = 2               # Number of computer clusters (max on RStudio Server is 16)
-  , start.tnum = 1000     # number of iterations for starting to testing mdes and power
-  , final.tnum = 20000    # final number of iterations to check power
+  , start.tnum = 100      # number of iterations for starting to testing mdes and power
+  , final.tnum = 200      # final number of iterations to check power
   , max.steps = 20        # maximum number of iterations for MDES or sample size calculations
-  , max.cum.tnum = 100000 # maximum cumulative tnum for MDES and sample size
+  , max.cum.tnum = 1000 # maximum cumulative tnum for MDES and sample size
   , procs = c("Bonferroni", "BH", "Holm")
   # , procs = c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
                           # Multiple testing procedures
-  , runSim = TRUE        # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runSim = TRUE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE        # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
   , runPowerUp = TRUE     # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
@@ -82,7 +82,7 @@ default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 20                                # number of schools
-  , K = 5                                 # number of districts (for two-level model, set K = 1)
+  , K = 10                                 # number of districts (for two-level model, set K = 1)
   , nbar = 50                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.id = NULL                           # N-length vector of indiv school assignments (optional)
@@ -92,10 +92,8 @@ user.params.list <- list(
   , ATE_ES = rep(0.125, M)                # minimum detectable effect size      
   ################################################## level 3: districts
   , R2.3 = rep(0.1, M)                    # percent of district variation explained by district covariates
-  # for 2-level model, set to 0
   , rho.V = default.rho.matrix            # MxM correlation matrix of district covariates
   , ICC.3 = rep(0.2, M)                   # district intraclass correlation
-  # for 2-level model, set to 0
   , omega.3 = 0.1                         # ratio of district effect size variability to random effects variability
   , rho.w0 = default.rho.matrix           # MxM matrix of correlations for district random effects
   , rho.w1 = default.rho.matrix           # MxM matrix of correlations for district impacts
