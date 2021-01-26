@@ -835,9 +835,6 @@ if(run.blocked.cluster & run.power)
   # assumptions
   user.params.list[['omega.2']] <- 0
   
-  # for stability
-  user.params.list[['K']] <- 15
-  
   #------------------------------------------------------------------#
   # vary sample size
   #------------------------------------------------------------------#

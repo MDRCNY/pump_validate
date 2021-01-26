@@ -214,8 +214,14 @@ gen_full_data <- function(model.params.list) {
 #' @export
 convert.params <- function(user.params.list) {
   
+  # save out useful paramters
   ICC.2 <- user.params.list[['ICC.2']]
   ICC.3 <- user.params.list[['ICC.3']]
+  R2.1 <- user.params.list[['R2.1']]
+  R2.2 <- user.params.list[['R2.2']]
+  R2.3 <- user.params.list[['R2.3']]
+  omega.2 <- user.params.list[['omega.2']]
+  omega.3 <- user.params.list[['omega.3']]
   
   # If no district info, set district parameters to 0
   has.level.three <- TRUE
@@ -227,16 +233,11 @@ convert.params <- function(user.params.list) {
     K <- 1
   }
   
+  # check ICC is valid
   if( ICC.2[1] + ICC.3[1] >= 1 )
   {
     stop(paste('ICC.2 + ICC.3 must be less than 1. ICC.2:', ICC.2, 'ICC3:', ICC.3))
   }
-  
-  R2.1 <- user.params.list[['R2.1']]
-  R2.2 <- user.params.list[['R2.2']]
-  R2.3 <- user.params.list[['R2.3']]
-  omega.2 <- user.params.list[['omega.2']]
-  omega.3 <- user.params.list[['omega.3']]
   
   # random intercepts variances
   tau0.sq <- ( (1 - R2.2) / (1- R2.1) ) * ( ICC.2 / (1 - ICC.2 - ICC.3) )
@@ -256,10 +257,10 @@ convert.params <- function(user.params.list) {
   
   model.params.list <- list(
     has.level.three = has.level.three
-    , M = user.params.list[['M']]                      # number of outcomes
+    , M = user.params.list[['M']]                    # number of outcomes
     , J = user.params.list[['J']]                    # number of schools
     , K = user.params.list[['K']]                    # number of districts
-    , nbar = user.params.list[['nbar']]                # number of individuals per school
+    , nbar = user.params.list[['nbar']]              # number of individuals per school
     , Xi0 = user.params.list[['Xi0']]                # scalar grand mean outcome under no treatment
     , Xi1 = Xi1                                      # scalar grand mean impact
   )
@@ -312,9 +313,9 @@ convert.params <- function(user.params.list) {
 #' @return Yobs
 #'
 #' @export
-gen_Yobs <- function(full.data, T.ijk) {
+gen_Yobs <- function(full.data, T.x) {
   Yobs = full.data$Y0
-  Yobs[T.ijk == 1,] = full.data$Y1[T.ijk == 1,]
+  Yobs[T.x == 1,] = full.data$Y1[T.x == 1,]
   return(Yobs)
 }
 
