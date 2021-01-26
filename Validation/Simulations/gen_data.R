@@ -198,7 +198,7 @@ gen_full_data <- function(model.params.list) {
     return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = V.ijk, X.jk = X.ijk, C.ijk = C.ijk, ID = ID ))
   } else {
     ID$D.id <- NULL
-    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = NULL, X.ijk = X.ijk, C.ijk = C.ijk, ID = ID ))
+    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = NULL, X.jk = X.ijk, C.ijk = C.ijk, ID = ID ))
   }
 }
 
