@@ -774,11 +774,11 @@ if(run.cluster.3l & run.power)
   
   user.params.list[['ICC.2']] <- rep(0.7, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c3_3r", q = q, overwrite)
-  user.params.list[['ICC.2']] <- params.default[['ICC.2']]
+  user.params.list[['ICC.2']] <- rep(0.1, M)
   
   user.params.list[['ICC.3']] <- rep(0.7, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c3_3r", q = q, overwrite)
-  user.params.list[['ICC.3']] <- params.default[['ICC.3']]
+  user.params.list[['ICC.3']] <- rep(0.1, M)
   
   print('-----------------------------------------------------------------------------')
   print(paste('Completed true positives and ICC, 11 out of', scenarios))
@@ -968,7 +968,6 @@ if(run.blocked.cluster & run.power)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
   user.params.list[['omega.3']] <- params.default[['omega.3']]
-  user.params.list[['omega.2']] <- params.default[['omega.2']]
   
   # vary both omega and ICC
   user.params.list[['omega.3']] <- 0.8
@@ -977,7 +976,6 @@ if(run.blocked.cluster & run.power)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
   user.params.list[['omega.3']] <- params.default[['omega.3']]
-  user.params.list[['omega.2']] <- params.default[['omega.2']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
   
   print('-----------------------------------------------------------------------------')

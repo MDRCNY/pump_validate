@@ -178,7 +178,6 @@ gen_full_data <- function(model.params.list) {
   
   # school level
   theta0.ijk <- mu0.ijk + delta * X.ijk + u0.ijk
-  
   ##-------temp
   # allow for school-level covariate to influence treatment
   # beta.ijk   <- Gamma1.ijk + psi   * X.jk + v.ijk
@@ -196,10 +195,10 @@ gen_full_data <- function(model.params.list) {
   ID <- data.frame( S.id = S.id, D.id = D.id )
   
   if ( has.level.three ) {
-    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = V.k,  X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
+    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = V.ijk, X.jk = X.ijk, C.ijk = C.ijk, ID = ID ))
   } else {
     ID$D.id <- NULL
-    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = NULL, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
+    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = NULL, X.ijk = X.ijk, C.ijk = C.ijk, ID = ID ))
   }
 }
 
