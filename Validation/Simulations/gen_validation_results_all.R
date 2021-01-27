@@ -805,9 +805,8 @@ if(run.cluster.3l & run.mdes.ss)
   user.params.list[['J']] <- 40
   user.params.list[['K']] <- 20
   user.params.list[['ATE_ES']] <- rep(0.25, M)
-  user.params.list[['ICC.3']] <- rep(0, M)
-  user.params.list[['ICC.2']] <- rep(0.1, M)
   user.params.list[['ICC.3']] <- rep(0.1, M)
+  user.params.list[['ICC.2']] <- rep(0.1, M)
   
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "simple_c3_3r", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "simple_c3_3r", overwrite = overwrite)
@@ -997,9 +996,6 @@ if(run.blocked.cluster & run.mdes.ss)
 
   # assumptions
   user.params.list[['omega.2']] <- 0
-  
-  # for stability
-  user.params.list[['K']] <- 15
 
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_c2_3f", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_c2_3f", overwrite = overwrite)

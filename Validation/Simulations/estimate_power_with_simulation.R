@@ -211,7 +211,7 @@ calc_power <- function(adjp.proc, alpha)
 #	Notes: dummies can be output of make.dummies $dnames			              #
 # --------------------------------------------------------------------- #
 
-make.model <- function(dat, dummies = NULL, design) {
+make.model <- function(dat, design) {
   # dat = mdat[[1]];
   
   dat$S.id <- as.factor(dat$S.id)
@@ -332,13 +332,13 @@ get.tstat <- function(mod) {
 # --------------------------------------------------------------------- #
 
 get.rawp <- function(mdat, design, user.params.list) {
-  mods = lapply(mdat, function(m) make.model(m, NULL, design))
+  mods = lapply(mdat, function(m) make.model(m, design))
   rawp = sapply(mods, function(x) get.pval(x, design, user.params.list))
   return(rawp)
 }
 
 get.rawt <- function(mdat, design) {
-  mods = lapply(mdat, function(m) make.model(m, NULL, design))
+  mods = lapply(mdat, function(m) make.model(m, design))
   rawt = sapply(mods, function(x) get.tstat(x))
   return(rawt)
 }
@@ -399,19 +399,18 @@ makelist.samp <-function(samp.obs, T.x) {
 get.adjp <- function(proc, rawp, rawt, mdat, S.id, D.id, sim.params.list, model.params.list, design, cl = NULL) {
 
   if(proc == "WY-SD" | proc == "WY-SS"){
-    #print(paste0("working on ", proc, " with ", B, " permutations"))
     tw1 <- Sys.time()
     adjp.proc <- adjust_WY(
-      data = mdat, rawp = rawp, rawt = rawt, S.id, D.id,
+      data = mdat,
+      rawp = rawp, rawt = rawt,
+      S.id = S.id, D.id = D.id,
       proc = proc,
-      blockby = 'S.id',
       sim.params.list = sim.params.list,
       model.params.list = model.params.list,
       design = design,
       cl = cl
     )[,"WY"]
     tw2 <- Sys.time()
-    # print(difftime(tw2, tw1))
   }
   else {
     # return a matrix with m columns (domains) and b rows (samples)
@@ -456,42 +455,19 @@ get.rejects <- function(adjp, alpha) {
 #' @export
 interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
                                          control_formula = NULL, lmer = FALSE) {
-  if (!is.null(control_formula)) {
-    stopifnot(!is.null(data))
-    stopifnot(!missing( "Yobs"))
-  }
-  
   # siteID = NULL;
   # Yobs = dat$Yobs; Z = T.x; B = D.id; data = dat; control_formula = "X.jk + C.ijk + (1 | S.id)"
   
   # This code block takes the parameters of
   # Yobs, Z, B, siteID = NULL, data=NULL, ...
   # and makes a dataframe with canonical Yobs, Z, B, and siteID columns.
-  if (!is.null(data)) {
-    if (missing( "Yobs")) {
-      data <- data.frame( Yobs = data[[1]], Z = data[[2]], B = data[[3]])
-      n.tx.lvls <- length(unique(data$Z))
-      stopifnot(n.tx.lvls == 2)
-      stopifnot(is.numeric(data$Yobs))
-    } else {
-      d2 <- data
-      if (!is.null(siteID)) {
-        d2$siteID <- data[[siteID]]
-        stopifnot(!is.null(d2$siteID))
-      }
-      d2$Yobs <- eval(substitute(Yobs), data)
-      d2$Z <- eval(substitute(Z), data)
-      d2$B <- eval(substitute(B), data)
-      data <- d2
-      rm(d2)
-    }
-  } else {
-    data <- data.frame(Yobs = Yobs, Z = Z, B = B)
-    if (!is.null( siteID)) {
-      data$siteID = siteID
-    }
-  }
-  
+  d2 <- data
+  d2$Yobs <- eval(substitute(Yobs), data)
+  d2$Z <- eval(substitute(Z), data)
+  d2$B <- eval(substitute(B), data)
+  data <- d2
+  rm(d2)
+
   data$B <- droplevels(as.factor(data$B))
   J <- length(unique(data$B))
   nj <- table(data$B)

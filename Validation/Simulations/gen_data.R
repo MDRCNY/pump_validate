@@ -137,7 +137,6 @@ gen_full_data <- function(model.params.list) {
   # ------------------------------#
   # reformat everything into N x M matrices
   # ------------------------------#
-  
   # for example, D is K x M, now I populate V.k, which is N x M,
   # by filling in district information for each individual
   
@@ -150,7 +149,8 @@ gen_full_data <- function(model.params.list) {
   # loop through each individual student
   for(i in 1:N)
   {
-    if ( has.level.three ) {
+    if ( has.level.three )
+    {
       # fill in values from district level variables
       V.ijk[i,]    <- V.k[D.id[i],]
       w0.ijk[i,]   <- w0.k[D.id[i],]
@@ -175,13 +175,15 @@ gen_full_data <- function(model.params.list) {
     mu0.ijk <- Xi0.ijk
     mu1.ijk <- Xi1.ijk
   }
-  
   # school level
   theta0.ijk <- mu0.ijk + delta * X.ijk + u0.ijk
+  
+  # treatment impact
+  psi1.ijk   <- mu1.ijk                + u1.ijk
+  
   ##-------temp
   # allow for school-level covariate to influence treatment
   # beta.ijk   <- Gamma1.ijk + psi   * X.jk + v.ijk
-  psi1.ijk   <- mu1.ijk                + u1.ijk
   ##-------temp
   
   # individual level
@@ -214,6 +216,7 @@ gen_full_data <- function(model.params.list) {
 convert.params <- function(user.params.list) {
   
   # save out useful paramters
+  M <- user.params.list[['M']]
   ICC.2 <- user.params.list[['ICC.2']]
   ICC.3 <- user.params.list[['ICC.3']]
   R2.1 <- user.params.list[['R2.1']]
@@ -226,8 +229,8 @@ convert.params <- function(user.params.list) {
   has.level.three <- TRUE
   if ( is.null( ICC.3 ) ) {
     has.level.three <- FALSE
-    ICC.3 <- rep(0, 3)
-    R2.3 <- rep(0, 3)
+    ICC.3 <- rep(0, M)
+    R2.3 <- rep(0, M)
     omega.3 <- 0
     K <- 1
   }
