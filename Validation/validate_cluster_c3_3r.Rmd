@@ -43,6 +43,7 @@ source(here::here("Validation/Simulations", "params.R"))
 
 ```{r}
 design <- "simple_c3_3r"
+
 # assumptions
 user.params.list[['omega.2']] <- 0
 user.params.list[['omega.3']] <- 0
@@ -51,7 +52,6 @@ user.params.list[['omega.3']] <- 0
 user.params.list[['J']] <- 40
 user.params.list[['K']] <- 20
 user.params.list[['ATE_ES']] <- rep(0.25, M)
-user.params.list[['ICC.3']] <- rep(0, M)
 user.params.list[['ICC.2']] <- rep(0.1, M)
 user.params.list[['ICC.3']] <- rep(0.1, M)
 
@@ -229,7 +229,7 @@ $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`
 ```{r 3r.ICC20.7}
 cluster_c3_3r_ICC2.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c3_3r_ICC2.0.7_power_plot)
-user.params.list[['ICC.2']] <- params.default[['ICC.2']]
+user.params.list[['ICC.2']] <- rep(0.1, M)
 ```
 
 ```{r ICC30.7}
@@ -241,7 +241,7 @@ $\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
 ```{r 3r.ICC30.7}
 cluster_c3_3r_ICC3.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c3_3r_ICC3.0.7_power_plot)
-user.params.list[['ICC.3']] <- params.default[['ICC.3']]
+user.params.list[['ICC.3']] <- rep(0.1, M)
 ```
 
 # MDES validation

@@ -48,8 +48,9 @@ design <- "simple_c2_2r"
 user.params.list[['K']] <- 1
 user.params.list[['ICC.3']] <- NULL
 user.params.list[['omega.3']] <- NULL
+user.params.list[['R2.3']] <- NULL
 user.params.list[['omega.2']] <- 0
-  
+
 # params to help have a decent power
 user.params.list[['ICC.2']] <- rep(0.1, M)
 user.params.list[['J']] <- 60
@@ -141,6 +142,7 @@ user.params.list[['R2.1']] <- rep(0, M)
 user.params.list[['R2.2']] <- rep(0, M)  
 ```
 
+$R^2_1 =$ `r user.params.list[['R2.1']]`
 $R^2_2 =$ `r user.params.list[['R2.2']]`
 
 ```{r 2r.r2.10r2.20}
