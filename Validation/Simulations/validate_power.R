@@ -514,11 +514,11 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
       print(grid.arrange(plot.power, plot.mdes, top = design))
     }
     
-    compare.filename <- paste0(params.file.base, "comparison_mdes_results.RDS")
+    mdes.filename <- paste0(params.file.base, 'comparison_mdes_', power.definition, '_results.RDS')
     
     mdes_compare_results[,2:3] <- apply(mdes_compare_results[,2:3], 2, as.numeric)
     mdes_compare_results = cbind(mdes_compare_results, user.params.list[['ATE_ES']][1])
-    colnames(mdes_compare_results) = c('MTP', 'Adjusted MDES', 'Indiv Power', 'Target MDES')
+    colnames(mdes_compare_results) <- c('MTP', 'Adjusted MDES', paste(power.definition, 'Power'), 'Target MDES')
     rownames(mdes_compare_results) <- NULL
     
     if(sim.params.list[['parallel']])
@@ -526,7 +526,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
       parallel::stopCluster(cl)
     }
     
-    saveRDS(mdes_compare_results, file = here("Validation/data", compare.filename))
+    saveRDS(mdes_compare_results, file = here("Validation/data", mdes.filename))
     return(mdes_compare_results)
   } else
   {
@@ -582,56 +582,60 @@ validate_sample <- function(user.params.list, sim.params.list, design,
     
     if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'simple_c2_2r'))
     {
-      typesamples = c('J', 'nbar')
+      typesample = c('J')
     } else if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
     {
-      typesamples = c('K', 'nbar')
+      typesample = c('K')
     } else
     {
       stop('Design not implemented')
     }
     
     sample_compare_results <- plot_data <- NULL
-    for(type in typesamples)
+    for (MTP in procs)
     {
-      for (MTP in procs)
-      {
-        # type = 'J'; MTP = 'Holm';
-        target.power <- power.results$value[
-          power.results$MTP == MTP &
-          power.results$power_type == power.definition &
-          power.results$method == 'pum'
-        ]
-        sample_results <- pump_sample(
-          design = design,
-          MTP = MTP,
-          typesample = type,
-          MDES = user.params.list[['ATE_ES']],
-          M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
-          target.power = target.power,
-          power.definition = power.definition,
-          tol = sim.params.list[['tol']],
-          nbar = user.params.list[['nbar']],
-          Tbar = sim.params.list[['Tbar']],
-          alpha = sim.params.list[['alpha']],
-          numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
-          R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
-          ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
-          rho = user.params.list[['rho.default']],
-          omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
-          tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
-          start.tnum = sim.params.list[['start.tnum']],
-          final.tnum = sim.params.list[['final.tnum']],
-          max.cum.tnum = sim.params.list[['max.cum.tnum']],
-          max.steps = sim.params.list[['max.steps']],
-          cl = cl
-        )
-        sample_compare_results <- rbind(sample_compare_results, sample_results$ss.results)
-        plot_data <- rbind(plot_data, sample_results$test.pts)
-      }
+      # type = 'J'; MTP = 'Holm';
+      target.power <- power.results$value[
+        power.results$MTP == MTP &
+        power.results$power_type == power.definition &
+        power.results$method == 'pum'
+      ]
+      sample_results <- pump_sample(
+        design = design,
+        MTP = MTP,
+        typesample = typesample,
+        MDES = user.params.list[['ATE_ES']],
+        M = user.params.list[['M']],
+        J = user.params.list[['J']],
+        K = user.params.list[['K']],
+        target.power = target.power,
+        power.definition = power.definition,
+        tol = sim.params.list[['tol']],
+        nbar = user.params.list[['nbar']],
+        Tbar = sim.params.list[['Tbar']],
+        alpha = sim.params.list[['alpha']],
+        numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+        R2.1 = user.params.list[['R2.1']],
+        R2.2 = user.params.list[['R2.2']],
+        R2.3 = user.params.list[['R2.3']],
+        ICC.2 = user.params.list[['ICC.2']],
+        ICC.3 = user.params.list[['ICC.3']],
+        rho = user.params.list[['rho.default']],
+        omega.2 = user.params.list[['omega.2']],
+        omega.3 = user.params.list[['omega.3']],
+        tnum = sim.params.list[['tnum']],
+        snum = sim.params.list[['B']],
+        start.tnum = sim.params.list[['start.tnum']],
+        final.tnum = sim.params.list[['final.tnum']],
+        max.cum.tnum = sim.params.list[['max.cum.tnum']],
+        max.steps = sim.params.list[['max.steps']],
+        cl = cl
+      )
+      sample_compare_results <- rbind(sample_compare_results, sample_results$ss.results)
+      plot_data <- rbind(plot_data, sample_results$test.pts)
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
-    compare.filename <- paste0(params.file.base, "comparison_sample_results.RDS")
+    sample.filename <- paste0(params.file.base, 'comparison_sample_', power.definition, '_results.RDS')
     
     if(plot.path)
     {
@@ -652,7 +656,7 @@ validate_sample <- function(user.params.list, sim.params.list, design,
       parallel::stopCluster(cl)
     }
     
-    saveRDS(sample_compare_results, file = here("Validation/data", compare.filename))
+    saveRDS(sample_compare_results, file = here("Validation/data", sample.filename))
     return(sample_compare_results)
   } else
   {

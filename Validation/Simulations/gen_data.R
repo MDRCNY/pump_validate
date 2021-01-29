@@ -48,7 +48,7 @@ gen_full_data <- function(model.params.list) {
   Xi0      <- model.params.list[['Xi0']];     Xi1     <- model.params.list[['Xi1']];
   rho.V    <- model.params.list[['rho.V']];   xi      <- model.params.list[['xi']];
   eta0.sq  <- model.params.list[['eta0.sq']]; eta1.sq <- model.params.list[['eta1.sq']];
-  rho.w0   <- model.params.list[['rho.w0']]; rho.w1  <- model.params.list[['rho.w1']];
+  rho.w0   <- model.params.list[['rho.w0']];  rho.w1  <- model.params.list[['rho.w1']];
   theta.w  <- model.params.list[['theta.w']];
   rho.X    <- model.params.list[['rho.X']];   delta   <- model.params.list[['delta']];
   ##-------temp
@@ -56,7 +56,7 @@ gen_full_data <- function(model.params.list) {
   if(is.null(psi)){ psi <- 0 }
   ##-------temp
   tau0.sq  <- model.params.list[['tau0.sq']]; tau1.sq <- model.params.list[['tau1.sq']];
-  rho.u0   <- model.params.list[['rho.u0']];   rho.u1  <- model.params.list[['rho.u1']];
+  rho.u0   <- model.params.list[['rho.u0']];  rho.u1  <- model.params.list[['rho.u1']];
   theta.u  <- model.params.list[['theta.u']];
   rho.C    <- model.params.list[['rho.C']];   gamma   <- model.params.list[['gamma']];
   rho.r    <- model.params.list[['rho.r']]
@@ -81,7 +81,7 @@ gen_full_data <- function(model.params.list) {
     
     # generate district covariates
     Sigma.V  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.V)
-    V        <- matrix(mvrnorm(K, mu = rep(0, M), Sigma = Sigma.V), K, M)
+    V.k      <- matrix(mvrnorm(K, mu = rep(0, M), Sigma = Sigma.V), K, M)
     
     # covariance of random district effects
     Sigma.w0       <- gen_cov_matrix(M, eta0.sq, eta0.sq, rho.w0)
@@ -97,7 +97,7 @@ gen_full_data <- function(model.params.list) {
     w0.k  <- w01.k[,1:M, drop = FALSE]
     w1.k  <- w01.k[,(M+1):(2*M), drop = FALSE]
   } else {
-    V = NULL
+    V.k <- NULL
   }
   
   # ------------------------------#
@@ -106,7 +106,7 @@ gen_full_data <- function(model.params.list) {
   
   # generate school covariates
   Sigma.X       <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.X)
-  X             <- mvrnorm(J*K, mu = rep(0, M), Sigma = Sigma.X)
+  X.jk          <- mvrnorm(J*K, mu = rep(0, M), Sigma = Sigma.X)
   
   # covariance of school random effects
   Sigma.u0       <- gen_cov_matrix(M, tau0.sq, tau0.sq, rho.u0)
@@ -137,12 +137,11 @@ gen_full_data <- function(model.params.list) {
   # ------------------------------#
   # reformat everything into N x M matrices
   # ------------------------------#
-  
   # for example, D is K x M, now I populate V.k, which is N x M,
   # by filling in district information for each individual
   
-  V.k  = w0.ijk = w1.ijk =
-  X.jk = u0.ijk = u1.ijk = matrix(NA, N, M)
+  V.ijk  <- w0.ijk <- w1.ijk <-
+  X.ijk  <- u0.ijk <- u1.ijk <- matrix(NA, N, M)
   
   Xi0.ijk <- matrix(Xi0, nrow = N, ncol = M, byrow = TRUE) 
   Xi1.ijk <- matrix(Xi1, nrow = N, ncol = M, byrow = TRUE) 
@@ -150,15 +149,16 @@ gen_full_data <- function(model.params.list) {
   # loop through each individual student
   for(i in 1:N)
   {
-    if ( has.level.three ) {
+    if ( has.level.three )
+    {
       # fill in values from district level variables
-      V.k[i,]      <- V[D.id[i],]
+      V.ijk[i,]    <- V.k[D.id[i],]
       w0.ijk[i,]   <- w0.k[D.id[i],]
       w1.ijk[i,]   <- w1.k[D.id[i],]
     }
     
     # fill in values from school level variables
-    X.jk[i,]     <- X[S.id[i],]
+    X.ijk[i,]    <- X.jk[S.id[i],]
     u0.ijk[i,]   <- u0.jk[S.id[i],]
     u1.ijk[i,]   <- u1.jk[S.id[i],]
   }
@@ -169,25 +169,26 @@ gen_full_data <- function(model.params.list) {
   
   # district level
   if ( has.level.three ) {
-    Gamma0.ijk <- Xi0.ijk  + xi * V.k + w0.ijk
-    Gamma1.ijk <- Xi1.ijk             + w1.ijk
+    mu0.ijk <- Xi0.ijk  + xi * V.ijk + w0.ijk
+    mu1.ijk <- Xi1.ijk               + w1.ijk
   } else {
-    Gamma0.ijk <- Xi0.ijk
-    Gamma1.ijk <- Xi1.ijk
+    mu0.ijk <- Xi0.ijk
+    mu1.ijk <- Xi1.ijk
   }
-  
   # school level
-  mu.ijk     <- Gamma0.ijk + delta * X.jk + u0.ijk
+  theta0.ijk <- mu0.ijk + delta * X.ijk + u0.ijk
+  
+  # treatment impact
+  psi1.ijk   <- mu1.ijk                + u1.ijk
   
   ##-------temp
   # allow for school-level covariate to influence treatment
   # beta.ijk   <- Gamma1.ijk + psi   * X.jk + v.ijk
-  beta.ijk   <- Gamma1.ijk                 + u1.ijk
   ##-------temp
   
   # individual level
-  Y0.ijk     <- mu.ijk     + gamma * C.ijk + r.ijk
-  Y1.ijk     <- Y0.ijk                     + beta.ijk
+  Y0.ijk     <- theta0.ijk  + gamma * C.ijk + r.ijk
+  Y1.ijk     <- Y0.ijk                      + psi1.ijk
   
   colnames(Y0.ijk) <- colnames(Y1.ijk) <- paste0('m', 1:M)
   Y0.ijk <- data.frame(Y0.ijk)
@@ -196,10 +197,10 @@ gen_full_data <- function(model.params.list) {
   ID <- data.frame( S.id = S.id, D.id = D.id )
   
   if ( has.level.three ) {
-    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = V.k,  X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
+    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = V.ijk, X.jk = X.ijk, C.ijk = C.ijk, ID = ID ))
   } else {
     ID$D.id <- NULL
-    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = NULL, X.jk = X.jk, C.ijk = C.ijk, ID = ID ))
+    return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = NULL, X.jk = X.ijk, C.ijk = C.ijk, ID = ID ))
   }
 }
 
@@ -214,29 +215,31 @@ gen_full_data <- function(model.params.list) {
 #' @export
 convert.params <- function(user.params.list) {
   
+  # save out useful paramters
+  M <- user.params.list[['M']]
   ICC.2 <- user.params.list[['ICC.2']]
   ICC.3 <- user.params.list[['ICC.3']]
-  
-  # If no district info, set district parameters to 0
-  has.level.three <- TRUE
-  if ( is.null( ICC.3 ) ) {
-    has.level.three <- FALSE
-    ICC.3 <- rep(0, 3)
-    R2.3 <- rep(0, 3)
-    omega.3 <- 0
-    K <- 1
-  }
-  
-  if( ICC.2[1] + ICC.3[1] >= 1 )
-  {
-    stop(paste('ICC.2 + ICC.3 must be less than 1. ICC.2:', ICC.2, 'ICC3:', ICC.3))
-  }
-  
   R2.1 <- user.params.list[['R2.1']]
   R2.2 <- user.params.list[['R2.2']]
   R2.3 <- user.params.list[['R2.3']]
   omega.2 <- user.params.list[['omega.2']]
   omega.3 <- user.params.list[['omega.3']]
+  
+  # If no district info, set district parameters to 0
+  has.level.three <- TRUE
+  if ( is.null( ICC.3 ) ) {
+    has.level.three <- FALSE
+    ICC.3 <- rep(0, M)
+    R2.3 <- rep(0, M)
+    omega.3 <- 0
+    K <- 1
+  }
+  
+  # check ICC is valid
+  if( ICC.2[1] + ICC.3[1] >= 1 )
+  {
+    stop(paste('ICC.2 + ICC.3 must be less than 1. ICC.2:', ICC.2, 'ICC3:', ICC.3))
+  }
   
   # random intercepts variances
   tau0.sq <- ( (1 - R2.2) / (1- R2.1) ) * ( ICC.2 / (1 - ICC.2 - ICC.3) )
@@ -256,10 +259,10 @@ convert.params <- function(user.params.list) {
   
   model.params.list <- list(
     has.level.three = has.level.three
-    , M = user.params.list[['M']]                      # number of outcomes
+    , M = user.params.list[['M']]                    # number of outcomes
     , J = user.params.list[['J']]                    # number of schools
     , K = user.params.list[['K']]                    # number of districts
-    , nbar = user.params.list[['nbar']]                # number of individuals per school
+    , nbar = user.params.list[['nbar']]              # number of individuals per school
     , Xi0 = user.params.list[['Xi0']]                # scalar grand mean outcome under no treatment
     , Xi1 = Xi1                                      # scalar grand mean impact
   )
@@ -312,9 +315,9 @@ convert.params <- function(user.params.list) {
 #' @return Yobs
 #'
 #' @export
-gen_Yobs <- function(full.data, T.ijk) {
+gen_Yobs <- function(full.data, T.x) {
   Yobs = full.data$Y0
-  Yobs[T.ijk == 1,] = full.data$Y1[T.ijk == 1,]
+  Yobs[T.x == 1,] = full.data$Y1[T.x == 1,]
   return(Yobs)
 }
 

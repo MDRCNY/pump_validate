@@ -215,7 +215,7 @@ ATE (ES) = `r user.params.list[['ATE_ES']]`
 ```{r 3r.MDES0.12500}
 cluster_c3_3r_mdes0.1250.00.0.00_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(cluster_c3_3r_mdes0.1250.00.0.00_power_plot)
-user.params.list[['ATE_ES']] <- params.default[['ATE_ES']]
+user.params.list[['ATE_ES']] <- rep(0.25, M)
 ```
 
 ## Varying ICC

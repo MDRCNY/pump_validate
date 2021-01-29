@@ -13,8 +13,6 @@
 #' @param proc Single-Step (WY-SS) or Step-Down (WY-SD)
 #' @param sim.params.list simulation parameters
 #' @param model.params.list model parameters
-#' @param clustered True if we are handling a cluster design
-#' @param blockby Variable that designates the clusters or blocks?
 #' @param cl clusters for parallel processing
 #'
 #' @return
@@ -22,33 +20,35 @@
 #'
 #' @examples
 #'
-adjust_WY <- function(data, rawp, rawt, S.jk, S.k, design, proc, sim.params.list, model.params.list,
-                      blockby = 'S.jk', cl = NULL) {
+adjust_WY <- function(data, rawp, rawt, S.id, D.id,
+                      design, proc,
+                      sim.params.list, model.params.list,
+                      cl = NULL) {
   
-  # blockby = 'S.jk'; data = mdat; cl = NULL;
+  # data = mdat; cl = NULL;
   
   B <- sim.params.list[['B']]
   maxT <- sim.params.list[['maxT']]
-  N <- model.params.list[['n.j']]*model.params.list[['J']]
+  N <- model.params.list[['nbar']]*model.params.list[['J']]
   M <- model.params.list[['M']]
   J <- model.params.list[['J']]
-  n.j <- model.params.list[['n.j']]
-  p.j <- sim.params.list[['p.j']]
+  nbar <- model.params.list[['nbar']]
+  Tbar <- sim.params.list[['Tbar']]
   
   # get order of raw p-values; returns ordered index for the vector "rawp"
   ifelse(maxT == FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing = TRUE))
   
   # blocked designs
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r')) {
-    permT <- sapply(1:B, function(x) { randomizr::block_ra(blocks = S.jk, prob = p.j) })
+    permT <- sapply(1:B, function(x) { randomizr::block_ra(blocks = S.id, prob = Tbar) })
   # cluster designs
   } else if(design %in% c('simple_c2_2r'))  { 
-    permT <- sapply(1:B, function(x) { randomizr::cluster_ra(clusters = S.jk, prob = p.j) })
+    permT <- sapply(1:B, function(x) { randomizr::cluster_ra(clusters = S.id, prob = Tbar) })
   } else if(design %in% c('simple_c3_3r'))  {
-    permT <- sapply(1:B, function(x) { randomizr::cluster_ra(clusters = S.k, prob = p.j) })
+    permT <- sapply(1:B, function(x) { randomizr::cluster_ra(clusters = D.id, prob = Tbar) })
   # blocked cluster designs
   } else if(design %in% c('blocked_c2_3f', 'blocked_c2_3r'))  {
-    permT <- sapply(1:B, function(x) { randomizr::block_and_cluster_ra( blocks = S.k, clusters = S.jk, prob = p.j ) })
+    permT <- sapply(1:B, function(x) { randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar ) })
   } else
   {
     stop(print(paste('Design', design, 'not implemented yet')))
@@ -57,21 +57,20 @@ adjust_WY <- function(data, rawp, rawt, S.jk, S.k, design, proc, sim.params.list
   if(!is.null(cl))
   {
     clusterExport(cl, list(
-      "perm.regs", "make.dummies", "make.model",
-      "get.tstat", "get.pval",
-      "fastLm", "lmer", "lmerControl", "interacted_linear_estimators"
+      "perm.regs", "make.model", "get.tstat", "get.pval",
+      "lmer", "interacted_linear_estimators"
     ), envir = environment())
     
     # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
     nullpt <- t(parallel::parApply(
-      cl, permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
-      n.j = n.j, J = J, design = design
+      cl, permT, 2, perm.regs, data = data, maxT = maxT,
+      design = design, user.params.list = user.params.list
     ))
   } else
   {
     nullpt <- t(apply(
-      permT, 2, perm.regs, data = data, maxT = maxT, blockby = blockby,
-      n.j = n.j, J = J, design = design
+      permT, 2, perm.regs, data = data, maxT = maxT,
+      design = design, user.params.list = user.params.list
     ))
   }
   
@@ -106,33 +105,28 @@ adjust_WY <- function(data, rawp, rawt, S.jk, S.k, design, proc, sim.params.list
 
 #' Performs regression with permuted treatment indicator
 #'
-#' @param permT matrix with n.j * J rows and B columns, contains all permutations of treatment indicator
+#' @param permT matrix with nbar * J rows and B columns, contains all permutations of treatment indicator
 #' @param data data for all M domains
 #' @param design the particular RCT design for an experiment: "Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r","Simple_c2_2r"
-#' @param S.jk blocking variable
+#' @param S.id blocking variable
 #' @param maxT TRUE if using maxT procedures
-#' @param n.j individuals per block (assume same for all)
+#' @param nbar individuals per block (assume same for all)
 #' @param J number of blocks
 #'
 #' @return
 #' @export
 #'
 #' @examples
-perm.regs <- function(permT, data, design, blockby, maxT, n.j, J) {
-
-  # for debug
+perm.regs <- function(permT, data, design, maxT, user.params.list) {
   # permT <- permT[,1];
-  
+
   M <- length(data)
   outpt <- numeric(M)
   for (m in 1:M) {
-    # Mdata is a dataset for one domain (m) for one sample
-    Mdata <- data[[m]]
-    Mdata$T.ijk <- permT
-    # mdum <- make.dummies(Mdata, blockby = blockby, n.j = n.j, J = J) # took this out of perm.reg so doing just once
-    fit <- make.model(Mdata, NULL, design)
-    # fit <- make.model(mdum$fixdat, mdum$dnames, design)
-    ifelse(maxT, outpt[m] <- get.tstat(fit), outpt[m] <- get.pval(fit))
+    mdat <- data[[m]]
+    mdat$T.x <- permT
+    mod <- make.model(mdat, design)
+    ifelse(maxT, outpt[m] <- get.tstat(mod), outpt[m] <- get.pval(mod, design, user.params.list))
   }
   return(outpt)
 }
