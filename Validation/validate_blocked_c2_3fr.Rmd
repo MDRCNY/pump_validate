@@ -42,10 +42,9 @@ params.default <- user.params.list
 ```
 
 ```{r}
-# set document-level parameters
-user.params.list[['K']] <- 10
+# assumptions
 user.params.list[['omega.2']] <- 0
-user.params.list[['omega.3']] <- params.default[['omega.3']]
+params.default <- user.params.list
 ```
 
 Default parameters:
@@ -316,7 +315,7 @@ print(blocked_i1_3f_omega3.0.8_power_plot)
 ```{r 3r.omega30.8}
 design <- "blocked_c2_3r"
 blocked_i1_3r_omega3.0.8_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
-print(blocked_i1_3r_omega3.0.8ICC30.7_power_plot)
+print(blocked_i1_3r_omega3.0.8_power_plot)
 ```
 
 ```{r omega30.8ICC30.7}
@@ -328,19 +327,19 @@ user.params.list[['K']] <- 20
 $\omega_3$ = `r user.params.list[['omega.3']]`
 $\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
 
-```{r 3f.omega30.8}
+```{r 3f.omega30.8ICC30.7}
 design <- "blocked_c2_3f"
 blocked_i1_3f_omega3.0.8ICC30.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_i1_3f_omega3.0.8ICC30.7_power_plot)
 ```
 
-```{r 3r.omega30.8}
+```{r 3r.omega30.8ICC30.7}
 design <- "blocked_c2_3r"
 blocked_i1_3r_omega3.0.8ICC30.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_i1_3r_omega3.0.8ICC30.7_power_plot)
 ```
 
-```{r omega3.reset}
+```{r omega3.ICC3.reset}
 user.params.list[['omega.3']] <- params.default[['omega.3']]
 user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 ```
