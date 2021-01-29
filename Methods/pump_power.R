@@ -322,79 +322,6 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   return(K)
 }
 
-
-#' #' This function calculates nbar for all implemented designs
-#' #' @param design RCT design (see list/naming convention)
-#' #' @param J the number of schools
-#' #' @param K the number of districts
-#' #' @param nbar units per block
-#' #' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
-#' #' @param R2.2 a vector of length M corresponding to R^2 for Level-2 covariates for M outcomes
-#' #' @param R2.3 a vector of length M corresponding to R^2 for Level-3 covariates for M outcomes
-#' #' @param ICC.2 a vector of length M of school intraclass correlation	
-#' #' @param ICC.3 a vector of length M of district intraclass correlation	
-#' #' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
-#' #' @param numCovar.2 number of Level 2 baseline covariates
-#' #' @param numCovar.3 number of Level 3 baseline covariates
-#' #'
-#' #' @return the degree of freedom
-#' 
-#' calc.nbar <- function(design, MT, MDES, J, K, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
-#'   
-#'   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
-#'   {
-#'     nbar <- (MT/MDES)^2 * ((1 - R2.1) /
-#'             ( Tbar * (1 - Tbar) * J) )
-#'   } else if (design == 'blocked_i1_2r')
-#'   {
-#'     nbar <- ( (1 - ICC.2) * (1 - R2.1) ) /
-#'             ( (Tbar * (1 - Tbar) ) * (
-#'               (J / (MT / MDES)^2 ) -
-#'               (ICC.2 * omega.2) ) )
-#'   } else if (design == 'blocked_i1_3r')
-#'   {
-#'     nbar <- ( (1 - ICC.2 - ICC.3) * (1 - R2.1) ) /
-#'             ( (Tbar * (1 - Tbar) ) * (
-#'             ( (J * K) / (MT / MDES)^2 ) -
-#'               (J * ICC.3 * omega.3) -
-#'               (ICC.2 * omega.2) ) )
-#'   } else if (design == 'simple_c2_2r')
-#'   {
-#'     nbar <- (   (1 - ICC.2) * (1 - R2.1) ) /
-#'             ( ( (Tbar * (1 - Tbar) ) * 
-#'                 (J / (MT / MDES)^2 ) ) -
-#'                 (ICC.2 * (1 - R2.2)) ) 
-#' 
-#'   } else if (design == 'simple_c3_3r')
-#'   {
-#'     nbar <- (   (1 - ICC.2 - ICC.3) * (1 - R2.1) ) /
-#'             ( ( (Tbar * (1 - Tbar) ) * 
-#'               ( (J * K) / (MT / MDES)^2 ) ) -
-#'                 (J * ICC.3 * (1 - R2.3)) -
-#'                 (ICC.2 * (1 - R2.2)) ) 
-#'   } else if (design == 'blocked_c2_3f')
-#'   {
-#'     nbar <- (   (1 - ICC.2) * (1 - R2.1) ) /
-#'             ( ( (Tbar * (1 - Tbar) ) * 
-#'               ( (J * K) / (MT / MDES)^2 ) ) -
-#'                 (ICC.2 * (1 - R2.2)) ) 
-#'   } else if (design == 'blocked_c2_3r')
-#'   {
-#'     
-#'     nbar <- (   (1 - ICC.2 - ICC.3) * (1 - R2.1) ) /
-#'             (  (Tbar * (1 - Tbar) * J ) * 
-#'              ( (K / (MT / MDES)^2 )  -
-#'                (ICC.3 * omega.3) 
-#'                (ICC.2 * (1 - R2.2)) ) ) 
-#'   } else
-#'   {
-#'     stop(paste('Design not implemented:', design))
-#'   }
-#'   return(nbar)
-#' }
-
-
-
 #' Calculate power using PUMP method
 #'
 #' This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
@@ -442,10 +369,6 @@ pump_power <- function(
     stop(paste('Please provide a vector of MDES values of length M. Current vector:', MDES, 'M =', M))
   }
   
-  # Setting a default Sigma
-  sigma <- matrix(rho, M, M)
-  diag(sigma) <- 1
-  
   # compute Q(m) for all false nulls. We are calculating the test statistics for when the alternative hypothesis is true.
   t.shift <- MDES/calc.Q.m(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3, Tbar)
   t.df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
@@ -454,6 +377,11 @@ pump_power <- function(
   
   # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
   # rmvt draws from a multivariate t-distribution
+  
+  # correlation between the test statistics
+  sigma <- matrix(rho, M, M)
+  diag(sigma) <- 1
+  
   Zs.H0 <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0, M), type = c("shifted", "Kshirsagar"))
   Zs.H1 <- Zs.H0 + t.shift.mat
   

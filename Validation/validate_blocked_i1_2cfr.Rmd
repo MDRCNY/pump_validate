@@ -311,7 +311,7 @@ design <- "blocked_i1_2c"
 user.params.list[['omega.2']] <- 0
 user.params.list[['ICC.2']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-mdes.file <- find_file(params.file.base, type = 'mdes')
+mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
 if(length(mdes.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))
@@ -331,7 +331,7 @@ design <- "blocked_i1_2c"
 user.params.list[['omega.2']] <- 0
 user.params.list[['ICC.2']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-mdes.file <- find_file(params.file.base, type = 'mdes')
+mdes.file <- find_file(params.file.base, type = 'mdes_min2')
 if(length(mdes.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))
@@ -351,7 +351,7 @@ design <- "blocked_i1_2f"
 user.params.list[['omega.2']] <- 0
 user.params.list[['ICC.2']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-mdes.file <- find_file(params.file.base, type = 'mdes')
+mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
 if(length(mdes.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))
@@ -366,12 +366,52 @@ if(length(mdes.file) == 0)
 }
 ```
 
-```{r 2r.mdesCombined}
+```{r 2f.mdes.min2}
+design <- "blocked_i1_2f"
+user.params.list[['omega.2']] <- 0
+user.params.list[['ICC.2']] <- rep(0, M)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes_min2')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_i1_2f_mdes_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    blocked_i1_2f_mdes_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )    
+}
+```
+
+```{r 2r.mdes.D1}
 design <- "blocked_i1_2r"
 user.params.list[['omega.2']] <- params.default[['omega.2']]
 user.params.list[['ICC.2']] <- params.default[['ICC.2']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-mdes.file <- find_file(params.file.base, type = 'mdes')
+mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_i1_2r_mdes_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    blocked_i1_2r_mdes_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+```{r 2r.mdes.min2}
+design <- "blocked_i1_2r"
+user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['ICC.2']] <- params.default[['ICC.2']]
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes_min2')
 if(length(mdes.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))
@@ -388,12 +428,12 @@ if(length(mdes.file) == 0)
 
 # Sample size validation
 
-```{r 2c.sampleCombined}
+```{r 2c.sampleD1}
 design <- "blocked_i1_2c"
 user.params.list[['omega.2']] <- 0
 user.params.list[['ICC.2']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-sample.file <- find_file(params.file.base, type = 'sample')
+sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
 if(length(sample.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))
@@ -408,13 +448,32 @@ if(length(sample.file) == 0)
 }
 ```
 
-
-```{r 2f.sampleCombined}
-design <- "blocked_i1_2f"
+```{r 2c.samplemin2}
+design <- "blocked_i1_2c"
 user.params.list[['omega.2']] <- 0
 user.params.list[['ICC.2']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-sample.file <- find_file(params.file.base, type = 'sample')
+sample.file <- find_file(params.file.base, type = 'sample_min2')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_i1_2c_sample_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    blocked_i1_2c_sample_results,
+    style = "grid", split.tables = 100, row.names = FALSE,
+    caption = design
+  )
+}
+```
+
+```{r 2f.sampleD1}
+design <- "blocked_i1_2f"
+user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['ICC.2']] <- rep(0, M)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
 if(length(sample.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))
@@ -429,12 +488,52 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r 2r.sampleCombined}
+```{r 2f.samplemin2}
+design <- "blocked_i1_2f"
+user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['ICC.2']] <- rep(0, M)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_min2')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_i1_2f_sample_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    blocked_i1_2f_sample_results,
+    style = "grid", split.tables = 100, row.names = FALSE,
+    caption = design
+  )
+}
+```
+
+```{r 2r.sampleD1}
 design <- "blocked_i1_2r"
 user.params.list[['omega.2']] <- params.default[['omega.2']]
 user.params.list[['ICC.2']] <- params.default[['ICC.2']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-sample.file <- find_file(params.file.base, type = 'sample')
+sample.file <- find_file(params.file.base, type = 'sample_D1')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_i1_2r_sample_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    blocked_i1_2r_sample_results,
+    style = "grid", split.tables = 100, row.names = FALSE,
+    caption = design
+  )
+}
+```
+
+```{r 2r.samplemin2}
+design <- "blocked_i1_2r"
+user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['ICC.2']] <- params.default[['ICC.2']]
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_min2')
 if(length(sample.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))

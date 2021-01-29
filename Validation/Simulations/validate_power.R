@@ -372,11 +372,9 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         }
         iterator = iterator + 1
       }
-      # adding rownames to the pum_combined_results table
+      # format results table nicely
       rownames(pump_results) <- c("rawp", sim.params.list[['procs']])
       pump_results_table <- pump_results
-      
-      # pum_results_table <- data.frame(pum_results[,c('indiv', 'min1', 'min2', 'complete')])
       pump_results_table$MTP <- rownames(pump_results_table)
       pump_results <- melt(pump_results_table, id.vars = 'MTP')
       pump_results$method = 'pum'
