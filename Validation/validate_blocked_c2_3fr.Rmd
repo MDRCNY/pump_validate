@@ -54,8 +54,10 @@ Default parameters:
 * K = `r user.params.list[['K']]`
 * rho: $\rho$ =  `r user.params.list[['rho.default']]`
 * ATE ES = `r user.params.list[['ATE_ES']]`
-* R2: $R^2_1$ = `r user.params.list[['R2.1']]`, $R^2_2$ = `r user.params.list[['R2.2']]`, $R^2_3$ = `r user.params.list[['R2.3']]`
-* ICC: $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`, $\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
+* R2: $R^2_1$ = `r user.params.list[['R2.1']]`, $R^2_2$ = `r user.params.list[['R2.2']]`
+* R2: $R^2_3 = 0$ for fixed effects model, $R^2_3$ = `r user.params.list[['R2.3']]` for random effects model
+* ICC2: $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`
+* ICC3: $\text{ICC}_3 = 0$ for fixed model, $\text{ICC}_3$ = `r user.params.list[['ICC.3']]` for random effects model
 * Omega: $\omega_2$ = `r user.params.list[['omega.2']]`, $\omega_3$ = `r user.params.list[['omega.3']]`
 
 ## Varying school size
@@ -69,6 +71,7 @@ $\bar{n}$ = `r user.params.list[['nbar']]`
 ```{r 3f.nj100}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 blocked_c2_3f_nj100_power_plot <- gen.power.results.plot(params.file.base, design)
 print(blocked_c2_3f_nj100_power_plot)
@@ -77,6 +80,7 @@ print(blocked_c2_3f_nj100_power_plot)
 ```{r 3r.nj100}
 design <- "blocked_c2_3r"
 user.params.list[['R2.3']] <- params.default[['R2.3']]
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 blocked_c2_3r_nj100_power_plot <- gen.power.results.plot(params.file.base, design)
 print(blocked_c2_3r_nj100_power_plot)
@@ -91,6 +95,7 @@ $\bar{n}$ = `r user.params.list[['nbar']]`
 ```{r 3f.nj75}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_c2_3f_nj75_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3f_nj75_power_plot)
 ```
@@ -98,6 +103,7 @@ print(blocked_c2_3f_nj75_power_plot)
 ```{r 3r.nj75}
 design <- "blocked_c2_3r"
 user.params.list[['R2.3']] <- params.default[['R2.3']]
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 blocked_c2_3r_nj75_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3r_nj75_power_plot)
 ```
@@ -111,6 +117,7 @@ $\bar{n}$ = `r user.params.list[['nbar']]`
 ```{r 3f.nj50}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_c2_3f_nj50_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3f_nj50_power_plot)
 ```
@@ -118,6 +125,7 @@ print(blocked_c2_3f_nj50_power_plot)
 ```{r 3r.nj50}
 design <- "blocked_c2_3r"
 user.params.list[['R2.3']] <- params.default[['R2.3']]
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 blocked_c2_3r_nj50_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3r_nj50_power_plot)
 ```
@@ -133,6 +141,7 @@ $R^2_1 =$ `r user.params.list[['R2.1']]`
 ```{r 3f.r2.10.6}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_c2_3f_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3f_r2.1_power_plot)
 ```
@@ -140,6 +149,7 @@ print(blocked_c2_3f_r2.1_power_plot)
 ```{r 3r.r2.10.6}
 design <- "blocked_c2_3r"
 user.params.list[['R2.3']] <- params.default[['R2.3']]
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 blocked_c2_3r_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3r_r2.1_power_plot)
 ```
@@ -157,6 +167,7 @@ $R^2_2 =$ `r user.params.list[['R2.2']]`
 ```{r 3f.r2.20.6}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_c2_3f_r2.2_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3f_r2.2_power_plot)
 ```
@@ -164,6 +175,7 @@ print(blocked_c2_3f_r2.2_power_plot)
 ```{r 3r.r2.20.6}
 design <- "blocked_c2_3r"
 user.params.list[['R2.3']] <- params.default[['R2.3']]
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 blocked_c2_3r_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3r_r2.1_power_plot)
 ```
@@ -180,6 +192,7 @@ $R^2_3 =$ `r user.params.list[['R2.3']]`
 
 ```{r 3r.r2.30.6}
 design <- "blocked_c2_3r"
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 blocked_c2_3r_r2.3_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3r_r2.3_power_plot)
 ```
@@ -201,12 +214,14 @@ $R^2_3 =$ `r user.params.list[['R2.3']]`
 
 ```{r 3f.r2.10r2.20r2.30}
 design <- "blocked_c2_3f"
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_c2_3f_r2.3_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3f_r2.3_power_plot)
 ```
 
 ```{r 3r.r2.10r2.20r2.30}
 design <- "blocked_c2_3r"
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 blocked_c2_3r_r2.3_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3r_r2.3_power_plot)
 ```
@@ -235,6 +250,7 @@ $\rho =$ `r user.params.list[['rho.default']]`
 ```{r 3f.rho0.2}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_c2_3f_rho0.2_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3f_rho0.2_power_plot)
 ```
@@ -254,6 +270,7 @@ $\rho =$ `r user.params.list[['rho.default']]`
 ```{r 3f.rho0.8}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_c2_3f_rho0.8_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3f_rho0.8_power_plot)
 ```
@@ -281,6 +298,7 @@ ATE (ES) = `r user.params.list[['ATE_ES']]`
 ```{r 3f.MDES0.12500}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_c2_3f_mdes0.1250.00.0.00_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3f_mdes0.1250.00.0.00_power_plot)
 ```
@@ -300,6 +318,7 @@ $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`
 ```{r 3f.ICC20.7}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_c2_3f_ICC2.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3f_ICC2.0.7_power_plot)
 ```
@@ -307,6 +326,7 @@ print(blocked_c2_3f_ICC2.0.7_power_plot)
 ```{r 3r.ICC20.7}
 design <- "blocked_c2_3r"
 user.params.list[['R2.3']] <- params.default[['R2.3']]
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 blocked_c2_3r_ICC2.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_c2_3r_ICC2.0.7_power_plot)
 ```
@@ -322,10 +342,11 @@ user.params.list[['ICC.3']] <- rep(0.7, M)
 $\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
 
 ```{r 3f.ICC30.7}
-design <- "blocked_c2_3f"
-user.params.list[['R2.3']] <- rep(0, M)
-blocked_c2_3f_ICC3.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
-print(blocked_c2_3f_ICC3.0.7_power_plot)
+# design <- "blocked_c2_3f"
+# user.params.list[['R2.3']] <- rep(0, M)
+# user.params.list[['ICC.3']] <- rep(0, M)
+# blocked_c2_3f_ICC3.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+# print(blocked_c2_3f_ICC3.0.7_power_plot)
 ```
 
 ```{r 3r.ICC30.7}
@@ -351,6 +372,7 @@ $\omega_3$ = `r user.params.list[['omega.3']]`
 ```{r 3f.omega30.8}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
 blocked_i1_3f_omega3.0.8_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_i1_3f_omega3.0.8_power_plot)
 ```
@@ -358,33 +380,37 @@ print(blocked_i1_3f_omega3.0.8_power_plot)
 ```{r 3r.omega30.8}
 design <- "blocked_c2_3r"
 user.params.list[['R2.3']] <- params.default[['R2.3']]
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 blocked_i1_3r_omega3.0.8_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
 print(blocked_i1_3r_omega3.0.8_power_plot)
 ```
 
-```{r omega30.8ICC30.7}
-user.params.list[['omega.3']] <- 0.8
-user.params.list[['ICC.3']] <- rep(0.7, M)
-user.params.list[['K']] <- 20
-```
+<!-- ```{r omega30.8ICC30.7} -->
+<!-- user.params.list[['omega.3']] <- 0.8 -->
+<!-- user.params.list[['ICC.3']] <- rep(0.7, M) -->
+<!-- user.params.list[['K']] <- 20 -->
+<!-- ``` -->
 
-$\omega_3$ = `r user.params.list[['omega.3']]`
-$\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
+<!-- $\omega_3$ = `r user.params.list[['omega.3']]` -->
+<!-- $\text{ICC}_3$ = `r user.params.list[['ICC.3']]` -->
 
-```{r 3f.omega30.8ICC30.7}
-design <- "blocked_c2_3f"
-blocked_i1_3f_omega3.0.8ICC30.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
-print(blocked_i1_3f_omega3.0.8ICC30.7_power_plot)
-```
+<!-- ```{r 3f.omega30.8ICC30.7} -->
+<!-- design <- "blocked_c2_3f" -->
+<!-- user.params.list[['R2.3']] <- rep(0, M) -->
+<!-- user.params.list[['ICC.3']] <- rep(0, M) -->
+<!-- blocked_i1_3f_omega3.0.8ICC30.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design) -->
+<!-- print(blocked_i1_3f_omega3.0.8ICC30.7_power_plot) -->
+<!-- ``` -->
 
-```{r 3r.omega30.8ICC30.7}
-design <- "blocked_c2_3r"
-user.params.list[['R2.3']] <- params.default[['R2.3']]
-blocked_i1_3r_omega3.0.8ICC30.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
-print(blocked_i1_3r_omega3.0.8ICC30.7_power_plot)
-```
+<!-- ```{r 3r.omega30.8ICC30.7} -->
+<!-- design <- "blocked_c2_3r" -->
+<!-- user.params.list[['R2.3']] <- params.default[['R2.3']] -->
+<!-- user.params.list[['ICC.3']] <- params.default[['ICC.3']] -->
+<!-- blocked_i1_3r_omega3.0.8ICC30.7_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design) -->
+<!-- print(blocked_i1_3r_omega3.0.8ICC30.7_power_plot) -->
+<!-- ``` -->
 
-```{r omega3.ICC3.reset}
-user.params.list[['omega.3']] <- params.default[['omega.3']]
-user.params.list[['ICC.3']] <- params.default[['ICC.3']]
-```
+<!-- ```{r omega3.ICC3.reset} -->
+<!-- user.params.list[['omega.3']] <- params.default[['omega.3']] -->
+<!-- user.params.list[['ICC.3']] <- params.default[['ICC.3']] -->
+<!-- ``` -->

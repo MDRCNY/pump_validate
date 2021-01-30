@@ -1017,11 +1017,10 @@ if(run.blocked.cluster & run.power)
   
   user.params.list[['ICC.3']] <- rep(0.7, M)
   
-  user.params.list[['R2.3']] <- rep(0, M)
-  user.params.list[['ICC.3']] <- rep(0, M)
-  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
+  # user.params.list[['R2.3']] <- rep(0, M)
+  # user.params.list[['ICC.3']] <- rep(0, M)
+  # power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
-  user.params.list[['ICC.3']] <- params.default[['ICC.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
   
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
