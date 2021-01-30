@@ -941,6 +941,7 @@ if(run.blocked.cluster & run.power)
   user.params.list[['rho.u0']] <- user.params.list[['rho.u1']] <- default.rho.matrix
   user.params.list[['rho.w0']] <- user.params.list[['rho.w1']] <- default.rho.matrix
   user.params.list[['rho.r']] <- default.rho.matrix
+  user.params.list[['R2.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   
   rho.default <- 0.8
@@ -950,6 +951,7 @@ if(run.blocked.cluster & run.power)
   user.params.list[['rho.u0']] <- user.params.list[['rho.u1']] <- default.rho.matrix
   user.params.list[['rho.w0']] <- user.params.list[['rho.w1']] <- default.rho.matrix
   user.params.list[['rho.r']] <- default.rho.matrix
+  user.params.list[['R2.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   
   # reset
@@ -970,6 +972,7 @@ if(run.blocked.cluster & run.power)
   #------------------------------------------------------------------#
   
   user.params.list[['ATE_ES']] <- c(0.125, 0, 0)
+  user.params.list[['R2.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   
   # reset

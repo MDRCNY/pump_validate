@@ -221,6 +221,7 @@ user.params.list[['R2.3']] <- params.default[['R2.3']]
 
 ```{r rho0.2tPMnj50}
 rho.default <- 0.2
+user.params.list[['rho.default']] <- rho.default
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list[['rho.default']] <- rho.default
 user.params.list[['rho.V']] <- user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
@@ -240,6 +241,7 @@ print(blocked_c2_3f_rho0.2_power_plot)
 
 ```{r rho0.8}
 rho.default <- 0.8
+user.params.list[['rho.default']] <- rho.default
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list[['rho.V']] <- user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
 user.params.list[['rho.u0']] <- user.params.list[['rho.u1']] <- default.rho.matrix
@@ -259,6 +261,7 @@ print(blocked_c2_3f_rho0.8_power_plot)
 ```{r rho.reset}
 # reset
 rho.default <- params.default[['rho.default']]
+user.params.list[['rho.default']] <- rho.default
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list[['rho.V']] <- user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
 user.params.list[['rho.u0']] <- user.params.list[['rho.u1']] <- default.rho.matrix
