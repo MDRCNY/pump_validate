@@ -29,10 +29,6 @@ adjust_WY <- function(data, rawp, rawt, S.id, D.id,
   
   B <- sim.params.list[['B']]
   maxT <- sim.params.list[['maxT']]
-  N <- model.params.list[['nbar']]*model.params.list[['J']]
-  M <- model.params.list[['M']]
-  J <- model.params.list[['J']]
-  nbar <- model.params.list[['nbar']]
   Tbar <- sim.params.list[['Tbar']]
   
   # get order of raw p-values; returns ordered index for the vector "rawp"
@@ -89,7 +85,7 @@ adjust_WY <- function(data, rawp, rawt, S.id, D.id,
   pi.p.m <- rowMeans(ind.B)
   
   # enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
-  adjp.minp <- numeric(M)
+  adjp.minp <- numeric(model.params.list[['M']])
   adjp.minp[1] <- pi.p.m[1]
   for (h in 2:length(pi.p.m)) {
     # adjp.minp is a numeric vector of 0's, it will always be less than the values in pi.p.m, right?
