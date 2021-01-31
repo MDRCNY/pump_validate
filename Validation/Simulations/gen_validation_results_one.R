@@ -7,6 +7,8 @@ library(here)
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
 
+overwrite <- TRUE
+
 q <- as.numeric(as.character(Sys.getenv("q")))
 if(is.na(q)) { q <- 1 }
 

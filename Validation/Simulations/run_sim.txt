@@ -9,6 +9,23 @@ export q
 # Run R script, and produce output files
 sbatch -o /n/home01/khunter33/Power-Under-Multiplicity/%j_${q}.out \
   -e /n/home01/khunter33/Power-Under-Multiplicity/%j_${q}.err \
-  Validation/validate_parallel.slurm
+  Validation/validate_parallel_all.slurm
+  sleep 2 # pause to be kind to the scheduler
+done
+
+#########################################################
+
+for q in $(seq 1 10); do
+
+# print out indexes
+echo “${q}”
+
+# give these indexes to R
+export q
+
+# Run R script, and produce output files
+sbatch -o /n/home01/khunter33/Power-Under-Multiplicity/%j_${q}.out \
+  -e /n/home01/khunter33/Power-Under-Multiplicity/%j_${q}.err \
+  Validation/validate_parallel_one.slurm
   sleep 2 # pause to be kind to the scheduler
 done
