@@ -7,8 +7,10 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
+# or just run one as a test
 run.power = TRUE
 run.mdes.ss = FALSE
+run.test = TRUE
 # which designs to run
 run.blocked.2l = TRUE
 run.cluster.2l = FALSE
@@ -26,10 +28,27 @@ params.default <- user.params.list
 sim.params.default <- sim.params.list
 
 #------------------------------------------------------------------#
+# run test
+#------------------------------------------------------------------#
+
+if(run.test)
+{
+  user.params.list[['K']] <- 1
+  user.params.list[['ICC.3']] <- NULL
+  user.params.list[['omega.3']] <- NULL
+  user.params.list[['R2.3']] <- NULL
+  
+  user.params.list[['nbar']] <- 100
+  user.params.list[['omega.2']] <- 0
+  user.params.list[['ICC.2']] <- rep(0, M)
+  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
+}
+
+#------------------------------------------------------------------#
 # Blocked 2 level: power
 #------------------------------------------------------------------#
 
-if(run.blocked.2l & run.power)
+if(run.blocked.2l & run.power & !run.test)
 {
   scenarios <- 16
   
@@ -185,7 +204,7 @@ if(run.blocked.2l & run.power)
 # Blocked 2 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(run.blocked.2l & run.mdes.ss)
+if(run.blocked.2l & run.mdes.ss & !run.test)
 {
   scenarios <- 6
   # back to defaults
@@ -282,7 +301,7 @@ print('-------------------------------------------------------------------------
 # Cluster 2 level: power
 #------------------------------------------------------------------#
 
-if(run.cluster.2l & run.power)
+if(run.cluster.2l & run.power & !run.test)
 {
   scenarios <- 10
   user.params.list <- params.default
@@ -416,7 +435,7 @@ if(run.cluster.2l & run.power)
 # Cluster 2 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(run.cluster.2l & run.mdes.ss)
+if(run.cluster.2l & run.mdes.ss & !run.test)
 {
   scenarios <- 1
   # back to defaults
@@ -453,7 +472,7 @@ print('-------------------------------------------------------------------------
 # Blocked 3 level: power
 #------------------------------------------------------------------#
 
-if(run.blocked.3l & run.power)
+if(run.blocked.3l & run.power & !run.test)
 {
   scenarios <- 15
   user.params.list <- params.default
@@ -625,7 +644,7 @@ if(run.blocked.3l & run.power)
 # Blocked 3 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(run.blocked.3l & run.mdes.ss)
+if(run.blocked.3l & run.mdes.ss & !run.test)
 {
   scenarios <- 1
   # back to defaults
@@ -655,7 +674,7 @@ print('-------------------------------------------------------------------------
 # Cluster 3 level: power
 #------------------------------------------------------------------#
 
-if(run.cluster.3l & run.power)
+if(run.cluster.3l & run.power & !run.test)
 {
   
   scenarios <- 11
@@ -802,7 +821,7 @@ if(run.cluster.3l & run.power)
 # Cluster 3 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(run.cluster.3l & run.mdes.ss)
+if(run.cluster.3l & run.mdes.ss & !run.test)
 {
   scenarios <- 1
   # back to defaults
@@ -839,7 +858,7 @@ print('-------------------------------------------------------------------------
 # Blocked cluster: power
 #------------------------------------------------------------------#
 
-if(run.blocked.cluster & run.power)
+if(run.blocked.cluster & run.power & !run.test)
 {
   scenarios <- 18
   user.params.list <- params.default
@@ -1069,7 +1088,7 @@ if(run.blocked.cluster & run.power)
 # Cluster 3 level: MDES and sample size
 #------------------------------------------------------------------#
 
-if(run.blocked.cluster & run.mdes.ss)
+if(run.blocked.cluster & run.mdes.ss & !run.test)
 {
   scenarios <- 2
   # back to defaults
