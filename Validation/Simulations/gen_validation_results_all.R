@@ -33,6 +33,10 @@ sim.params.default <- sim.params.list
 #------------------------------------------------------------------#
 if(run.wy.test)
 {
+  user.params.list <- params.default
+  sim.params.list <- sim.params.default
+  sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+  
   #------------------------------------#
   # blocked 2 level
   #------------------------------------#
@@ -139,6 +143,8 @@ if(run.wy.test)
 if(run.blocked.2l & run.power & !run.wy.test)
 {
   scenarios <- 16
+  user.params.list <- params.default
+  sim.params.list <- sim.params.default
   
   # assumptions
   user.params.list[['K']] <- 1
@@ -308,8 +314,9 @@ if(run.blocked.2l & run.power & !run.wy.test)
 if(run.blocked.2l & run.mdes.ss & !run.wy.test)
 {
   scenarios <- 6
-  # back to defaults
   user.params.list <- params.default
+  sim.params.list <- sim.params.default
+  
   # assumptions
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
@@ -406,6 +413,7 @@ if(run.cluster.2l & run.power & !run.wy.test)
 {
   scenarios <- 10
   user.params.list <- params.default
+  sim.params.list <- sim.params.default
 
   # assumptions
   user.params.list[['K']] <- 1
@@ -548,7 +556,7 @@ if(run.cluster.2l & run.mdes.ss & !run.wy.test)
   scenarios <- 1
   # back to defaults
   user.params.list <- params.default
-  # don't do WY for now
+  sim.params.list <- sim.params.default
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
   
   # assumptions
@@ -584,6 +592,7 @@ if(run.blocked.3l & run.power & !run.wy.test)
 {
   scenarios <- 15
   user.params.list <- params.default
+  sim.params.list <- sim.params.default
   
   # for sufficient power and stability
   user.params.list[['K']] <- 15
@@ -757,13 +766,13 @@ if(run.blocked.3l & run.mdes.ss & !run.wy.test)
   scenarios <- 1
   # back to defaults
   user.params.list <- params.default
+  sim.params.list <- sim.params.default
+  sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
   
   # for sufficient power and stability
   user.params.list[['K']] <- 15
   user.params.list[['nbar']] <- 100
-  # don't do WY for now
-  sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
-  
+
   mdes.results <- validate_mdes(user.params.list, sim.params.list, design = "blocked_i1_3r", overwrite = overwrite)
   sample.results <- validate_sample(user.params.list, sim.params.list, design = "blocked_i1_3r", overwrite = overwrite)
   
@@ -787,6 +796,7 @@ if(run.cluster.3l & run.power & !run.wy.test)
   
   scenarios <- 11
   user.params.list <- params.default
+  sim.params.list <- sim.params.default
   
   # assumptions
   user.params.list[['omega.2']] <- 0
@@ -932,9 +942,8 @@ if(run.cluster.3l & run.power & !run.wy.test)
 if(run.cluster.3l & run.mdes.ss & !run.wy.test)
 {
   scenarios <- 1
-  # back to defaults
   user.params.list <- params.default
-  # don't do WY for now
+  sim.params.list <- sim.params.default
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
   
   # assumptions
@@ -970,6 +979,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
 {
   scenarios <- 18
   user.params.list <- params.default
+  sim.params.list <- sim.params.default
   
   # assumptions
   user.params.list[['omega.2']] <- 0
@@ -1040,7 +1050,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['R2.2']] <- rep(0.6, M)
 
   user.params.list[['R2.3']] <- rep(0, M)
-  user.params.list[['ICC.3']] <- rep(0, M)
+  # user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
@@ -1144,9 +1154,9 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   
   user.params.list[['ICC.3']] <- rep(0.7, M)
   
-  # user.params.list[['R2.3']] <- rep(0, M)
+  user.params.list[['R2.3']] <- rep(0, M)
   # user.params.list[['ICC.3']] <- rep(0, M)
-  # power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
+  power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
   
@@ -1199,9 +1209,8 @@ if(run.blocked.cluster & run.power & !run.wy.test)
 if(run.blocked.cluster & run.mdes.ss & !run.wy.test)
 {
   scenarios <- 2
-  # back to defaults
   user.params.list <- params.default
-  # don't do WY for now
+  sim.params.list <- sim.params.default
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
 
   # assumptions
