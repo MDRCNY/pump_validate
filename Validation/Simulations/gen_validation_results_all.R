@@ -1,3 +1,8 @@
+
+
+
+
+
 #------------------------------------------------------------------#
 # script that produces all output results
 # all designs, all cases of interest
@@ -8,7 +13,7 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
-run.power = TRUE
+run.power = FALSE
 run.mdes.ss = FALSE
 run.wy.test = TRUE
 # which designs to run
@@ -16,7 +21,7 @@ run.blocked.2l = FALSE
 run.cluster.2l = FALSE
 run.blocked.3l = FALSE
 run.cluster.3l = FALSE
-run.blocked.cluster = TRUE
+run.blocked.cluster = FALSE
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
@@ -100,9 +105,12 @@ if(run.wy.test)
   
   user.params.list <- params.default
   
-  # for sufficient power and stability
-  user.params.list[['K']] <- 15
-  user.params.list[['nbar']] <- 100
+  # for a reasonable runtime
+  user.params.list[['J']] <- 10
+  user.params.list[['K']] <- 5
+  user.params.list[['nbar']] <- 20
+  sim.params.list[['B']] <- 200
+  user.params.list[['S']] <- 20
   
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
   
@@ -115,9 +123,10 @@ if(run.wy.test)
   user.params.list[['omega.2']] <- 0
   user.params.list[['omega.3']] <- 0
   
-  # param settings to have a decent level of power
-  user.params.list[['J']] <- 40
-  user.params.list[['K']] <- 20
+  # for a reasonable runtime and power
+  user.params.list[['J']] <- 10
+  user.params.list[['K']] <- 5
+  user.params.list[['nbar']] <- 20
   user.params.list[['ATE_ES']] <- rep(0.25, M)
   user.params.list[['ICC.3']] <- rep(0.1, M)
   user.params.list[['ICC.2']] <- rep(0.1, M)
