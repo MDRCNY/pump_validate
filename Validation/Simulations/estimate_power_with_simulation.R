@@ -456,7 +456,8 @@ get.rejects <- function(adjp, alpha) {
 interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
                                          control_formula = NULL, lmer = FALSE) {
   # siteID = NULL;
-  # Yobs = dat$Yobs; Z = T.x; B = D.id; data = dat; control_formula = "X.jk + C.ijk + (1 | S.id)"
+  # Yobs = Yobs; Z = T.x; B = D.id; data = dat; control_formula = "X.jk + C.ijk + (1 | S.id)"
+  # Yobs = Yobs; Z = T.x; B = S.id; data = dat; control_formula = "C.ijk"
   
   # This code block takes the parameters of
   # Yobs, Z, B, siteID = NULL, data=NULL, ...

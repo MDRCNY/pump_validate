@@ -10,7 +10,7 @@ overwrite = TRUE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
 run.mdes.ss = FALSE
-run.wy.test = FALSE
+run.wy.test = TRUE
 # which designs to run
 run.blocked.2l = FALSE
 run.cluster.2l = FALSE
@@ -98,6 +98,8 @@ if(run.wy.test)
   # blocked 3 level
   #------------------------------------#
   
+  user.params.list <- params.default
+  
   # for sufficient power and stability
   user.params.list[['K']] <- 15
   user.params.list[['nbar']] <- 100
@@ -108,6 +110,7 @@ if(run.wy.test)
   # cluster 3 level
   #------------------------------------#
   
+  user.params.list <- params.default
   # assumptions
   user.params.list[['omega.2']] <- 0
   user.params.list[['omega.3']] <- 0
@@ -124,6 +127,8 @@ if(run.wy.test)
   #------------------------------------#
   # blocked cluster
   #------------------------------------#
+  
+  user.params.list <- params.default
   
   # assumptions
   user.params.list[['omega.2']] <- 0

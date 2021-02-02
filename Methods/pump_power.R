@@ -309,7 +309,7 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   } else if (design == 'blocked_c2_3f')
   {
     K <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                         ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
+                         ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
   } else if (design == 'blocked_c2_3r')
   {
     K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
