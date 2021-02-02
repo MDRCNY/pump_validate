@@ -38,7 +38,6 @@ sim.params.default <- sim.params.list
 #------------------------------------------------------------------#
 if(run.wy.test)
 {
-  user.params.list <- params.default
   sim.params.list <- sim.params.default
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
   
@@ -47,12 +46,13 @@ if(run.wy.test)
   #------------------------------------#
   
   user.params.list <- params.default
+  user.params.list[['nbar']] <- 50
+  
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
   user.params.list[['omega.3']] <- NULL
   user.params.list[['R2.3']] <- NULL
   
-  user.params.list[['nbar']] <- 50
   user.params.list[['omega.2']] <- 0
   user.params.list[['ICC.2']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
@@ -86,6 +86,8 @@ if(run.wy.test)
   # cluster 2 level
   #------------------------------------#
   user.params.list <- params.default
+  user.params.list[['nbar']] <- 50
+  
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
   user.params.list[['omega.3']] <- NULL
@@ -104,6 +106,7 @@ if(run.wy.test)
   #------------------------------------#
   
   user.params.list <- params.default
+  user.params.list[['nbar']] <- 50
   
   # for a reasonable runtime
   user.params.list[['J']] <- 10
@@ -119,6 +122,8 @@ if(run.wy.test)
   #------------------------------------#
   
   user.params.list <- params.default
+  user.params.list[['nbar']] <- 50
+  
   # assumptions
   user.params.list[['omega.2']] <- 0
   user.params.list[['omega.3']] <- 0
@@ -138,6 +143,7 @@ if(run.wy.test)
   #------------------------------------#
   
   user.params.list <- params.default
+  user.params.list[['nbar']] <- 50
   
   # assumptions
   user.params.list[['omega.2']] <- 0
@@ -1004,7 +1010,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['nbar']] <- 100
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
@@ -1017,7 +1023,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['nbar']] <- 75
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
@@ -1030,7 +1036,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['nbar']] <- 50
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
@@ -1052,7 +1058,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['R2.1']] <- rep(0.6, M)
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
@@ -1064,7 +1070,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['R2.2']] <- rep(0.6, M)
 
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
@@ -1084,7 +1090,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['R2.2']] <- rep(0, M)
   user.params.list[['R2.3']] <- rep(0, M)
   
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
@@ -1110,7 +1116,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['rho.r']] <- default.rho.matrix
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   
   rho.default <- 0.8
@@ -1122,7 +1128,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['rho.r']] <- default.rho.matrix
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   
   # reset
@@ -1145,7 +1151,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['ATE_ES']] <- c(0.125, 0, 0)
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   
   # reset
@@ -1158,7 +1164,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['ICC.2']] <- rep(0.7, M)
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
@@ -1169,7 +1175,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['ICC.3']] <- rep(0.7, M)
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3r", q = q, overwrite)
@@ -1188,7 +1194,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['K']] <- 20
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
@@ -1202,7 +1208,7 @@ if(run.blocked.cluster & run.power & !run.wy.test)
   user.params.list[['K']] <- 20
   
   user.params.list[['R2.3']] <- rep(0, M)
-  # user.params.list[['ICC.3']] <- rep(0, M)
+  user.params.list[['ICC.3']] <- rep(0, M)
   power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_c2_3f", q = q, overwrite)
   user.params.list[['R2.3']] <- params.default[['R2.3']]
   user.params.list[['ICC.3']] <- params.default[['ICC.3']]
