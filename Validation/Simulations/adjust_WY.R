@@ -20,19 +20,25 @@
 #'
 #' @examples
 #'
-adjust_WY <- function(data, rawp, rawt, S.id, D.id,
+adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
                       design, proc,
                       sim.params.list, model.params.list,
                       cl = NULL) {
   
-  # data = mdat; cl = NULL;
+  # cl = NULL;
   
   B <- sim.params.list[['B']]
   maxT <- sim.params.list[['maxT']]
   Tbar <- sim.params.list[['Tbar']]
   
   # get order of raw p-values; returns ordered index for the vector "rawp"
-  ifelse(maxT == FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing = TRUE))
+  if(maxT)
+  {
+    r.m.r <- order(abs(rawt), decreasing = TRUE)
+  } else
+  {
+    r.m.r <- order(rawp)
+  }
   
   # blocked designs
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r')) {
@@ -58,14 +64,15 @@ adjust_WY <- function(data, rawp, rawt, S.id, D.id,
     ), envir = environment())
     
     # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
+    set.seed(1)
     nullpt <- t(parallel::parApply(
-      cl, permT, 2, perm.regs, data = data, maxT = maxT,
+      cl, permT, 2, perm.regs, dat.all = dat.all, maxT = maxT,
       design = design, user.params.list = user.params.list
     ))
   } else
   {
     nullpt <- t(apply(
-      permT, 2, perm.regs, data = data, maxT = maxT,
+      permT, 2, perm.regs, dat.all = dat.all, maxT = maxT,
       design = design, user.params.list = user.params.list
     ))
   }
@@ -113,18 +120,24 @@ adjust_WY <- function(data, rawp, rawt, S.id, D.id,
 #' @export
 #'
 #' @examples
-perm.regs <- function(permT, data, design, maxT, user.params.list) {
+perm.regs <- function(permT, dat.all, design, maxT, user.params.list) {
   # permT <- permT[,1];
 
-  M <- length(data)
-  outpt <- numeric(M)
+  M <- length(dat.all)
+  out <- numeric(M)
   for (m in 1:M) {
-    mdat <- data[[m]]
-    mdat$T.x <- permT
-    mod <- make.model(mdat, design)
-    ifelse(maxT, outpt[m] <- get.tstat(mod), outpt[m] <- get.pval(mod, design, user.params.list))
+    dat.m <- dat.all[[m]]
+    dat.m$T.x <- permT
+    mod <- make.model(dat.m, design)
+    if(maxT)
+    {
+      out[m] <- get.tstat(mod)
+    } else
+    {
+      out[m] <- get.pval(mod, design, user.params.list)
+    }
   }
-  return(outpt)
+  return(out)
 }
 
 #' Functions to compare nullp distributions with raw distributions
