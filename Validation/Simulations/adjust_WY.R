@@ -121,12 +121,13 @@ perm.regs <- function(permT.vec, dat.all, design, maxT, user.params.list) {
     dat.m <- dat.all[[m]]
     dat.m$T.x <- permT.vec
     mod <- make.model(dat.m, design)
+    pval.tstat <- get.pval.tstat(mod, design, user.params.list)
     if(maxT)
     {
-      out[m] <- get.tstat(mod)
+      out[m] <- pval.tstat[['tstat']]
     } else
     {
-      out[m] <- get.pval(mod, design, user.params.list)
+      out[m] <- pval.tstat[['pval']]
     }
   }
   return(out)
