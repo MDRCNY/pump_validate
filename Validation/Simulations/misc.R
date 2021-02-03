@@ -137,26 +137,26 @@ gen_cov_matrix = function(D, var1.vec, var2.vec, rho.matrix) {
 #'
 #' @param K number of districts
 #' @param J number of schools per district
-#' @param nbar number of individuals per school
+#' @param n.j number of individuals per school
 #'
 #' @return list(S.id, D.id) of school and district assignments for each individual
 #' @export
 #'
 #' @examples
 
-gen_simple_assignments <- function(J, K, nbar){
+gen_simple_assignments <- function(J, K, n.j){
 
-  N <- nbar * J * K
+  N <- n.j * J * K
 
   # vector of assignments to schools
   S.id = rep(NA, N)
   start.index = 1
-  end.index = nbar
+  end.index = n.j
   for(j in 1:(K*J))
   {
     S.id[start.index:end.index] = j
     start.index = end.index + 1
-    end.index = end.index + nbar
+    end.index = end.index + n.j
   }
 
   D.id = rep(NA, N)
