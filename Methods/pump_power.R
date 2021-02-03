@@ -201,7 +201,7 @@ calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2
   } else if (design == 'blocked_c2_3f')
   {
     Q.m <- sqrt( ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
-                 ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar) ) )
+                 ( ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar) ) )
   } else if (design == 'blocked_c2_3r')
   {
     Q.m <- sqrt( ( (ICC.3 * omega.3) / K ) +

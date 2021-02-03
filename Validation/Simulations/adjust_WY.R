@@ -31,14 +31,8 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
   maxT <- sim.params.list[['maxT']]
   Tbar <- sim.params.list[['Tbar']]
   
-  # get order of raw p-values; returns ordered index for the vector "rawp"
-  if(maxT)
-  {
-    r.m.r <- order(abs(rawt), decreasing = TRUE)
-  } else
-  {
-    r.m.r <- order(rawp)
-  }
+  # get ordering of raw p-values
+  r.m.r <- order(rawp, decreasing = FALSE)
   
   # blocked designs
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r')) {
@@ -64,7 +58,6 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
     ), envir = environment())
     
     # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
-    set.seed(1)
     nullpt <- t(parallel::parApply(
       cl, permT, 2, perm.regs, dat.all = dat.all, maxT = maxT,
       design = design, user.params.list = user.params.list
@@ -92,17 +85,16 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
   pi.p.m <- rowMeans(ind.B)
   
   # enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
-  adjp.minp <- numeric(model.params.list[['M']])
+  adjp.minp <- rep(NA, user.params.list[['M']])
   adjp.minp[1] <- pi.p.m[1]
   for (h in 2:length(pi.p.m)) {
-    # adjp.minp is a numeric vector of 0's, it will always be less than the values in pi.p.m, right?
     adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])
   }
   
+  # return back in original, non-ordered form
   out <- cbind(rawp[r.m.r], adjp.minp, r.m.r)
-  colnames(out) <- c("rawp", "WY", "test num")
-  oo <- order(out[ ,"test num"])
-  out.oo <- out[oo, ]
+  colnames(out) <- c("rawp", "WY", "test.num")
+  out.oo <- out[order(out[, 'test.num']),]
   return(out.oo)
 }
 
@@ -120,14 +112,14 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
 #' @export
 #'
 #' @examples
-perm.regs <- function(permT, dat.all, design, maxT, user.params.list) {
-  # permT <- permT[,1];
+perm.regs <- function(permT.vec, dat.all, design, maxT, user.params.list) {
+  # permT.vec <- permT[,1];
 
   M <- length(dat.all)
   out <- numeric(M)
   for (m in 1:M) {
     dat.m <- dat.all[[m]]
-    dat.m$T.x <- permT
+    dat.m$T.x <- permT.vec
     mod <- make.model(dat.m, design)
     if(maxT)
     {
@@ -187,6 +179,7 @@ comp.rawt.sd <- function(nulltrow, rawt, r.m.r) {
 }
 
 comp.rawt.ss <- function(nulltrow, rawt, r.m.r) {
+  # nulltrow = nullpt[1,]
   num.test <- length(nulltrow)
   maxt <- rep(NA, num.test)
   for (h in 1:num.test) {
