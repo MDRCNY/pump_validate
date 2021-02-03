@@ -99,7 +99,6 @@ if(run.wy.test)
   # params to help have a decent power
   user.params.list[['ICC.2']] <- rep(0.1, M)
   user.params.list[['J']] <- 60
-  user.params.list[['ATE_ES']] <- rep(0.25, M)
 
   power.results <- validate_power(user.params.list, sim.params.list, design = "simple_c2_2r", q = q, overwrite)
   
