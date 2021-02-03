@@ -26,6 +26,8 @@ gen_RE_cov_matrix = function( Sigma.w, Sigma.z, Sigma.wz ) {
 }
 
 
+
+
 #' generate 'science' table of full potential outcomes
 #'
 #' @param model.params.list list of DGP parameters
@@ -72,13 +74,12 @@ gen_full_data <- function(model.params.list) {
   }
   N <- length( S.id )
   
-  
   # ------------------------------#
   # Districts: Level 3
   # ------------------------------#
   
-  if ( has.level.three ) {
-    
+  gen.level.three.data = function(K, M, rho.V, sigma.V, eta0.sq, eta1.sq, rho.w0, rho.w1, theta.w)
+  {
     # generate district covariates
     Sigma.V  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.V)
     V.k      <- matrix(mvrnorm(K, mu = rep(0, M), Sigma = Sigma.V), K, M)
@@ -96,43 +97,72 @@ gen_full_data <- function(model.params.list) {
     w01.k <- mvrnorm(K, mu = rep(0, 2*M), Sigma = Sigma.w.full)
     w0.k  <- w01.k[,1:M, drop = FALSE]
     w1.k  <- w01.k[,(M+1):(2*M), drop = FALSE]
+    return(list(V.k = V.k, w0.k = w0.k, w1.k = w1.k))
+  }
+
+  if ( has.level.three ) {
+    level.three.data <- gen.level.three.data(K, M, rho.V, sigma.V, eta0.sq, eta1.sq, rho.w0, rho.w1, theta.w) 
+    V.k <- level.three.data[['V.k']]
+    w0.k <- level.three.data[['w0.k']]
+    w1.k <- level.three.data[['w1.k']]
   } else {
     V.k <- NULL
+    w0.k <- NULL
+    w1.k <- NULL
   }
   
   # ------------------------------#
   # Schools: Level 2
   # ------------------------------#
   
-  # generate school covariates
-  Sigma.X       <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.X)
-  X.jk          <- mvrnorm(J*K, mu = rep(0, M), Sigma = Sigma.X)
+  gen.level.two.data = function(J, K, M, rho.X, sigma.X, tau0.sq, tau1.sq, rho.u0, rho.u1, theta.u)
+  {
+    # generate school covariates
+    Sigma.X       <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.X)
+    X.jk          <- mvrnorm(J*K, mu = rep(0, M), Sigma = Sigma.X)
+    
+    # covariance of school random effects
+    Sigma.u0       <- gen_cov_matrix(M, tau0.sq, tau0.sq, rho.u0)
+    # covariance of school random impacts
+    Sigma.u1       <- gen_cov_matrix(M, tau1.sq, tau1.sq, rho.u1)
+    # covariance of school random effects and impacts
+    Sigma.u        <- gen_cov_matrix(M, tau0.sq, tau1.sq, theta.u)
+    # full covariance matrix
+    Sigma.u.full   <- gen_RE_cov_matrix( Sigma.u0, Sigma.u1, Sigma.u )
+    
+    # generate full vector of school random effects and impacts
+    u01.jk <- mvrnorm(J*K, mu = rep(0, 2*M), Sigma = Sigma.u.full)
+    u0.jk  <- u01.jk[,1:M, drop = FALSE]
+    u1.jk  <- u01.jk[,(M+1):(2*M), drop = FALSE]
+    
+    return(list(X.jk = X.jk, u0.jk = u0.jk, u1.jk = u1.jk))
+  }
   
-  # covariance of school random effects
-  Sigma.u0       <- gen_cov_matrix(M, tau0.sq, tau0.sq, rho.u0)
-  # covariance of school random impacts
-  Sigma.u1       <- gen_cov_matrix(M, tau1.sq, tau1.sq, rho.u1)
-  # covariance of school random effects and impacts
-  Sigma.u        <- gen_cov_matrix(M, tau0.sq, tau1.sq, theta.u)
-  # full covariance matrix
-  Sigma.u.full   <- gen_RE_cov_matrix( Sigma.u0, Sigma.u1, Sigma.u )
-  
-  # generate full vector of school random effects and impacts
-  u01.jk <- mvrnorm(J*K, mu = rep(0, 2*M), Sigma = Sigma.u.full)
-  u0.jk  <- u01.jk[,1:M, drop = FALSE]
-  u1.jk  <- u01.jk[,(M+1):(2*M), drop = FALSE]
+  level.two.data <- gen.level.two.data(J, K, M, rho.X, sigma.X, tau0.sq, tau1.sq, rho.u0, rho.u1, theta.u) 
+  X.jk  <- level.two.data[['X.jk']]
+  u0.jk <- level.two.data[['u0.jk']]
+  u1.jk <- level.two.data[['u1.jk']]
   
   # ------------------------------#
   # Individuals: Level 1
   # ------------------------------#
   
-  # generate individual covariates
-  Sigma.C <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.C)
-  C.ijk   <- matrix(mvrnorm(N, mu = rep(0, M), Sigma = Sigma.C), N, M)
+  gen.level.one.data = function(N, M, rho.C, sigma.C, rho.r, Sigma.r)
+  {
+    # generate individual covariates
+    Sigma.C <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.C)
+    C.ijk   <- matrix(mvrnorm(N, mu = rep(0, M), Sigma = Sigma.C), N, M)
+    
+    # generate individual residuals
+    Sigma.r <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.r)
+    r.ijk   <- matrix(mvrnorm(N, mu = rep(0,M), Sigma = Sigma.r), N, M)
+    
+    return(list(C.ijk = C.ijk, r.ijk = r.ijk))
+  }
   
-  # generate individual residuals
-  Sigma.r <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.r)
-  r.ijk   <- matrix(mvrnorm(N, mu = rep(0,M), Sigma = Sigma.r), N, M)
+  level.one.data <- gen.level.one.data(N, M, rho.C, sigma.C, rho.r, Sigma.r) 
+  C.ijk <- level.one.data[['C.ijk']]
+  r.ijk <- level.one.data[['r.ijk']]
   
   # ------------------------------#
   # reformat everything into N x M matrices
@@ -248,7 +278,6 @@ convert.params <- function(user.params.list) {
   delta   <- sqrt( (R2.2 / (1 - R2.1)) *  ( ICC.2 / (1 - ICC.2 - ICC.3) ) )
   xi      <- sqrt( (R2.3 / (1 - R2.1)) *  ( ICC.3 / (1 - ICC.2 - ICC.3) ) )
   gamma   <- sqrt( (R2.1 / (1 - R2.1)) )
-  # psi     <- 
   
   # random impacts variances
   tau1.sq <- omega.2 * (tau0.sq + delta^2)
@@ -266,7 +295,6 @@ convert.params <- function(user.params.list) {
     , Xi0 = user.params.list[['Xi0']]                # scalar grand mean outcome under no treatment
     , Xi1 = Xi1                                      # scalar grand mean impact
   )
-  
   
   if ( has.level.three ) {
     model.params.list <- c( model.params.list, list( 
