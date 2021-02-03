@@ -32,7 +32,6 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   
   # begin loop through all samples to be generated
   num.singular.raw <- 0
-  num.warnings.adj <- 0
   t1 <- Sys.time()
   for (s in 1:S) {
     
@@ -222,6 +221,7 @@ calc_power <- function(adjp.proc, alpha)
 make.model <- function(dat.m, design) {
   # dat.m = dat.all[[1]];
   
+  singular <- FALSE
   dat.m$S.id <- as.factor(dat.m$S.id)
   if(!is.null(dat.m$D.id)){ dat.m$D.id <- as.factor(dat.m$D.id) }
 
@@ -237,17 +237,21 @@ make.model <- function(dat.m, design) {
   } else if (design == "blocked_i1_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
     mod <- lmer(form, data = dat.m)
+    singular <- isSingular(mod)
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
     mod <- lmer(form, data = dat.m)
+    singular <- isSingular(mod)
   } else if (design == "simple_c3_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)"))
     mod <- lmer(form, data = dat.m)
+    singular <- isSingular(mod)
   } else if (design == "blocked_c2_3f") {
     mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = D.id, data = dat.m, control_formula = "X.jk + C.ijk + (1 | S.id)", use.lmer = TRUE)
   } else if (design == "blocked_c2_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
     mod <- lmer(form, data = dat.m)
+    singular <- isSingular(mod)
   } else {
     stop(paste('Unknown design:', design)) 
   }
