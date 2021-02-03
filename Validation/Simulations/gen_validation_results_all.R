@@ -145,8 +145,7 @@ if(run.wy.test)
   #------------------------------------#
   
   user.params.list <- params.default
-  user.params.list[['nbar']] <- 50
-  
+
   # assumptions
   user.params.list[['omega.2']] <- 0
   
