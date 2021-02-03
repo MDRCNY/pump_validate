@@ -185,11 +185,19 @@ gen_simple_assignments <- function(J, K, nbar){
 #' @return params.file.base
 gen_params_file_base <- function(user.params.list, sim.params.list, design)
 {
+  if('WY-SS' %in% sim.params.list[['procs']] | 'WY-SD' %in% sim.params.list[['procs']])
+  {
+    B <- sim.params.list[['B']]
+  } else
+  {
+    B <- NULL
+  }
+  
   params.file.base <- paste0(
     design, "_",
     sim.params.list[['S']] * sim.params.list[['Q']], "_S_",
     user.params.list[['M']], "_M_",
-    sim.params.list[['B']], "_B_",
+    B, "_B_",
     convert.vec.to.filename(user.params.list[['ATE_ES']]),"_ATES_",
     user.params.list[['J']], "_J_",
     user.params.list[['K']], "_K_",
