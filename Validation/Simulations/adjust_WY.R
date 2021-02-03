@@ -20,19 +20,23 @@
 #'
 #' @examples
 #'
-adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
+adjust_WY <- function(data, rawp, rawt, S.id, D.id,
                       design, proc,
                       sim.params.list, model.params.list,
                       cl = NULL) {
   
-  # cl = NULL;
+  # data = mdat; cl = NULL;
   
   B <- sim.params.list[['B']]
   maxT <- sim.params.list[['maxT']]
+  N <- model.params.list[['nbar']]*model.params.list[['J']]
+  M <- model.params.list[['M']]
+  J <- model.params.list[['J']]
+  nbar <- model.params.list[['nbar']]
   Tbar <- sim.params.list[['Tbar']]
   
-  # get ordering of raw p-values
-  r.m.r <- order(rawp, decreasing = FALSE)
+  # get order of raw p-values; returns ordered index for the vector "rawp"
+  ifelse(maxT == FALSE, r.m.r <- order(rawp), r.m.r <- order(abs(rawt), decreasing = TRUE))
   
   # blocked designs
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r')) {
@@ -59,13 +63,13 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
     
     # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
     nullpt <- t(parallel::parApply(
-      cl, permT, 2, perm.regs, dat.all = dat.all, maxT = maxT,
+      cl, permT, 2, perm.regs, data = data, maxT = maxT,
       design = design, user.params.list = user.params.list
     ))
   } else
   {
     nullpt <- t(apply(
-      permT, 2, perm.regs, dat.all = dat.all, maxT = maxT,
+      permT, 2, perm.regs, data = data, maxT = maxT,
       design = design, user.params.list = user.params.list
     ))
   }
@@ -85,16 +89,17 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
   pi.p.m <- rowMeans(ind.B)
   
   # enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
-  adjp.minp <- rep(NA, user.params.list[['M']])
+  adjp.minp <- numeric(M)
   adjp.minp[1] <- pi.p.m[1]
   for (h in 2:length(pi.p.m)) {
+    # adjp.minp is a numeric vector of 0's, it will always be less than the values in pi.p.m, right?
     adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])
   }
   
-  # return back in original, non-ordered form
   out <- cbind(rawp[r.m.r], adjp.minp, r.m.r)
-  colnames(out) <- c("rawp", "WY", "test.num")
-  out.oo <- out[order(out[, 'test.num']),]
+  colnames(out) <- c("rawp", "WY", "test num")
+  oo <- order(out[ ,"test num"])
+  out.oo <- out[oo, ]
   return(out.oo)
 }
 
@@ -112,24 +117,18 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
 #' @export
 #'
 #' @examples
-perm.regs <- function(permT.vec, dat.all, design, maxT, user.params.list) {
-  # permT.vec <- permT[,1];
+perm.regs <- function(permT, data, design, maxT, user.params.list) {
+  # permT <- permT[,1];
 
-  M <- length(dat.all)
-  out <- numeric(M)
+  M <- length(data)
+  outpt <- numeric(M)
   for (m in 1:M) {
-    dat.m <- dat.all[[m]]
-    dat.m$T.x <- permT.vec
-    mod <- make.model(dat.m, design)
-    if(maxT)
-    {
-      out[m] <- get.tstat(mod)
-    } else
-    {
-      out[m] <- get.pval(mod, design, user.params.list)
-    }
+    mdat <- data[[m]]
+    mdat$T.x <- permT
+    mod <- make.model(mdat, design)
+    ifelse(maxT, outpt[m] <- get.tstat(mod), outpt[m] <- get.pval(mod, design, user.params.list))
   }
-  return(out)
+  return(outpt)
 }
 
 #' Functions to compare nullp distributions with raw distributions
@@ -179,7 +178,6 @@ comp.rawt.sd <- function(nulltrow, rawt, r.m.r) {
 }
 
 comp.rawt.ss <- function(nulltrow, rawt, r.m.r) {
-  # nulltrow = nullpt[1,]
   num.test <- length(nulltrow)
   maxt <- rep(NA, num.test)
   for (h in 1:num.test) {
