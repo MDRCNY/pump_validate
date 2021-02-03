@@ -32,9 +32,10 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   
   # begin loop through all samples to be generated
   num.singular.raw <- 0
+  num.failed.converge.raw <- 0
   t1 <- Sys.time()
   for (s in 1:S) {
-    
+
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
@@ -71,9 +72,9 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     rawp <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['pval']])})
     rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
     
-    # track how many warnings occur
-    num.singular.raw.s <- rawpt.out[['num.singular']]
-    num.singular.raw <- num.singular.raw + num.singular.raw.s
+    # track how many failures occur
+    num.singular.raw <- num.singular.raw + rawpt.out[['num.singular']]
+    num.failed.converge.raw <- num.failed.converge.raw + rawpt.out[['num.failed.converge']]
     
     # loop through adjustment procedures (adding 'rawp' as default in all cases)
     for (p in 1:(length(procs) + 1)) {
@@ -109,6 +110,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   } # end loop through samples
   
   message(paste('Number of singular fits:', num.singular.raw))
+  message(paste('Number of failed convergence:', num.failed.converge.raw))
   return(adjp.proc)
 }
 
@@ -227,6 +229,8 @@ make.model <- function(dat.m, design) {
   # dat.m = dat.all[[1]];
   
   singular <- FALSE
+  failed.converge <- FALSE
+  
   dat.m$S.id <- as.factor(dat.m$S.id)
   if(!is.null(dat.m$D.id)){ dat.m$D.id <- as.factor(dat.m$D.id) }
 
@@ -237,30 +241,35 @@ make.model <- function(dat.m, design) {
     mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.id, data = dat.m, control_formula = "C.ijk", use.lmer = FALSE)
   } else if (design == "blocked_i1_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else if (design == "blocked_i1_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else if (design == "simple_c3_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else if (design == "blocked_c2_3f") {
     mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = D.id, data = dat.m, control_formula = "X.jk + C.ijk + (1 | S.id)", use.lmer = TRUE)
   } else if (design == "blocked_c2_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else {
     stop(paste('Unknown design:', design)) 
   }
-  return(list(mod = mod, singular = singular))
+  return(list(mod = mod, singular = singular, failed.converge = failed.converge))
 }
 
 # --------------------------------------------------------------------- #
@@ -336,11 +345,12 @@ get.pval.tstat <- function(mod, design, user.params.list) {
 # --------------------------------------------------------------------- #
 
 get.rawpt <- function(dat.all, design, user.params.list) {
-  mods.out = lapply(dat.all, function(m) make.model(m, design))
-  mods = lapply(mods.out, function(m){ return(m[['mod']]) })
-  num.singular = sapply(mods.out, function(m){ return(m[['singular']]) })
-  rawpt = lapply(mods, function(x) get.pval.tstat(x, design, user.params.list))
-  return(list(rawpt = rawpt, num.singular = sum(num.singular)))
+  mods.out <- lapply(dat.all, function(m) make.model(m, design))
+  mods <- lapply(mods.out, function(m){ return(m[['mod']]) })
+  singular <- sapply(mods.out, function(m){ return(m[['singular']]) })
+  failed.converge <- sapply(mods.out, function(m){ return(m[['failed.converge']]) })
+  rawpt <- lapply(mods, function(x) get.pval.tstat(x, design, user.params.list))
+  return(list(rawpt = rawpt, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
 }
 
 # --------------------------------------------------------------------- #
