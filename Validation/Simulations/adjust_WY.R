@@ -53,8 +53,9 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
   if(!is.null(cl))
   {
     clusterExport(cl, list(
-      "perm.regs", "make.model", "get.tstat", "get.pval",
-      "lmer", "interacted_linear_estimators"
+      "perm.regs", "make.model", "get.pval.tstat",
+      "lmer", "interacted_linear_estimators", "isSingular",
+      "calc.df"
     ), envir = environment())
     
     # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
@@ -120,7 +121,7 @@ perm.regs <- function(permT.vec, dat.all, design, maxT, user.params.list) {
   for (m in 1:M) {
     dat.m <- dat.all[[m]]
     dat.m$T.x <- permT.vec
-    mod <- make.model(dat.m, design)
+    mod <- make.model(dat.m, design)[['mod']]
     pval.tstat <- get.pval.tstat(mod, design, user.params.list)
     if(maxT)
     {

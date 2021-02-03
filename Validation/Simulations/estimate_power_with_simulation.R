@@ -84,7 +84,12 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         t11 <- Sys.time()
         
         proc <- procs[p-1]
-        pvals <- get.adjp(proc, rawp, rawt, dat.all, S.id, D.id, sim.params.list, model.params.list, design, cl)
+        pvals <- get.adjp(
+          proc = proc, rawp = rawp, rawt = rawt,
+          dat.all = dat.all, S.id = S.id, D.id = S.id,
+          sim.params.list = sim.params.list, model.params.list = model.params.list,
+          design = design, cl = cl
+        )
         
         t21 <- Sys.time()
         if (s == 1) { message(paste("One sample of", proc, "took", round(difftime(t21, t11, units = 'secs')[[1]], 4), 'seconds')) }
@@ -395,7 +400,7 @@ get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id, sim.params.list, mod
 
   if(proc == "WY-SD" | proc == "WY-SS"){
     tw1 <- Sys.time()
-    adjp.proc.out <- adjust_WY(
+    adjp.proc <- adjust_WY(
       dat.all = dat.all,
       rawp = rawp, rawt = rawt,
       S.id = S.id, D.id = D.id,
@@ -403,7 +408,7 @@ get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id, sim.params.list, mod
       sim.params.list = sim.params.list,
       model.params.list = model.params.list,
       design = design,
-      cl = cl,
+      cl = cl
     )[,"WY"]
     tw2 <- Sys.time()
   }
@@ -413,7 +418,7 @@ get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id, sim.params.list, mod
     mt.out <- mt.rawp2adjp(rawp, proc, sim.params.list[['alpha']])
     adjp.proc <- mt.out$adjp[order(mt.out$index), proc]
   }
-  return(adjp.proc = adjp.proc)
+  return(adjp.proc)
 }
 
 # --------------------------------------------------------------------- #

@@ -35,7 +35,7 @@ panderOptions('round', 3)
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
-params.default <- user.params.list
+user.params.default <- user.params.list
 sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
 sim.params.list[['S']] <- 1000
 sim.params.list[['Q']] <- 1
@@ -45,7 +45,7 @@ sim.params.default <- sim.params.list
 ```
 
 ```{r blocked.2}
-user.params.list <- params.default
+user.params.list <- user.params.default
 user.params.list[['nbar']] <- 50
 user.params.list[['K']] <- 1
 user.params.list[['ICC.3']] <- NULL
@@ -71,7 +71,7 @@ Fixed effects
 
 ```{r blocked.2f}
 design <- "blocked_i1_2f"
-user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['omega.2']] <- user.params.default[['omega.2']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 blocked_i1_2f_power_plot <- gen.power.results.plot(params.file.base, design)
 print(blocked_i1_2f_power_plot)
@@ -81,7 +81,7 @@ Random effects
 
 ```{r blocked.2r}
 design <- "blocked_i1_2r"
-user.params.list[['ICC.2']] <- params.default[['ICC.2']]
+user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, design)
 print(blocked_i1_2r_power_plot)
@@ -110,7 +110,7 @@ Fixed effects, $\rho = 0$
 
 ```{r blocked.2f.rho0}
 design <- "blocked_i1_2f"
-user.params.list[['omega.2']] <- params.default[['omega.2']]
+user.params.list[['omega.2']] <- user.params.default[['omega.2']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 blocked_i1_2f_rho0_power_plot <- gen.power.results.plot(params.file.base, design)
 print(blocked_i1_2f_rho0_power_plot)
@@ -120,7 +120,7 @@ Random effects, $\rho = 0$
 
 ```{r blocked.2r.rho0}
 design <- "blocked_i1_2r"
-user.params.list[['ICC.2']] <- params.default[['ICC.2']]
+user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 blocked_i1_2r_rho0_power_plot <- gen.power.results.plot(params.file.base, design)
 print(blocked_i1_2r_rho0_power_plot)
@@ -129,7 +129,7 @@ print(blocked_i1_2r_rho0_power_plot)
 
 
 ```{r rho.reset}
-rho.default <- params.default[['rho.default']]
+rho.default <- user.params.default[['rho.default']]
 user.params.list[['rho.default']] <- rho.default
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 user.params.list[['rho.X']] <- user.params.list[['rho.C']] <- default.rho.matrix
@@ -139,7 +139,9 @@ user.params.list[['rho.u0']] <- user.params.list[['rho.u1']] <- user.params.list
 # Cluster 2 level
 
 ```{r cluster.2c}
-user.params.list <- params.default
+user.params.list <- user.params.default
+user.params.list[['nbar']] <- 50
+
 user.params.list[['K']] <- 1
 user.params.list[['ICC.3']] <- NULL
 user.params.list[['omega.3']] <- NULL
@@ -149,6 +151,7 @@ user.params.list[['omega.2']] <- 0
 # params to help have a decent power
 user.params.list[['ICC.2']] <- rep(0.1, M)
 user.params.list[['J']] <- 60
+user.params.list[['ATE_ES']] <- rep(0.25, M)
   
 design <- "simple_c2_2r"
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -159,7 +162,7 @@ print(simple_c2_2r_power_plot)
 # Blocked 3 level
 
 ```{r blocked.3r}
-user.params.list <- params.default
+user.params.list <- user.params.default
 
 # for a reasonable runtime
 user.params.list[['J']] <- 10
@@ -177,8 +180,10 @@ print(blocked_i1_3r_power_plot)
 # Cluster 3 level
 
 ```{r cluster.3r}
-user.params.list <- params.default
+user.params.list <- user.params.default
+user.params.list[['nbar']] <- 50
 
+# assumptions
 user.params.list[['omega.2']] <- 0
 user.params.list[['omega.3']] <- 0
 
@@ -186,7 +191,7 @@ user.params.list[['omega.3']] <- 0
 user.params.list[['J']] <- 10
 user.params.list[['K']] <- 5
 user.params.list[['nbar']] <- 20
-user.params.list[['ATE_ES']] <- rep(0.25, M)
+user.params.list[['ATE_ES']] <- rep(1, M)
 user.params.list[['ICC.3']] <- rep(0.1, M)
 user.params.list[['ICC.2']] <- rep(0.1, M)
 
@@ -199,7 +204,7 @@ print(simple_c3_3r_power_plot)
 # Blocked cluster
 
 ```{r blocked.cluster}
-user.params.list <- params.default
+user.params.list <- user.params.default
 
 user.params.list[['omega.2']] <- 0
 
@@ -227,8 +232,8 @@ Blocked cluster, random effects
 
 ```{r blocked.cluster.3r}
 design <- "blocked_c2_3r"
-user.params.list[['R2.3']] <- params.default[['R2.3']]
-user.params.list[['ICC.3']] <- params.default[['ICC.3']]
+user.params.list[['R2.3']] <- user.params.default[['R2.3']]
+user.params.list[['ICC.3']] <- user.params.default[['ICC.3']]
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 blocked_c2_3r_power_plot <- gen.power.results.plot(params.file.base, design)
 print(blocked_c2_3r_power_plot)
