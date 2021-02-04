@@ -20,7 +20,7 @@
 #'
 #' @examples
 #'
-adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
+adjust_WY <- function(dat.all, rawt, S.id, D.id,
                       design, proc,
                       sim.params.list, model.params.list,
                       cl = NULL) {
@@ -28,11 +28,10 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
   # cl = NULL;
   
   B <- sim.params.list[['B']]
-  maxT <- sim.params.list[['maxT']]
   Tbar <- sim.params.list[['Tbar']]
   
   # get ordering of raw p-values
-  r.m.r <- order(rawp, decreasing = FALSE)
+  
   
   # blocked designs
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r')) {
@@ -50,6 +49,7 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
     stop(print(paste('Design', design, 'not implemented yet')))
   }
   
+  # generate null test-statistics
   if(!is.null(cl))
   {
     clusterExport(cl, list(
@@ -58,45 +58,28 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
       "calc.df"
     ), envir = environment())
     
-    # get null p-values (if maxT=FALSE) or test-statistics (if maxT=TRUE) using permuted T's
-    nullpt <- t(parallel::parApply(
-      cl, permT, 2, perm.regs, dat.all = dat.all, maxT = maxT,
+    nullt <- t(parallel::parApply(
+      cl, permT, 2, perm.regs, dat.all = dat.all,
       design = design, user.params.list = user.params.list
     ))
   } else
   {
-    nullpt <- t(apply(
-      permT, 2, perm.regs, dat.all = dat.all, maxT = maxT,
+    nullt <- t(apply(
+      permT, 2, perm.regs, dat.all = dat.all,
       design = design, user.params.list = user.params.list
     ))
   }
   
-  # create dummies for comparisons of null p-values to raw p-values
-  if (maxT == FALSE & proc == 'WY-SD') {
-    ind.B <- apply(nullpt, 1, comp.rawp.sd, rawp, r.m.r)
-  } else if (maxT == FALSE & proc == 'WY-SS') {
-    ind.B <- apply(nullpt, 1, comp.rawp.ss, rawp, r.m.r)
-  } else if (maxT == TRUE & proc == 'WY-SD') {
-    ind.B <- apply(nullpt, 1, comp.rawt.sd, rawt, r.m.r)
-  } else if (maxT == TRUE & proc == 'WY-SS') {
-    ind.B <- apply(nullpt, 1, comp.rawt.ss, rawt, r.m.r)
+  # now calculate WY p-values
+  oo <- order(rawt, decreasing = TRUE)
+  if (proc == 'WY-SS') {
+    ind.B <- t(apply(nullt, 1, comp.rawt.SS, abs.Zs.H1.1samp = rawt))
+    adjp <- colMeans(ind.B)
+  } else if (proc == 'WY-SD') {
+    adjp <- get.adjp.minp(nullt, rawt, oo)
   }
   
-  # take means of dummies, these are already ordered (by r.m.r) but still need to enforce monotonicity
-  pi.p.m <- rowMeans(ind.B)
-  
-  # enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
-  adjp.minp <- rep(NA, user.params.list[['M']])
-  adjp.minp[1] <- pi.p.m[1]
-  for (h in 2:length(pi.p.m)) {
-    adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])
-  }
-  
-  # return back in original, non-ordered form
-  out <- cbind(rawp[r.m.r], adjp.minp, r.m.r)
-  colnames(out) <- c("rawp", "WY", "test.num")
-  out.oo <- out[order(out[, 'test.num']),]
-  return(out.oo)
+  return(adjp)
 }
 
 #' Performs regression with permuted treatment indicator
@@ -113,7 +96,7 @@ adjust_WY <- function(dat.all, rawp, rawt, S.id, D.id,
 #' @export
 #'
 #' @examples
-perm.regs <- function(permT.vec, dat.all, design, maxT, user.params.list) {
+perm.regs <- function(permT.vec, dat.all, design, user.params.list) {
   # permT.vec <- permT[,1];
 
   M <- length(dat.all)
@@ -123,69 +106,7 @@ perm.regs <- function(permT.vec, dat.all, design, maxT, user.params.list) {
     dat.m$T.x <- permT.vec
     mod <- make.model(dat.m, design)[['mod']]
     pval.tstat <- get.pval.tstat(mod, design, user.params.list)
-    if(maxT)
-    {
-      out[m] <- pval.tstat[['tstat']]
-    } else
-    {
-      out[m] <- pval.tstat[['pval']]
-    }
+    out[m] <- pval.tstat[['tstat']]
   }
   return(out)
-}
-
-#' Functions to compare nullp distributions with raw distributions
-#' comp.rawp.sd: makes rawp comparisons for step-down procedure
-#' comp.rawp.ss: makes rawp comparisons for single-step procedure
-#' comp.rawt.sd: makes rawt comparisons for step-down procedure
-#' comp.rawt.ss: makes rawt comparisons for single-step procedure
-#'
-#' The length of nullprow, rawp, and r.m.r are the same. This function is performed on each row of nullp.mat
-#'
-#' @param nullprow OR null trow row of p-values or t stats
-#' @param rawp OR rawt raw p-values or t stats
-#' @param r.m.r vector of indices of rawp or rawt in order
-#'
-#' @return
-#' @export
-#'
-#' @examples
-
-comp.rawp.sd <- function(nullprow, rawp, r.m.r) {
-  num.test <- length(nullprow)
-  minp <- rep(NA, num.test)
-  minp[1] <- min(nullprow) < rawp[r.m.r][1]
-  for (h in 2:num.test) {
-    minp[h] <- min(nullprow[r.m.r][-(1:(h-1))]) < rawp[r.m.r][h]
-  }
-  return(as.integer(minp))
-}
-
-comp.rawp.ss <- function(nullprow, rawp, r.m.r) {
-  num.test <- length(nullprow)
-  minp <- rep(NA, num.test)
-  for (h in 1:num.test) {
-    minp[h] <- min(nullprow) < rawp[r.m.r][h]
-  }
-  return(as.integer(minp))
-}
-
-comp.rawt.sd <- function(nulltrow, rawt, r.m.r) {
-  num.test <- length(nulltrow)
-  maxt <- rep(NA, num.test)
-  maxt[1] <- max(abs(nulltrow)) > abs(rawt)[r.m.r][1]
-  for (h in 2:num.test) {
-    maxt[h] <- max(abs(nulltrow)[r.m.r][-(1:(h-1))]) > abs(rawt)[r.m.r][h]
-  }
-  return(as.integer(maxt))
-}
-
-comp.rawt.ss <- function(nulltrow, rawt, r.m.r) {
-  # nulltrow = nullpt[1,]
-  num.test <- length(nulltrow)
-  maxt <- rep(NA, num.test)
-  for (h in 1:num.test) {
-    maxt[h] <- max(abs(nulltrow)) > abs(rawt)[r.m.r][h]
-  }
-  return(as.integer(maxt))
 }

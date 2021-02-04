@@ -43,6 +43,8 @@ library(tictoc)      # for timing
 # choose whether to load package code or local code
 source(here::here("Methods", "utils.R"))
 source(here::here("Methods", "pump_power.R"))
+source(here::here("Methods", "pump_wy.R"))
+source(here::here("Methods", "utils.R"))
 
 # to install pum from github, generate a personal authentication token 'foo'
 # at https://github.com/settings/tokens

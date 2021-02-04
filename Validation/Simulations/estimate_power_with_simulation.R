@@ -412,14 +412,14 @@ get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id, sim.params.list, mod
     tw1 <- Sys.time()
     adjp.proc <- adjust_WY(
       dat.all = dat.all,
-      rawp = rawp, rawt = rawt,
+      rawt = rawt,
       S.id = S.id, D.id = D.id,
       proc = proc,
       sim.params.list = sim.params.list,
       model.params.list = model.params.list,
       design = design,
       cl = cl
-    )[,"WY"]
+    )
     tw2 <- Sys.time()
   }
   else {
