@@ -228,7 +228,7 @@ pump_power <- function(
   rawp.matrix <- pt(-abs(rawt.matrix), df = t.df) * 2
 
   # 1st call back to progress bar on progress of calculation: P values generation
-  if (is.function(updateProgress) & !is.null(rawp)) {
+  if (is.function(updateProgress) & !is.null(rawp.matrix)) {
     updateProgress(message = "P-values have been generated!")
   }
   
@@ -253,7 +253,9 @@ pump_power <- function(
     adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "BH"))
     
   } else if(MTP == "rawp") {
-    adjp <- rawp
+    
+    adjp <- rawp.matrix
+    
   } else if (MTP == "WY-SS"){
       
     adjp <- adjp.wyss(rawt.matrix = rawt.matrix, snum = snum, sigma = sigma, t.df = t.df)
