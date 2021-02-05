@@ -37,15 +37,18 @@ panderOptions('round', 3)
 source(here::here("Validation/Simulations", "params.R"))
 user.params.default <- user.params.list
 sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
-sim.params.list[['S']] <- 1000
+sim.params.list[['S']] <- 500
 sim.params.list[['Q']] <- 1
-sim.params.list[['B']] <- 1000
+sim.params.list[['B']] <- 500
 
 sim.params.default <- sim.params.list
 ```
 
+# Blocked 2 level models
+
 ```{r blocked.2}
 user.params.list <- user.params.default
+sim.params.list <- sim.params.default
 user.params.list[['nbar']] <- 50
 user.params.list[['K']] <- 1
 user.params.list[['ICC.3']] <- NULL
@@ -53,8 +56,6 @@ user.params.list[['omega.3']] <- NULL
 user.params.list[['R2.3']] <- NULL
 user.params.list[['nbar']] <- 50
 ```
-
-# Blocked 2 level models
 
 Constant effects
 
@@ -140,6 +141,7 @@ user.params.list[['rho.u0']] <- user.params.list[['rho.u1']] <- user.params.list
 
 ```{r cluster.2c}
 user.params.list <- user.params.default
+sim.params.list <- sim.params.default
 user.params.list[['nbar']] <- 50
 
 user.params.list[['K']] <- 1
@@ -151,7 +153,6 @@ user.params.list[['omega.2']] <- 0
 # params to help have a decent power
 user.params.list[['ICC.2']] <- rep(0.1, M)
 user.params.list[['J']] <- 60
-user.params.list[['ATE_ES']] <- rep(0.25, M)
   
 design <- "simple_c2_2r"
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -181,6 +182,7 @@ print(blocked_i1_3r_power_plot)
 
 ```{r cluster.3r}
 user.params.list <- user.params.default
+sim.params.list <- sim.params.default
 user.params.list[['nbar']] <- 50
 
 # assumptions
@@ -188,10 +190,10 @@ user.params.list[['omega.2']] <- 0
 user.params.list[['omega.3']] <- 0
 
 # for a reasonable runtime and power
-user.params.list[['J']] <- 10
-user.params.list[['K']] <- 5
-user.params.list[['nbar']] <- 20
-user.params.list[['ATE_ES']] <- rep(1, M)
+# user.params.list[['J']] <- 10
+# user.params.list[['K']] <- 5
+# user.params.list[['nbar']] <- 20
+user.params.list[['ATE_ES']] <- rep(0.25, M)
 user.params.list[['ICC.3']] <- rep(0.1, M)
 user.params.list[['ICC.2']] <- rep(0.1, M)
 

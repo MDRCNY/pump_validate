@@ -118,11 +118,10 @@ if(run.wy.test)
     # user.params.list[['K']] <- 5
     # user.params.list[['nbar']] <- 20
     # sim.params.list[['B']] <- 200
-    # user.params.list[['S']] <- 20
+    # user.params.list[['S']] <- 200
     
     power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
   }
-
   
   #------------------------------------#
   # cluster 3 level

@@ -207,7 +207,7 @@ user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[[
 ## Varying true positives
 
 ```{r MDES0.12500}
-user.params.list[['ATE_ES']] <- c(0.125, 0, 0)
+user.params.list[['ATE_ES']] <- c(0.25, 0, 0)
 ```
 
 ATE (ES) = `r user.params.list[['ATE_ES']]`
