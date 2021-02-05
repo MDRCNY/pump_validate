@@ -55,6 +55,9 @@ user.params.list[['ATE_ES']] <- rep(0.25, M)
 user.params.list[['ICC.2']] <- rep(0.1, M)
 user.params.list[['ICC.3']] <- rep(0.1, M)
 
+# what we assume for validation
+user.params.list[['S']] <- 1000
+
 params.default <- user.params.list
 ```
 

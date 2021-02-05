@@ -45,6 +45,10 @@ params.default <- user.params.list
 ```{r}
 # assumptions
 user.params.list[['omega.2']] <- 0
+
+# what we assume for validation
+user.params.list[['S']] <- 1000
+
 params.default <- user.params.list
 ```
 

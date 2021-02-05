@@ -50,6 +50,9 @@ design <- "blocked_i1_3r"
 user.params.list[['K']] <- 15
 user.params.list[['nbar']] <- 100
 
+# what we assume for validation
+user.params.list[['S']] <- 1000
+
 params.default <- user.params.list
 ```
 
