@@ -19,14 +19,13 @@ source(here::here("Validation/Simulations", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 1000                # Number of samples for Monte Carlo Simulation
+  S = 10               # Number of samples for Monte Carlo Simulation
   , Q = 1                 # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = 2                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
-  , maxT = TRUE           # In WY procedure, whether to adjust based on ordered rawp values or ordered rawT values
   , alpha = 0.05          # Significance level
   , tol = 0.01            # tolerance for MDES and sample  size calculations
   , Tbar = 0.5            # Binomial assignment probability
-  , tnum = 1000           # Number of test statistics (samples) for all procedures other than Westfall-Young
+  , tnum = 10           # Number of test statistics (samples) for all procedures other than Westfall-Young
   , parallel = TRUE       # parallelize within each monte carlo iteration
   , ncl = 2               # Number of computer clusters (max on RStudio Server is 16)
   , start.tnum = 100      # number of iterations for starting to testing mdes and power
