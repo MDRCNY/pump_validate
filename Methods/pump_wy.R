@@ -9,11 +9,11 @@
 #' @return returns a vector of 1s and 0s with length of M outcomes
 #'
 #'
-comp.rawt.ss <- function(nullt, rawt, rawt.order) {
+comp.rawt.ss <- function(nullt, rawt) {
   M <- length(nullt)
   maxt <- rep(NA, M)
   for (h in 1:M) {
-    maxt[h] <- max(abs(nullt)) > abs(rawt)[rawt.order][h]
+    maxt[h] <- max(abs(nullt)) > abs(rawt)[h]
   }
   return(as.integer(maxt))
 }
@@ -37,15 +37,10 @@ comp.rawt.sd <- function(nullt, rawt, rawt.order) {
 }
 
 # enforce monotonicity in p-values
-get.adjp.minp <- function(nullt, rawt, rawt.order)
+get.adjp.minp <- function(ind.B, rawt.order)
 {
-  # abs.Zs.H1.row = abs.Zs.H1[1,]; oo = order.matrix[1,];
-  
-  # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
-  ind.B <- apply(nullt, 1, comp.rawt.sd, rawt, rawt.order)
-  
   # take means of dummies, these are already ordered (by r.m.r) but still need to enforce monotonicity
-  pi.p.m <- rowMeans(ind.B)
+  pi.p.m <- colMeans(ind.B)
   
   # enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
   adjp.minp <- rep(NA, length(pi.p.m))
@@ -55,9 +50,8 @@ get.adjp.minp <- function(nullt, rawt, rawt.order)
   }
   
   # return back in original, non-ordered form
-  out <- cbind(adjp.minp, rawt.order)
-  colnames(out) <- c("WY", "test.num")
-  out.oo <- out[order(out[, 'test.num']),"WY"]
+  out <- data.frame(adjp = adjp.minp, rawt.order = rawt.order)
+  out.oo <- out$adjp[order(out$rawt.order)]
   
   return(out.oo)
 }
@@ -77,21 +71,27 @@ get.adjp.minp <- function(nullt, rawt, rawt.order)
 #'
 #' @return a matrix of adjusted test statistics values
 
-adjust.allsamps.WYSS <- function(snum, nullt, rawt, rawt.order) {
+adjp.wyss <- function(rawt.matrix, snum, sigma, t.df) {
   
-  # creating the matrix to store the adjusted test values with the number of samples &
-  # number of M outcomes
-  adjp.WY <- matrix(NA, snum, ncol(nullt))
-  # looping through all the samples of raw test statistics under the alternative hypothesis
-  doWY <- for (s in 1:snum) {
+  # creating the matrix to store the adjusted test values
+  M <- ncol(rawt.matrix)
+  tnum <- nrow(rawt.matrix)
+  adjp <- matrix(NA, tnum, nrow = tnum, ncol = M)
+  
+  # looping through all the samples of raw test statistics
+  for (t in 1:tnum) {
+    
+    # generate a bunch of null p values
+    nullt <- mvtnorm::rmvt(snum, sigma = sigma, df = t.df)
     
     # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
-    ind.B <- t(apply(nullt, 1, comp.rawt.ss, rawt = rawt[s,]))
+    ind.B <- t(apply(nullt, 1, comp.rawt.ss, rawt = rawt.matrix[t,]))
+    
     # calculating the p-value for each sample
-    adjp.WY[s,] <- colMeans(ind.B)
+    adjp[t,] <- colMeans(ind.B)
     
   }
-  return(adjp.WY)
+  return(adjp)
 }
 
 #' Westfall Young Step Down Function
@@ -111,35 +111,57 @@ adjust.allsamps.WYSS <- function(snum, nullt, rawt, rawt.order) {
 #'
 #' @return a matrix of adjusted test statistics values
 
-adjust.allsamps.WYSD <- function(snum, nullt, rawt.matrix, rawt.order.matrix, cl = NULL) {
+adjp.wysd <- function(rawt.matrix, snum, sigma, t.df, cl = NULL) {
   
-  # getting M number of outcomes vector
-  M <- ncol(nullt)
-  # setting up the matrix to save the adjusted p values
-  adjp.WY <- matrix(NA, snum, M)
+  # creating the matrix to store the adjusted test values
+  M <- ncol(rawt.matrix)
+  tnum <- nrow(rawt.matrix)
+  adjp.wy <- matrix(NA, tnum, nrow = tnum, ncol = M)
   
   if(!is.null(cl))
   {
-    # leveraging snow to run multiple cores for foreach loops
-    doParallel::registerDoParallel(cl)
-    # registering the comp.rawt.SD function in global enivronment of each node
-    parallel::clusterExport(cl = cl, list('comp.rawt.sd', 'get.adjp.minp'), envir = environment())
-    
-    # dopar is a special function that has to be explicitly called from the foreach package
-    # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
-    # series of steps to execute
-    # `%dopar%` <- foreach::`%dopar%`
-    # making s a local variable to perpetuate across (created to bypass a package requirement)
-    # s = 1:snum
-    doWY <- foreach::foreach(s = 1:snum, .combine = rbind) %dopar% {
-      adjp.WY[s,] <- get.adjp.minp(nullt = nullt, rawt = rawt.matrix[s,], rawt.order = rawt.order.matrix[s,])
-    }
+    clusterExport(
+      cl,
+      list("rawt.matrix"),
+      envir = environment()
+    )
+    rawt.order.matrix <- t(parallel::parApply(cl, rawt.matrix, 1, order, decreasing = TRUE))
   } else
   {
-    doWY <- foreach::foreach(s = 1:snum, .combine = rbind) %do% {
-      adjp.WY[s,] <- get.adjp.minp(nullt = nullt, rawt = rawt.matrix[s,], rawt.order = rawt.order.matrix[s,])
-    }
+    rawt.order.matrix <- t(apply(rawt.matrix, 1, order, decreasing = TRUE))
   }
   
-  return(doWY)
+  # looping through all the samples of raw test statistics
+  for (t in 1:tnum) {
+    # generate null t statistics
+    nullt <- mvtnorm::rmvt(snum, sigma = sigma, df = t.df)
+    ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt.matrix[t,], rawt.order.matrix[t,]))
+    adjp <- get.adjp.minp(ind.B, rawt.order.matrix[t,])
+  }
+  
+  # if(!is.null(cl))
+  # {
+  #   # leveraging snow to run multiple cores for foreach loops
+  #   doParallel::registerDoParallel(cl)
+  #   # registering the comp.rawt.SD function in global enivronment of each node
+  #   parallel::clusterExport(cl = cl, list('comp.rawt.sd', 'get.adjp.minp'), envir = environment())
+  #   
+  #   # dopar is a special function that has to be explicitly called from the foreach package
+  #   # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
+  #   # series of steps to execute
+  #   # `%dopar%` <- foreach::`%dopar%`
+  #   # making s a local variable to perpetuate across (created to bypass a package requirement)
+  #   # s = 1:snum
+  #   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %dopar% {
+  #     nullt <- mvtnorm::rmvt(snum, sigma = sigma, df = t.df)
+  #     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,])
+  #   }
+  # } else
+  # {
+  #   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %do% {
+  #     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[s,], rawt.order = rawt.order.matrix[t,])
+  #   }
+  # }
+  
+  return(adjp.wy)
 }

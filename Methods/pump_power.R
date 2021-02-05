@@ -223,72 +223,45 @@ pump_power <- function(
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
   
-  Zs.H0 <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0, M), type = c("shifted", "Kshirsagar"))
-  Zs.H1 <- Zs.H0 + t.shift.mat
-  
-  # calculates p values from quantiles and degrees of freedom
-  pvals.H0 <- pt(-abs(Zs.H0), df = t.df) * 2
-  pvals.H1 <- pt(-abs(Zs.H1), df = t.df) * 2
-  
-  # getting the absolute values of the test statistics
-  abs.Zs.H0 <- abs(Zs.H0)
-  abs.Zs.H1 <- abs(Zs.H1)
-  
+  # generate t statistics and p values
+  rawt.matrix <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df) + t.shift.mat
+  rawp.matrix <- pt(-abs(rawt.matrix), df = t.df) * 2
+
   # 1st call back to progress bar on progress of calculation: P values generation
-  if (is.function(updateProgress) & !is.null(abs.Zs.H0)) {
+  if (is.function(updateProgress) & !is.null(rawp)) {
     updateProgress(message = "P-values have been generated!")
   }
   
   # seperating out p values that are adjusted by Bonferroni, Holm and Benjamini-Hocheberg
   grab.pval <- function(...,proc) {return(...$adjp[order(...$index),proc])}
   
-  rawp <- pvals.H1
+  
   
   if (MTP == "Bonferroni"){
     
-    adjp <- apply(pvals.H1, 1, multtest::mt.rawp2adjp, proc = "Bonferroni", alpha = alpha)
+    adjp <- apply(rawp.matrix, 1, multtest::mt.rawp2adjp, proc = "Bonferroni", alpha = alpha)
     adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "Bonferroni"))
     
   } else if (MTP == "Holm") {
     
-    adjp <- apply(pvals.H1, 1, multtest::mt.rawp2adjp, proc = "Holm", alpha = alpha)
+    adjp <- apply(rawp.matrix, 1, multtest::mt.rawp2adjp, proc = "Holm", alpha = alpha)
     adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "Holm"))
     
   } else if (MTP == "BH") {
     
-    adjp <- apply(pvals.H1, 1, multtest::mt.rawp2adjp, proc = c("BH"), alpha = alpha)
+    adjp <- apply(rawp.matrix, 1, multtest::mt.rawp2adjp, proc = c("BH"), alpha = alpha)
     adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "BH"))
     
   } else if(MTP == "rawp") {
     adjp <- rawp
-  } else if(MTP %in% c("WY-SS", "WY-SD"))
-  {
-    if(snum > tnum)
-    {
-      message('snum must be less than tnum, increasing tnum to match snum')
-      tnum <- snum
-    }
-    if(!is.null(cl))
-    {
-      clusterExport(
-        cl,
-        list("abs.Zs.H1"),
-        envir = environment()
-      )
-      order.matrix <- t(parallel::parApply(cl, abs.Zs.H1, 1, order, decreasing = TRUE))
-    } else
-    {
-      order.matrix <- t(apply(abs.Zs.H1, 1, order, decreasing = TRUE))
-    }
+  } else if (MTP == "WY-SS"){
+      
+    adjp <- adjp.wyss(rawt.matrix = rawt.matrix, snum = snum, sigma = sigma, t.df = t.df)
+      
+  } else if (MTP == "WY-SD"){
+      
+    adjp <- adjp.wysd(rawt.matrix = rawt.matrix, snum = snum, sigma = sigma, t.df = t.df, cl = cl)
     
-    if (MTP == "WY-SS"){
-      
-      adjp <- adjust.allsamps.WYSS(snum, abs.Zs.H0, abs.Zs.H1)
-      
-    } else if (MTP == "WY-SD"){
-      
-      adjp <- adjust.allsamps.WYSD(snum, abs.Zs.H0, abs.Zs.H1, order.matrix, cl)
-    }
   } else {
     stop(paste("Unknown MTP:", MTP))
   }
@@ -297,7 +270,7 @@ pump_power <- function(
     updateProgress(message = paste("Multiple adjustments done for", MTP))
   }
   
-  adjp.each <- list(rawp, adjp)
+  adjp.each <- list(rawp.matrix, adjp)
   
   # for each MTP, get matrix of indicators for whether the adjusted p-value is less than alpha
   reject <- function(x) { as.matrix(1*(x < alpha)) }

@@ -69,10 +69,11 @@ adjust_WY <- function(dat.all, rawt, S.id, D.id,
   # now calculate WY p-values
   rawt.order <- order(rawt, decreasing = TRUE)
   if (proc == 'WY-SS') {
-    ind.B <- t(apply(nullt, 1, comp.rawt.ss, rawt, rawt.order))
+    ind.B <- t(apply(nullt, 1, comp.rawt.ss, rawt))
     adjp <- colMeans(ind.B)
   } else if (proc == 'WY-SD') {
-    adjp <- get.adjp.minp(nullt, rawt, rawt.order)
+    ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt, rawt.order))
+    adjp <- get.adjp.minp(ind.B, rawt.order)
   }
   
   return(adjp)
