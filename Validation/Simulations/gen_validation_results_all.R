@@ -841,9 +841,6 @@ if(run.cluster.3l & run.power)
   user.params.list[['ICC.3']] <- rep(0.1, M)
   user.params.list[['ICC.2']] <- rep(0.1, M)
   
-  user.params.list <- user.params.default
-  user.params.list[['nbar']] <- 50
-  
   #------------------------------------------------------------------#
   # vary sample size
   #------------------------------------------------------------------#

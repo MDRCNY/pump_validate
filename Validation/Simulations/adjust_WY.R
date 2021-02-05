@@ -26,12 +26,8 @@ adjust_WY <- function(dat.all, rawt, S.id, D.id,
                       cl = NULL) {
   
   # cl = NULL;
-  
   B <- sim.params.list[['B']]
   Tbar <- sim.params.list[['Tbar']]
-  
-  # get ordering of raw p-values
-  
   
   # blocked designs
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r')) {
@@ -71,12 +67,12 @@ adjust_WY <- function(dat.all, rawt, S.id, D.id,
   }
   
   # now calculate WY p-values
-  oo <- order(rawt, decreasing = TRUE)
+  rawt.order <- order(rawt, decreasing = TRUE)
   if (proc == 'WY-SS') {
-    ind.B <- t(apply(nullt, 1, comp.rawt.SS, abs.Zs.H1.1samp = rawt))
+    ind.B <- t(apply(nullt, 1, comp.rawt.ss, rawt, rawt.order))
     adjp <- colMeans(ind.B)
   } else if (proc == 'WY-SD') {
-    adjp <- get.adjp.minp(nullt, rawt, oo)
+    adjp <- get.adjp.minp(nullt, rawt, rawt.order)
   }
   
   return(adjp)
