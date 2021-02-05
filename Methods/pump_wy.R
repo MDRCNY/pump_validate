@@ -76,7 +76,7 @@ adjp.wyss <- function(rawt.matrix, snum, sigma, t.df) {
   # creating the matrix to store the adjusted test values
   M <- ncol(rawt.matrix)
   tnum <- nrow(rawt.matrix)
-  adjp <- matrix(NA, tnum, nrow = tnum, ncol = M)
+  adjp <- matrix(NA, nrow = tnum, ncol = M)
   
   # looping through all the samples of raw test statistics
   for (t in 1:tnum) {
@@ -116,7 +116,7 @@ adjp.wysd <- function(rawt.matrix, snum, sigma, t.df, cl = NULL) {
   # creating the matrix to store the adjusted test values
   M <- ncol(rawt.matrix)
   tnum <- nrow(rawt.matrix)
-  adjp.wy <- matrix(NA, tnum, nrow = tnum, ncol = M)
+  adjp <- matrix(NA, nrow = tnum, ncol = M)
   
   if(!is.null(cl))
   {
@@ -136,7 +136,7 @@ adjp.wysd <- function(rawt.matrix, snum, sigma, t.df, cl = NULL) {
     # generate null t statistics
     nullt <- mvtnorm::rmvt(snum, sigma = sigma, df = t.df)
     ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt.matrix[t,], rawt.order.matrix[t,]))
-    adjp <- get.adjp.minp(ind.B, rawt.order.matrix[t,])
+    adjp[t,] <- get.adjp.minp(ind.B, rawt.order.matrix[t,])
   }
   
   # if(!is.null(cl))
@@ -163,5 +163,5 @@ adjp.wysd <- function(rawt.matrix, snum, sigma, t.df, cl = NULL) {
   #   }
   # }
   
-  return(adjp.wy)
+  return(adjp)
 }
