@@ -55,6 +55,9 @@ user.params.list[['ATE_ES']] <- rep(0.25, M)
 user.params.list[['ICC.2']] <- rep(0.1, M)
 user.params.list[['ICC.3']] <- rep(0.1, M)
 
+# what we assume for validation
+user.params.list[['S']] <- 1000
+
 params.default <- user.params.list
 ```
 
@@ -207,7 +210,7 @@ user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[[
 ## Varying true positives
 
 ```{r MDES0.12500}
-user.params.list[['ATE_ES']] <- c(0.125, 0, 0)
+user.params.list[['ATE_ES']] <- c(0.25, 0, 0)
 ```
 
 ATE (ES) = `r user.params.list[['ATE_ES']]`

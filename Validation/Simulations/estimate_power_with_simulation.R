@@ -27,12 +27,15 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", procs))
   names(adjp.proc) <- c("rawp", procs)
   
+  # how often to print error messages
   px <- 100
-  rawt.all <- matrix(NA, S, M)
+  
   # begin loop through all samples to be generated
+  num.singular.raw <- 0
+  num.failed.converge.raw <- 0
   t1 <- Sys.time()
   for (s in 1:S) {
-    
+
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
@@ -65,9 +68,13 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     samp.obs$Yobs <- gen_Yobs(samp.full, T.x)
     
     dat.all <- makelist.samp(samp.obs, T.x) # list length M
-    rawp <- get.rawp(dat.all, design = design, user.params.list = user.params.list) # vector length M
-    rawt <- get.rawt(dat.all, design = design) # vector length M
-    rawt.all[s,] <- rawt
+    rawpt.out <- get.rawpt(dat.all, design = design, user.params.list = user.params.list)
+    rawp <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['pval']])})
+    rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
+    
+    # track how many failures occur
+    num.singular.raw <- num.singular.raw + rawpt.out[['num.singular']]
+    num.failed.converge.raw <- num.failed.converge.raw + rawpt.out[['num.failed.converge']]
     
     # loop through adjustment procedures (adding 'rawp' as default in all cases)
     for (p in 1:(length(procs) + 1)) {
@@ -78,7 +85,12 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         t11 <- Sys.time()
         
         proc <- procs[p-1]
-        pvals <- get.adjp(proc, rawp, rawt, dat.all, S.id, D.id, sim.params.list, model.params.list, design, cl)
+        pvals <- get.adjp(
+          proc = proc, rawp = rawp, rawt = rawt,
+          dat.all = dat.all, S.id = S.id, D.id = S.id,
+          sim.params.list = sim.params.list, model.params.list = model.params.list,
+          design = design, cl = cl
+        )
         
         t21 <- Sys.time()
         if (s == 1) { message(paste("One sample of", proc, "took", round(difftime(t21, t11, units = 'secs')[[1]], 4), 'seconds')) }
@@ -97,6 +109,8 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     else if (s %% px == 0) { message(paste('Progress: iteration', s, 'of', S, 'complete, running time:', difftime(t2, t1))) }
   } # end loop through samples
   
+  message(paste('Number of singular fits:', num.singular.raw))
+  message(paste('Number of failed convergence:', num.failed.converge.raw))
   return(adjp.proc)
 }
 
@@ -214,6 +228,9 @@ calc_power <- function(adjp.proc, alpha)
 make.model <- function(dat.m, design) {
   # dat.m = dat.all[[1]];
   
+  singular <- FALSE
+  failed.converge <- FALSE
+  
   dat.m$S.id <- as.factor(dat.m$S.id)
   if(!is.null(dat.m$D.id)){ dat.m$D.id <- as.factor(dat.m$D.id) }
 
@@ -224,25 +241,35 @@ make.model <- function(dat.m, design) {
     mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.id, data = dat.m, control_formula = "C.ijk", use.lmer = FALSE)
   } else if (design == "blocked_i1_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
+    singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else if (design == "blocked_i1_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
+    singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else if (design == "simple_c2_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
+    singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else if (design == "simple_c3_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
+    singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else if (design == "blocked_c2_3f") {
     mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = D.id, data = dat.m, control_formula = "X.jk + C.ijk + (1 | S.id)", use.lmer = TRUE)
   } else if (design == "blocked_c2_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
-    mod <- lmer(form, data = dat.m)
+    mod <- suppressMessages(lmer(form, data = dat.m))
+    singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else {
     stop(paste('Unknown design:', design)) 
   }
-  return(mod)
+  return(list(mod = mod, singular = singular, failed.converge = failed.converge))
 }
 
 # --------------------------------------------------------------------- #
@@ -283,9 +310,10 @@ make.dummies <- function(dat, dummy.vars, nbar, J){
 #	Outputs: pvalue 									                                      #
 # --------------------------------------------------------------------- #
 
-get.pval <- function(mod, design, user.params.list) {
+get.pval.tstat <- function(mod, design, user.params.list) {
 
   if(class(mod) == "lm") {
+    tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
   } else if(class(mod) == "lmerMod") {
     df <- calc.df(design, user.params.list[['J']], user.params.list[['K']],
@@ -304,43 +332,25 @@ get.pval <- function(mod, design, user.params.list) {
   {
     stop('Unknown model type')
   }
-  return(pval)
-}
-
-get.tstat <- function(mod) {
-  
-  if(class(mod) %in% c("lmerMod", "lm")) {
-    tstat <- summary(mod)$coefficients["T.x","t value"]
-  } else if (class(mod) == "fastLm") {
-    tstat <- summary(mod)$coef["T.x", "t value"]
-  } else if (class(mod) == "data.frame") {
-    # fixed effects models
-    tstat <- mod$ATE_hat[1]/mod$SE[1]
-  }
-  return(tstat)
+  return(list(tstat = tstat, pval = pval))
 }
 
 # --------------------------------------------------------------------- #
-#	Function: get.rawp	Inputs: mdat, design, nbar, J      	                  #
-#   mdat, a single dataset from list of S datasets as a list length M     #
-#		p, a string "random", "fixfastLm", or "fixlmer"					          #
-#		nbar and J, number of obs at a site and number of sites, respectively	#
+#	Function: get.rawp	Inputs: dat.all, design, nbar, J      	            #
+#   dat.all, a single dataset from list of S datasets as a list length M  #
 #												                                                  #
 # Calls: make.dummies, make.model, get.pval                               #
 #	Outputs: matrix of raw p-values for a single sample		                  #
 #	Notes: gets raw p-vals for a single dataset and funct at a time	        #
 # --------------------------------------------------------------------- #
 
-get.rawp <- function(dat.all, design, user.params.list) {
-  mods = lapply(dat.all, function(m) make.model(m, design))
-  rawp = sapply(mods, function(x) get.pval(x, design, user.params.list))
-  return(rawp)
-}
-
-get.rawt <- function(mdat, design) {
-  mods = lapply(mdat, function(m) make.model(m, design))
-  rawt = sapply(mods, function(x) get.tstat(x))
-  return(rawt)
+get.rawpt <- function(dat.all, design, user.params.list) {
+  mods.out <- lapply(dat.all, function(m) make.model(m, design))
+  mods <- lapply(mods.out, function(m){ return(m[['mod']]) })
+  singular <- sapply(mods.out, function(m){ return(m[['singular']]) })
+  failed.converge <- sapply(mods.out, function(m){ return(m[['failed.converge']]) })
+  rawpt <- lapply(mods, function(x) get.pval.tstat(x, design, user.params.list))
+  return(list(rawpt = rawpt, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
 }
 
 # --------------------------------------------------------------------- #
@@ -402,14 +412,14 @@ get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id, sim.params.list, mod
     tw1 <- Sys.time()
     adjp.proc <- adjust_WY(
       dat.all = dat.all,
-      rawp = rawp, rawt = rawt,
+      rawt = rawt,
       S.id = S.id, D.id = D.id,
       proc = proc,
       sim.params.list = sim.params.list,
       model.params.list = model.params.list,
       design = design,
       cl = cl
-    )[,"WY"]
+    )
     tw2 <- Sys.time()
   }
   else {

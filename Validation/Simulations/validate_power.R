@@ -43,6 +43,8 @@ library(tictoc)      # for timing
 # choose whether to load package code or local code
 source(here::here("Methods", "utils.R"))
 source(here::here("Methods", "pump_power.R"))
+source(here::here("Methods", "pump_wy.R"))
+source(here::here("Methods", "utils.R"))
 
 # to install pum from github, generate a personal authentication token 'foo'
 # at https://github.com/settings/tokens
@@ -340,7 +342,8 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     pump.filename <- paste0(params.file.base, "pump_results.RDS")
     pump.file <- paste0(intermediate.data.dir, pump.filename)
     
-    if((overwrite | !file.exists(pump.file)) & sim.params.list[['runPump']]){
+    if((overwrite | !file.exists(pump.file)) & sim.params.list[['runPump']])
+    {
       
       message('Running PUMP')
       
@@ -670,7 +673,8 @@ if(FALSE)
   # design = 'simple_c2_2r';
   # design = 'simple_c3_3r';
   # MTP = 'Bonferroni';
-  MTP = 'Holm';
+  # MTP = 'Holm';
+  MTP = 'WY-SD';
   target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
   ATE_ES = user.params.list[['ATE_ES']]
