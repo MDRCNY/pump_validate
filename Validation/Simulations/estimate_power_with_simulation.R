@@ -316,7 +316,7 @@ get.pval.tstat <- function(mod, design, user.params.list) {
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
   } else if(class(mod) == "lmerMod") {
-    df <- calc.df(design, user.params.list[['J']], user.params.list[['K']],
+    df <- pum::calc.df(design, user.params.list[['J']], user.params.list[['K']],
                   user.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- (1 - pt(abs(tstat), df = df))*2
@@ -324,7 +324,7 @@ get.pval.tstat <- function(mod, design, user.params.list) {
     pval <- summary(mod)$coef["T.x", "Pr(>|t|)"]
   } else if (class(mod) == "data.frame") {
     # fixed effects models
-    df <- calc.df(design, user.params.list[['J']], user.params.list[['K']],
+    df <- pum::calc.df(design, user.params.list[['J']], user.params.list[['K']],
                   user.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- mod$ATE_hat[1]/mod$SE[1]
     pval <- (1 - pt(abs(tstat), df = df))*2

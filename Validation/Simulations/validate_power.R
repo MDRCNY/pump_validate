@@ -40,17 +40,20 @@ library(tibble)      # a modern take on data frames
 library(tictoc)      # for timing
 
 ################
-# choose whether to load package code or local code
-source(here::here("Methods", "utils.R"))
-source(here::here("Methods", "pump_power.R"))
-source(here::here("Methods", "pump_wy.R"))
-source(here::here("Methods", "utils.R"))
-
-# to install pum from github, generate a personal authentication token 'foo'
+# local code
+# source(here::here("Methods", "utils.R"))
+# source(here::here("Methods", "pump_power.R"))
+# source(here::here("Methods", "pump_wy.R"))
+# source(here::here("Methods", "utils.R"))
+################
+# install pum from github
+# one way to install pum from github:
+# generate a personal authentication token 'foo'
 # at https://github.com/settings/tokens
 # then run
-# devtools::install_github('MDRCNY/pum-p', auth_token = 'foo')
-# library(pum)         # for checking with the new methods
+# devtools::install_github('MDRCNY/pum-p', ref = 'main', auth_token = 'foo')
+################
+library(pum)
 ################
 
 
@@ -364,7 +367,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
           rho = user.params.list[['rho.default']],
           omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
-          tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
+          tnum = sim.params.list[['tnum']], B = sim.params.list[['B']],
           cl = cl
         )
         pump_results_iter <- data.frame(pump_results_iter)
@@ -490,7 +493,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
         ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
         rho = user.params.list[['rho.default']],
         omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
-        tnum = sim.params.list[['tnum']], snum = sim.params.list[['B']],
+        tnum = sim.params.list[['tnum']], B = sim.params.list[['B']],
         start.tnum = sim.params.list[['start.tnum']],
         final.tnum = sim.params.list[['final.tnum']],
         max.cum.tnum = sim.params.list[['max.cum.tnum']],
@@ -625,7 +628,7 @@ validate_sample <- function(user.params.list, sim.params.list, design,
         omega.2 = user.params.list[['omega.2']],
         omega.3 = user.params.list[['omega.3']],
         tnum = sim.params.list[['tnum']],
-        snum = sim.params.list[['B']],
+        B = sim.params.list[['B']],
         start.tnum = sim.params.list[['start.tnum']],
         final.tnum = sim.params.list[['final.tnum']],
         max.cum.tnum = sim.params.list[['max.cum.tnum']],
@@ -696,7 +699,7 @@ if(FALSE)
   omega.2 = user.params.list[['omega.2']];
   omega.3 = user.params.list[['omega.3']];
   numCovar.1 = 1; numCovar.2 = 1; numCovar.3 = 1;
-  tnum = sim.params.list[['tnum']]; snum = sim.params.list[['B']];
+  tnum = sim.params.list[['tnum']]; B = sim.params.list[['B']];
   max.cum.tnum = sim.params.list[['max.cum.tnum']];
   updateProgress = NULL;
   typesample = 'nbar';
