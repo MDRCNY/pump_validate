@@ -37,9 +37,9 @@ panderOptions('round', 3)
 source(here::here("Validation/Simulations", "params.R"))
 user.params.default <- user.params.list
 sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
-sim.params.list[['S']] <- 500
+sim.params.list[['S']] <- 300
 sim.params.list[['Q']] <- 1
-sim.params.list[['B']] <- 500
+sim.params.list[['B']] <- 300
 
 sim.params.default <- sim.params.list
 ```
