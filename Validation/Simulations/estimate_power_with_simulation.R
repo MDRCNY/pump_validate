@@ -35,7 +35,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   num.failed.converge.raw <- 0
   t1 <- Sys.time()
   for (s in 1:S) {
-
+    
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
@@ -67,6 +67,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     samp.obs <- samp.full
     samp.obs$Yobs <- gen_Yobs(samp.full, T.x)
     
+    print('raw model')
     dat.all <- makelist.samp(samp.obs, T.x) # list length M
     rawpt.out <- get.rawpt(dat.all, design = design, user.params.list = user.params.list)
     rawp <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['pval']])})
@@ -269,6 +270,15 @@ make.model <- function(dat.m, design) {
   } else {
     stop(paste('Unknown design:', design)) 
   }
+  if(singular)
+  {
+    print(paste('Singular:', singular))
+  }
+  if(failed.converge)
+  {
+    print(paste('Failed converge:', failed.converge))
+  }
+
   return(list(mod = mod, singular = singular, failed.converge = failed.converge))
 }
 
