@@ -1,0 +1,231 @@
+% -----------------------------*- LaTeX -*------------------------------
+%   SCRIBE.STY -- Make scribe notes
+%
+%   Martin Wainwright;  August, 2004
+%
+%   Modified from a version by Jeff Erickson (jeffe@cs.uiuc.edu), July 29, 1998
+%
+%   Loosely based on the MIT/Berkeley scribe notes macros, but
+%   written from scratch.
+%
+% ----------------------------------------------------------------------
+%   USAGE:
+%
+%   \documentstyle[12pt]{report}		NOT article!
+%   \usepackage{scribe}
+%   ...
+%   \begin{document}
+%   \course{EECS 227} 				optional
+%   \coursetitle{Optimization}	optional
+%   \semester{Fall 2004}			optional
+%   \lecturer{Jeff Erickson}			optional
+%   \scribe{Joe. A Student}			required
+%   \lecturenumber{17}				required (must be a number)
+%   \lecturedate{October 12}			required (omit year)
+%   \maketitle
+% ----------------------------------------------------------------------
+%   The stuff before \maketitle can be in any order, but it has to go
+%   before \maketitle.
+%
+%   The lecture number appears in all page, section, theorem, figure,
+%   table, and equation numbers.  It must be a single positive
+%   integer; ranges like 3--5 are not (yet) properly supported.
+%
+%   Automatically loads the amsmath package, which is a Good Thing,
+%   especially if you're going to use a lot of math.  See ``The LaTeX
+%   Companion'' for details!
+%
+%   To get a proof, use \begin{proof}...\end{proof}.  You can attach
+%   an optional argument, just as with the standard latex theorem
+%   environment.  You can also define new proof-like environments with
+%   \newproof{foo}{bar}, just like \newtheorem.
+% ----------------------------------------------------------------------
+\RequirePackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{enumerate}
+
+% ----------------------------------------------------------------------
+%  Add a period after the theorem number, and make theorems slanted
+%  instead of italic to help distinguish text from math.
+% ----------------------------------------------------------------------
+\def\@begintheorem#1#2{\trivlist \item[\hskip \labelsep{\bf #1\ #2.}]\sl}
+\def\@opargbegintheorem#1#2#3{\trivlist
+      \item[\hskip \labelsep{\bf #1\ #2\ (#3).}]\sl}
+
+% ----------------------------------------------------------------------
+%  Standard lemma, theorem, and corollary environments.
+% ----------------------------------------------------------------------
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}[lemma]{Proposition}
+\newtheorem{theorem}[lemma]{Theorem}
+\newtheorem{corollary}[lemma]{Corollary}
+
+% ----------------------------------------------------------------------
+%  \newproof{type}{Text}[post] -- Define a new proof-like environment.
+%  Proofs are just like theorems, except they aren't numbered, and
+%  their text is (by default) set in roman type.  Proofs can take
+%  optional arguments, just like theorems.  The optional ``post''
+%  argument specifies a postscript, like a QED symbol.
+% ----------------------------------------------------------------------
+\def\newproof#1#2{\@ifnextchar[{\@xnproof{#1}{#2}}{\@xnproof{#1}{#2}[]}}
+
+\def\@xnproof#1#2[#3]{\expandafter\@ifdefinable\csname #1\endcsname
+{\global\@namedef{#1}{\@prf{#2}}\global\@namedef{end#1}{\@endprf{#3}}}}
+
+\def\@prf#1{\@ifnextchar[{\@xprf{#1}}{\@yprf{#1}}}
+
+\def\@xprf#1[#2]{\begin{trivlist}\item[\hskip\labelsep{\bf #1\ (#2):}]}
+
+\def\@yprf#1{\begin{trivlist}\item[\hskip\labelsep{\bf #1:}]}
+
+\def\@endprf#1{#1\end{trivlist}}
+
+% ----------------------------------------------------------------------
+%  Standard proof environment.
+% ----------------------------------------------------------------------
+\@ifundefined{square}{\let\square\Box}{}
+\def\QED{{\boldmath$\square$}}
+\def\markatright#1{\leavevmode\unskip\nobreak\quad\hspace*{\fill}{#1}}
+\def\qed{\markatright{\QED}}
+\newproof{proof}{Proof}[\qed]
+
+% ----------------------------------------------------------------------
+%  Make captions smaller than the text, make their titles bold.
+%  Arguments:   #1 == figure name: "Figure 5"
+%               #2 == caption: "Papers by \Erdos, 1900--2000 (projected)"
+%  Put less space after floats, since captions are smaller
+% ----------------------------------------------------------------------
+\long\def\@makecaption#1#2{
+   \vskip 10pt
+   \setbox\@tempboxa\hbox{{\small \textbf{#1.} #2}}
+   \ifdim \wd\@tempboxa >\hsize         % IF longer than one line:
+       {\footnotesize \textbf{#1.} #2\par}% THEN set as ordinary paragraph.
+     \else                              %   ELSE  center.
+       \hbox to\hsize{\hfil\box\@tempboxa\hfil}
+   \fi}
+\dbltextfloatsep 18pt plus 2pt minus 4pt   % was 20pt plus 2pt minus 4pt
+\textfloatsep 18pt plus 2pt minus 4pt      % was 20pt plus 2pt minus 4pt
+
+% ----------------------------------------------------------------------
+%  Dangerous bend environments, stolen from TeXbook and slightly
+%  massaged.
+%
+%  Invoke as \begin{[d]danger}...\end{[d]danger}.  The enclosed text
+%  is offset just like any other list (theorem, proof, etc.)  Puts
+%  sign[s] in front of first two lines of first paragraph, which are
+%  (supposedly) never split by a page boundary.  Does NOT shrink or
+%  otherwise modify the text.
+% ----------------------------------------------------------------------
+%  The dangerous bend signs are the correct size to match two lines of
+%  Computer Modern 9pt type.   We really ought to scale them up to
+%  fit whatever size we're using, but we don't.  Unfortunately, manfnt
+%  is actually a 10pt font, so if we want to match 11pt Computer
+%  Modern, we have to scale manfnt to 12.222222pt!  Thanks, Don. 
+% ----------------------------------------------------------------------
+\font\manual=manfnt
+\def\dbend{{\manual\char127}} % dangerous bend sign
+
+% Danger, Will Robinson!
+\def\danger{\begin{trivlist}\item[]\noindent%
+\begingroup\hangindent=3pc\hangafter=-2%\clubpenalty=10000%
+\def\par{\endgraf\endgroup}%
+\hbox to0pt{\hskip-\hangindent\dbend\hfill}\ignorespaces}
+\def\enddanger{\par\end{trivlist}}
+
+% Danger! Danger!
+\def\ddanger{\begin{trivlist}\item[]\noindent%
+\begingroup\hangindent=3pc\hangafter=-2%\clubpenalty=10000%
+\def\par{\endgraf\endgroup}%
+\hbox to0pt{\hskip-\hangindent\dbend\kern2pt\dbend\hfill}\ignorespaces}
+\def\endddanger{\par\end{trivlist}}
+
+
+
+
+
+
+%%  My personal stuff
+\DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+\DeclareMathSymbol{\N}{\mathbin}{AMSb}{"4E}
+\DeclareMathSymbol{\Z}{\mathbin}{AMSb}{"5A}
+\DeclareMathSymbol{\R}{\mathbin}{AMSb}{"52}
+\DeclareMathSymbol{\Q}{\mathbin}{AMSb}{"51}
+\DeclareMathSymbol{\I}{\mathbin}{AMSb}{"49}
+\DeclareMathSymbol{\C}{\mathbin}{AMSb}{"43}
+\DeclareMathSymbol{\D}{\mathbin}{AMSb}{"44}
+\DeclareMathSymbol{\E}{\mathbin}{AMSb}{"45}
+
+% Conditional independence signs!:
+\newcommand{\indep}{{\;\bot\!\!\!\!\!\!\bot\;}}
+\newcommand{\notindep}{{\;\not\!\bot\!\!\!\!\!\!\bot\;}}
+
+\renewcommand{\P}{\mathbf{P}}
+
+%\def\b1{1{\hskip -3 pt}\hbox{I} {\hskip -3 pt}}
+\def\b1{\boldsymbol{1}}
+\newcommand{\ind}[1]{\b1_{\left\{#1\right\}}}
+\def\RR{\hbox{I\kern-.1667em\hbox{R}}}
+\newcommand{\ip}[2]{\;<\!\!#1,#2\!\!>\;}
+\newcommand{\pr}[1]{\mathbf{P} \! \left \{ #1 \right \}}
+\newcommand{\EE}[1]{\E \left [ #1 \right ]}
+\newcommand{\expM}[1]{\exp \left \{ #1 \right \} }
+\def\eqdist{\stackrel{d}{=}}
+\def\rightas{\stackrel{a.s.}{\rightarrow}}
+\def\rightP{\stackrel{P}{\rightarrow}}
+\def\rightd{\stackrel{d}{\rightarrow}}
+\def\rightw{\stackrel{w}{\rightarrow}}
+
+ \newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+ \newcommand{\dd}[1]{\frac{\partial }{\partial #1}}
+ 
+%\def\io{\; i.o. }
+\newcommand{\io}[1]{\{#1 \; i.o. \} }
+\newcommand{\ult}[1]{\{#1 \; ult \} }
+\newcommand{\mylemma}[1]{\begin{lemma}#1\end{lemma}}
+
+%    \newtheorem{theorem}{Theorem}[section]
+%    \newtheorem{lemma}[theorem]{Lemma}
+%    \newtheorem{proposition}[theorem]{Proposition}
+%    \newtheorem{corollary}[theorem]{Corollary}
+
+%%    \newenvironment{proof}[1][Proof]{\begin{trivlist}
+%%    \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%%    \newenvironment{definition}[1][Definition]{\begin{trivlist}
+%%    \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%%    \newenvironment{example}[1][Example]{\begin{trivlist}
+%%    \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%%    \newenvironment{remark}[1][Remark]{\begin{trivlist}
+%%    \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+%%    \newcommand{\qed}{\nobreak \ifvmode \relax \else
+%%          \ifdim\lastskip<1.5em \hskip-\lastskip
+%%          \hskip1.5em plus0em minus0.5em \fi \nobreak
+%%          \vrule height0.75em width0.5em depth0.25em\fi}
+
+%
+%%\@ifundefined{square}{\let\square\Box}{}
+%\def\newproof#1#2{\@ifnextchar[{\@xnproof{#1}{#2}}{\@xnproof{#1}{#2}[]}}
+
+%\def\QED{{\boldmath$\square$}}
+%\def\markatright#1{\leavevmode\unskip\nobreak\quad\hspace*{\fill}{#1}}
+%\def\qed{\markatright{\QED}}
+%\newproof{proof}{Proof}[\qed]
+
+%
+
+
+% Formatting
+\oddsidemargin .00in
+\evensidemargin .00in
+\topmargin 0.00 in
+\headheight 0.00 in 
+\marginparwidth 0.07 true in
+\addtolength{\headsep}{0.00in}
+\textheight 8.5 true in
+\textwidth 6 true in
+\clubpenalty=10000
+\usepackage[left=1 in, top= 0.75 in, right=1 in,head = 0.75 in , foot=0.75 in]{geometry}
+
+\setlength{\parskip}{5mm plus4mm minus3mm}
+
+
