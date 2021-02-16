@@ -47,3 +47,11 @@ inst/doc
 *.utf8.md
 *.knit.md
 .Rproj.user
+
+# Temp files from latex
+*.aux
+*.toc
+*.log
+*.bbl
+*.synctex.gz
+*.out
