@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -n 8 													# Number of cores requested
 #SBATCH -N 1 													# Ensure that all cores are on one machine
-#SBATCH -t 720													# Runtime in minutes
+#SBATCH -t 240													# Runtime in minutes
 #SBATCH -p shared												# Partition to submit to
 #SBATCH --mem-per-cpu=1000 										        # Memory per cpu in MB (see also --mem-per-cpu)
 #SBATCH --open-mode=append
@@ -12,7 +12,7 @@ source new-modules.sh
 module load gcc/7.1.0-fasrc01
 module load R
 export R_LIBS_USER=$HOME/apps/R:$R_LIBS_USER
-R CMD BATCH --quiet --no-restore --no-save /n/home01/khunter33/Power-Under-Multiplicity/Validation/Simulations/gen_validation_results_all.R /n/home01/khunter33/Power-Under-Multiplicity/$(date +"%Y%m%d_%H%M%S").out
+R CMD BATCH --quiet --no-restore --no-save /n/home01/khunter33/Power-Under-Multiplicity/Validation/Simulations/gen_validation_results_all.R /n/home01/khunter33/Power-Under-Multiplicity/$(date +"%Y%m%d_%H%M%S%N").out
 
 
 
