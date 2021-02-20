@@ -37,9 +37,9 @@ panderOptions('round', 3)
 source(here::here("Validation/Simulations", "params.R"))
 user.params.default <- user.params.list
 sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
-sim.params.list[['S']] <- 300
+sim.params.list[['S']] <- 200
 sim.params.list[['Q']] <- 1
-sim.params.list[['B']] <- 300
+sim.params.list[['B']] <- 200
 
 sim.params.default <- sim.params.list
 ```
@@ -166,11 +166,11 @@ print(simple_c2_2r_power_plot)
 user.params.list <- user.params.default
 
 # for a reasonable runtime
-user.params.list[['J']] <- 10
-user.params.list[['K']] <- 5
-user.params.list[['nbar']] <- 20
-sim.params.list[['B']] <- 200
-user.params.list[['S']] <- 20
+# user.params.list[['J']] <- 10
+# user.params.list[['K']] <- 5
+# user.params.list[['nbar']] <- 20
+# sim.params.list[['B']] <- 200
+# user.params.list[['S']] <- 20
 
 design <- "blocked_i1_3r"
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
