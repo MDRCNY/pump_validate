@@ -99,7 +99,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   current.file <- find_file(params.file.base, type = 'power')
   
   # store some files in intermediate results file
-  data.dir <- here("Validation/data")
+  data.dir <- here::here("Validation/data")
   intermediate.data.dir <- paste0(data.dir, "/intermediate_results/")
   if(!dir.exists(intermediate.data.dir))
   {

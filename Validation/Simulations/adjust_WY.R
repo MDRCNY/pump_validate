@@ -24,7 +24,7 @@ adjust_WY <- function(dat.all, rawt, S.id, D.id,
                       design, proc,
                       sim.params.list, model.params.list,
                       cl = NULL) {
-  
+
   # cl = NULL;
   B <- sim.params.list[['B']]
   Tbar <- sim.params.list[['Tbar']]

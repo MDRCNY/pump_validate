@@ -35,7 +35,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   num.failed.converge.raw <- 0
   t1 <- Sys.time()
   for (s in 1:S) {
-
+    
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
@@ -238,9 +238,19 @@ make.model <- function(dat.m, design) {
     form <- as.formula("Yobs ~ 1 + T.x + C.ijk + S.id")
     mod <- lm(form, data = dat.m)
   } else if (design == "blocked_i1_2f") {
-    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = S.id, data = dat.m, control_formula = "C.ijk", use.lmer = FALSE)
+    mod.out <- interacted_linear_estimators(
+      Yobs = Yobs, Z = T.x, B = S.id, data = dat.m,
+      control_formula = "C.ijk", use.lmer = FALSE
+    )
+    singular <- mod.out[['singular']]
+    mod <- mod.out[['mod']]
   } else if (design == "blocked_i1_2r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
+    mod <- suppressMessages(lmer(form, data = dat.m))
+    singular <- isSingular(mod)
+    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+  } else if (design == "blocked_i1_2r_special") {
+    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
@@ -260,7 +270,13 @@ make.model <- function(dat.m, design) {
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
   } else if (design == "blocked_c2_3f") {
-    mod <- interacted_linear_estimators(Yobs = Yobs, Z = T.x, B = D.id, data = dat.m, control_formula = "X.jk + C.ijk + (1 | S.id)", use.lmer = TRUE)
+    mod.out <- interacted_linear_estimators(
+      Yobs = Yobs, Z = T.x, B = D.id, data = dat.m,
+      control_formula = "X.jk + C.ijk + (1 | S.id)",
+      use.lmer = TRUE
+    )
+    singular <- mod.out[['singular']]
+    mod <- mod.out[['mod']]
   } else if (design == "blocked_c2_3r") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
@@ -269,6 +285,7 @@ make.model <- function(dat.m, design) {
   } else {
     stop(paste('Unknown design:', design)) 
   }
+
   return(list(mod = mod, singular = singular, failed.converge = failed.converge))
 }
 
@@ -469,6 +486,9 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
   # Yobs = dat.m$Yobs; Z = dat.m$T.x; B = dat.m$D.id; data = dat.m; control_formula = "X.jk + C.ijk + (1 | S.id)"; use.lmer = TRUE
   # Yobs = dat.m$Yobs; Z = dat.m$T.x; B = dat.m$S.id; data = dat.m; control_formula = "C.ijk"; use.lmer = FALSE
   
+  # keep track of singularity
+  singular <- FALSE
+  
   # This code block takes the parameters of
   # Yobs, Z, B, siteID = NULL, data=NULL, ...
   # and makes a dataframe with canonical Yobs, Z, B, and siteID columns.
@@ -490,14 +510,19 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
   {
     M0.int <- lmer(formula, data = data)
     ids <- grep( "Z:", rownames(summary(M0.int)$coefficients))
-    stopifnot(length(ids) == J)
   } else
   {
     M0.int <- lm(formula, data = data)
     ids <- grep( "Z:", names(coef(M0.int)))
-    stopifnot(length(ids) == J)
   }
 
+  if(length(ids) != J)
+  {
+    message('Proceeding with rank deficient model')
+    singular <- TRUE
+    J <- length(ids)
+  }
+  
   VC <- as.matrix(vcov(M0.int))
   ATE_hats <- summary(M0.int)$coefficients[ids,1]
   wts <- rep(1 / J, J)
@@ -514,5 +539,5 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
   if (!is.null(control_formula)) {
     interactModels$method <- paste0(interactModels$method, "-adj")
   }
-  return(interactModels)
+  return(list(mod = interactModels, singular = singular))
 }
