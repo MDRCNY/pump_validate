@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1581708447595.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1387562180",
+    "id" : "2E12DE4B",
+    "lastKnownWriteTime" : 1582230898,
+    "last_content_update" : 1582230898997,
+    "path" : "/data/share/cdi/Pum/working/zarni/Power-Under-Multiplicity/Validation/Simulations/runMCS_blocked_i1_2.R",
+    "project_path" : "Validation/Simulations/runMCS_blocked_i1_2.R",
+    "properties" : {
+        "cursorPosition" : "36,0",
+        "scrollLine" : "28"
+    },
+    "relative_order" : 9,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
