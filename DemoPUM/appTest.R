@@ -60,13 +60,16 @@ ui <- fluidPage(
                               
                               fluidRow(
                                 column(10,
-                                       div(style = "display: inline-block, vertical-align:top;", selectInput("Design", "What Research Design is this for?", 
-                                                                                                             choices = list("constantEffects" = "blocked_i1_2c", "fixedEffects" = "blocked_i1_2f", 
+                                       div(style = "display: inline-block, vertical-align:top;", selectInput("design", "What Research Design is this for?", 
+                                                                                                             choices = list("constantEffects" = "blocked_i1_2c", 
+                                                                                                                            "fixedEffects" = "blocked_i1_2f", 
                                                                                                                             "randomEffects" = "blocked_i1_2r"))) # select input buttons div
                                 ), # column for inputs
                                 
                                 column(2, 
-                                       div(style ="display: inline-block, vertical-align:top;",actionButton("question_design",label = "", icon = icon("question"))) #div for button ends
+                                       div(style ="display: inline-block, vertical-align:top;",actionButton("question_design",label = "", icon = icon("question"),
+                                                                                                            style = "font-size: 10px;
+                                                                                                            margin-top: 28px;")) #div for button ends
                                 ) # column for buttons
                                 
                               ), # fluid Row to contain the question mark issue 
@@ -84,7 +87,8 @@ ui <- fluidPage(
                                                                                                                             "Holm" = "Holm", 
                                                                                                                             "Benjamini-Hochberg" = "BH", 
                                                                                                                             "Westfall-Young-Single-Step" = "WY-SS", 
-                                                                                                                            "Westfall-Young-Step-Down" = "WY-SD"))) # select input buttons div
+                                                                                                                            "Westfall-Young-Step-Down" = "WY-SD"),
+                                                                                                             multiple = TRUE)) # select input buttons div
                                 ), # column for inputs
                                 
                                 column(2, 
@@ -101,34 +105,19 @@ ui <- fluidPage(
                               
                               fluidRow(
                                 
-                                column(6,
+                                column(12,
                                        numericInput("M", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
-                                ), # column for number of outcomes
-                                
-                                column(6,
-                                       textInput("MDES", "MDES (Please enter a vector)", value = "c(0.125,0.125,0.125)")
-                                ) # column for Minimum detectable effect size
-                                
-                              ), # number of outcomes and mdes
+                                ) # column for number of outcomes
                               
+                              ), # number of outcomes and mdes
                               
                               fluidRow(
                                 
-                                column(10,
-                                       numericInput("numFalse", "Number of Outcomes with an expected non-zero effects", value = 3, min = 0, max = 10, step = 1)
-                                ), # column for outcomes with actual effect size
-                                
-                                column(2,
-                                       div(style ="display: inline-block, vertical-align:top;",actionButton("question_mdes",label = "", icon = icon("question"))) #div for button ends                            
-                                ) # column for action button
-                                
-                              ), # MDES and number of outcomes with expected actual effect
+                                column(12,
+                                       textInput("MDES", "Enter a vector (comma delimited)", value = "0.125,0.125,0.125, 0,0"))
+                              ), # column for Minimum detectable effect size
                               
-                              bsPopover(id = "question_mdes", title = NULL,
-                                        content = paste0("For MDES, you would want to consider, etc etc"),
-                                        placement = "right", 
-                                        trigger = "hover", 
-                                        options = list(container = "body")),
+                    
                               fluidRow(
                                 
                                 column(12,
@@ -170,13 +159,16 @@ ui <- fluidPage(
                               
                               fluidRow(
                                 
-                                column(6,
+                                column(12,
                                        
-                                       numericInput("Tbar", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
+                                       numericInput("tbar", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
                                        
-                                ), # proportion of treatment assignment
+                                ) # proportion of treatment assignment
+                              ), # proprtion of treatement as assignment
+                              
+                              fluidRow(  
                                 
-                                column(6,
+                                column(12,
                                        
                                        numericInput("alpha", "Significance Level of Tests (alpha)", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
                                        
@@ -187,7 +179,7 @@ ui <- fluidPage(
                               fluidRow(
                                 column(12,
                                        
-                                       numericInput("rho_test", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
+                                       numericInput("rho", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
                                        
                                 ) # Number of Level 1 covariates
                                 
@@ -407,7 +399,11 @@ ui <- fluidPage(
                                 column(6,
                                        div(style = "display: inline-block, vertical-align:top;", 
                                            selectInput("MTP_sample", "MTP", 
-                                                       choices = list("Bonferroni" = "BF", "Benjamini-Hocheberg" = "BH", "Holms" = "HO", "Westfall-Young-SS" = "WY-SS", "Westfall-Young-SD" = "WY-SD"),
+                                                       choices = list("Bonferroni" = "BF", 
+                                                                      "Benjamini-Hocheberg" = "BH", 
+                                                                      "Holms" = "HO", 
+                                                                      "Westfall-Young-SS" = "WY-SS", 
+                                                                      "Westfall-Young-SD" = "WY-SD"),
                                                        selected = "BF")) # select input buttons div
                                        
                                 ), # MTP, the Mutliple Testing Procedure in Use
@@ -520,10 +516,200 @@ ui <- fluidPage(
                  )  # Tabpanel Sample calculation 
                ) # Inner Tabset Panel
               
-              ) # Estimation Tab set
+              # ), # 2 Level Block RCT Design Tab set
+              # 
+              # tabPanel("2-Level-Cluster", tabsetPanel(
+              #   tabPanel("Cluster Power Calculation",
+              #            sidebarLayout(
+              #              sidebarPanel(
+              #                # css to center the progress bar
+              #                tags$head(
+              #                  tags$style(
+              #                    HTML(".shiny-notification {
+              #                 height: 50px;
+              #                 width: 600px;
+              #                 position:fixed;
+              #                 top: calc(50% - 50px);
+              #                 left: calc(45%);
+              #                 right: calc(15%);
+              #                 font-size: 100%;
+              #                 text-align: center;
+              #                 
+              #                 }
+              #                 .progress-message {
+              #                 
+              #                 padding-top: 0px;
+              #                 padding-right: 3px;
+              #                 padding-bottom: 3px;
+              #                 padding-left: 10px;
+              #                 font-weight: normal !important;
+              #                 font-style: italic !important;
+              #                 font-size: 15px;
+              #                 }
+              #                 
+              #                 .progress-detail {
+              #                 
+              #                 padding-top: 0px;
+              #                 padding-right: 3px;
+              #                 padding-bottom: 3px;
+              #                 padding-left: 3px;
+              #                 font-weight: normal;
+              #                 font-style: italic !important;
+              #                 font-size: 15px;
+              #                 }
+              #                 
+              #                 "
+              #                    ) # html bracket
+              #                  ) # css styling tag
+              #                ), # The header tag
+              #                
+              #                fluidRow(
+              #                  column(10,
+              #                         div(style = "display: inline-block, vertical-align:top;", selectInput("designCluster", "What Research Design is this for?", 
+              #                                                                                               choices = list("simpleRandomEffects" = "simple_c2_2r")) # select input buttons div
+              #                  ), # column for inputs
+              #                  
+              #                  column(2, 
+              #                         div(style ="display: inline-block, vertical-align:top;",actionButton("question_designCluster",label = "", icon = icon("question"),
+              #                                                                                              style = "font-size: 10px;
+              #                                                                                               margin-top: 28px;")) #div for button ends
+              #                  ) # column for buttons
+              #                  
+              #                ), # fluid Row to contain the question mark issue 
+              #                
+              #                bsPopover(id = "question_designCluster", title = NULL,
+              #                          content = paste0("For more information on different designs, please click!"),
+              #                          placement = "right", 
+              #                          trigger = "hover", 
+              #                          options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
+              #                
+              #                fluidRow(
+              #                  column(10,
+              #                         div(style = "display: inline-block, vertical-align:top;", selectInput("MTPCluster", "Which MTP do you plan to use?", 
+              #                                                                                               choices = list("Bonferroni" = "Bonferroni", 
+              #                                                                                                              "Holm" = "Holm", 
+              #                                                                                                              "Benjamini-Hochberg" = "BH", 
+              #                                                                                                              "Westfall-Young-Single-Step" = "WY-SS", 
+              #                                                                                                              "Westfall-Young-Step-Down" = "WY-SD"))) # select input buttons div
+              #                  ), # column for inputs
+              #                  
+              #                  column(2, 
+              #                         div(style ="display: inline-block, vertical-align:top;",actionButton("question_mtpCluster",label = "", icon = icon("question"))) #div for button ends
+              #                  ) # column for buttons
+              #                  
+              #                ), # fluid Row to contain the question mark issue 
+              #                
+              #                bsPopover(id = "question_mtpCluster", title = NULL,
+              #                          content = paste0("For more information on MTP, please click!"),
+              #                          placement = "right", 
+              #                          trigger = "hover", 
+              #                          options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
+              #                
+              #                fluidRow(
+              #                  
+              #                  column(12,
+              #                         numericInput("MCluster", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
+              #                  ) # column for number of outcomes
+              #                  
+              #                ), # number of outcomes and mdes
+              #                
+              #                fluidRow(
+              #                  
+              #                  column(12,
+              #                         textInput("MDESCluster", "Enter a vector (comma delimited)", value = "0.125,0.125,0.125, 0,0"))
+              #                ), # column for Minimum detectable effect size
+              #                
+              #                
+              #                fluidRow(
+              #                  
+              #                  column(12,
+              #                         
+              #                         numericInput("KCluster", "Number of Districts", min = 1, max = 100, value = 1, step = 1))
+              #                ), # number of districts
+              #                
+              #                fluidRow(
+              #                  
+              #                  column(6,
+              #                         
+              #                         numericInput("JCluster", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
+              #                         
+              #                  ), # number of blocks
+              #                  
+              #                  column(6,
+              #                         
+              #                         numericInput("nbarCluster","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
+              #                         
+              #                  ) # number of units per blocks
+              #                  
+              #                ), # Nmber of blocks and number of units per block
+              #                
+              #                fluidRow(
+              #                  
+              #                  column(6,
+              #                         
+              #                         numericInput("R2.1Cluster", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
+              #                         
+              #                  ), # R square for level 1
+              #                  
+              #                  column(6,
+              #                         
+              #                         numericInput("numCovar.1Cluster", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
+              #                         
+              #                  )# Number of Level 1 Covariates
+              #                  
+              #                ), # column correlation btw tests & intraclass correlation!
+              #                
+              #                fluidRow(
+              #                  
+              #                  column(12,
+              #                         
+              #                         numericInput("tbarCluster", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
+              #                         
+              #                  ) # proportion of treatment assignment
+              #                ), # proprtion of treatement as assignment
+              #                
+              #                fluidRow(  
+              #                  
+              #                  column(12,
+              #                         
+              #                         numericInput("alphaCluster", "Significance Level of Tests (alpha)", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
+              #                         
+              #                  ) #Significance Level of Tests
+              #                  
+              #                ), # proportion of treatment assignment and significance level of tests
+              #                
+              #                fluidRow(
+              #                  column(12,
+              #                         
+              #                         numericInput("rhoCluster", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
+              #                         
+              #                  ) # Number of Level 1 covariates
+              #                  
+              #                ), #fluid row for block level covariate inputs
+              #                
+              #                fluidRow(
+              #                  
+              #                  column(12,
+              #                         actionButton("goButton_powerCluster", "Go!") # Action Button to trigger other reactive values
+              #                  ) # Column for action button
+              #                  
+              #                )
+              #                
+              #              ), #sidebar Panel
+              #              mainPanel (
+              #                tableOutput("powercalcCluster") #The power calculation table output
+              #              ) #main panel
+              #              
+              #            ) #sidebar Layout
+              #            
+              #   )  
+              # ) # Tabset for Power for Cluster
+            
+            )# 2 Level Cluster RCT
+              
           ) # Tabset Panel
   
-)# fluidPage
+)# fluid page
 
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session = FALSE) {
@@ -577,11 +763,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
       #  rho, omega.2, omega.3 = NULL,
       #  tnum = 10000, B = 1000, cl = NULL, updateProgress = NULL
       #)
-    
-    
+     #browser()
+      
       isolate(pump_power(design = input$design,
-                         MTP = input$MTP,
-                         MDES = input$MDES,
+                         MTP = as.character(unlist(strsplit(input$MTP," "))),
+                         MDES = as.numeric(unlist(strsplit(input$MDES, ","))),
                          M = input$M, # The number of hypotheses/outcomes
                          J = input$J, # The number of schools
                          K = input$K, # The number of districts
@@ -591,20 +777,87 @@ server <- shinyServer(function(input, output, session = FALSE) {
                          numCovar.1 = input$numCovar.1,
                          numCovar.2 = 0,
                          numCovar.3 = 0,
-                         R2.1 = input$R2.1,
-                         R2.2 = NULL,
-                         R2.3 = NULL,
-                         ICC.2 = NULL,
-                         ICC.3 = NULL,
+                         R2.1 = rep(input$R2.1,input$M),
+                         R2.2 = rep(0.1, input$M),
+                         R2.3 = rep(0.1, input$M),
+                         ICC.2 = rep(0, input$M),
+                         ICC.3 = rep(0.2, input$M) ,
                          rho = input$rho,
-                         omega.2 = NULL,
-                         omega.3 = NULL,
+                         omega.2 = 0,
+                         omega.3 = 0.1,
                          tnum = 10000, 
                          B = 100, 
-                         updateProgress = updateProgress))
+                         cl = NULL,
+                         updateProgress = updateProgress)
+                    )
     }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
     
   }) # observe Event go Button for power
+  
+  #observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
+  observeEvent(input$goButton_powerCluster,{
+    
+    #Rendering a reactive object table from the power function
+    output$powercalcCluster <- renderTable({
+      
+      #Creating a progress bar
+      progress <- shiny::Progress$new()
+      progress$set(message = "Calculating MDES", value = 0)
+      # Close the progress bar when this reactive expression is done (even if there is an error)
+      on.exit(progress$close())
+      
+      #Update Progress Bar Callback function
+      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+        
+        if (is.null(value)){
+          
+          value <- progress$getValue()
+          value <- value + (progress$getMax() - value)/5
+          
+        } # Progess bar in terms of values' increments
+        
+        progress$set(value = value, detail = detail, message = message)
+        
+      } # End of Callback Progress Function
+      
+      #displaying based on the number of sample sizes
+      #pump_power <- function(
+      #  design, MTP, MDES, M, J, K = 1, nbar, Tbar, alpha, numCovar.1 = 0, numCovar.2 = 0,
+      #  numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
+      #  rho, omega.2, omega.3 = NULL,
+      #  tnum = 10000, B = 1000, cl = NULL, updateProgress = NULL
+      #)
+      
+      isolate(pump_power(design = input$design,
+                         MTP = input$MTP,
+                         MDES = as.numeric(unlist(strsplit(input$MDES, ","))),
+                         M = input$M, # The number of hypotheses/outcomes
+                         J = input$J, # The number of schools
+                         K = input$K, # The number of districts
+                         nbar = input$nbar, # The number of units per block
+                         Tbar = input$tbar, # The proportion of samples that are assigned to the treatment
+                         alpha = input$alpha,
+                         numCovar.1 = input$numCovar.1,
+                         numCovar.2 = 0,
+                         numCovar.3 = 0,
+                         R2.1 = rep(input$R2.1,input$M),
+                         R2.2 = rep(0.1, input$M),
+                         R2.3 = NULL,
+                         ICC.2 = rep(0, input$M),
+                         ICC.3 = NULL ,
+                         rho = input$rho,
+                         omega.2 = 0,
+                         omega.3 = NULL,
+                         tnum = 10000, 
+                         B = 100, 
+                         cl = NULL,
+                         updateProgress = updateProgress)
+      )
+    }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
+    
+  }) # observe Event go Button for power Cluster
+  
+  
   ############################################
   # MDES Server Side Calculation Begins
   ############################################
