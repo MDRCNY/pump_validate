@@ -28,7 +28,7 @@ Models: random treatment effects.
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
 ```
 
 ```{r setup}
@@ -56,12 +56,10 @@ user.params.list[['ICC.2']] <- rep(0.1, M)
 user.params.list[['J']] <- 60
 
 # what we assume for validation
-user.params.list[['S']] <- 1000
+sim.params.list[['S']] <- 1000
 
 params.default <- user.params.list
 ```
-
-# Power Validation
 
 Default parameters:
 
@@ -76,6 +74,8 @@ Assumptions
 
 * Two-level design: $\text{ICC}_3 = 0$,  $\omega_3 = 0$, $K = 1$
 * Constant treatment effects: $\omega_2 = 0$
+
+# Power Validation
 
 ## Varying school size
 

@@ -6,16 +6,16 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = FALSE
+overwrite = TRUE
 # whether or not to run power, mdes and sample size
-run.power = TRUE
+run.power = FALSE
 run.mdes.ss = FALSE
-run.wy.test = FALSE
+run.wy.test = TRUE
 # which designs to run
 run.blocked.2l = FALSE
 run.cluster.2l = FALSE
-run.blocked.3l = FALSE
-run.cluster.3l = TRUE
+run.blocked.3l = TRUE
+run.cluster.3l = FALSE
 run.blocked.cluster = FALSE
 
 # simulation and user parameters
@@ -114,11 +114,11 @@ if(run.wy.test)
     user.params.list[['nbar']] <- 50
     
     # for a reasonable runtime
-    # user.params.list[['J']] <- 10
-    # user.params.list[['K']] <- 5
-    # user.params.list[['nbar']] <- 20
-    # sim.params.list[['B']] <- 200
-    # user.params.list[['S']] <- 200
+    user.params.list[['J']] <- 10
+    user.params.list[['K']] <- 5
+    user.params.list[['nbar']] <- 20
+    sim.params.list[['B']] <- 100
+    user.params.list[['S']] <- 100
     
     power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_3r", q = q, overwrite)
   }
