@@ -81,13 +81,9 @@ adjust_WY <- function(dat.all, rawt, S.id, D.id,
 
 #' Performs regression with permuted treatment indicator
 #'
-#' @param permT matrix with nbar * J rows and B columns, contains all permutations of treatment indicator
-#' @param data data for all M domains
+#' @param permT.vec matrix with nbar * J rows and B columns, contains all permutations of treatment indicator
+#' @param dat.all data for all M domains
 #' @param design the particular RCT design for an experiment: "Blocked_i1_2c", "Blocked_i1_2f", "Blocked_i1_2r","Simple_c2_2r"
-#' @param S.id blocking variable
-#' @param maxT TRUE if using maxT procedures
-#' @param nbar individuals per block (assume same for all)
-#' @param J number of blocks
 #'
 #' @return
 #' @export

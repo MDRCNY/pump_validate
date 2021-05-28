@@ -1,6 +1,7 @@
 ---
 title: "Validate Power: blocked_c2_3fr"
 author: "Kristin Porter, Zarni Htet, Kristen Hunter"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   html_document:
     code_folding: hide
@@ -27,7 +28,7 @@ Models: random and fixed treatment effects.
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
 ```
 
 ```{r setup}
@@ -45,9 +46,11 @@ params.default <- user.params.list
 ```{r}
 # assumptions
 user.params.list[['omega.2']] <- 0
+user.params.list[['J']] <- 20
+user.params.list[['K']] <- 10
+user.params.list[['nbar']] <- 50
 
-# what we assume for validation
-user.params.list[['S']] <- 1000
+sim.params.list[['S']] <- 1000
 
 params.default <- user.params.list
 ```
@@ -67,6 +70,8 @@ Parameters by model type:
 
 * R23: $R^2_3 = 0$ for fixed effects model, $R^2_3$ = `r user.params.list[['R2.3']]` for random effects model
 * ICC3: $\text{ICC}_3 = 0$ for fixed model, $\text{ICC}_3$ = `r user.params.list[['ICC.3']]` for random effects model
+
+# Power Validation
 
 ## Varying school size
 
@@ -421,4 +426,161 @@ print(blocked_i1_3r_omega3.0.8ICC30.7_power_plot)
 ```{r omega3.ICC3.reset}
 user.params.list[['omega.3']] <- params.default[['omega.3']]
 user.params.list[['ICC.3']] <- params.default[['ICC.3']]
+```
+
+
+# MDES validation
+
+```{r}
+# reset to defaults
+user.params.list <- params.default 
+```
+
+
+```{r 3f.mdes.D1}
+design <- "blocked_c2_3f"
+user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_c2_3f_mdes_D1_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    blocked_c2_3f_mdes_D1_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+```{r 3f.mdes.min2}
+mdes.file <- find_file(params.file.base, type = 'mdes_min2')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_c2_3f_mdes_min2_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    blocked_i1_2c_mdes_min2_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+```{r 3r.mdes.D1}
+design <- "blocked_c2_3r"
+user.params.list[['R2.3']] <- params.default[['R2.3']]
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_c2_3r_mdes_D1_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    blocked_c2_3r_mdes_D1_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+```{r 3r.mdes.min2}
+mdes.file <- find_file(params.file.base, type = 'mdes_min2')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_c2_3r_mdes_min2_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    blocked_i1_2c_mdes_min2_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+
+
+# Sample size validation
+
+```{r 3f.sample.D1}
+design <- "blocked_c2_3f"
+user.params.list[['R2.3']] <- rep(0, M)
+user.params.list[['ICC.3']] <- rep(0, M)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_c2_3f_sample_D1_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    blocked_c2_3f_sample_D1_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+```{r 3f.sample.min2}
+sample.file <- find_file(params.file.base, type = 'sample_min2')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_c2_3f_sample_min2_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    blocked_i1_2c_sample_min2_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+```{r 3r.sample.D1}
+design <- "blocked_c2_3r"
+user.params.list[['R2.3']] <- params.default[['R2.3']]
+user.params.list[['ICC.3']] <- params.default[['ICC.3']]
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_c2_3r_sample_D1_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    blocked_c2_3r_sample_D1_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+```{r 3r.sample.min2}
+sample.file <- find_file(params.file.base, type = 'sample_min2')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  blocked_c2_3r_sample_min2_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    blocked_i1_2c_sample_min2_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
 ```

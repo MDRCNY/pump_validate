@@ -26,17 +26,14 @@ Design: Blocked RCT, with 2 levels, and randomization done at level 1 (individua
 Models: Constant treatment effects, fixed treatment effects, and random treatment effects.
 
 ```{r knit.options, echo = FALSE}
-# by default, all code chunks will cache their results
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
 ```
 
 ```{r setup}
 library(here)
 library(pander)    # For good table format
-
 # default tables to round to 3 digits
 panderOptions('round', 3)
-
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))
 ```
@@ -44,17 +41,14 @@ source(here::here("Validation/Simulations", "params.R"))
 ```{r universal.params}
 # assumptions
 user.params.list[['K']] <- 1
+user.params.list[['J']] <- 20
 user.params.list[['ICC.3']] <- NULL
 user.params.list[['omega.3']] <- NULL
 user.params.list[['R2.3']] <- NULL
-
 # what we assume for validation
-user.params.list[['S']] <- 1000
-
+sim.params.list[['S']] <- 1000
 params.default <- user.params.list
 ```
-
-# Power Validation
 
 Default parameters:
 
@@ -72,6 +66,8 @@ Parameters by model type:
 Assumptions:
 
 * Two-level design: $\text{ICC}_3 = 0$,  $\omega_3 = 0$, $K = 1$
+
+# Power Validation
 
 ## Varying school size
 
@@ -321,9 +317,9 @@ if(length(mdes.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2c_mdes_results <- readRDS(mdes.file)
+  blocked_i1_2c_mdes_D1_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    blocked_i1_2c_mdes_results,
+    blocked_i1_2c_mdes_D1_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = design
   )
@@ -341,9 +337,9 @@ if(length(mdes.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2c_mdes_results <- readRDS(mdes.file)
+  blocked_i1_2c_mdes_min2_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    blocked_i1_2c_mdes_results,
+    blocked_i1_2c_mdes_min2_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = design
   )
@@ -361,9 +357,9 @@ if(length(mdes.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2f_mdes_results <- readRDS(mdes.file)
+  blocked_i1_2f_mdes_D1_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    blocked_i1_2f_mdes_results,
+    blocked_i1_2f_mdes_D1_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = design
   )    
@@ -381,9 +377,9 @@ if(length(mdes.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2f_mdes_results <- readRDS(mdes.file)
+  blocked_i1_2f_mdes_min2_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    blocked_i1_2f_mdes_results,
+    blocked_i1_2f_mdes_min2_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = design
   )    
@@ -401,9 +397,9 @@ if(length(mdes.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2r_mdes_results <- readRDS(mdes.file)
+  blocked_i1_2r_mdes_D1_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    blocked_i1_2r_mdes_results,
+    blocked_i1_2r_mdes_D1_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = design
   )
@@ -421,9 +417,9 @@ if(length(mdes.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2r_mdes_results <- readRDS(mdes.file)
+  blocked_i1_2r_mdes_min2_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    blocked_i1_2r_mdes_results,
+    blocked_i1_2r_mdes_min2_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = design
   )
@@ -443,9 +439,9 @@ if(length(sample.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2c_sample_results <- readRDS(sample.file)
+  blocked_i1_2c_sample_D1_results <- readRDS(sample.file)
   pander::pandoc.table(
-    blocked_i1_2c_sample_results,
+    blocked_i1_2c_sample_D1_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -463,9 +459,9 @@ if(length(sample.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2c_sample_results <- readRDS(sample.file)
+  blocked_i1_2c_sample_min2_results <- readRDS(sample.file)
   pander::pandoc.table(
-    blocked_i1_2c_sample_results,
+    blocked_i1_2c_sample_min2_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -483,9 +479,9 @@ if(length(sample.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2f_sample_results <- readRDS(sample.file)
+  blocked_i1_2f_sample_D1_results <- readRDS(sample.file)
   pander::pandoc.table(
-    blocked_i1_2f_sample_results,
+    blocked_i1_2f_sample_D1_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -503,9 +499,9 @@ if(length(sample.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2f_sample_results <- readRDS(sample.file)
+  blocked_i1_2f_sample_min2_results <- readRDS(sample.file)
   pander::pandoc.table(
-    blocked_i1_2f_sample_results,
+    blocked_i1_2f_sample_min2_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -523,9 +519,9 @@ if(length(sample.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2r_sample_results <- readRDS(sample.file)
+  blocked_i1_2r_sample_D1_results <- readRDS(sample.file)
   pander::pandoc.table(
-    blocked_i1_2r_sample_results,
+    blocked_i1_2r_sample_D1_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -543,9 +539,9 @@ if(length(sample.file) == 0)
   warning(paste('Results not yet computed for given parameters:', params.file.base))
 } else
 {
-  blocked_i1_2r_sample_results <- readRDS(sample.file)
+  blocked_i1_2r_sample_min2_results <- readRDS(sample.file)
   pander::pandoc.table(
-    blocked_i1_2r_sample_results,
+    blocked_i1_2r_sample_min2_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
