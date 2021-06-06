@@ -67,6 +67,15 @@ if(run.wy)
     power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", q = q, overwrite)
     user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
     power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
+    
+    # try other combinations of params
+    user.params.list[['J']] <- 60
+    sim.params.list[['B']] <- 200
+    power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
+    
+    user.params.list[['J']] <- 15
+    sim.params.list[['B']] <- 3000
+    power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
  
     sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm", "WY-SS")    
 
