@@ -28,7 +28,7 @@ Models: random treatment effects.
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
 ```
 
 ```{r setup}
@@ -48,16 +48,15 @@ design <- "blocked_i1_3r"
 
 # for sufficient power and stability
 user.params.list[['K']] <- 15
+user.params.list[['J']] <- 20
 user.params.list[['nbar']] <- 100
 
 # what we assume for validation
-user.params.list[['S']] <- 1000
+sim.params.list[['S']] <- 1000
 
 params.default <- user.params.list
 ```
 
-
-# Power Validation
 
 * M = `r user.params.list[['M']]`
 * J = `r user.params.list[['J']]`
@@ -68,6 +67,8 @@ params.default <- user.params.list
 * R2: $R^2_1$ = `r user.params.list[['R2.1']]`, $R^2_2$ = `r user.params.list[['R2.2']]`, $R^2_3$ = `r user.params.list[['R2.3']]`
 * ICC: $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`, $\text{ICC}_3$ = `r user.params.list[['ICC.3']]`
 * Omega: $\omega_2$ = `r user.params.list[['omega.2']]`, $\omega_3$ = `r user.params.list[['omega.3']]`
+
+# Power Validation
 
 ## Varying school size
 
@@ -206,7 +207,7 @@ user.params.list[['rho.u']] <- user.params.list[['rho.v']] <- user.params.list[[
 ```
 
 
-# Varying true positives
+## Varying true positives
 
 ```{r MDES0.12500}
 user.params.list[['ATE_ES']] <- c(0.125, 0, 0)
@@ -220,7 +221,7 @@ print(blocked_i1_3r_mdes0.1250.00.0.00_power_plot)
 user.params.list[['ATE_ES']] <- params.default[['ATE_ES']]
 ```
 
-# Varying ICC
+## Varying ICC
 
 ```{r ICC20.7}
 user.params.list[['ICC.2']] <- rep(0.7, M)
@@ -247,7 +248,7 @@ user.params.list[['ICC.3']] <- params.default[['ICC.3']]
 ```
 
 
-# Varying Omega
+## Varying Omega
 
 ```{r omega20.8}
 user.params.list[['omega.2']] <- 0.8

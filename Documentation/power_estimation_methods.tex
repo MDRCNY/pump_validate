@@ -58,6 +58,18 @@ These models vary in the following ways:
 \item Whether school covariates $X_{jkmr}$ or district covariates $V_{kms}$  are included in the model for the intercept. Note that in some models, PowerUp incorporates covariates into the slope, allowing for, in principle, heterogeneous treatment efects correlated to said covariates. However, we never make this assumption, as it is unlikely to help with an evaluationg targeting an overall average impact. Including covariates in the slope terms allows for modeling treatment effect heterogeneity in principle, but this can add complexity with estimation. When this difference occurs, it is noted.
 \end{itemize}
 
+\subsection{Proposed naming conventions}
+
+Proposed names would be:
+levels\_treatment\_intercepts\_effects
+
+Examples:
+\begin{itemize}
+\item 2level\_b2\_ir\_er: 2 level, blocked on the second level, random intercept, random treatment effect.  Corresponds to current blocked\_i1\_2r.
+\item 3level\_b3c2\_if\_ec: 3 level, blocked on third level, clustered on second level, fixed intercepts, constant treatment effect. Corresponds to current blocked\_c2\_3f.
+\end{itemize}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Notation

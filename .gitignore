@@ -1,6 +1,7 @@
 ## R Out data and storage files
 .RData
 .Ruserdata
+*Rproj.user*
 *.ini
 *.DS_Store
 Validation/data/*.RDS
