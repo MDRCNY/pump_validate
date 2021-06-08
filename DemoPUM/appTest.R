@@ -10,10 +10,10 @@ ui <- fluidPage(
   # Nav Bar to construct the set of options we have along with the name of the title
   
   titlePanel(title = "Power Under Multiplicity", windowTitle = "Power Under Multiplicity"), 
-             tabsetPanel(
+             tabsetPanel( id = "mainMenu",
                tabPanel("Home"),
                tabPanel("Educational Resources"),
-               tabPanel("2_Level_Blocked_i1_2cfr", tabsetPanel(
+               tabPanel("2_Level_Blocked_i1_2cfr", tabsetPanel( #2LBI for 2 Level Blocked I1
                  tabPanel("Power Calculation",
                           sidebarLayout(
                             sidebarPanel(
@@ -60,21 +60,26 @@ ui <- fluidPage(
                               
                               fluidRow(
                                 column(10,
-                                       div(style = "display: inline-block, vertical-align:top;", selectInput("design", "What Research Design is this for?", 
-                                                                                                             choices = list("constantEffects" = "blocked_i1_2c", 
-                                                                                                                            "fixedEffects" = "blocked_i1_2f", 
-                                                                                                                            "randomEffects" = "blocked_i1_2r"))) # select input buttons div
+                                       div(style = "display: inline-block, vertical-align:top;", 
+                                           selectInput("designP2LBI", "What Research Design is this for?", 
+                                           choices = list("constantEffects" = "blocked_i1_2c", 
+                                                          "fixedEffects" = "blocked_i1_2f", 
+                                                          "randomEffects" = "blocked_i1_2r"))) # select input buttons div
                                 ), # column for inputs
                                 
                                 column(2, 
-                                       div(style ="display: inline-block, vertical-align:top;",actionButton("question_design",label = "", icon = icon("question"),
-                                                                                                            style = "font-size: 10px;
-                                                                                                            margin-top: 28px;")) #div for button ends
+                                       div(style ="display: inline-block,vertical-align:top;",
+                                           actionButton("question_designP2LBI",
+                                           label = "", 
+                                           icon = icon("question"),
+                                           style = "font-size: 10px;
+                                                    margin-top: 28px;")) #div for button ends
                                 ) # column for buttons
                                 
                               ), # fluid Row to contain the question mark issue 
                               
-                              bsPopover(id = "question_design", title = NULL,
+                              bsPopover(id = "question_designP2LBI", 
+                                        title = NULL,
                                         content = paste0("For more information on different designs, please click!"),
                                         placement = "right", 
                                         trigger = "hover", 
@@ -82,22 +87,30 @@ ui <- fluidPage(
                               
                               fluidRow(
                                 column(10,
-                                       div(style = "display: inline-block, vertical-align:top;", selectInput("MTP", "Which MTP do you plan to use?", 
-                                                                                                             choices = list("Bonferroni" = "Bonferroni", 
-                                                                                                                            "Holm" = "Holm", 
-                                                                                                                            "Benjamini-Hochberg" = "BH", 
-                                                                                                                            "Westfall-Young-Single-Step" = "WY-SS", 
-                                                                                                                            "Westfall-Young-Step-Down" = "WY-SD"),
-                                                                                                             multiple = TRUE)) # select input buttons div
+                                       div(style = "display: inline-block, vertical-align:top;", 
+                                           selectInput("MTPP2LBI", "Which MTP do you plan to use?", 
+                                           choices = list("Bonferroni" = "Bonferroni", 
+                                                          "Holm" = "Holm", 
+                                                          "Benjamini-Hochberg" = "BH", 
+                                                          "Westfall-Young-Single-Step" = "WY-SS", 
+                                                          "Westfall-Young-Step-Down" = "WY-SD"),
+                                                          multiple = TRUE)) # select input buttons div
                                 ), # column for inputs
                                 
                                 column(2, 
-                                       div(style ="display: inline-block, vertical-align:top;",actionButton("question_mtp",label = "", icon = icon("question"))) #div for button ends
+                                       div(style ="display: inline-block, 
+                                           vertical-align:top;",
+                                           actionButton("question_mtpP2LBI",
+                                                        label = "", 
+                                                        icon = icon("question"),
+                                                        style = "font-size: 10px;
+                                                                 margin-top: 28px;")) #div for button ends
                                 ) # column for buttons
                                 
                               ), # fluid Row to contain the question mark issue 
                               
-                              bsPopover(id = "question_mtp", title = NULL,
+                              bsPopover(id = "question_mtpP2LBI", 
+                                        title = NULL,
                                         content = paste0("For more information on MTP, please click!"),
                                         placement = "right", 
                                         trigger = "hover", 
@@ -106,36 +119,61 @@ ui <- fluidPage(
                               fluidRow(
                                 
                                 column(12,
-                                       numericInput("M", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
+                                       numericInput("MP2LBI", 
+                                                    "Number of Outcomes", 
+                                                    min = 1, 
+                                                    max = 10, 
+                                                    value = 5, 
+                                                    step = 1)
                                 ) # column for number of outcomes
                               
                               ), # number of outcomes and mdes
                               
                               fluidRow(
                                 
-                                column(12,
-                                       textInput("MDES", "Enter a vector (comma delimited)", value = "0.125,0.125,0.125, 0,0"))
-                              ), # column for Minimum detectable effect size
+                                column(10,
+                                       textInput("MDESP2LBI", "Enter MDES vector (comma delimited)", value = "0.125,0.125,0.125, 0,0")
+                                       
+                                ), # column for MDES
+                                
+                                column(2, 
+                                       div(style ="display: inline-block, 
+                                           vertical-align:top;",
+                                           actionButton("question_mdesP2LBI",
+                                                        label = "", 
+                                                        icon = icon("question"),
+                                                        style = "font-size: 10px;
+                                                                 margin-top: 28px;")) #div for button ends
+                                ) # column for buttons
+                                
+                              ), # fluid Row to contain the question mark issue 
                               
-                    
+                              bsPopover(id = "question_mdesP2LBI", 
+                                        title = NULL,
+                                        content = paste0("For more information on MTP, please click!"),
+                                        placement = "right", 
+                                        trigger = "hover", 
+                                        options = list(container = "body")
+                                        ), # the bsPopover for the more information section of the Shiny App
+                              
                               fluidRow(
                                 
                                 column(12,
                                        
-                                       numericInput("K", "Number of Districts", min = 1, max = 100, value = 1, step = 1))
+                                       numericInput("KP2LBI", "Number of Districts", min = 1, max = 100, value = 1, step = 1))
                               ), # number of districts
                               
                               fluidRow(
                                 
                                 column(6,
                                        
-                                       numericInput("J", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
+                                       numericInput("JP2LBI", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
                                        
                                 ), # number of blocks
                                 
                                 column(6,
                                        
-                                       numericInput("nbar","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
+                                       numericInput("nbarP2LBI","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
                                        
                                 ) # number of units per blocks
                                 
@@ -145,13 +183,13 @@ ui <- fluidPage(
                                 
                                 column(6,
                                        
-                                       numericInput("R2.1", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
+                                       numericInput("R2.1P2LBI", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
                                        
                                 ), # R square for level 1
                                 
                                 column(6,
                                        
-                                       numericInput("numCovar.1", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
+                                       numericInput("numCovar.1P2LBI", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
                                        
                                 )# Number of Level 1 Covariates
                                 
@@ -161,7 +199,7 @@ ui <- fluidPage(
                                 
                                 column(12,
                                        
-                                       numericInput("tbar", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
+                                       numericInput("tbarP2LBI", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
                                        
                                 ) # proportion of treatment assignment
                               ), # proprtion of treatement as assignment
@@ -170,7 +208,7 @@ ui <- fluidPage(
                                 
                                 column(12,
                                        
-                                       numericInput("alpha", "Significance Level of Tests (alpha)", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
+                                       numericInput("alphaP2LBI", "Significance Level of Tests (alpha)", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
                                        
                                 ) #Significance Level of Tests
                                 
@@ -179,7 +217,7 @@ ui <- fluidPage(
                               fluidRow(
                                 column(12,
                                        
-                                       numericInput("rho", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
+                                       numericInput("rhoP2LBI", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
                                        
                                 ) # Number of Level 1 covariates
                                 
@@ -188,14 +226,14 @@ ui <- fluidPage(
                               fluidRow(
                                 
                                 column(12,
-                                       actionButton("goButton_power", "Go!") # Action Button to trigger other reactive values
+                                       actionButton("goButtonP2LBI", "Go!") # Action Button to trigger other reactive values
                                 ) # Column for action button
                                 
                               )
                               
                             ), #sidebar Panel
                             mainPanel (
-                              tableOutput("powercalc") #The power calculation table output
+                              tableOutput("powercalcP2LBI") #The power calculation table output
                             ) #main panel
                             
                           ) #sidebar Layout
@@ -241,7 +279,6 @@ ui <- fluidPage(
                          font-style: italic !important;
                          font-size: 15px;
                         }
-  
                       "
                                   ) # html bracket
                                 ) # css styling tag
@@ -719,8 +756,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
   ############################################
   
   #Observing the action button click and switching to a different Tab. Passing the session to keep the info from previous tab.
-  observeEvent(input$question_mtp,{
-    updateTabsetPanel(session, "mainmenu", selected = "MTP" )
+  observeEvent(input$question_designP2LBI,{
+    updateTabsetPanel(session, "mainMenu", selected = "Educational Resources" )
   }) # Action button that switch tabs
   
   # power <- reactive({
@@ -731,10 +768,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
   # }) # reactive expression for power
   
   #observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
-  observeEvent(input$goButton_power,{
+  observeEvent(input$goButtonP2LBI,{
     
     #Rendering a reactive object table from the power function
-    output$powercalc <- renderTable({
+    output$powercalcP2LBI <- renderTable({
       
       #Creating a progress bar
       progress <- shiny::Progress$new()
@@ -765,24 +802,24 @@ server <- shinyServer(function(input, output, session = FALSE) {
       #)
      #browser()
       
-      isolate(pump_power(design = input$design,
-                         MTP = as.character(unlist(strsplit(input$MTP," "))),
-                         MDES = as.numeric(unlist(strsplit(input$MDES, ","))),
-                         M = input$M, # The number of hypotheses/outcomes
-                         J = input$J, # The number of schools
-                         K = input$K, # The number of districts
-                         nbar = input$nbar, # The number of units per block
-                         Tbar = input$tbar, # The proportion of samples that are assigned to the treatment
-                         alpha = input$alpha,
-                         numCovar.1 = input$numCovar.1,
+      isolate(pump_power(design = input$designP2LBI,
+                         MTP = as.character(unlist(strsplit(input$MTPP2LBI," "))),
+                         MDES = as.numeric(unlist(strsplit(input$MDESP2LBI, ","))),
+                         M = input$MP2LBI, # The number of hypotheses/outcomes
+                         J = input$JP2LBI, # The number of schools
+                         K = input$KP2LBI, # The number of districts
+                         nbar = input$nbarP2LBI, # The number of units per block
+                         Tbar = input$tbarP2LBI, # The proportion of samples that are assigned to the treatment
+                         alpha = input$alphaP2LBI,
+                         numCovar.1 = input$numCovar.1P2LBI,
                          numCovar.2 = 0,
                          numCovar.3 = 0,
-                         R2.1 = rep(input$R2.1,input$M),
-                         R2.2 = rep(0.1, input$M),
-                         R2.3 = rep(0.1, input$M),
-                         ICC.2 = rep(0, input$M),
-                         ICC.3 = rep(0.2, input$M) ,
-                         rho = input$rho,
+                         R2.1 = rep(input$R2.1P2LBI,input$MP2LBI),
+                         R2.2 = rep(0.1, input$MP2LBI),
+                         R2.3 = rep(0.1, input$MP2LBI),
+                         ICC.2 = rep(0, input$MP2LBI),
+                         ICC.3 = rep(0.2, input$MP2LBI) ,
+                         rho = input$rhoP2LBI,
                          omega.2 = 0,
                          omega.3 = 0.1,
                          tnum = 10000, 
