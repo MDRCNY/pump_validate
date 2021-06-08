@@ -2,7 +2,8 @@ library(shiny) # for basic templates
 library(shinyBS) # for popovers and tool tips
 library(shinycssloaders) # for ui elements showing shiny loading
 library(magrittr) # piping operator
-library(pum) # our pum lirbary
+library(ggplot2) # loading ggplot for the plot
+library(pum) # our pum library
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -14,7 +15,7 @@ ui <- fluidPage(
                tabPanel("Home"),
                tabPanel("Educational Resources"),
                tabPanel("2_Level_Blocked_i1_2cfr", tabsetPanel( #2LBI for 2 Level Blocked I1
-                 tabPanel("Power Calculation",
+               tabPanel("Power Calculation",
                           sidebarLayout(
                             sidebarPanel(
                               # css to center the progress bar
@@ -252,9 +253,29 @@ ui <- fluidPage(
                               )
                               
                             ), #sidebar Panel
-                            mainPanel (
-                              tableOutput("powercalcP2LBI") #The power calculation table output
-                            ) #main panel
+                            
+                          
+                            mainPanel(
+                            br(),    
+                            br(),
+                            fluidRow(
+                              column(12,
+                              tableOutput("powercalcTableP2LBI")) #The power calculation table output
+                            ), #fluidRow for first half of the page
+                            
+                            br(), # To create spaces between Table and Plots
+                            br(), # To create spaces between Table and Plots
+                            br(), # To create spaces between Table and Plots
+                            br(), # To create spaces between Table and Plots
+                            br(), # To create spaces between Table and Plots
+                            br(), # To create spaces between Table and Plots
+                      
+                            fluidRow(
+                              column(6,
+                                     plotOutput("powercalcGraphP2LBI"))
+                            ) # end of Fluid Row
+                            
+                            ) # end of Main Panel
                             
                           ) #sidebar Layout
                           
@@ -566,7 +587,7 @@ ui <- fluidPage(
                                        tableOutput("sample") # Sample Table
                                 ) # Full column
                                 
-                              ) #fluidRow for first half of the page
+                              )
                               
                             ) # Main Panel Layout
                           ) # Sidebar Panel       
@@ -790,16 +811,20 @@ server <- shinyServer(function(input, output, session = FALSE) {
   #observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
   observeEvent(input$goButtonP2LBI,{
     
-    #Rendering a reactive object table from the power function
-    output$powercalcP2LBI <- renderTable({
+    
+    # set a Reactive Value for Power Table
+    reactPowerTable <- reactiveVal()
+    
+    # Rendering a reactive object table from the power function
+    output$powercalcTableP2LBI <- renderTable({
       
-      #Creating a progress bar
+      # Creating a progress bar
       progress <- shiny::Progress$new()
       progress$set(message = "Calculating MDES", value = 0)
       # Close the progress bar when this reactive expression is done (even if there is an error)
       on.exit(progress$close())
       
-      #Update Progress Bar Callback function
+      # Update Progress Bar Callback function
       updateProgress <- function(value = NULL, detail = NULL, message = NULL){
         
         if (is.null(value)){
@@ -813,15 +838,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
       } # End of Callback Progress Function
       
-      #displaying based on the number of sample sizes
-      #pump_power <- function(
-      #  design, MTP, MDES, M, J, K = 1, nbar, Tbar, alpha, numCovar.1 = 0, numCovar.2 = 0,
-      #  numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
-      #  rho, omega.2, omega.3 = NULL,
-      #  tnum = 10000, B = 1000, cl = NULL, updateProgress = NULL
-      #)
-     #browser()
-      
+      # data frame output for the results
+      dat <- as.data.frame(
       isolate(pump_power(design = input$designP2LBI,
                          MTP = as.character(unlist(strsplit(input$MTPP2LBI," "))),
                          MDES = as.numeric(unlist(strsplit(input$MDESP2LBI, ","))),
@@ -846,10 +864,32 @@ server <- shinyServer(function(input, output, session = FALSE) {
                          B = 100, 
                          cl = NULL,
                          updateProgress = updateProgress)
-                    )
-    }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
+                    ))
+      
+      # Save the reactive Power Table
+      reactPowerTable(dat)
+      {reactPowerTable()}
+          }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
+
     
+    # Rendering a reactive object table from the power function
+    output$powercalcGraphP2LBI <-renderPlot({
+      
+      dat <- reactPowerTable()
+      dat$AdjType <- rownames(dat)
+      dat %>%
+        dplyr::select(AdjType,D1indiv, min2, min3) %>%
+        tidyr::pivot_longer(!AdjType, names_to = "powerType", values_to = "power") %>%
+        ggplot(aes(x = powerType, 
+                   y = power, 
+                   shape = AdjType,
+                   colour = AdjType)) + 
+        geom_point(size = 3)
+      
   }) # observe Event go Button for power
+    
+    
+})
   
   #observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
   observeEvent(input$goButton_powerCluster,{
