@@ -181,13 +181,42 @@ ui <- fluidPage(
                               
                               fluidRow(
                                 
-                                column(6,
+                                column(10,
+                                       textInput("R2.1P2LBI", "Enter R2 vector (comma delimited)", value = "0.2, 0.2, 0.2, 0.2, 0.2")
                                        
-                                       numericInput("R2.1P2LBI", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
-                                       
-                                ), # R square for level 1
+                                ), # column for MDES
                                 
-                                column(6,
+                                column(2, 
+                                       div(style ="display: inline-block, 
+                                           vertical-align:top;",
+                                           actionButton("R2.1P2LBI",
+                                                        label = "", 
+                                                        icon = icon("question"),
+                                                        style = "font-size: 10px;
+                                                                 margin-top: 28px;")) #div for button ends
+                                ) # column for buttons
+                                
+                              ), # fluid Row to contain the question mark issue 
+                              
+                              bsPopover(id = "R2.1P2LBI", 
+                                        title = NULL,
+                                        content = paste0("For more information on MTP, please click!"),
+                                        placement = "right", 
+                                        trigger = "hover", 
+                                        options = list(container = "body")
+                              ), # the bsPopover for the more information section of the Shiny App
+                              
+                              fluidRow(
+                                column(12,
+                                       
+                                       numericInput("rhoP2LBI", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
+                                       
+                                ) # Number of Level 1 covariates
+                                
+                              ), #fluid row for block level covariate inputs
+                              
+                              fluidRow(
+                                column(12,
                                        
                                        numericInput("numCovar.1P2LBI", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
                                        
@@ -213,15 +242,6 @@ ui <- fluidPage(
                                 ) #Significance Level of Tests
                                 
                               ), # proportion of treatment assignment and significance level of tests
-                              
-                              fluidRow(
-                                column(12,
-                                       
-                                       numericInput("rhoP2LBI", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
-                                       
-                                ) # Number of Level 1 covariates
-                                
-                              ), #fluid row for block level covariate inputs
                               
                               fluidRow(
                                 
