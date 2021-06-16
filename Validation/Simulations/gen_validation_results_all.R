@@ -8,9 +8,9 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
-run.power = FALSE
+run.power = TRUE
 run.mdes.ss = FALSE
-run.wy = TRUE
+run.wy = FALSE
 # which designs to run
 run.blocked.2l = TRUE
 run.cluster.2l = FALSE
@@ -57,25 +57,25 @@ if(run.wy)
     user.params.list[['R2.3']] <- NULL
 
     # so power isn't too high
-    user.params.list[['ATE_ES']] <- rep(0.1, M)
+    user.params.list[['ATE_ES']] <- rep(0.05, M)
+    user.params.list[['nbar']] <- 30
 
-    
     user.params.list[['omega.2']] <- 0
     user.params.list[['ICC.2']] <- rep(0, M)
-    power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
+    # power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2c", q = q, overwrite)
     user.params.list[['omega.2']] <- user.params.default[['omega.2']]
-    power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", q = q, overwrite)
+    # power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2f", q = q, overwrite)
     user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
     power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
     
-    # try other combinations of params
-    user.params.list[['J']] <- 60
-    sim.params.list[['B']] <- 200
-    power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
-    
-    user.params.list[['J']] <- 15
-    sim.params.list[['B']] <- 3000
-    power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
+    # # try other combinations of params
+    # user.params.list[['J']] <- 60
+    # sim.params.list[['B']] <- 200
+    # power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
+    # 
+    # user.params.list[['J']] <- 15
+    # sim.params.list[['B']] <- 3000
+    # power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
  
     sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm", "WY-SS")    
 
