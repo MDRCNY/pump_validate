@@ -1,29 +1,26 @@
 ---
-  title: 'Appendix: Validation of power results'
+title: 'Appendix: Validation of power results'
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
+header-includes:
+   - \usepackage{dsfont}
 output:
   pdf_document:
-  toc: yes
-toc_depth: '5'
-github_document:
-  df_print: paged
-fig_caption: yes
-fig_height: 8
-fig_width: 10
-toc: yes
-html_document:
-  df_print: paged
-fig_caption: yes
-fig_height: 8
-fig_width: 10
-highlight: monochrome
-theme: spacelab
-toc: yes
-toc_depth: 5
-toc_float: yes
+    toc: yes
+    toc_depth: '5'
+  html_document:
+    code_folding: hide
+    df_print: paged
+    fig_caption: yes
+    fig_height: 8
+    fig_width: 10
+    highlight: monochrome
+    theme: spacelab
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
 ---
   
-  ```{r knit.options, echo = FALSE}
+```{r knit.options, echo = FALSE, message = FALSE}
 # by default, all code chunks will cache their results
 knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
 library(ggplot2)
@@ -34,10 +31,10 @@ source(here::here("Validation/Simulations", "misc.R"))
 # TODO
 
 * Potentially problematic graphs
-- blocked_c2_3r $R^2 = 0.6$
+  - blocked_c2_3r $R^2 = 0.6$
   - blocked_c2_3r $ICC = 0.7$
   - blocked_i1_3r $ICC = 0.7$
-  * Write up westfall-young
+* Write up westfall-young
 * Run all MDES and SS calculations
 * Try additional simulation variations
 
@@ -60,7 +57,7 @@ In order to estimate power by simulation, we follow the following steps.
 
 For iteration $s = 1, \dots S$:
   
-  1. Generate simulated data according to the assumed data generating process (DGP)
+1. Generate simulated data according to the assumed data generating process (DGP)
 2. Generate simulated treatment assignment
 3. Calculate p-value given simulated data, treatment assignment, and assumed model
 
@@ -89,19 +86,19 @@ We calculate power under the following definitions:
 
 We consider the following designs:
   
-  * Blocked individual randomization, 2 level
-- constant effects (blocked_i1_2c)
-- fixed effects (blocked_i1_2f)
-- random effects (blocked_i1_2r)
+* Blocked individual randomization, 2 level
+  - constant effects (blocked_i1_2c)
+  - fixed effects (blocked_i1_2f)
+  - random effects (blocked_i1_2r)
 * Blocked individual randomization, 3 level
-- random effects (blocked_i1_3r)
+  - random effects (blocked_i1_3r)
 * Cluster randomization, 2 level
-- random effects (simple_c2_2r)
+  - random effects (simple_c2_2r)
 * Cluster randomization, 3 level
-- random effects (simple_c3_3r)
+  - random effects (simple_c3_3r)
 * Blocked cluster randomization, 3 level
-- fixed effects (blocked_c2_3f)
-- random effects (blocked_c2_3r)
+  - fixed effects (blocked_c2_3f)
+  - random effects (blocked_c2_3r)
 
 ## Simulation parameters
 
@@ -128,8 +125,9 @@ Parameters that vary:
 
 TODO: possible things we may want to vary:
   
-  * Correlations between school random effects and impacts $\kappa$
-  * Combinations of parameters instead of one at a time
+* Correlations between school random effects and impacts $\kappa$
+* Combinations of parameters instead of one at a time
+* A realistic set of parameters
 * Extreme values, i.e. $\rho = 0.95$
   
   \newpage
@@ -211,41 +209,61 @@ design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
 user.params.list[['ICC.3']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_c2_3f_nj100_power_plot <- gen.power.results.plot(params.file.base, design)
-print(blocked_c2_3f_nj100_power_plot)
+# blocked_c2_3f_nj100_power_plot <- gen.power.results.plot(params.file.base, design)
+# print(blocked_c2_3f_nj100_power_plot)
 ```
 
 Next, we validate MDES and sample size calculations. The first column shows the calculated MDES or sample size, the middle column is the power we plugged into the calculation, and the last column shows the MDES or sample size that we are targeting. Thus, ideally we want the first and last columns to match.
 
 ```{r}
-mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
-blocked_c2_3f_mdes_D1_results <- readRDS(mdes.file)
-pander::pandoc.table(
-  blocked_c2_3f_mdes_D1_results,
-  style = "grid", split.tables = 100, row.names = FALSE, 
-  caption = design
-)
+# mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
+# blocked_c2_3f_mdes_D1_results <- readRDS(mdes.file)
+# pander::pandoc.table(
+#   blocked_c2_3f_mdes_D1_results,
+#   style = "grid", split.tables = 100, row.names = FALSE, 
+#   caption = design
+# )
 ```
 
 ```{r}
-sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
-blocked_c2_3f_sample_D1_results <- readRDS(sample.file)
-pander::pandoc.table(
-  blocked_c2_3f_sample_D1_results,
-  style = "grid", split.tables = 100, row.names = FALSE, 
-  caption = design
-)
+# sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
+# blocked_c2_3f_sample_D1_results <- readRDS(sample.file)
+# pander::pandoc.table(
+#   blocked_c2_3f_sample_D1_results,
+#   style = "grid", split.tables = 100, row.names = FALSE, 
+#   caption = design
+# )
 ```
 
 # Westfall-Young procedures
 
-To validate the Westfall-Young procedures, we took several steps. The WY procedure was validated separately due to its unique complications and computational burden.
+The Westfall-Young procedure was validated separately due to its unique complications and computational burden.
 
 First, we wrote a series of careful unit tests ensuring that our code worked as expected for each step of the WY procedure. One of these tests compared results from our procedure to the WY procedure in the multtest package, and found it matched quite well.
 
-Second, we also tested the WY procedures using the same simulation procedure described above. For constant effect and fixed effect models, the power estimation matches between PUM and the simulations. However, for random effects models, the two methods diverge.
+Second, we also tested the WY procedures using the same simulation procedure described above.
+For constant effect and fixed effect models, the power estimation matches between PUM and the simulations.
+However, for random effects models, the two methods diverge in some cases.
+We find that the simulated power matches the PUMP-calculated power only when (1) there is a large number of blocks/clusters, and (2) the user has a large number of WY permutations.
+Below, we discuss the single-step procedure because it is simpler, although the same concepts hold for the step-down procedure.
+Although it is difficult to verify why this discrepancy occurs, our hypothesis is that this behavior occurs due to the combination of the sensitivity of the WY procedure, and the instability of the random effects model.
 
-Westfall-young procedures were more difficult to validate.
+The goal of the WY procedure is to estimate the adjusted p-value for outcome $i$
+$$\tilde{p}_i = Pr\left(\min_{1 \leq j \leq k} P_j \leq p_i \mid H_0^C\right).$$
+where $P_j$ is a random variable representing a $p$-value for outcome $j$, and lowercase $p_i$ is the observed realization for outcome $i$.
+We assume a set of $k$ tests with corresponding null hypotheses $H_{0i}$ for $i = 1, \cdots, k$.
+The complete null hypothesis is the setting where all the null hypotheses are true: $H_0^C = \cap_{i=1}^{k} H_{0i} = \{\text{all } H_i \text{are true}\}$.
+In order to estimate this p-value, the p-value is calculated across $B$ permutations
+$$\tilde{p}_i = \frac{1}{B}\sum_{b = 1}^{B} \mathds{1}(\min_{1 \leq j \leq k} p_{b,j}^\star \leq p_i).$$
 
+In order for the procedure to be correct, we should be generating the p-values $P_j$ from the the true distribution of p-values under the null hypothesis.
+We generally are testing outcomes that are truly significant, so the observed p-values are small.
+Thus, looking at these expressions, we are concerned about tail behavior; we are testing whether a small observed p-value is less than the minimum of of the generated p-values of our multiple outcomes.
+This combination of factors means that a small discrepancy in the tails between the generated null distribution and the true distribution could have a large impact on the adjusted p-value.
 
-First, these procedures run very slowly, so repeating them across many different simulation iterations was a computationally intensive process.
+Given that we are relying on tail behavior, this explains why we need both a large number of permutations, and a large number of blocks/clusters.
+The large number of permutations is required because we are trying to estimate a rare event.
+With a significant outcome, it is rare that the observed p-value will be less than the minimum of p-values generated from the null distribution.
+The large number of blocks/clusters is required to accurately estimate the tail behavior for random effects models.
+With a small number of blocks/clusters, we may not properly estimate the spread of the distribution, resulting in a poor estimate of the tail behavior.
+
