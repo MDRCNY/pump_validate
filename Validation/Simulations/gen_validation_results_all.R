@@ -6,17 +6,17 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = TRUE
+overwrite = FALSE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
-run.mdes.ss = FALSE
+run.mdes.ss = TRUE
 run.wy = FALSE
 # which designs to run
 run.blocked.2l = TRUE
-run.cluster.2l = FALSE
-run.blocked.3l = FALSE
-run.cluster.3l = FALSE
-run.blocked.cluster = FALSE
+run.cluster.2l = TRUE
+run.blocked.3l = TRUE
+run.cluster.3l = TRUE
+run.blocked.cluster = TRUE
 
 # simulation and user parameters
 source(here::here("Validation/Simulations", "params.R"))

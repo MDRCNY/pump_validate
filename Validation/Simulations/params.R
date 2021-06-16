@@ -19,9 +19,9 @@ source(here::here("Validation/Simulations", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 20                     # Number of samples for Monte Carlo Simulation
+  S = 100                     # Number of samples for Monte Carlo Simulation
   , Q = 10                   # Number of times entire simulation is repeated, so total iterations = S * Q
-  , B = 3000                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
+  , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
   , tol = 0.01               # tolerance for MDES and sample  size calculations
   , Tbar = 0.5               # Binomial assignment probability
@@ -34,7 +34,7 @@ sim.params.list <- list(
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , procs = c("Bonferroni", "BH", "Holm") # Multiple testing procedures
   , runSim = TRUE            # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = FALSE          # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPump = FALSE         # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
   , runPowerUp = FALSE       # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
