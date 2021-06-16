@@ -14,7 +14,7 @@ source new-modules.sh
 module load gcc/7.1.0-fasrc01
 module load R
 export R_LIBS_USER=$HOME/apps/R:$R_LIBS_USER
-R CMD BATCH --quiet --no-restore --no-save /n/home01/khunter33/Power-Under-Multiplicity/Validation/Simulations/gen_validation_results_all.R /n/home01/khunter33/Power-Under-Multiplicity/$(date +"%Y%m%d_%H%M%S").out
+R CMD BATCH --quiet --no-restore --no-save /n/home01/khunter33/Power-Under-Multiplicity/Validation/Simulations/gen_validation_results_all.R /n/home01/khunter33/Power-Under-Multiplicity/out/$(date +"%Y%m%d_%H%M%S").out
 
 
 
