@@ -14,6 +14,8 @@ Draft outline
 - world of modest number of outcomes (relative to some science applications)
 * Brief summary of the multiple testing problem
 
+TESTING!
+
 
 This paper focuses on the frequentist framework of hypothesis testing, as it is currently the prevailing framework in education and social policy research. Under this framework, the treatment and control groups in an RCT are considered random samples from a defined population (assumed to be the same across all blocks under the assumed design). Following the Rubin-Neyman counterfactual framework (Neyman, 1923; Rubin, 1974, 2006), $Y0_i(m)$ is the $m^{th}$ of $M$ outcomesfor individual $i$ when not exposed to the treatment, and $Y1_i(m)$ is the $m^{th}$ of $M$ outcomes for individual $i$ when exposed to treatment. Then the population average treatment on the th m outcome, given by
 
