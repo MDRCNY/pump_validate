@@ -3,6 +3,7 @@ Below is a checklist of tasks to complete for finalizing the PUMP project. For e
 This list is not complete - to be added to and checked off by everyone.
 
 # R package
+- Expand models (e.g. D3 designs with ICC non zero, and others discussed) & validate (Kristen, TBD)
 - Run additional validation for extreme values (Kristen, TBD)
 - Update with new naming convention (Kristen, TBD)
 - Complete code commenting (Kristen, TBD)
