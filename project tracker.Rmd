@@ -1,0 +1,34 @@
+Below is a checklist of tasks to complete for finalizing the PUMP project. For each, we can list champion & target date for completion. 
+
+This list is not complete - to be added to and checked off by everyone.
+
+# R package
+- Run additional validation for extreme values (Kristen, TBD)
+- Update with new naming convention (Kristen, TBD)
+- Complete code commenting (Kristen, TBD)
+- Complete all testing (Kristen and Luke, TBD)
+- Source code completed, ASCII files, with formatted help files and be packaged for easy installation. 
+- Submit package to CRAN - including JSS submission as vignettes in the package. 
+
+# Shiny app
+- Introduction/education matter (Kristin, 8/31)
+- Tabs completed for blocked individual RCT (Zarni, 7/31)
+- Tabs built out for additional designs/models (Zarni, 8/31)
+- User testing/review complete (Team, 9/15)
+- Revisions implemented (Zarni & Kristin, 10/15)
+- Submit to Pubs for review (Zarni, 10/15)
+- Test on host server (Zarni, 8/31)
+
+# Manuscript
+- Revisit outline & assign champions to sections (Team, 7/1)
+- Complete draft (Team, 9/30)
+- Get reviewer comments (Chuck, 10/15)
+- Revised draft (Team, 10/31)
+
+# Video
+- Reach out to video staff with plans and questions (Zarni, 7/31)
+- Budget video (Kristin, 8/15)
+
+# Presentation
+- TBD pending SREE decision
+
