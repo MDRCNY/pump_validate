@@ -58,16 +58,38 @@ These models vary in the following ways:
 \item Whether school covariates $X_{jkmr}$ or district covariates $V_{kms}$  are included in the model for the intercept. Note that in some models, PowerUp incorporates covariates into the slope, allowing for, in principle, heterogeneous treatment efects correlated to said covariates. However, we never make this assumption, as it is unlikely to help with an evaluationg targeting an overall average impact. Including covariates in the slope terms allows for modeling treatment effect heterogeneity in principle, but this can add complexity with estimation. When this difference occurs, it is noted.
 \end{itemize}
 
-\subsection{Proposed naming conventions}
+\subsection{Design naming convention}
 
-Proposed names would be:
-levels\_treatment\_intercepts\_effects
+The general naming convention follows:
+dparameters\_mparameters
+
+For design parameters, the first number is the number of levels, and the second is the level at which treatment is assigned.
+
+For model parameters, each set corresponds to the level, how the intercepts are modeled, and how the effects are modeled.
 
 Examples:
 \begin{itemize}
-\item 2level\_b2\_ir\_er: 2 level, blocked on the second level, random intercept, random treatment effect.  Corresponds to current blocked\_i1\_2r.
-\item 3level\_b3c2\_if\_ec: 3 level, blocked on third level, clustered on second level, fixed intercepts, constant treatment effect. Corresponds to current blocked\_c2\_3f.
+\item d2.1\_m2rr: 2 level, individual assignment, level 2 random intercept and random treatment effect.  Corresponds to current blocked\_i1\_2r.
+\item d3.2\_m3ff2rc: 3 level, level 2 assignment, level 3 fixed intercepts and fixed treatment effects, level 2 random intercepts and constant treatment effects. Corresponds to current blocked\_c2\_3f.
 \end{itemize}
+
+\begin{table}[h!]
+\begin{tabular}{l | l}
+% \begin{tabular}{p{5cm} | p{5cm}}
+\textbf{PowerUpR!}	& \textbf{PUMP} \\ \hline
+blocked\_i1\_2c 	& d2.1\_m2fc \\
+blocked\_i1\_2f 	& d2.1\_m2ff \\
+blocked\_i1\_2r 	& d2.1\_m2fr \\
+blocked\_i1\_3r 	& d3.1\_m3rr2rr \\
+simple\_c2\_2r 		& d2.2\_m2rc \\
+simple\_c3\_3r 		& d3.3\_m3rc2rc \\
+blocked\_c2\_3f 	& d3.2\_m3ff2rc \\
+blocked\_c2\_3r 	& d3.2\_m3rr2rc \\
+\end{tabular}
+\caption{Correspondence between design names\label{tab:estimate_param}}
+\end{table}
+
+
 
 
 
@@ -745,7 +767,7 @@ T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
 
 \subsection{Blocked cluster randomization, fixed effects (blocked\_c2\_3f)}
 
-\textbf{Characterization:} 3-level design, random intercepts for schools, fixed intercepts for districts, fixed slopes/treatment effects for districts, constant slope/effects for schools within a district, school covariates for intercept.
+\textbf{Characterization:} 3-level design, random intercepts for schools, fixed intercepts for districts, fixed slopes/treatment effects for districts, random intercepts for schools, constant slope/effects for schools within a district, school covariates for intercept.
 
 The model for estimating impacts on outcome $m$ is given by:
 \begin{align}\label{eqn:bi12c_model}

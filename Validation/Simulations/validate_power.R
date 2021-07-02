@@ -71,24 +71,13 @@ library(pum)
 #' @export
 #'
 #' @examples
-validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
-  
-  # checks
-  if(length(user.params.list[['ATE_ES']]) != user.params.list[['M']])
-  {
-    stop(paste('Please provide a vector of ATE_ES of length M.'))
-  }
-  
+validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE)
+{
   if( (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) > 1) |
       (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) == 1 & !('Bonferroni' %in% sim.params.list[['procs']] )))
   {
     stop(print("Multiple testing corrections are not needed when M = 1. Please change multiple testing procedures or increase M."))
   } 
-  
-  if(user.params.list[['omega.2']] > 0 & design == 'blocked_i1_2c')
-  {
-    stop('Omega.2 should be 0 for constant effects')
-  }
   
   t1 = Sys.time()
   
@@ -160,7 +149,51 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     if(!is.null(adjp.proc) && dim(adjp.proc)[1] == sim.params.list[['S']]*sim.params.list[['Q']])
     {
       sim.filename = paste0(params.file.base, "simulation_results.RDS")
-      sim_results <- calc_power(adjp.proc, sim.params.list[['alpha']])
+      
+      power.results <- NULL
+      for(p in 1:dim(adjp.proc)[3])
+      {
+        proc.results <- get.power.results(
+          pval.mat = adjp.proc[,,p],
+          ind.nonzero = user.params.list[['ATE_ES']] > 0,
+          alpha = sim.params.list[['alpha']]
+        )
+        power.results <- rbind(power.results, proc.results)
+      }
+      rownames(power.results) <- dimnames(adjp.proc)[[3]]
+      
+      # calculate confidence intervals
+      se.power <- sqrt(0.25/sim.params.list[['S']]) 
+      CI.lower.power <- power.results - 1.96 * se.power
+      CI.upper.power <- power.results + 1.96 * se.power
+      # make sure that intervals do not produce power below 0 or above 1
+      for(i in 1:nrow(CI.lower.power))
+      {
+        for(j in 1:ncol(CI.lower.power))
+        {
+          CI.lower.power[i,j] <- max(CI.lower.power[i,j], 0)
+          CI.lower.power[i,j] <- min(CI.lower.power[i,j], 1)
+          CI.upper.power[i,j] <- max(CI.upper.power[i,j], 0)
+          CI.upper.power[i,j] <- min(CI.upper.power[i,j], 1)
+        }
+      }
+      
+      adj_power <- list(power.results, CI.lower.power, CI.upper.power)
+      names(adj_power) <- c("adjusted_power", "ci_lower", "ci_upper")
+      
+      get_adj_power_melt = function(adj_power)
+      {
+        adj_power <- data.frame(adj_power)
+        adj_power$MTP <- rownames(adj_power)
+        adj_power_melt <- melt(adj_power, id.vars = 'MTP')
+        adj_power_melt$method = 'sim'
+        return(adj_power_melt)
+      }
+      
+      # bind results together
+      sim_results <- list.rbind(lapply(adj_power, get_adj_power_melt))
+      sim_results$value.type <- sapply(rownames(sim_results), function(x){strsplit(x, '\\.')[[1]][1]})
+      
       saveRDS(sim_results, file = paste0(intermediate.data.dir, sim.filename))
     } else
     {
@@ -379,7 +412,6 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         iterator = iterator + 1
       }
       # format results table nicely
-      rownames(pump_results) <- c("rawp", sim.params.list[['procs']])
       pump_results_table <- pump_results
       pump_results_table$MTP <- rownames(pump_results_table)
       pump_results <- melt(pump_results_table, id.vars = 'MTP')
@@ -675,9 +707,10 @@ if(FALSE)
   design = "blocked_i1_2c";
   # design = 'simple_c2_2r';
   # design = 'simple_c3_3r';
-  # MTP = 'Bonferroni';
+  MTP = 'Bonferroni';
   # MTP = 'Holm';
-  MTP = 'WY-SD';
+  # MTP = 'WY-SD';
+  numZero = NULL;
   target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'];
   M = user.params.list[['M']];
   ATE_ES = user.params.list[['ATE_ES']]
