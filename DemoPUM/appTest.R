@@ -58,8 +58,27 @@ ui <- fluidPage(
                                   ) # html bracket
                                 ) # css styling tag
                               ), # The header tag
-                              
+                          
                               fluidRow(
+                                
+                                column(10,
+                                       div(style = "display: inline-block, vertical-align:top;", 
+                                           selectInput("scenarioP2LBI", "How many design scenarios would you like to run?", 
+                                                       choices = list("One scenario" = "one", 
+                                                                      "Two scenario" = "two"))) # select input buttons div
+                                ), # column for inputs
+                                
+                                column(2, 
+                                       div(style ="display: inline-block,vertical-align:top;",
+                                           actionButton("question_scenarioP2LBI",
+                                                        label = "", 
+                                                        icon = icon("question"),
+                                                        style = "font-size: 10px;
+                                                    margin-top: 28px;")) #div for button ends
+                                ) # column for buttons       
+                                       
+                              ), # check box
+                                
                                 column(10,
                                        div(style = "display: inline-block, vertical-align:top;", 
                                            selectInput("designP2LBI", "What Research Design is this for?", 
@@ -246,12 +265,14 @@ ui <- fluidPage(
                               
                               fluidRow(
                                 
-                                column(12,
+                                column(6,
                                        actionButton("goButtonP2LBI", "Go!") # Action Button to trigger other reactive values
-                                ) # Column for action button
+                                ), # Column for action button
                                 
+                                column(6,
+                                       actionButton("saveButtonP2LBI", "Save!")
+                                ) # Column for save button
                               )
-                              
                             ), #sidebar Panel
                             
                           
@@ -785,9 +806,11 @@ ui <- fluidPage(
             
             )# 2 Level Cluster RCT
               
-          ) # Tabset Panel
+) # Fluid Panel
   
-)# fluid page
+
+# set counter outside of the server call
+counter <<- 0
 
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session = FALSE) {
@@ -808,87 +831,128 @@ server <- shinyServer(function(input, output, session = FALSE) {
   #   
   # }) # reactive expression for power
   
+  # counter for button clicking
+  # List of Data Frames
+  listDfs <- list()
+  
+  #observe Event for input parameter savings through the save Button
+  observeEvent(input$saveButtonP2LBI,{
+    
+    # counter to save the list values to store the parameters
+    counter <<- counter + 1
+    
+    # Saving the input parameters for each button click
+    inputParams <- isolate(
+    list(
+      design = input$designP2LBI,
+      MTP = as.character(unlist(strsplit(input$MTPP2LBI," "))),
+      MDES = as.numeric(unlist(strsplit(input$MDESP2LBI, ","))),
+      M = input$MP2LBI, # The number of hypotheses/outcomes
+      J = input$JP2LBI, # The number of schools
+      K = input$KP2LBI, # The number of districts
+      nbar = input$nbarP2LBI, # The number of units per block
+      Tbar = input$tbarP2LBI, # The proportion of samples that are assigned to the treatment
+      alpha = input$alphaP2LBI,
+      numCovar.1 = input$numCovar.1P2LBI,
+      numCovar.2 = 0,
+      numCovar.3 = 0,
+      R2.1 = rep(input$R2.1P2LBI,input$MP2LBI),
+      R2.2 = rep(0.1, input$MP2LBI),
+      R2.3 = rep(0.1, input$MP2LBI),
+      ICC.2 = rep(0, input$MP2LBI),
+      ICC.3 = rep(0.2, input$MP2LBI) ,
+      rho = input$rhoP2LBI
+    ) # data frame for input parameters
+  ) # isolate to make sure the values for are saved only for each click
+    
+      listDfs[[counter]] <<- inputParams
+      
+      browser()
+      
+  }) # Saving Button Click
+  
   #observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
   observeEvent(input$goButtonP2LBI,{
     
-    
-    # set a Reactive Value for Power Table
-    reactPowerTable <- reactiveVal()
-    
-    # Rendering a reactive object table from the power function
-    output$powercalcTableP2LBI <- renderTable({
+    if(length(listDfs) == 0){
+      # set a Reactive Value for Power Table
+      reactPowerTable <- reactiveVal()
       
-      # Creating a progress bar
-      progress <- shiny::Progress$new()
-      progress$set(message = "Calculating MDES", value = 0)
-      # Close the progress bar when this reactive expression is done (even if there is an error)
-      on.exit(progress$close())
-      
-      # Update Progress Bar Callback function
-      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+      # Rendering a reactive object table from the power function
+      output$powercalcTableP2LBI <- renderTable({
         
-        if (is.null(value)){
+        # Creating a progress bar
+        progress <- shiny::Progress$new()
+        progress$set(message = "Calculating MDES", value = 0)
+        # Close the progress bar when this reactive expression is done (even if there is an error)
+        on.exit(progress$close())
+        
+        # Update Progress Bar Callback function
+        updateProgress <- function(value = NULL, detail = NULL, message = NULL){
           
-          value <- progress$getValue()
-          value <- value + (progress$getMax() - value)/5
+          if (is.null(value)){
+            
+            value <- progress$getValue()
+            value <- value + (progress$getMax() - value)/5
+            
+          } # Progess bar in terms of values' increments
           
-        } # Progess bar in terms of values' increments
+          progress$set(value = value, detail = detail, message = message)
+          
+        } # End of Callback Progress Function
         
-        progress$set(value = value, detail = detail, message = message)
+        # data frame output for the results
+        dat <- as.data.frame(
+        isolate(pump_power(design = input$designP2LBI,
+                           MTP = as.character(unlist(strsplit(input$MTPP2LBI," "))),
+                           MDES = as.numeric(unlist(strsplit(input$MDESP2LBI, ","))),
+                           M = input$MP2LBI, # The number of hypotheses/outcomes
+                           J = input$JP2LBI, # The number of schools
+                           K = input$KP2LBI, # The number of districts
+                           nbar = input$nbarP2LBI, # The number of units per block
+                           Tbar = input$tbarP2LBI, # The proportion of samples that are assigned to the treatment
+                           alpha = input$alphaP2LBI,
+                           numCovar.1 = input$numCovar.1P2LBI,
+                           numCovar.2 = 0,
+                           numCovar.3 = 0,
+                           R2.1 = rep(input$R2.1P2LBI,input$MP2LBI),
+                           R2.2 = rep(0.1, input$MP2LBI),
+                           R2.3 = rep(0.1, input$MP2LBI),
+                           ICC.2 = rep(0, input$MP2LBI),
+                           ICC.3 = rep(0.2, input$MP2LBI) ,
+                           rho = input$rhoP2LBI,
+                           omega.2 = 0,
+                           omega.3 = 0.1,
+                           tnum = 10000, 
+                           B = 100, 
+                           cl = NULL,
+                           updateProgress = updateProgress)
+                      ))
         
-      } # End of Callback Progress Function
+        # Save the reactive Power Table
+        reactPowerTable(dat)
+        {reactPowerTable()}
+            }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
+  
       
-      # data frame output for the results
-      dat <- as.data.frame(
-      isolate(pump_power(design = input$designP2LBI,
-                         MTP = as.character(unlist(strsplit(input$MTPP2LBI," "))),
-                         MDES = as.numeric(unlist(strsplit(input$MDESP2LBI, ","))),
-                         M = input$MP2LBI, # The number of hypotheses/outcomes
-                         J = input$JP2LBI, # The number of schools
-                         K = input$KP2LBI, # The number of districts
-                         nbar = input$nbarP2LBI, # The number of units per block
-                         Tbar = input$tbarP2LBI, # The proportion of samples that are assigned to the treatment
-                         alpha = input$alphaP2LBI,
-                         numCovar.1 = input$numCovar.1P2LBI,
-                         numCovar.2 = 0,
-                         numCovar.3 = 0,
-                         R2.1 = rep(input$R2.1P2LBI,input$MP2LBI),
-                         R2.2 = rep(0.1, input$MP2LBI),
-                         R2.3 = rep(0.1, input$MP2LBI),
-                         ICC.2 = rep(0, input$MP2LBI),
-                         ICC.3 = rep(0.2, input$MP2LBI) ,
-                         rho = input$rhoP2LBI,
-                         omega.2 = 0,
-                         omega.3 = 0.1,
-                         tnum = 10000, 
-                         B = 100, 
-                         cl = NULL,
-                         updateProgress = updateProgress)
-                    ))
+      # Rendering a reactive object table from the power function
+      output$powercalcGraphP2LBI <-renderPlot({
+        
+        dat <- reactPowerTable()
+        dat$AdjType <- rownames(dat)
+        dat %>%
+          dplyr::select(AdjType,D1indiv, min2, min3) %>%
+          tidyr::pivot_longer(!AdjType, names_to = "powerType", values_to = "power") %>%
+          ggplot(aes(x = powerType, 
+                     y = power, 
+                     shape = AdjType,
+                     colour = AdjType)) + 
+          geom_point(size = 3)
+        
+    }) # observe Event go Button for power
       
-      # Save the reactive Power Table
-      reactPowerTable(dat)
-      {reactPowerTable()}
-          }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
-
-    
-    # Rendering a reactive object table from the power function
-    output$powercalcGraphP2LBI <-renderPlot({
-      
-      dat <- reactPowerTable()
-      dat$AdjType <- rownames(dat)
-      dat %>%
-        dplyr::select(AdjType,D1indiv, min2, min3) %>%
-        tidyr::pivot_longer(!AdjType, names_to = "powerType", values_to = "power") %>%
-        ggplot(aes(x = powerType, 
-                   y = power, 
-                   shape = AdjType,
-                   colour = AdjType)) + 
-        geom_point(size = 3)
-      
-  }) # observe Event go Button for power
-    
-    
+    } # if only the Go Button was used without the save Button.
+  
 })
   
   #observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
