@@ -56,7 +56,7 @@ These models vary in the following ways:
 \item Whether the school-level and district-level treatment effects are:
 \begin{itemize}
 \item constant, e.g. all schools and districts are modeled as having a single average impact ($u_{1,jkm}= 0$ and $w_{1,km} = 0$)
-\item fixed, e.g. each school or district has an individual estimated impact ($u_{1,jkm}$ are fixed values constrained to have mean 0)
+\item fixed, e.g. each school or district has an individual estimated impact ($u_{1,jkm}$ are fixed values constrained to have mean 0), with an additional mean impact.
 \item random ($u_{1,jkm}$ and $w_{1,km}$ are Normally distributed around a mean impact)
 \end{itemize}
 \item Whether school covariates $X_{jkmr}$ or district covariates $V_{kms}$  are included in the model for the intercept. Note that in some models, PowerUp incorporates covariates into the slope, allowing for, in principle, heterogeneous treatment efects correlated to said covariates. However, we never make this assumption, as it is unlikely to help with an evaluationg targeting an overall average impact. Including covariates in the slope terms allows for modeling treatment effect heterogeneity in principle, but this can add complexity with estimation. When this difference occurs, it is noted.
@@ -111,15 +111,15 @@ We now provide further clarification on the parameters in Table~\ref{tab:derived
 The quantity $\text{ICC}$ is the Intraclass Correlation for the unconditional model.
 
 \begin{align*}
-\text{ICC}_{3,m} &= \frac{Var(\mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\xi^2_m + \eta_{0,m}^2}{\xi_m^2 +  \eta^2_{0,m} + \delta_m^2  + \tau^2_{0,m} + \gamma_m^2 + \sigma^2_m}\\
-\text{ICC}_{2,m} &= \frac{Var(\theta_{0,jkm} \mid \mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\delta_m^2  + \tau_{0,m}^2}{\xi_m^2 +  \eta^2_{0,m} + \delta_m^2  + \tau^2_{0,m} + \gamma_m^2 + \sigma^2_m}
+\text{ICC}_{3,m} &= \frac{Var(\mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\xi^2_m + \eta_{0,m}^2}{\left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}\\
+\text{ICC}_{2,m} &= \frac{Var(\theta_{0,jkm} \mid \mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\delta_m^2  + \tau_{0,m}^2}{ \left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}
 \end{align*}
 
 The quantity $\omega$ is the ratio between impact variation and mean variation.
 
 \begin{align*}
-\omega_{3,m} &=  \frac{Var(\mu_{1,jkm})}{Var(\mu_{0,km})} = \frac{\eta^2_{1,m}}{\left(\xi^2_m + \eta_{0,m}^2\right)}\\
-\omega_{2,m} &=  \frac{Var(\psi_{1,jkm} \mid \mu_{1,km})}{Var(\theta_{0,jkm} \mid \mu_{0,km})} = \frac{\tau^2_{1,m}}{\left(\delta_m^2 + \tau^2_{0,m}\right)}
+\omega_{3,m} &=  \frac{Var(\mu_{1,jkm})}{Var(\mu_{0,km})} = \frac{\eta^2_{1,m}}{\xi^2_m + \eta_{0,m}^2}\\
+\omega_{2,m} &=  \frac{Var(\psi_{1,jkm} \mid \mu_{1,km})}{Var(\theta_{0,jkm} \mid \mu_{0,km})} = \frac{\tau^2_{1,m}}{\delta_m^2 + \tau^2_{0,m}}
 \end{align*}
 
 The $R^2$ expressions are the percent of variation at a particular level predicted by covariates specific to that level.
@@ -264,9 +264,9 @@ When analyzing actual data, we would, to estimate $Q_m$, plug in known values fo
 Any other parameters are replaced by sample estimates.
 Then, when testing the $m^{\text{th}}$ null hypothesis, $\text{ES}_m = 0$, the test statistic for a $t$-test is given by
 \begin{align}t_m \equiv \frac{\hat{\text{ES}}_m}{\hat{Q}_m}.\end{align}
-When the null is true, $t_m$ follows a $t$ distribution with mean $0$ and degrees of freedom $\text{df}_m$ depending on the design.
+When the null is true, $t_m$ follows a $t$ distribution with mean $0$ and degrees of freedom $\text{df}_m$, depending on the design.
 
-For power calculations we simply need to know, giving our assumptions on the design, a reasonable value for $Q_m$; with that, we can then calculate the power to detect an impact expressed in effect size units.
+For power calculations we need to know, giving our assumptions on the design, a reasonable value for $Q_m$; with that, we can then calculate the power to detect an impact expressed in effect size units.
 
 From the power formulas, we can then arrive at MDES and sample size calculations.
 From \citet{Dong2013}, in general the MDES can be estimated as
@@ -282,7 +282,7 @@ Manipulating this expression then results in sample size formulae.
 \paragraph{A note on effect sizes.}
 In describing the standard error of our estimators in terms of effect size, we need to carefully identify what we mean by an ``effect size.''
 We commonly think of an effect size as the size of an impact relative to some reference amount of variation.
-Typically we would use the variation in \emph{overall} control group, but could also index by the within-group variation only.
+Typically we would use the variation in \emph{overall} control group, but one could also index by the within-group variation only.
 The former would include the student variation within each site, and also how the sites vary from each other.
 We argue that this definition is more natural.
 Unfortunately, difference in how an effect size is defined can create some tension regarding some of the power formula, as we will note in the following sections.
@@ -301,7 +301,7 @@ In a multisite experiment, we have a collection of sites (here, schools) and are
 This allows for estimating an average impact for each site, in principle.
 That being said, we are usually interested in estimating some overall summary of impacts across all our sites.
 
-Critically, there are four different estimands we might consider: the average impact for persons vs. impact for sites, and the average impact of the sample we have vs. the average impact of a population where the sample came from.
+Critically, there are four different estimands we might consider: the average impact for persons vs. impact for sites, and the average impact of the sample we have vs. the average impact of the population where the sample came from.
 When sites are equal sized, a common assumption for power calculations, the site and person average will be the same.
 We therefore ignore it here.
 For finite vs. super-population, we have to be more careful.\
@@ -315,7 +315,7 @@ Here, the one that does this is blocked\_i1\_2r, with a model of each school hav
 
 
 Regardless of the model used to analyze these data, the randomization scheme is the same.
-It is simple random sampling within each school, with $\bar{n}\bar{T}$ units assigned to treatment in each school.
+It is simple random sampling within each school, with proportion $\bar{n}\bar{T}$ units assigned to treatment in each school.
 In R, we could randomize this way as so:
 \begin{verbatim}
 T.x <- randomizr::block_ra( S.id, prob = Tbar )
@@ -326,7 +326,7 @@ T.x <- randomizr::block_ra( S.id, prob = Tbar )
 % Blocked individual randomization 2 level designs, constant effects
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Blocked randomization of individuals, 2 level design, constant effects (d2.1\_m2fc)}
+\subsection{Constant effects (d2.1\_m2fc)}
 
 \textbf{PowerUp name:} blocked\_i1\_2c
 
@@ -334,7 +334,7 @@ T.x <- randomizr::block_ra( S.id, prob = Tbar )
 
 When we assume constant effects, each school has its own fixed intercept for the control outcome, and the treatment effect is modeled as constant across schools.
 We can also call this a fixed effects, constant treatment model \citep{Miratrix2020}.
-This model allows some schools to have higher average outcomes than others (allowed for with the fixed effects), but are assuming the treatment impact is the same.
+This model allows some schools to have higher average outcomes than others (allowed for with the fixed effects), but assumes the treatment impact is the same.
 
 The model for estimating impacts on outcome $m$ is given by:
 \begin{align}
@@ -350,7 +350,7 @@ and distributions:
 r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
 \end{align}
 
-PowerUp! gives that the standard error of the treatment effect estimate \emph{not} in effect size units is given by:
+PowerUp! gives that the standard error of the treatment effect estimate \emph{not} in effect size units is:
 \begin{align}SE( \hat{\psi}_m ) = \sqrt{\frac{1}{\bar{T}(1 - \bar{T}) J \bar{n}}} \cdot \sigma_m .\end{align}
 
 The degrees of freedom for our impact estimate are
@@ -418,7 +418,7 @@ This can be viewed as within (PowerUp!) vs. overall (this work) effect size metr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\subsection{Blocked randomization of individuals, 2 level design, fixed effects (d2.1\_m2ff)}
+\subsection{Fixed effects (d2.1\_m2ff)}
 
 \textbf{PowerUp name:} blocked\_i1\_2f
 
@@ -486,11 +486,11 @@ This can be viewed as within (PowerUp!) vs. overall (this work) effect size metr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\subsection{Blocked randomization of individuals, 2 level design, random effects (d2.1\_m2fr)}
+\subsection{Random effects (d2.1\_m2fr)}
 
 \textbf{PowerUp name:} blocked\_i1\_2r
 
-\textbf{Characterization:} 2-level design, random intercepts, random treatment effect, school covariates for intercept. Powerup also has school covariates for treatment effects to allow for modeling treatment effect heterogeneity.
+\textbf{Characterization:} 2-level design, random intercepts, random treatment effect, school covariates for intercept. Powerup also has school covariates for treatment effects to allow for modeling treatment effect heterogeneity; we do not include this.
 
 If we are interested in generalizing from our sample to a superpopulation, we may wish to view the sample of schools themselves as representative of something larger.
 Then, if some schools have different average impacts than other schools, we have to account for the possibility that our sample of schools has an overall average impact different from the target population.
@@ -513,7 +513,7 @@ Y_{ijkm} &= \left(\mu_{1,km} + u_{1,jkm}\right) T_{ijk} + \mu_{0,km} \\
 and distributions:
 \begin{align}
 \begin{pmatrix} u_{0, jkm} \\ u_{1,jkm}\\ \end{pmatrix} &\sim
-N\left(\begin{pmatrix} \tau^2_{0,m} & \kappa^u_{mm} \tau_{0,m} \tau_{1,m} \\ \kappa^u_{mm} \tau_{1,m} \tau_{0,m} & \tau^2_{1,m} \\ \end{pmatrix}, \begin{pmatrix} 0 \\ 0\\ \end{pmatrix}\right) \\
+N\left(\begin{pmatrix} 0 \\ 0\\ \end{pmatrix}, \begin{pmatrix} \tau^2_{0,m} & \kappa^u_{mm} \tau_{0,m} \tau_{1,m} \\ \kappa^u_{mm} \tau_{1,m} \tau_{0,m} & \tau^2_{1,m} \\ \end{pmatrix}\right) \\
 \nonumber r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
 \end{align}
 
@@ -524,14 +524,14 @@ We make an important note. In PowerUp!, they assume that school and district cov
 $$ \psi_{1,jkm} = \mu_{1,km} + \sum_{r=1}^{g_{2,m}} \phi_{mr} X_{jkmr} u_{1,jkm}$$
 
 but we do not make this assumption.
-The result of this is that we assume, in their notation, $R_{2T}^2=0$, which is the percent of treatment variation explained by level 2 covariates; we are exploring none of the cross-site impact heterogeneity.
+The result of this is that we assume, in their notation, $R_{2T}^2=0$, which is the percent of treatment variation explained by level 2 covariates; we are exploiting none of the cross-site impact heterogeneity.
 This assumption affects the first term in the standard error below.
 
 The standard error of the treatment effect estimate is given by:
 \begin{align}Q_m = \sqrt{\frac{\text{ICC}_{2,m} \omega_{2,m}}{J} + \frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}}}.\end{align}
 
-Note that this formula is simply the prior formula with an additional inflation term of $\text{ICC}_{2,m} \omega_{2,m} / J$.
-This represents the additional uncertainty from extrapolating from our sample to the super-population.
+Note that this formula is simply the prior formula with an additional term of $\text{ICC}_{2,m} \omega_{2,m} / J$.
+This term captures the additional uncertainty from extrapolating from our sample to the super-population.
 $Q_m$ with this model, therefore, will be larger than the prior models to the extent that the schools differ in terms of their impact variation (the $\text{ICC}_{2,m} \omega_{2,m}$ term is simply the variation in the random impact terms scaled by our overall variation).
 
 The degrees of freedom are
@@ -562,20 +562,18 @@ PowerUp allows for school covariates to influence the treatment impact, while we
 \section{Design: 3 levels, Randomization: level 1}
 
 In these designs we have schools nested in districts, and students in schools.
-The only difference here, with the prior blocked individual randomization with 2 levels, is the third level of district.
-Since we are randomizing at the school level, this will only impact how we think about where variation is in terms of for effect size units.
+The only difference here, as compared to blocked individual randomization with 2 levels, is the third level of district.
+Since we are randomizing at the school level, this will only impact how we think about where variation is in terms of our effect size units.
 
 In this context, if we are interested in the finite-sample impacts, other than for calculating our reference variation for effect sizes, the districts do not matter.
 We can simply use the prior 2 level designs if we lump district variation into the $\text{ICC}_{2,m}$ terms.
-
-\textcolor{red}{Nesting in district does allow}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Blocked individual randomization 3 level designs, random effects
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Blocked randomization of individuals, 3 level design, random effects (d3.1\_m3rr2rr)}
+\subsection{Random effects (d3.1\_m3rr2rr)}
 
 \textbf{PowerUp name:} blocked\_i1\_3r
 
@@ -598,9 +596,9 @@ Y_{ijkm} &= \left(\Xi_{1,jkm} + w_{1,km} + u_{1,jkm}\right) T_{ijk} + \Xi_{0,km}
 and distributions:
 \begin{align}
 \begin{pmatrix} u_{0, jkm} \\ u_{1,jkm}\\ \end{pmatrix} &\sim
-N\left(\begin{pmatrix} \tau^2_{0,m} & \kappa^u_{mm} \tau_{0,m} \tau_{1,m} \\ \kappa^u_{mm} \tau_{1,m} \tau_{0,m} & \tau^2_{1,m} \\ \end{pmatrix}, \begin{pmatrix} 0 \\ 0\\ \end{pmatrix}\right) \\
+N\left(\begin{pmatrix} 0 \\ 0\\ \end{pmatrix}, \begin{pmatrix} \tau^2_{0,m} & \kappa^u_{mm} \tau_{0,m} \tau_{1,m} \\ \kappa^u_{mm} \tau_{1,m} \tau_{0,m} & \tau^2_{1,m} \\ \end{pmatrix}\right) \\
 \nonumber \begin{pmatrix} w_{0, km} \\ w_{1,km}\\ \end{pmatrix} &\sim
-N\left(\begin{pmatrix} \eta^2_{0,m} & \kappa^w_{mm} \eta_{0,m} \eta_{1,m} \\ \kappa^w_{mm} \eta_{1,m} \eta_{0,m} & \eta^2_{1,m} \\ \end{pmatrix}, \begin{pmatrix} 0 \\ 0\\ \end{pmatrix}\right) \\
+N\left( \begin{pmatrix} 0 \\ 0\\ \end{pmatrix}, \begin{pmatrix} \eta^2_{0,m} & \kappa^w_{mm} \eta_{0,m} \eta_{1,m} \\ \kappa^w_{mm} \eta_{1,m} \eta_{0,m} & \eta^2_{1,m} \\ \end{pmatrix}\right) \\
 \nonumber r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
 \end{align}
 
@@ -622,11 +620,13 @@ The standard error of the treatment effect estimate is given by:
 The degrees of freedom are
 \begin{align}\text{df}_m = K - g_{3,m} - 1.\end{align}
 
+This is a very conservative degrees of freedom.
+
 
 \paragraph{Sample size formula.} 
 \begin{align}
 K &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\text{ICC}_{3,m} \omega_{3,m} + \frac{\text{ICC}_{2,m} \omega_{2,m}}{J} + \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}} \right)\\
-J &= \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m}) + \bar{T}(1 - \bar{T}) \bar{n}\text{ICC}_{2,m} \omega_{2,m} + }{\bar{T}(1 - \bar{T}) \bar{n}\left(K \left(\frac{MT_{df}}{MDES}\right)^{-2} - \text{ICC}_{3,m} \omega_{3,m}\right)}\\
+J &= \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m}) + \bar{T}(1 - \bar{T}) \bar{n}\text{ICC}_{2,m} \omega_{2,m}}{\bar{T}(1 - \bar{T}) \bar{n}\left(K \left(\frac{MT_{df}}{MDES}\right)^{-2} - \text{ICC}_{3,m} \omega_{3,m}\right)}\\
 \bar{n} &= \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T})\left(JK \left(\frac{MT_{df}}{MDES}\right)^{-2} - J\text{ICC}_{3,m} \omega_{3,m} - \text{ICC}_{2,m} \omega_{2,m}\right)}
 \end{align}
 
@@ -657,7 +657,7 @@ PowerUp allows for school and district covariates to influence the treatment imp
 % Simple cluster randomization, 2 level design, random effects 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Simple cluster randomization, 2 level design, random effects (d2.2\_m2rc)}
+\subsection{Random effects (d2.2\_m2rc)}
 
 \textbf{PowerUp name:} simple\_c2\_2r
 
@@ -692,7 +692,7 @@ The constant effects model means that we assume no treatment variation across ou
 
 \paragraph{Sample size formula.} 
 \begin{align}
-J &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\frac{\text{ICC}_{2,m}(1-R^2_{2,m})}{\bar{T}(1- \bar{T})} + \frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) \bar{n}} \right)\\
+J &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\frac{ \bar{n} \text{ICC}_{2,m}(1-R^2_{2,m}) + (1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) \bar{n}} \right)\\
 \bar{n} &= \frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \left(\frac{MT_{df}}{MDES}\right)^{-2} - \text{ICC}_{2,m}(1-R^2_{2,m})  }
 \end{align}
 
@@ -720,7 +720,7 @@ T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
 % Simple cluster randomization, 3 level design, random effects 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Simple cluster randomization, 3 level design, random effects (d3.3\_m3rc2rc)}
+\subsection{Random effects (d3.3\_m3rc2rc)}
 
 \textbf{PowerUp name:} simple\_c3\_3r
 
@@ -792,7 +792,7 @@ T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
 % Blocked cluster randomization, 3 level design, fixed effects 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Blocked cluster randomization, fixed effects (d3.2\_m3ff2rc)}
+\subsection{Fixed effects (d3.2\_m3ff2rc)}
 
 \textbf{PowerUp name:} blocked\_c2\_3f
 
@@ -845,7 +845,7 @@ Note that the PowerUp formula assumes
 \paragraph{Sample size formula.} 
 \begin{align}
 K &= \left(\frac{MT_{df}}{MDES}\right)^2 \left( \frac{\text{ICC}_{2,m} (1-R_{2,m}^2)}{\bar{T}(1 - \bar{T}) J} + \frac{(1-\text{ICC}_{2,m} - \text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}} \right)\\
-J &= \frac{\bar{n}\text{ICC}_{2,m} (1-R_{2,m}^2) + (1-\text{ICC}_{2,m} - \text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{n} \bar{T}(1 - \bar{T})\left(\frac{MT_{df}}{MDES}\right)^{-2} K } \\
+J &= \frac{\bar{n}\text{ICC}_{2,m} (1-R_{2,m}^2) + (1-\text{ICC}_{2,m} - \text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{n} \bar{T}(1 - \bar{T}) K \left(\frac{MT_{df}}{MDES}\right)^{-2} } \\
 \bar{n} &= \frac{(1-\text{ICC}_{2,m} - \text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T})J K \left(\frac{MT_{df}}{MDES}\right)^{-2} -  \text{ICC}_{2,m} (1-R_{2,m}^2)}
 \end{align}
 
@@ -866,7 +866,7 @@ T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = T
 % Blocked cluster randomization, 3 level design, random effects 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\subsection{Blocked cluster randomization, random effects (d3.2\_m3rr2rc)}
+\subsection{Random effects (d3.2\_m3rr2rc)}
 
 \textbf{PowerUp name:} blocked\_c2\_3r
 
@@ -891,7 +891,7 @@ and distributions:
 \begin{align}
 u_{0,jkm} &\sim N\left(0, \tau^2_{0,m}\right)\\
 \nonumber \begin{pmatrix} w_{0, km} \\ w_{1,km}\\ \end{pmatrix} &\sim
-N\left(\begin{pmatrix} \eta^2_{0,m} & \kappa^w_{mm} \eta_{0,m} \eta_{1,m} \\ \kappa^w_{mm} \eta_{1,m} \eta_{0,m} & \eta^2_{1,m} \\ \end{pmatrix}, \begin{pmatrix} 0 \\ 0\\ \end{pmatrix}\right) \\
+N\left(\begin{pmatrix} 0 \\ 0\\ \end{pmatrix}, \begin{pmatrix} \eta^2_{0,m} & \kappa^w_{mm} \eta_{0,m} \eta_{1,m} \\ \kappa^w_{mm} \eta_{1,m} \eta_{0,m} & \eta^2_{1,m} \\ \end{pmatrix}\right) \\
 \nonumber r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
 \end{align}
 
@@ -920,7 +920,7 @@ Parameter assumptions
 \begin{align}
 K &= \left(\frac{MT_{df}}{MDES}\right)^2 \left( \text{ICC}_{3,m} \omega_3  +  \frac{\text{ICC}_{2,m} (1-R_{2,m}^2)}{\bar{T}(1 - \bar{T}) J} + \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}} \right)\\
 J &=  \frac{\bar{n}\text{ICC}_{2,m} (1-R_{2,m}^2) + (1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T})\left(\bar{n} K \left(\frac{MT_{df}}{MDES}\right)^{-2} - \bar{n} \text{ICC}_{3,m} \omega_3\right)}\\
-\bar{n} &= \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T})J \left(K \left(\frac{MT_{df}}{MDES}\right)^{-2}  \text{ICC}_{3,m}\omega_{3,m}\right) -  \text{ICC}_{2,m} (1-R_{2,m}^2)}
+\bar{n} &= \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T})J K \left(\frac{MT_{df}}{MDES}\right)^{-2}  \text{ICC}_{3,m}\omega_{3,m} -  \text{ICC}_{2,m} (1-R_{2,m}^2)}
 \end{align}
 
 \paragraph{Code syntax.}
@@ -1301,9 +1301,9 @@ Var_m( Y_{ijkm}(0) ) &= \xi_m^2 Var_m(V_{km}) + \delta_m^2 Var_m(X_{jkm}) + \gam
 
 Looking at Equation~\ref{eq:reduced}, we see:
 
-\[ \text{ICC}_{3,m} = \frac{Var(\theta_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\xi^2_m + \eta_{0,m}^2}{\xi_m^2 +  \eta^2_{0,m} + \delta_m^2  + \tau^2_{0,m} + \gamma_m^2 + \sigma^2_m}.\]
+\[ \text{ICC}_{3,m} = \frac{Var(\theta_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\xi^2_m + \eta_{0,m}^2}{\left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}.\]
 
-\[ \text{ICC}_{2,m} = \frac{Var(\mu_{0,jkm})}{ Var(Y_{ijkm}(0))} = \frac{\delta_m^2  + \tau_{0,m}^2}{\xi_m^2 +  \eta^2_{0,m} + \delta_m^2  + \tau^2_{0,m} + \gamma_m^2 + \sigma^2_m} .\]
+\[ \text{ICC}_{2,m} = \frac{Var(\mu_{0,jkm})}{ Var(Y_{ijkm}(0))} = \frac{\delta_m^2  + \tau_{0,m}^2}{\left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)} .\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Covariate coefficients
