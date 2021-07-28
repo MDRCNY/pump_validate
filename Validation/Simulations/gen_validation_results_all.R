@@ -9,14 +9,14 @@ library(here)
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
-run.mdes.ss = FALSE
+run.mdes.ss = TRUE
 run.wy = FALSE
 # which designs to run
-run.blocked.2l = FALSE
-run.cluster.2l = FALSE
-run.blocked.3l = FALSE
-run.cluster.3l = FALSE
-run.blocked.cluster = FALSE
+run.blocked.2l = TRUE
+run.cluster.2l = TRUE
+run.blocked.3l = TRUE
+run.cluster.3l = TRUE
+run.blocked.cluster = TRUE
 run.power.def = TRUE
 run.extremes = TRUE
 
@@ -1510,7 +1510,7 @@ print('-------------------------------------------------------------------------
 
 
 #------------------------------------------------------------------#
-# Power definitions
+# Power definitions: power
 #------------------------------------------------------------------#
 
 if(run.power.def & run.power)
@@ -1582,7 +1582,7 @@ if(run.power.def & run.power)
 
 
 #------------------------------------------------------------------#
-# Power definitions
+# Power definitions: MDES and SS
 #------------------------------------------------------------------#
 
 if(run.power.def & run.mdes.ss)
@@ -1605,6 +1605,7 @@ if(run.power.def & run.mdes.ss)
   user.params.list[['ICC.2']] <- rep(0.1, M)
   
 
+  # MDES power defs
   mdes.results <- validate_mdes(
     user.params.list, sim.params.list,
     design = "simple_c3_3r",
@@ -1630,7 +1631,7 @@ if(run.power.def & run.mdes.ss)
     overwrite = overwrite
   )
   
-  
+  # SS type J power defs
   sample.results <- validate_sample(
     user.params.list, sim.params.list,
     design = "simple_c3_3r",
@@ -1660,7 +1661,7 @@ if(run.power.def & run.mdes.ss)
     overwrite = overwrite
   )
   
-  
+  # SS type K power defs
   sample.results <- validate_sample(
     user.params.list, sim.params.list,
     design = "simple_c3_3r",
@@ -1690,6 +1691,7 @@ if(run.power.def & run.mdes.ss)
     overwrite = overwrite
   )
   
+  # SS type nbar power defs
   sample.results <- validate_sample(
     user.params.list, sim.params.list,
     design = "simple_c3_3r",
@@ -1722,6 +1724,96 @@ if(run.power.def & run.mdes.ss)
     user.params.list, sim.params.list,
     design = "simple_c3_3r",
     typesample = 'nbar',
+    power.definition = 'complete',
+    overwrite = overwrite
+  )
+  
+  # change correlation
+  user.params.list[['rho']] <- 0
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    power.definition = 'min1',
+    overwrite = overwrite
+  )
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    power.definition = 'complete',
+    overwrite = overwrite
+  )
+  
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    typesample = 'J',
+    power.definition = 'min1',
+    overwrite = overwrite
+  )
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    typesample = 'J',
+    power.definition = 'complete',
+    overwrite = overwrite
+  )
+  
+  # change correlation
+  user.params.list[['rho']] <- 0.8
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    power.definition = 'min1',
+    overwrite = overwrite
+  )
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    power.definition = 'complete',
+    overwrite = overwrite
+  )
+  
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    typesample = 'J',
+    power.definition = 'min1',
+    overwrite = overwrite
+  )
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    typesample = 'J',
+    power.definition = 'complete',
+    overwrite = overwrite
+  )
+  
+  # change correlation
+  user.params.list[['rho']] <- 1
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    power.definition = 'min1',
+    overwrite = overwrite
+  )
+  mdes.results <- validate_mdes(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    power.definition = 'complete',
+    overwrite = overwrite
+  )
+  
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    typesample = 'J',
+    power.definition = 'min1',
+    overwrite = overwrite
+  )
+  sample.results <- validate_sample(
+    user.params.list, sim.params.list,
+    design = "simple_c3_3r",
+    typesample = 'J',
     power.definition = 'complete',
     overwrite = overwrite
   )

@@ -724,7 +724,7 @@ if(FALSE)
   # MTP = 'Holm';
   # MTP = 'WY-SD';
   numZero = NULL;
-  target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'];
+  target.power = 0.8;
   M = user.params.list[['M']];
   ATE_ES = user.params.list[['ATE_ES']]
   MDES = user.params.list[['ATE_ES']]
@@ -742,6 +742,7 @@ if(FALSE)
   ICC.2 = user.params.list[['ICC.2']];
   ICC.3 = user.params.list[['ICC.3']];
   rho = user.params.list[['rho.default']];
+  rho.matrix = NULL;
   omega.2 = user.params.list[['omega.2']];
   omega.3 = user.params.list[['omega.3']];
   numCovar.1 = 1; numCovar.2 = 1; numCovar.3 = 1;
