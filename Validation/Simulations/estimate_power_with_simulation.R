@@ -17,11 +17,6 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   Tbar <- sim.params.list[['Tbar']]
   procs <- sim.params.list[['procs']]
 
-  if(M == 1) {
-    print("Multiple testing corrections are not needed when M = 1")
-    procs <- "Bonferroni"
-  }
-
   # list of adjustment procedures
   adjp.proc <- array(0, c(S, M, length(procs) + 1))
   dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", procs))
@@ -43,8 +38,12 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     S.id <- samp.full$ID$S.id
     D.id  <- samp.full$ID$D.id
     
+    # unblocked designs
+    if(design == 'unblocked_i1_2c')
+    {
+      T.x <- randomizr::simple_ra(N = user.params.list$nbar, prob = Tbar)
     # blocked designs
-    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r'))
+    } else if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r'))
     {
       T.x <- randomizr::block_ra( S.id, prob = Tbar )
     # cluster designs
@@ -133,7 +132,10 @@ make.model <- function(dat.m, design) {
   dat.m$S.id <- as.factor(dat.m$S.id)
   if(!is.null(dat.m$D.id)){ dat.m$D.id <- as.factor(dat.m$D.id) }
 
-  if (design == "blocked_i1_2c") {
+  if (design == "unblocked_i1_2c") {
+    form <- as.formula("Yobs ~ 1 + T.x + C.ijk")
+    mod <- lm(form, data = dat.m)
+  } else if (design == "blocked_i1_2c") {
     form <- as.formula("Yobs ~ 1 + T.x + C.ijk + S.id")
     mod <- lm(form, data = dat.m)
   } else if (design == "blocked_i1_2f") {

@@ -213,7 +213,19 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     if( (overwrite | !file.exists(powerup.file))  & sim.params.list[['runPowerUp']])
     {
       message('Running PowerUp')
-      if(design == 'blocked_i1_2c')
+      if(design == 'unblocked_i1_2c')
+      {
+        powerup_results <- power.bira2c1(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['Tbar']],
+          g1 = 1,
+          r21 = user.params.list[['R2.1']][1],
+          n = user.params.list[['nbar']],
+          J = user.params.list[['J']]
+        )
+      } else if(design == 'blocked_i1_2c')
       {
         powerup_results <- power.bira2c1(
           es = user.params.list[['ATE_ES']][1],
@@ -585,7 +597,8 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
 #'
 #' @examples
 validate_sample <- function(user.params.list, sim.params.list, design,
-                            power.definition = 'D1indiv', plot.path = FALSE, overwrite = TRUE) {
+                            power.definition = 'D1indiv', typesample,
+                            plot.path = FALSE, overwrite = TRUE) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
