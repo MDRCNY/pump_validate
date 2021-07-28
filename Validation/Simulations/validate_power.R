@@ -672,7 +672,9 @@ validate_sample <- function(user.params.list, sim.params.list, design,
       plot_data <- rbind(plot_data, sample_results$test.pts)
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
-    sample.filename <- paste0(params.file.base, 'comparison_sample_', power.definition, '_results.RDS')
+    sample.filename <- paste0(
+      params.file.base, 'comparison_sample_', typesample, '_', power.definition, '_results.RDS'
+    )
     
     if(plot.path)
     {
