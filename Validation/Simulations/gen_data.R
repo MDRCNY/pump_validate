@@ -51,15 +51,11 @@ gen_full_data <- function(model.params.list) {
   rho.V    <- model.params.list[['rho.V']];   xi      <- model.params.list[['xi']];
   eta0.sq  <- model.params.list[['eta0.sq']]; eta1.sq <- model.params.list[['eta1.sq']];
   rho.w0   <- model.params.list[['rho.w0']];  rho.w1  <- model.params.list[['rho.w1']];
-  theta.w  <- model.params.list[['theta.w']];
+  kappa.w  <- model.params.list[['kappa.w']];
   rho.X    <- model.params.list[['rho.X']];   delta   <- model.params.list[['delta']];
-  ##-------temp
-  psi      <- model.params.list[['psi']]
-  if(is.null(psi)){ psi <- 0 }
-  ##-------temp
   tau0.sq  <- model.params.list[['tau0.sq']]; tau1.sq <- model.params.list[['tau1.sq']];
   rho.u0   <- model.params.list[['rho.u0']];  rho.u1  <- model.params.list[['rho.u1']];
-  theta.u  <- model.params.list[['theta.u']];
+  kappa.u  <- model.params.list[['kappa.u']];
   rho.C    <- model.params.list[['rho.C']];   gamma   <- model.params.list[['gamma']];
   rho.r    <- model.params.list[['rho.r']]
   
@@ -78,7 +74,7 @@ gen_full_data <- function(model.params.list) {
   # Districts: Level 3
   # ------------------------------#
   
-  gen.level.three.data = function(K, M, rho.V, sigma.V, eta0.sq, eta1.sq, rho.w0, rho.w1, theta.w)
+  gen.level.three.data = function(K, M, rho.V, sigma.V, eta0.sq, eta1.sq, rho.w0, rho.w1, kappa.w)
   {
     # generate district covariates
     Sigma.V  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.V)
@@ -89,7 +85,7 @@ gen_full_data <- function(model.params.list) {
     # covariance random district impacts
     Sigma.w1       <- gen_cov_matrix(M, eta1.sq, eta1.sq, rho.w1)
     # covariance between impacts and effects
-    Sigma.w        <- gen_cov_matrix(M, eta0.sq, eta1.sq, theta.w)
+    Sigma.w        <- gen_cov_matrix(M, eta0.sq, eta1.sq, kappa.w)
     # full covariance matrix
     Sigma.w.full   <- gen_RE_cov_matrix( Sigma.w0, Sigma.w1, Sigma.w )
     
@@ -101,7 +97,7 @@ gen_full_data <- function(model.params.list) {
   }
 
   if ( has.level.three ) {
-    level.three.data <- gen.level.three.data(K, M, rho.V, sigma.V, eta0.sq, eta1.sq, rho.w0, rho.w1, theta.w) 
+    level.three.data <- gen.level.three.data(K, M, rho.V, sigma.V, eta0.sq, eta1.sq, rho.w0, rho.w1, kappa.w) 
     V.k <- level.three.data[['V.k']]
     w0.k <- level.three.data[['w0.k']]
     w1.k <- level.three.data[['w1.k']]
@@ -115,30 +111,30 @@ gen_full_data <- function(model.params.list) {
   # Schools: Level 2
   # ------------------------------#
   
-  gen.level.two.data = function(J, K, M, rho.X, sigma.X, tau0.sq, tau1.sq, rho.u0, rho.u1, theta.u)
+  gen.level.two.data = function(J, K, M, rho.X, sigma.X, tau0.sq, tau1.sq, rho.u0, rho.u1, kappa.u)
   {
     # generate school covariates
     Sigma.X       <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.X)
-    X.jk          <- mvrnorm(J*K, mu = rep(0, M), Sigma = Sigma.X)
+    X.jk          <- matrix(mvrnorm(J*K, mu = rep(0, M), Sigma = Sigma.X), nrow = J*K, ncol = M)
     
     # covariance of school random effects
     Sigma.u0       <- gen_cov_matrix(M, tau0.sq, tau0.sq, rho.u0)
     # covariance of school random impacts
     Sigma.u1       <- gen_cov_matrix(M, tau1.sq, tau1.sq, rho.u1)
     # covariance of school random effects and impacts
-    Sigma.u        <- gen_cov_matrix(M, tau0.sq, tau1.sq, theta.u)
+    Sigma.u        <- gen_cov_matrix(M, tau0.sq, tau1.sq, kappa.u)
     # full covariance matrix
     Sigma.u.full   <- gen_RE_cov_matrix( Sigma.u0, Sigma.u1, Sigma.u )
     
     # generate full vector of school random effects and impacts
-    u01.jk <- mvrnorm(J*K, mu = rep(0, 2*M), Sigma = Sigma.u.full)
+    u01.jk <- matrix(mvrnorm(J*K, mu = rep(0, 2*M), Sigma = Sigma.u.full), nrow = J*K, ncol = 2*M)
     u0.jk  <- u01.jk[,1:M, drop = FALSE]
     u1.jk  <- u01.jk[,(M+1):(2*M), drop = FALSE]
     
     return(list(X.jk = X.jk, u0.jk = u0.jk, u1.jk = u1.jk))
   }
   
-  level.two.data <- gen.level.two.data(J, K, M, rho.X, sigma.X, tau0.sq, tau1.sq, rho.u0, rho.u1, theta.u) 
+  level.two.data <- gen.level.two.data(J, K, M, rho.X, sigma.X, tau0.sq, tau1.sq, rho.u0, rho.u1, kappa.u) 
   X.jk  <- level.two.data[['X.jk']]
   u0.jk <- level.two.data[['u0.jk']]
   u1.jk <- level.two.data[['u1.jk']]
@@ -210,11 +206,6 @@ gen_full_data <- function(model.params.list) {
   
   # treatment impact
   psi1.ijk   <- mu1.ijk                + u1.ijk
-  
-  ##-------temp
-  # allow for school-level covariate to influence treatment
-  # beta.ijk   <- Gamma1.ijk + psi   * X.jk + v.ijk
-  ##-------temp
   
   # individual level
   Y0.ijk     <- theta0.ijk  + gamma * C.ijk + r.ijk
@@ -305,7 +296,7 @@ convert.params <- function(user.params.list) {
       , eta1.sq = eta1.sq                              # M-vector of variances of district impacts
       , rho.w0 = user.params.list[['rho.w0']]          # MxM matrix of correlations for district random effects
       , rho.w1 = user.params.list[['rho.w1']]          # MxM matrix of correlations for district impacts
-      , theta.w = user.params.list[['theta.w']]        # MxM matrix of correlations between district random effects and impacts
+      , kappa.w = user.params.list[['kappa.w']]        # MxM matrix of correlations between district random effects and impacts
     ) )
   }
   
@@ -320,7 +311,7 @@ convert.params <- function(user.params.list) {
     , tau1.sq = tau1.sq                              # M-vector of variances of school impacts
     , rho.u0 = user.params.list[['rho.u0']]          # MxM matrix of correlations for school random effects
     , rho.u1 = user.params.list[['rho.u1']]          # MxM matrix of correlations for school impacts
-    , theta.u = user.params.list[['theta.u']]        # MxM matrix of correlations between school random effects and impacts
+    , kappa.u = user.params.list[['kappa.u']]        # MxM matrix of correlations between school random effects and impacts
     # -------------------------------------------- level 1
     , gamma = gamma                                  # M-vector of coefficients of individual covariates
     , rho.C = user.params.list[['rho.C']]            # MxM correlation matrix of individual covariates
