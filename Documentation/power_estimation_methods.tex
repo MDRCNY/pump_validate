@@ -41,12 +41,16 @@
 % Model taxonomy
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Model taxonomy}
+\subsection{Experiment and Model taxonomy}
 
-A basic note on notation: we use $i$ to index individuals, $j$ to index schools, $k$ to index districts, and $m$ to index outcomes.
+Our package allows for power calculations across a range of common scenarios or \emph{Designs}.
+To identify a given design, we distinguish between the planned experimental design (e.g., clustered data, with randomization within cluster) and the model used for the planned analysis (e.g., multilevel modeling of some sort).
+Each of these components need to be identified and specified.
 
-We create a taxonomy of these models in addition to the categorization by clustering, blocking, etc.
-These models vary in the following ways:
+We first identify designs by noting the number of levels of nesting (e.g., students in schools in districts would be three levels) and the level of randomization (e.g., randomization at schools would be randomization at level 2).
+
+The models are a bit more complex. For the models used for analysis, we create a taxonomy by noting what modeling choice is used at each level of the model, and how covariates are used.
+In particular we have:
 \begin{itemize}
 \item Whether the school-level and district-level intercepts are:
 \begin{itemize}
@@ -62,10 +66,12 @@ These models vary in the following ways:
 \item Whether school covariates $X_{jkmr}$ or district covariates $V_{kms}$  are included in the model for the intercept. Note that in some models, PowerUp incorporates covariates into the slope, allowing for, in principle, heterogeneous treatment efects correlated to said covariates. However, we never make this assumption, as it is unlikely to help with an evaluationg targeting an overall average impact. Including covariates in the slope terms allows for modeling treatment effect heterogeneity in principle, but this can add complexity with estimation. When this difference occurs, it is noted.
 \end{itemize}
 
-\subsection{Design naming convention}
+
+
+\subsection{Overall Design naming convention}
 
 The general naming convention follows:
-dparameters\_mparameters
+d[parameters]\_m[parameters]
 
 For design parameters, the first number is the number of levels, and the second is the level at which treatment is assigned.
 
@@ -104,6 +110,7 @@ blocked\_c2\_3r 	& d3.2\_m3rr2rc \\
 \subsection{Notation}
 \label{sec:notation}
 
+For all notation, we use $i$ to index individuals, $j$ to index schools, $k$ to index districts, and $m$ to index outcomes.
 Tables~\ref{tab:observed_param}-\ref{tab:derived_param} outline all important quantities for calculating power, MDES, and sample size.
 Table~\ref{tab:powerup} provides a reference for translating notation between this document and PowerUpR!
 We now provide further clarification on the parameters in Table~\ref{tab:derived_param}; for a more detailed discussion of these expressions, see Section~\ref{sec:tune}.
