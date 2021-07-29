@@ -17,11 +17,6 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   Tbar <- sim.params.list[['Tbar']]
   procs <- sim.params.list[['procs']]
 
-  if(M == 1) {
-    print("Multiple testing corrections are not needed when M = 1")
-    procs <- "Bonferroni"
-  }
-
   # list of adjustment procedures
   adjp.proc <- array(0, c(S, M, length(procs) + 1))
   dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", procs))
@@ -43,19 +38,23 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     S.id <- samp.full$ID$S.id
     D.id  <- samp.full$ID$D.id
     
+    # unblocked designs
+    if(startsWith(design, 'd1.1'))
+    {
+      T.x <- randomizr::simple_ra(N = user.params.list$nbar, prob = Tbar)
     # blocked designs
-    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r'))
+    } else if(startsWith(design, 'd2.1') | startsWith(design, 'd3.1'))
     {
       T.x <- randomizr::block_ra( S.id, prob = Tbar )
     # cluster designs
-    } else if(design %in% c('simple_c2_2r'))
+    } else if(startsWith(design, 'd2.2'))
     { 
       T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
-    } else if(design %in% c('simple_c3_3r'))
+    } else if(startsWith(design, 'd3.3'))
     {
       T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
     # blocked cluster designs
-    } else if(design %in% c('blocked_c2_3f', 'blocked_c2_3r'))
+    } else if(startsWith(design, 'd3.2'))
     {
       T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
     } else
@@ -114,107 +113,6 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   return(adjp.proc)
 }
 
-#'  Function: calc_power                                       
-#'  
-#'  Calculates power based on adjusted p values
-#'
-#' @param adjp.proc adjusted p values for all procedures
-#' @param alpha
-#' 
-#' @return formatted simulation results
-
-calc_power <- function(adjp.proc, alpha)
-{
-
-  procs <- dimnames(adjp.proc)[[3]]
-  S <- dim(adjp.proc)[1]
-  M <- dim(adjp.proc)[2]
-  
-  power.results <- matrix(NA, nrow = length(procs), ncol = M + M + 2)
-  if(M == 1)
-  {
-    colnames(power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", "complete")
-  } else
-  {
-    colnames(power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", paste0("min",1:(M-1)), "complete")
-  }
-  rownames(power.results) = procs
-  
-  alts <- which(user.params.list[['ATE_ES']] != 0)
-  
-  for (p in 1:length(procs)) {
-    # calculate d-minimal power
-    power.results[p, 1:M] <- apply(adjp.proc[,,p,drop = FALSE], 2, function(x) mean(x < alpha))
-
-    # calculate min, min1, min2, etc. and complete power
-    rejects <- get.rejects(adjp.proc[, , p], alpha)
-    rawp.rejects <- get.rejects(adjp.proc[, , 1], alpha)
-
-    num.t.pos <- apply(rejects[, alts, drop = FALSE], 1, sum)
-    num.t.pos.rawp <- apply(rawp.rejects[, alts, drop = FALSE], 1, sum)
-
-    power.results[p, "min"] <- mean(1 * (num.t.pos > 0))
-    if(M > 1)
-    {
-      for(m in 1:(M-1))
-      {
-        power.results[p, paste0("min", m)] <- mean(1 * (num.t.pos >= m))
-      }
-    }
-    power.results[p, "complete"] <- mean(1 * (num.t.pos.rawp == M))
-    
-    # se.power[p, 1:M] <- apply(adjp.proc[,,p], 2, function(x) {
-    #   sqrt(mean(x < alpha)*(1 - mean(x < alpha))/S) 
-    # })
-    # se.power[p, "min"] <- sqrt(mean(1 * (num.t.pos > 0)) * (1 - mean(1 * (num.t.pos > 0)))/S)
-    # power.results[p, "1/3"] <- mean(1 * (num.t.pos >= (1/3) * M))
-    # # se.power[p, "1/3"] <- sqrt(mean(1 * (num.t.pos >= (1/3) * M)) * (1 - mean(1 * (num.t.pos >= (1/3) * M)))/S)
-    # power.results[p, "1/2"] <- mean(1 * (num.t.pos >= (1/2) * M))
-    # # se.power[p, "1/2"] <- sqrt(mean(1 * (num.t.pos >= (1/2) * M)) * (1 - mean(1 * (num.t.pos >= (1/2) * M)))/S)
-    # power.results[p, "2/3"] <- mean(1 * (num.t.pos >= (2/3) * M))
-    # # se.power[p, "2/3"] <- sqrt(mean(1 * (num.t.pos >= (2/3) * M)) * (1 - mean(1 * (num.t.pos >= (2/3) * M)))/S)
-    # power.results[p, "full"] <- mean(1 * (num.t.pos.rawp == M))
-    # # se.power[p, "full"] <- sqrt(mean(1 * (num.t.pos == M)) * (1 - mean(1 * (num.t.pos == M)))/S)
-  }
-  
-  # calculate mean power across all individual powers
-  power.results[,"indiv.mean"] <- apply(as.matrix(power.results[,1:M, drop = FALSE][,alts, drop = FALSE]), 1, mean)
-  
-  # confidenceintervals
-  se.power <- sqrt(0.25/S) 
-  CI.lower.power <- power.results - 1.96 * se.power
-  CI.upper.power <- power.results + 1.96 * se.power
-  # make sure that intervals do not produce power below 0 or above 1
-  for(i in 1:nrow(CI.lower.power))
-  {
-    for(j in 1:ncol(CI.lower.power))
-    {
-      CI.lower.power[i,j] <- max(CI.lower.power[i,j], 0)
-      CI.lower.power[i,j] <- min(CI.lower.power[i,j], 1)
-      CI.upper.power[i,j] <- max(CI.upper.power[i,j], 0)
-      CI.upper.power[i,j] <- min(CI.upper.power[i,j], 1)
-    }
-  }
-  
-  adj_power <- list(power.results, CI.lower.power, CI.upper.power)
-  names(adj_power) <- c("adjusted_power", "ci_lower", "ci_upper")
-  
-  get_sim_results_melt = function(adj_power)
-  {
-    sim_results <- data.frame(adj_power)
-    sim_results$MTP <- rownames(sim_results)
-    sim_results_melt <- melt(sim_results, id.vars = 'MTP')
-    sim_results_melt$method = 'sim'
-    return(sim_results_melt)
-  }
-  
-  # apply for means and upper and lower bounds of confidence interval
-  sim_results_melt_full <- list.rbind(lapply(adj_power, get_sim_results_melt))
-  sim_results_melt_full$value.type <- sapply(rownames(sim_results_melt_full), function(x){strsplit(x, '\\.')[[1]][1]})
-  
-  return(sim_results_melt_full)
-}
-
 # --------------------------------------------------------------------- #
 #  Function: make.model	Inputs:dat,dummies      	                        #
 #		a reshaped dataset (dat)-->data for one m 			                      #
@@ -234,42 +132,40 @@ make.model <- function(dat.m, design) {
   dat.m$S.id <- as.factor(dat.m$S.id)
   if(!is.null(dat.m$D.id)){ dat.m$D.id <- as.factor(dat.m$D.id) }
 
-  if (design == "blocked_i1_2c") {
+  if (design == "d1.1_m2fc") {
+    form <- as.formula("Yobs ~ 1 + T.x + C.ijk")
+    mod <- lm(form, data = dat.m)
+  } else if (design == "d2.1_m2fc") {
     form <- as.formula("Yobs ~ 1 + T.x + C.ijk + S.id")
     mod <- lm(form, data = dat.m)
-  } else if (design == "blocked_i1_2f") {
+  } else if (design == "d2.1_m2ff") {
     mod.out <- interacted_linear_estimators(
       Yobs = Yobs, Z = T.x, B = S.id, data = dat.m,
       control_formula = "C.ijk", use.lmer = FALSE
     )
     singular <- mod.out[['singular']]
     mod <- mod.out[['mod']]
-  } else if (design == "blocked_i1_2r") {
+  } else if (design == "d2.1_m2fr") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "blocked_i1_2r_special") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
-    mod <- suppressMessages(lmer(form, data = dat.m))
-    singular <- isSingular(mod)
-    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "blocked_i1_3r") {
+  } else if (design == "d3.1_m3rr2rr") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "simple_c2_2r") {
+  } else if (design == "d2.2_m2rc") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "simple_c3_3r") {
+  } else if (design == "d3.3_m3rc2rc") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "blocked_c2_3f") {
+  } else if (design == "d3.2_m3ff2rc") {
     mod.out <- interacted_linear_estimators(
       Yobs = Yobs, Z = T.x, B = D.id, data = dat.m,
       control_formula = "X.jk + C.ijk + (1 | S.id)",
@@ -277,7 +173,7 @@ make.model <- function(dat.m, design) {
     )
     singular <- mod.out[['singular']]
     mod <- mod.out[['mod']]
-  } else if (design == "blocked_c2_3r") {
+  } else if (design == "d3.2_m3rr2rc") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
@@ -463,7 +359,7 @@ get.rejects <- function(adjp, alpha) {
 
 
 #' Interacted linear regression models
-#' https://github.com/lmiratrix/blkvar/blob/master/R/linear_model_method.R
+#' https://github.com/lmiratrix/blkvar/blob_master/R/linear_model_method.R
 #'
 #' These linear models have block by treatment interaction terms.  The final ATE
 #' estimates are then weighted average of the block (site) specific ATE

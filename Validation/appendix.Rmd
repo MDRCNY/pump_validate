@@ -28,23 +28,13 @@ library(here)
 source(here::here("Validation/Simulations", "misc.R"))
 ```
 
-# TODO
-
-* Potentially problematic graphs
-  - blocked_c2_3r $R^2 = 0.6$
-  - blocked_c2_3r $ICC = 0.7$
-  - blocked_i1_3r $ICC = 0.7$
-* Write up westfall-young
-* Run all MDES and SS calculations
-* Try additional simulation variations
-
 # Introduction
 
 This appendix discusses our work to validate that the power estimation methods work as intended.
 
 We compare three different methods of estimating power:
   
-  * PUMP
+* PUMP
 * PowerUpR (only comparable for D1individual, unadjusted power)
 * Monte Carlo Simulations
 
@@ -111,17 +101,17 @@ Parameters that vary:
   | school size $\bar{n}$   | 50                     | 75, 100           |
   | $R^2$                   | 0                      | 0.6               |
   | $\rho$                  | 0.5                    | 0.2, 0.8          |
-  | ATE (ES) true positives | (0.125, 0.125, 0.125)  | (0.125, 0. 0)     |
+  | ATE (ES) true positives | (0.125, 0.125, 0.125)  | (0.125, 0, 0)     |
   | ICC                     | 0.2                    | 0.7               |
   | $\omega$                | 0.1                    | 0.8               |
   
-  We do not vary:
-  
-  * $M = 3$
-  * $J$ and $K$ are fixed for each scenario
+We do not vary:
+
+* $M = 3$
+* $J$ and $K$ are fixed for each scenario
 * Scalar grand mean $\Xi_0$
-  * Correlations between school random effects and impacts $\kappa$
-  * $\rho$ informs all correlations; we keep the same correlation between covariates, residuals, impacts, random effects for all levels and across all outcomes
+* Correlations between school random effects and impacts $\kappa$
+* $\rho$ informs all correlations; we keep the same correlation between covariates, residuals, impacts, random effects for all levels and across all outcomes
 
 TODO: possible things we may want to vary:
   
@@ -130,7 +120,7 @@ TODO: possible things we may want to vary:
 * A realistic set of parameters
 * Extreme values, i.e. $\rho = 0.95$
   
-  \newpage
+\newpage
 
 # Validation results
 
@@ -197,42 +187,45 @@ user.params.list <- list(
   , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals 
 )
 
-# assumptions specific to blocked c2 
 user.params.list[['omega.2']] <- 0
 user.params.list[['J']] <- 20
 user.params.list[['K']] <- 10
+user.params.list[['nbar']] <- 50
+sim.params.list[['S']] <- 1000
+sim.params.list[['Q']] <- 1
+user.params.list[['nbar']] <- 100
 ```
 
 
-```{r 3f.nj100}
+```{r validate.power, fig.height=8, fig.width=6}
 design <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
 user.params.list[['ICC.3']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-# blocked_c2_3f_nj100_power_plot <- gen.power.results.plot(params.file.base, design)
-# print(blocked_c2_3f_nj100_power_plot)
+blocked_c2_3f_nj100_power_plot <- gen.power.results.plot(params.file.base, design)
+print(blocked_c2_3f_nj100_power_plot)
 ```
 
 Next, we validate MDES and sample size calculations. The first column shows the calculated MDES or sample size, the middle column is the power we plugged into the calculation, and the last column shows the MDES or sample size that we are targeting. Thus, ideally we want the first and last columns to match.
 
 ```{r}
-# mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
-# blocked_c2_3f_mdes_D1_results <- readRDS(mdes.file)
-# pander::pandoc.table(
-#   blocked_c2_3f_mdes_D1_results,
-#   style = "grid", split.tables = 100, row.names = FALSE, 
-#   caption = design
-# )
+mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
+blocked_c2_3f_mdes_D1_results <- readRDS(mdes.file)
+pander::pandoc.table(
+  blocked_c2_3f_mdes_D1_results,
+  style = "grid", split.tables = 100, row.names = FALSE,
+  caption = design
+)
 ```
 
 ```{r}
-# sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
-# blocked_c2_3f_sample_D1_results <- readRDS(sample.file)
-# pander::pandoc.table(
-#   blocked_c2_3f_sample_D1_results,
-#   style = "grid", split.tables = 100, row.names = FALSE, 
-#   caption = design
-# )
+sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
+blocked_c2_3f_sample_D1_results <- readRDS(sample.file)
+pander::pandoc.table(
+  blocked_c2_3f_sample_D1_results,
+  style = "grid", split.tables = 100, row.names = FALSE,
+  caption = design
+)
 ```
 
 # Westfall-Young procedures

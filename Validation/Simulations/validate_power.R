@@ -71,24 +71,13 @@ library(pum)
 #' @export
 #'
 #' @examples
-validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE) {
-  
-  # checks
-  if(length(user.params.list[['ATE_ES']]) != user.params.list[['M']])
-  {
-    stop(paste('Please provide a vector of ATE_ES of length M.'))
-  }
-  
+validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE)
+{
   if( (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) > 1) |
       (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) == 1 & !('Bonferroni' %in% sim.params.list[['procs']] )))
   {
     stop(print("Multiple testing corrections are not needed when M = 1. Please change multiple testing procedures or increase M."))
   } 
-  
-  if(user.params.list[['omega.2']] > 0 & design == 'blocked_i1_2c')
-  {
-    stop('Omega.2 should be 0 for constant effects')
-  }
   
   t1 = Sys.time()
   
@@ -160,7 +149,51 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     if(!is.null(adjp.proc) && dim(adjp.proc)[1] == sim.params.list[['S']]*sim.params.list[['Q']])
     {
       sim.filename = paste0(params.file.base, "simulation_results.RDS")
-      sim_results <- calc_power(adjp.proc, sim.params.list[['alpha']])
+      
+      power.results <- NULL
+      for(p in 1:dim(adjp.proc)[3])
+      {
+        proc.results <- get.power.results(
+          pval.mat = adjp.proc[,,p],
+          ind.nonzero = user.params.list[['ATE_ES']] > 0,
+          alpha = sim.params.list[['alpha']]
+        )
+        power.results <- rbind(power.results, proc.results)
+      }
+      rownames(power.results) <- dimnames(adjp.proc)[[3]]
+      
+      # calculate confidence intervals
+      se.power <- sqrt(0.25/sim.params.list[['S']]) 
+      CI.lower.power <- power.results - 1.96 * se.power
+      CI.upper.power <- power.results + 1.96 * se.power
+      # make sure that intervals do not produce power below 0 or above 1
+      for(i in 1:nrow(CI.lower.power))
+      {
+        for(j in 1:ncol(CI.lower.power))
+        {
+          CI.lower.power[i,j] <- max(CI.lower.power[i,j], 0)
+          CI.lower.power[i,j] <- min(CI.lower.power[i,j], 1)
+          CI.upper.power[i,j] <- max(CI.upper.power[i,j], 0)
+          CI.upper.power[i,j] <- min(CI.upper.power[i,j], 1)
+        }
+      }
+      
+      adj_power <- list(power.results, CI.lower.power, CI.upper.power)
+      names(adj_power) <- c("adjusted_power", "ci_lower", "ci_upper")
+      
+      get_adj_power_melt = function(adj_power)
+      {
+        adj_power <- data.frame(adj_power)
+        adj_power$MTP <- rownames(adj_power)
+        adj_power_melt <- melt(adj_power, id.vars = 'MTP')
+        adj_power_melt$method = 'sim'
+        return(adj_power_melt)
+      }
+      
+      # bind results together
+      sim_results <- list.rbind(lapply(adj_power, get_adj_power_melt))
+      sim_results$value.type <- sapply(rownames(sim_results), function(x){strsplit(x, '\\.')[[1]][1]})
+      
       saveRDS(sim_results, file = paste0(intermediate.data.dir, sim.filename))
     } else
     {
@@ -180,7 +213,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     if( (overwrite | !file.exists(powerup.file))  & sim.params.list[['runPowerUp']])
     {
       message('Running PowerUp')
-      if(design == 'blocked_i1_2c')
+      if(design == 'd1.1_m2fc')
       {
         powerup_results <- power.bira2c1(
           es = user.params.list[['ATE_ES']][1],
@@ -192,7 +225,19 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           n = user.params.list[['nbar']],
           J = user.params.list[['J']]
         )
-      } else if(design == 'blocked_i1_2f')
+      } else if(design == 'd2.1_m2fc')
+      {
+        powerup_results <- power.bira2c1(
+          es = user.params.list[['ATE_ES']][1],
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE,
+          p = sim.params.list[['Tbar']],
+          g1 = 1,
+          r21 = user.params.list[['R2.1']][1],
+          n = user.params.list[['nbar']],
+          J = user.params.list[['J']]
+        )
+      } else if(design == 'd2.1_m2ff')
       {
         powerup_results <- power.bira2f1(
           es = user.params.list[['ATE_ES']][1],
@@ -204,7 +249,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           n = user.params.list[['nbar']],
           J = user.params.list[['J']]
         )
-      } else if(design == 'blocked_i1_2r')
+      } else if(design == 'd2.1_m2fr')
       {
         powerup_results <- power.bira2r1(
           es = user.params.list[['ATE_ES']][1],
@@ -219,7 +264,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           n = user.params.list[['nbar']],
           J = user.params.list[['J']]
         )
-      } else if(design == 'blocked_i1_3r')
+      } else if(design == 'd3.1_m3rr2rr')
       {
         powerup_results <- power.bira3r1(
           es = user.params.list[['ATE_ES']][1],
@@ -237,7 +282,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           J = user.params.list[['J']],
           K = user.params.list[['K']]
         )
-      } else if(design == c('simple_c2_2r'))
+      } else if(design == c('d2.2_m2rc'))
       {
         powerup_results <- power.cra2r2(
           es = user.params.list[['ATE_ES']][1],
@@ -251,7 +296,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           n = user.params.list[['nbar']],
           J = user.params.list[['J']]
         )
-      } else if(design == c('simple_c3_3r'))
+      } else if(design == c('d3.3_m3rc2rc'))
       {
         powerup_results <- power.cra3r3(
           es = user.params.list[['ATE_ES']][1],
@@ -268,7 +313,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           J = user.params.list[['J']],
           K = user.params.list[['K']]
         )
-      } else if(design == c('blocked_c2_3f'))
+      } else if(design == c('d3.2_m3ff2rc'))
       {
         powerup_results <- power.bcra3f2(
           es = user.params.list[['ATE_ES']][1],
@@ -283,7 +328,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           J = user.params.list[['J']],
           K = user.params.list[['K']]
         )
-      } else if(design == c('blocked_c2_3r'))
+      } else if(design == c('d3.2_m3rr2rc'))
       {
         powerup_results <- power.bcra3r2(
           es = user.params.list[['ATE_ES']][1],
@@ -379,7 +424,6 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         iterator = iterator + 1
       }
       # format results table nicely
-      rownames(pump_results) <- c("rawp", sim.params.list[['procs']])
       pump_results_table <- pump_results
       pump_results_table$MTP <- rownames(pump_results_table)
       pump_results <- melt(pump_results_table, id.vars = 'MTP')
@@ -553,7 +597,8 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
 #'
 #' @examples
 validate_sample <- function(user.params.list, sim.params.list, design,
-                            power.definition = 'D1indiv', plot.path = FALSE, overwrite = TRUE) {
+                            power.definition = 'D1indiv', typesample,
+                            plot.path = FALSE, overwrite = TRUE) {
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
@@ -584,21 +629,9 @@ validate_sample <- function(user.params.list, sim.params.list, design,
     }
     power.results <- readRDS(power.file)
     
-    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'simple_c2_2r'))
-    {
-      typesample = c('J')
-    } else if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
-    {
-      typesample = c('K')
-    } else
-    {
-      stop('Design not implemented')
-    }
-    
     sample_compare_results <- plot_data <- NULL
     for (MTP in procs)
     {
-      # type = 'J'; MTP = 'Holm';
       target.power <- power.results$value[
         power.results$MTP == MTP &
         power.results$power_type == power.definition &
@@ -639,7 +672,9 @@ validate_sample <- function(user.params.list, sim.params.list, design,
       plot_data <- rbind(plot_data, sample_results$test.pts)
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
-    sample.filename <- paste0(params.file.base, 'comparison_sample_', power.definition, '_results.RDS')
+    sample.filename <- paste0(
+      params.file.base, 'comparison_sample_', typesample, '_', power.definition, '_results.RDS'
+    )
     
     if(plot.path)
     {
@@ -675,10 +710,11 @@ if(FALSE)
   design = "blocked_i1_2c";
   # design = 'simple_c2_2r';
   # design = 'simple_c3_3r';
-  # MTP = 'Bonferroni';
+  MTP = 'Bonferroni';
   # MTP = 'Holm';
-  MTP = 'WY-SD';
-  target.power = power.results[power.results$MTP == MTP & power.results$power_type == 'D1indiv' & power.results$method == 'pum', 'value'];
+  # MTP = 'WY-SD';
+  numZero = NULL;
+  target.power = 0.8;
   M = user.params.list[['M']];
   ATE_ES = user.params.list[['ATE_ES']]
   MDES = user.params.list[['ATE_ES']]
@@ -696,6 +732,7 @@ if(FALSE)
   ICC.2 = user.params.list[['ICC.2']];
   ICC.3 = user.params.list[['ICC.3']];
   rho = user.params.list[['rho.default']];
+  rho.matrix = NULL;
   omega.2 = user.params.list[['omega.2']];
   omega.3 = user.params.list[['omega.3']];
   numCovar.1 = 1; numCovar.2 = 1; numCovar.3 = 1;
