@@ -82,7 +82,7 @@ Tables~\ref{tab:observed_param}-\ref{tab:derived_param} outline all important qu
 Table~\ref{tab:powerup} provides a reference for translating notation between this document and PowerUpR!
 We now provide further clarification on the parameters in Table~\ref{tab:derived_param}; for a more detailed discussion of these expressions, see Section~\ref{sec:tune}.
 
-The quantity $\text{ICC}$ is the Intraclass Correlation for the unconditional model.
+The quantity $\text{ICC}$ is the Intraclass Correlation for the unconditional model. The following expressions include the variation, therefore, due to covariates.  All covariates are assumed to be group-mean centered and have unit variance.  (This creates the pairing of terms in the equations below.)
 
 \begin{align*}
 \text{ICC}_{3,m} &= \frac{Var(\mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\xi^2_m + \eta_{0,m}^2}{\xi_m^2 +  \eta^2_{0,m} + \delta_m^2  + \tau^2_{0,m} + \gamma_m^2 + \sigma^2_m}\\
@@ -251,9 +251,13 @@ We next outline the R model and randomization scheme.
 In describing the standard error of our estimators in terms of effect size, we need to carefully identify what we mean by an ``effect size.''
 We commonly think of an effect size as the size of an impact relative to some reference amount of variation.
 Typically we would use the variation in \emph{overall} control group, but could also index by the within-group variation only.
-The former would include the student variation within each site, and also how the sites vary from each other.
-We argue that this definition is more natural.
-Unfortunately, difference in how an effect size is defined can create some tension regarding some of the power formula, as we will note in the following sections.
+
+We use overall variation, as we believe this definition is more natural.
+Overall variation includes the student variation within each site, and also how the sites vary from each other.
+Unfortunately, difference in how an effect size is defined can create some tension regarding some of the power formula.
+In particular, with overall variation if we increase the ICC at level 2 or level 3, then there is less variation (relative to the reference variation) in level 1; thus an increased ICC will increase power for fixed effect regression as it is realizing the gains of a blocked experiment.
+If effect size is relative to within-group variation, this gain is not seen.
+We note how this plays out explicitly in the following sections.
 
 
 
