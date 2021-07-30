@@ -17,11 +17,6 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   Tbar <- sim.params.list[['Tbar']]
   procs <- sim.params.list[['procs']]
 
-  if(M == 1) {
-    print("Multiple testing corrections are not needed when M = 1")
-    procs <- "Bonferroni"
-  }
-
   # list of adjustment procedures
   adjp.proc <- array(0, c(S, M, length(procs) + 1))
   dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", procs))
@@ -43,19 +38,23 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     S.id <- samp.full$ID$S.id
     D.id  <- samp.full$ID$D.id
     
+    # unblocked designs
+    if(startsWith(design, 'd1.1'))
+    {
+      T.x <- randomizr::simple_ra(N = user.params.list$nbar, prob = Tbar)
     # blocked designs
-    if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'blocked_i1_3r'))
+    } else if(startsWith(design, 'd2.1') | startsWith(design, 'd3.1'))
     {
       T.x <- randomizr::block_ra( S.id, prob = Tbar )
     # cluster designs
-    } else if(design %in% c('simple_c2_2r'))
+    } else if(startsWith(design, 'd2.2'))
     { 
       T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
-    } else if(design %in% c('simple_c3_3r'))
+    } else if(startsWith(design, 'd3.3'))
     {
       T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
     # blocked cluster designs
-    } else if(design %in% c('blocked_c2_3f', 'blocked_c2_3r'))
+    } else if(startsWith(design, 'd3.2'))
     {
       T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
     } else
@@ -133,42 +132,40 @@ make.model <- function(dat.m, design) {
   dat.m$S.id <- as.factor(dat.m$S.id)
   if(!is.null(dat.m$D.id)){ dat.m$D.id <- as.factor(dat.m$D.id) }
 
-  if (design == "blocked_i1_2c") {
+  if (design == "d1.1_m2fc") {
+    form <- as.formula("Yobs ~ 1 + T.x + C.ijk")
+    mod <- lm(form, data = dat.m)
+  } else if (design == "d2.1_m2fc") {
     form <- as.formula("Yobs ~ 1 + T.x + C.ijk + S.id")
     mod <- lm(form, data = dat.m)
-  } else if (design == "blocked_i1_2f") {
+  } else if (design == "d2.1_m2ff") {
     mod.out <- interacted_linear_estimators(
       Yobs = Yobs, Z = T.x, B = S.id, data = dat.m,
       control_formula = "C.ijk", use.lmer = FALSE
     )
     singular <- mod.out[['singular']]
     mod <- mod.out[['mod']]
-  } else if (design == "blocked_i1_2r") {
+  } else if (design == "d2.1_m2fr") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "blocked_i1_2r_special") {
-    form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
-    mod <- suppressMessages(lmer(form, data = dat.m))
-    singular <- isSingular(mod)
-    failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "blocked_i1_3r") {
+  } else if (design == "d3.1_m3rr2rr") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "simple_c2_2r") {
+  } else if (design == "d2.2_m2rc") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "simple_c3_3r") {
+  } else if (design == "d3.3_m3rc2rc") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
     failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
-  } else if (design == "blocked_c2_3f") {
+  } else if (design == "d3.2_m3ff2rc") {
     mod.out <- interacted_linear_estimators(
       Yobs = Yobs, Z = T.x, B = D.id, data = dat.m,
       control_formula = "X.jk + C.ijk + (1 | S.id)",
@@ -176,7 +173,7 @@ make.model <- function(dat.m, design) {
     )
     singular <- mod.out[['singular']]
     mod <- mod.out[['mod']]
-  } else if (design == "blocked_c2_3r") {
+  } else if (design == "d3.2_m3rr2rc") {
     form <- as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
     mod <- suppressMessages(lmer(form, data = dat.m))
     singular <- isSingular(mod)
@@ -362,7 +359,7 @@ get.rejects <- function(adjp, alpha) {
 
 
 #' Interacted linear regression models
-#' https://github.com/lmiratrix/blkvar/blob/master/R/linear_model_method.R
+#' https://github.com/lmiratrix/blkvar/blob_master/R/linear_model_method.R
 #'
 #' These linear models have block by treatment interaction terms.  The final ATE
 #' estimates are then weighted average of the block (site) specific ATE

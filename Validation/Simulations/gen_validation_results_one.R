@@ -17,6 +17,6 @@ user.params.list[['ICC.3']] <- NULL
 user.params.list[['omega.3']] <- NULL
 user.params.list[['R2.3']] <- NULL
 
-power.results <- validate_power(user.params.list, sim.params.list, design = "blocked_i1_2r", q = q, overwrite)
+power.results <- validate_power(user.params.list, sim.params.list, design = "d2.1_m2fr", q = q, overwrite)
 
 print(power.results)

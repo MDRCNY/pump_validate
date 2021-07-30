@@ -63,8 +63,8 @@ sim.params.list <- list(
 # rho.u <-
 # rho.v <- 
 # rho.r <- 
-# theta.wz <-
-# theta.uv <-
+# kappa.wz <-
+# kappa.uv <-
 
 #------------------------------------------------------------------#
 # default user parameters
@@ -78,7 +78,7 @@ default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 
 user.params.list <- list(
   M = 3                                   # number of outcomes
-  , J = 20                                # number of schools
+  , J = 30                                # number of schools
   , K = 10                                # number of districts (for two-level model, set K = 1)
   , nbar = 50                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
@@ -94,7 +94,7 @@ user.params.list <- list(
   , omega.3 = 0.1                         # ratio of district effect size variability to random effects variability
   , rho.w0 = default.rho.matrix           # MxM matrix of correlations for district random effects
   , rho.w1 = default.rho.matrix           # MxM matrix of correlations for district impacts
-  , theta.w = matrix(0, M, M)             # MxM matrix of correlations between district random effects and impacts
+  , kappa.w = matrix(0, M, M)             # MxM matrix of correlations between district random effects and impacts
   ################################################## level 2: schools
   , R2.2 = rep(0.1, M)                    # percent of school variation explained by school covariates
   , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
@@ -102,7 +102,7 @@ user.params.list <- list(
   , omega.2 = 0.1                         # ratio of school effect size variability to random effects variability
   , rho.u0 = default.rho.matrix           # MxM matrix of correlations for school random effects
   , rho.u1 = default.rho.matrix           # MxM matrix of correlations for school impacts
-  , theta.u = matrix(0, M, M)             # MxM matrix of correlations between school random effects and impacts
+  , kappa.u = matrix(0, M, M)             # MxM matrix of correlations between school random effects and impacts
   ################################################## level 1: individuals
   , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
   , rho.C = default.rho.matrix            # MxM correlation matrix of individual covariates
