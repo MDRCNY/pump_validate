@@ -4,11 +4,18 @@ This list is not complete - to be added to and checked off by everyone.
 
 # R package
 - Expand models (e.g. D3 designs with ICC non zero, and others discussed) & validate (Kristen, TBD)
+    Done this (in particular the ICC stuff) except for additional models, to be postponed.
+    TO DO: Add the d1.1_mcc model (simple randomization)
 - Run additional validation for extreme values (Kristen, TBD)
-- Update with new naming convention (Kristen, TBD)
+    Near done.
+- Update with new naming convention (Kristen)
+    Done!
 - Complete code commenting (Kristen, TBD)
+    Done enough.
 - Complete all testing (Kristen and Luke, TBD)
+    Done enough, will add tests as issues arise.
 - Source code completed, ASCII files, with formatted help files and be packaged for easy installation. 
+    Still to do.
 - Submit package to CRAN - including JSS submission as vignettes in the package. 
 
 # Shiny app
