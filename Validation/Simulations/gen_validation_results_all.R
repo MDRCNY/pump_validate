@@ -8,7 +8,7 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
-run.power = TRUE
+run.power = FALSE
 run.mdes.ss = TRUE
 run.wy = FALSE
 # which designs to run
@@ -17,7 +17,7 @@ run.d2.2 = TRUE
 run.d3.1 = TRUE
 run.d3.3 = TRUE
 run.d3.2 = TRUE
-run.power.def = TRUE
+run.power.def = FALSE
 run.extremes = TRUE
 
 # simulation and user parameters
@@ -1438,7 +1438,7 @@ if(run.d3.2 & run.mdes.ss)
   user.params.list <- user.params.default
   sim.params.list <- sim.params.default
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
-
+  
   # assumptions
   user.params.list[['omega.2']] <- 0
   

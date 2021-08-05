@@ -606,6 +606,18 @@ validate_sample <- function(user.params.list, sim.params.list, design,
   
   current.file <- find_file(params.file.base, type = 'sample')
   
+  # convert to a single MDES
+  user.params.list[['ATE_ES']] <- user.params.list[['ATE_ES']][1]
+  
+  # nullify parameters
+  if ( typesample == "nbar" ) {
+    user.params.list[['nbar']] <- NULL
+  } else if ( typesample == "J" ) {
+    user.params.list[['J']] <- NULL
+  } else if ( typesample == "K" ) {
+    user.params.list[['K']] <- NULL
+  }
+  
   if(overwrite | length(current.file) == 0)
   {
     if(sim.params.list[['parallel']])
