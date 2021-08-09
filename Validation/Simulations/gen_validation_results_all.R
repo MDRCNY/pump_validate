@@ -1442,9 +1442,9 @@ if(run.d3.2 & run.mdes.ss)
   
   # assumptions
   user.params.list[['omega.2']] <- 0
-  
   user.params.list[['R2.3']] <- rep(0, M)
   user.params.list[['ICC.3']] <- rep(0, M)
+  
   mdes.results <- validate_mdes(
     user.params.list, sim.params.list,
     design = "d3.2_m3ff2rc",
@@ -1471,6 +1471,7 @@ if(run.d3.2 & run.mdes.ss)
   
   user.params.list[['R2.3']] <- user.params.default[['R2.3']]
   user.params.list[['ICC.3']] <- user.params.default[['ICC.3']]
+  
   mdes.results <- validate_mdes(
     user.params.list, sim.params.list,
     design = "d3.2_m3rr2rc",
