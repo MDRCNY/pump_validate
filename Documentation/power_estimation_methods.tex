@@ -306,6 +306,51 @@ An alternate approach is to have the $R^2$ measure include variance explained by
 To make the formula more directly comparable, we do not take this route, but one can obtain the same results by selecting an appropriate $R^2$ and then setting the ICC to 0.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Design: 1 levels, Randomization: level 1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Design: 1 level, Randomization: level 1}
+
+\subsection{Constant effects (d1.1\_m2cc)}
+
+\textbf{PowerUp name:} Not applicable.
+
+\textbf{Characterization:} 1-level design, constant intercepts, constant treatment effects, no school covariates.
+
+The model for estimating impacts on outcome $m$ is given by:
+\begin{align}
+Y_{ijkm} &= \psi_{1,jkm} T_{ijk} + \theta_{0,jkm} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp} + r_{ijkm}
+\end{align}
+
+The standard error of the treatment effect estimate is:
+\begin{align} Q_m = \sqrt{\frac{(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}}} . \end{align}
+
+The degrees of freedom are:
+\begin{align}\text{df}_m = J \bar{n} - g_{1,m} - 1.\end{align}
+
+\paragraph{Sample size formula.} 
+The sample size formulas are:
+\begin{align}
+J &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\frac{1-R^2_{1,m}}{\bar{n} \bar{T} (1 - \bar{T})} \right)\\
+\bar{n} &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\frac{1-R^2_{1,m}}{J \bar{T} (1 - \bar{T})} \right) .
+\end{align}
+
+\paragraph{Code syntax.}
+The R model is
+\begin{verbatim}
+Yobs ~ 1 + T.x + C.ijk
+\end{verbatim}
+
+The randomization scheme is: simple random sampling.
+\begin{verbatim}
+T.x <- randomizr::simple_ra(N = nbar, prob = Tbar)
+\end{verbatim}
+
+The overall treatment effect is then the average of the \texttt{T.x} terms.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Design: 2 levels, Randomization: level 1

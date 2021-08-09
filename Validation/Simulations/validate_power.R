@@ -602,7 +602,11 @@ validate_sample <- function(user.params.list, sim.params.list, design,
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-  print(paste('Sample validation for:', params.file.base))
+  print(paste(
+    'Sample validation with power def:', power.definition,
+    'and typesample', typesample,
+    'for:', params.file.base
+  ))
   
   current.file <- find_file(params.file.base, type = 'sample')
   

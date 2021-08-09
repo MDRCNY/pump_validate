@@ -660,7 +660,8 @@ if(run.d2.2 & run.mdes.ss)
   
   mdes.results <- validate_mdes(
     user.params.list, sim.params.list,
-    design = "d2.2_m2rc", overwrite = overwrite
+    design = "d2.2_m2rc",
+    overwrite = overwrite
   )
   sample.results <- validate_sample(
     user.params.list, sim.params.list,
