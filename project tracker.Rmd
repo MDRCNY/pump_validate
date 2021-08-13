@@ -17,6 +17,10 @@ This list is not complete - to be added to and checked off by everyone.
 - Source code completed, ASCII files, with formatted help files and be packaged for easy installation. 
     Still to do.
 - Submit package to CRAN - including JSS submission as vignettes in the package. 
+- Make sure all functions still work when specifying one outcome (Kristen, TBD)
+- Check for cluster RCT (using simulation?) whether correlation between test statistics is still equiv to correlation between outcomes (assuming constant values of R2 across outcomes) (Kristen, TBD)
+- Potentially use simulations to estimate rho matrix for users when entering other information about data - corr between outcomes, R2's (Kristen, maybe, TBD)
+- Revisit terminology of MDES - should we use "effect size" or "ATE" instead - build into user testing (Kristin, TBD)
 
 # Shiny app
 - Introduction/education matter (Kristin, 8/31)
@@ -38,5 +42,11 @@ This list is not complete - to be added to and checked off by everyone.
 - Budget video (Kristin, 8/15)
 
 # Presentation
-- TBD pending SREE decision
+- Kristen presenting
+
+# Next check-in
+- champions for paper sections
+- planning for SREE presentation - Kristin P will share past slide deck for reference
+
+
 
