@@ -87,34 +87,30 @@ Also in Table 1, the FDR is equal to $E(\frac{B}{R})$ but is defined to be 0 whe
 
 Note that MTPs may provide either weak or strong control of the error rate they target. An MTP provides weak control of the FWER or the FDR at level $\alpha$ if the control can only be guaranteed when all nulls are true, or when the effects on all outcomes are zero. An MTP provides strong control of the FWER or FDR at level Î± if the control is guaranteed when some null hypotheses are true and some are false, or when there may be effects on at least some outcomes. Of course, strong control is preferred. 
 
-# Estimating Power, MDES's and Sample Sizes in Studies of Impacts on Multiple Outcomes 
+# Estimating Power, MDES's and Sample Sizes in Studies of Impacts on Multiple Outcomes (Kristen - first draft October 1)
 * Approach for estimating statistical power
   + General strategy
-  + Specifications for each RCT design (in appendix)
+  + Table of all designs (showing naming convention)
 * Approach for estimating MDES's and sample size
-* Modeling empirical findings for faster estimation
+  + fun with optimization
 * Validation (how much/what should we present?)
   + paragraph on what we did 
-  + consider options for making code available
+  + make validation results available on Github
+     + include validation template
+     + include our simulation code
+     + discrepancy between our results and power-up
 
-# Software
-* Map of PUMP functions (functions/naming convention for each design)
-* Inputs 
-* Outputs
-* To what extent should we cover Shiny app in the paper? 
+# PUM-P Package (Luke - first October 1)
+* Overview of power, mdes, sample size and grid functions + plotting function
+* Example(s) -  LUKE'S VIGNETTE  
 
-# Example(s) -  LUKE'S VIGNETTE  
-(Notes from an earlier brainstorm below...)
-* maybe one blocked individual RCT and one cluster RCT?
-* maybe one is scenario for designing study and one is scenario for post-hoc power analysis?
- + post hoc might be best place to start since simplest
- + then more about design considerations after making software clear
+# Guidance for practice 
+* Reflections on issues that come up in vignette
+  + e.g., how to come up with correlation assumption - what's needed by future researchers so can come to our tool with good assumptions
+  + e.g., reinformce importance of looking at ranges when it matters a lot
 
-# Guidance for practice (or after software section below?)
-* Considerations for study design - limted to implications from multiple testting plus short lit review of key issues related to design issues 
-* Considerations for specifying assumptions (or do we go through this when discussing inputs for R functions)
-  + how to come up with correlation assumption
-  + importance of looking at ranges when it matters a lot
-
-# Conclusion and Next Steps
+# Appendices
+- specifications/derivations for all designs
+- how data were generated for simulations
+- something about validation maybe? (one example or template?)
 
