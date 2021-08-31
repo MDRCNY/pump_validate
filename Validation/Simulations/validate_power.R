@@ -415,13 +415,12 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           tnum = sim.params.list[['tnum']], B = sim.params.list[['B']],
           cl = cl
         )
-        pump_results_iter <- data.frame(pump_results_iter)
         if (iterator == 0) {
           pump_results <- pump_results_iter
         } else {
-          pump_results <- dplyr::bind_rows(pump_results, pump_results_iter[2,])
+          pump_results <- rbind(pump_results, pump_results_iter[2,])
         }
-        iterator = iterator + 1
+        iterator <- iterator + 1
       }
       # format results table nicely
       pump_results_table <- pump_results
@@ -503,10 +502,6 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
   if(overwrite | length(current.file) == 0)
   {
     procs <- sim.params.list[['procs']]
-    if(!("rawp" %in% sim.params.list[['procs']]))
-    {
-      procs <- c("rawp", procs)
-    }
     
     power.file <- find_file(params.file.base, type = 'power')
     if(length(power.file) == 0)
@@ -515,6 +510,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
     }
     power.results <- readRDS(power.file)
     
+    iterator <- 0
     mdes_compare_results <- plot_data <- NULL
     for (MTP in procs){
       target.power <- power.results$value[
@@ -522,7 +518,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
         power.results$power_type == power.definition &
         power.results$method == 'pum'
       ]
-      mdes_results <- pump_mdes(
+      mdes_results_iter <- pump_mdes(
         design = design,
         MTP = MTP,
         M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
@@ -544,8 +540,13 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
         max.steps = sim.params.list[['max.steps']],
         cl = cl
       )
-      mdes_compare_results <- rbind(mdes_compare_results, mdes_results$mdes.results)
-      plot_data <- rbind(plot_data, mdes_results$test.pts)
+      if (iterator == 0) {
+        mdes_compare_results <- mdes_results_iter$mdes.results
+      } else {
+        mdes_compare_results <- rbind(mdes_compare_results, mdes_results_iter$mdes.results[2,])
+      }
+      iterator <- iterator + 1
+      plot_data <- rbind(plot_data, mdes_results_iter$test.pts)
     }
     
     if(plot.path)
@@ -602,9 +603,25 @@ validate_sample <- function(user.params.list, sim.params.list, design,
   
   # for saving out and reading in files based on simulation parameters
   params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-  print(paste('Sample validation for:', params.file.base))
+  print(paste(
+    'Sample validation with power def:', power.definition,
+    'and typesample', typesample,
+    'for:', params.file.base
+  ))
   
   current.file <- find_file(params.file.base, type = 'sample')
+  
+  # convert to a single MDES
+  user.params.list[['ATE_ES']] <- user.params.list[['ATE_ES']][1]
+  
+  # nullify parameters
+  if ( typesample == "nbar" ) {
+    user.params.list[['nbar']] <- NULL
+  } else if ( typesample == "J" ) {
+    user.params.list[['J']] <- NULL
+  } else if ( typesample == "K" ) {
+    user.params.list[['K']] <- NULL
+  }
   
   if(overwrite | length(current.file) == 0)
   {
@@ -617,10 +634,6 @@ validate_sample <- function(user.params.list, sim.params.list, design,
     }
     
     procs <- sim.params.list[['procs']]
-    if(!("rawp" %in% sim.params.list[['procs']]))
-    {
-      procs <- c("rawp", procs)
-    }
     
     power.file <- find_file(params.file.base, type = 'power')
     if(length(power.file) == 0)
@@ -629,6 +642,7 @@ validate_sample <- function(user.params.list, sim.params.list, design,
     }
     power.results <- readRDS(power.file)
     
+    iterator <- 0
     sample_compare_results <- plot_data <- NULL
     for (MTP in procs)
     {
@@ -637,7 +651,7 @@ validate_sample <- function(user.params.list, sim.params.list, design,
         power.results$power_type == power.definition &
         power.results$method == 'pum'
       ]
-      sample_results <- pump_sample(
+      sample_results_iter <- pump_sample(
         design = design,
         MTP = MTP,
         typesample = typesample,
@@ -668,8 +682,13 @@ validate_sample <- function(user.params.list, sim.params.list, design,
         max.steps = sim.params.list[['max.steps']],
         cl = cl
       )
-      sample_compare_results <- rbind(sample_compare_results, sample_results$ss.results)
-      plot_data <- rbind(plot_data, sample_results$test.pts)
+      if (iterator == 0) {
+        sample_results <- sample_results_iter
+      } else {
+        sample_compare_results <- rbind(sample_compare_results, sample_results_iter$ss.results[2,])
+      }
+      iterator <- iterator + 1
+      plot_data <- rbind(plot_data, sample_results_iter$test.pts)
     }
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
     sample.filename <- paste0(
