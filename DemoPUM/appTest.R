@@ -15,331 +15,313 @@ ui <- fluidPage(
                tabPanel("Home"),
                tabPanel("Educational Resources"),
                tabPanel("2_Level_Blocked_i1_2cfr", tabsetPanel( #2LBI for 2 Level Blocked I1
-               tabPanel("Power Calculation",
-                        sidebarLayout(
-                          sidebarPanel(
-                        # css to center the progress bar
-                        tags$head(
-                          tags$style(
-                            HTML(".shiny-notification {
-                            height: 50px;
-                            width: 600px;
-                            position:fixed;
-                            top: calc(50% - 50px);
-                            left: calc(45%);
-                            right: calc(15%);
-                            font-size: 100%;
-                            text-align: center;
-                            
-                            }
-                            .progress-message {
-                            
-                            padding-top: 0px;
-                            padding-right: 3px;
-                            padding-bottom: 3px;
-                            padding-left: 10px;
-                            font-weight: normal !important;
-                            font-style: italic !important;
-                            font-size: 15px;
-                            }
-                            
-                            .progress-detail {
-                            
-                            padding-top: 0px;
-                            padding-right: 3px;
-                            padding-bottom: 3px;
-                            padding-left: 3px;
-                            font-weight: normal;
-                            font-style: italic !important;
-                            font-size: 15px;
-                            }
-                            
-                            "
-                            ) # html bracket
-                          ) # css styling tag
-                        ), # The header tag
+               tabPanel("Power Calculation", tabsetPanel( # To host Single and Explorer
+                 tabPanel("Single Scenario",
+                          sidebarLayout(
+                            sidebarPanel(
+                          # css to center the progress bar
+                          tags$head(
+                            tags$style(
+                              HTML(".shiny-notification {
+                              height: 50px;
+                              width: 600px;
+                              position:fixed;
+                              top: calc(50% - 50px);
+                              left: calc(45%);
+                              right: calc(15%);
+                              font-size: 100%;
+                              text-align: center;
+                              
+                              }
+                              .progress-message {
+                              
+                              padding-top: 0px;
+                              padding-right: 3px;
+                              padding-bottom: 3px;
+                              padding-left: 10px;
+                              font-weight: normal !important;
+                              font-style: italic !important;
+                              font-size: 15px;
+                              }
+                              
+                              .progress-detail {
+                              
+                              padding-top: 0px;
+                              padding-right: 3px;
+                              padding-bottom: 3px;
+                              padding-left: 3px;
+                              font-weight: normal;
+                              font-style: italic !important;
+                              font-size: 15px;
+                              }
+                              
+                              "
+                              ) # html bracket
+                            ) # css styling tag
+                          ), # The header tag
+                                  
+                            fluidRow(
+                                  column(10,
+                                         div(style = "display: inline-block, vertical-align:top;", 
+                                             selectInput("designP2LBISS", "What Research Design is this for?", 
+                                             choices = list("constantEffects" = "d2.1_m2fc", 
+                                                            "fixedEffects" = "d2.1_m2ff", 
+                                                            "randomEffects" = "d2.1_m2fr"))) # select input buttons div
+                                  ), # column for inputs
+                                  
+                                  column(2, 
+                                         div(style ="display: inline-block,vertical-align:top;",
+                                             actionButton("question_designP2LBISS",
+                                             label = "", 
+                                             icon = icon("question"),
+                                             style = "font-size: 10px;
+                                                      margin-top: 28px;")) #div for button ends
+                                  ) # column for buttons
+                                  
+                                ), # fluid Row to contain the question mark issue 
+                                
+                                bsPopover(id = "question_designP2LBISS", 
+                                          title = NULL,
+                                          content = paste0("For more information on different designs, please click!"),
+                                          placement = "right", 
+                                          trigger = "hover", 
+                                          options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
+                                
+                                fluidRow(
+                                  column(10,
+                                         div(style = "display: inline-block, vertical-align:top;", 
+                                             selectInput("MTPP2LBISS", "Which MTP do you plan to use?", 
+                                             choices = list("Bonferroni" = "Bonferroni", 
+                                                            "Holm" = "Holm", 
+                                                            "Benjamini-Hochberg" = "BH", 
+                                                            "Westfall-Young-Single-Step" = "WY-SS", 
+                                                            "Westfall-Young-Step-Down" = "WY-SD"),
+                                                            multiple = TRUE)) # select input buttons div
+                                  ), # column for inputs
+                                  
+                                  column(2, 
+                                         div(style ="display: inline-block, 
+                                             vertical-align:top;",
+                                             actionButton("question_mtpP2LBISS",
+                                                          label = "", 
+                                                          icon = icon("question"),
+                                                          style = "font-size: 10px;
+                                                                   margin-top: 28px;")) #div for button ends
+                                  ) # column for buttons
+                                  
+                                ), # fluid Row to contain the question mark issue 
+                                
+                                bsPopover(id = "question_mtpP2LBISS", 
+                                          title = NULL,
+                                          content = paste0("For more information on MTP, please click!"),
+                                          placement = "right", 
+                                          trigger = "hover", 
+                                          options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
+                                
+                                fluidRow(
+                                  
+                                  column(12,
+                                         numericInput("MP2LBISS", 
+                                                      "Number of Outcomes", 
+                                                      min = 1, 
+                                                      max = 10, 
+                                                      value = 5, 
+                                                      step = 1)
+                                  ) # column for number of outcomes
+                                
+                                ), # number of outcomes and mdes
+                                
+                                fluidRow(
+                                  
+                                  column(10,
+                                         textInput("MDESP2LBISS", 
+                                                   "Enter MDES vector (comma delimited)", 
+                                                   value = "0.125,0.125,0.125, 0,0")
+                                         
+                                  ), # column for MDES
+                                  
+                                  column(2, 
+                                         div(style ="display: inline-block, 
+                                             vertical-align:top;",
+                                             actionButton("question_mdesP2LBISS",
+                                                          label = "", 
+                                                          icon = icon("question"),
+                                                          style = "font-size: 10px;
+                                                                   margin-top: 28px;")) #div for button ends
+                                  ) # column for buttons
+                                  
+                                ), # fluid Row to contain the question mark issue 
+                                
+                                bsPopover(id = "question_mdesP2LBISS", 
+                                          title = NULL,
+                                          content = paste0("For more information on MTP, please click!"),
+                                          placement = "right", 
+                                          trigger = "hover", 
+                                          options = list(container = "body")
+                                          ), # the bsPopover for the more information section of the Shiny App
+                                
+                                fluidRow(
+                                  
+                                  column(12,
+                                         
+                                         numericInput("KP2LBISS", 
+                                                      "Number of Districts", 
+                                                      min = 1, 
+                                                      max = 100, 
+                                                      value = 1, 
+                                                      step = 1))
+                                ), # number of districts
+                                
+                                fluidRow(
+  
+                                  column(6,
+  
+                                         numericInput("JP2LBISS", 
+                                                      "Number of blocks", 
+                                                      min = 1, 
+                                                      max = 100, 
+                                                      value = 50, 
+                                                      step = 1)
+  
+                                  ), # number of blocks
+  
+                                  column(6,
+  
+                                         numericInput("nbarP2LBISS",
+                                                      "Number of units per block", 
+                                                      min = 2, 
+                                                      max = 100, 
+                                                      value = 20, 
+                                                      step = 1)
+  
+                                  ) # number of units per blocks
+  
+                                ), # Nmber of blocks and number of units per block
+                                
+                                fluidRow(
+                                  
+                                  column(10,
+                                         textInput("R2.1P2LBISS", 
+                                                   "Enter R2 vector (comma delimited)", 
+                                                   value = "0.2, 0.2, 0.2, 0.2, 0.2")
+                                         
+                                  ), # column for MDES
+                                  
+                                  column(2, 
+                                         div(style ="display: inline-block, 
+                                             vertical-align:top;",
+                                             actionButton("R2.1P2LBISS",
+                                                          label = "", 
+                                                          icon = icon("question"),
+                                                          style = "font-size: 10px;
+                                                                   margin-top: 28px;")) #div for button ends
+                                  ) # column for buttons
+                                  
+                                ), # fluid Row to contain the question mark issue 
+                                
+                                bsPopover(id = "R2.1P2LBISS", 
+                                          title = NULL,
+                                          content = paste0("For more information on MTP, please click!"),
+                                          placement = "right", 
+                                          trigger = "hover", 
+                                          options = list(container = "body")
+                                ), # the bsPopover for the more information section of the Shiny App
+                                
+                                fluidRow(
+                                  column(12,
+                                         
+                                         numericInput("rhoP2LBISS", 
+                                                      "Correlation between outcomes", 
+                                                      min = 0, 
+                                                      max = 1, 
+                                                      value = 0.5, 
+                                                      step = 0.1 )
+                                         
+                                  ) # Number of Level 1 covariates
+                                  
+                                ), #fluid row for block level covariate inputs
+                                
+                                fluidRow(
+                                  column(12,
+                                         
+                                         numericInput("numCovar.1P2LBISS", 
+                                                      "Number of Level 1 Covariates", 
+                                                      min = 0, 
+                                                      max = 10, 
+                                                      value = 1, 
+                                                      step = 1 )
+                                         
+                                  )# Number of Level 1 Covariates
+                                  
+                                ), # column correlation btw tests & intraclass correlation!
+                                
+                                fluidRow(
+                                  
+                                  column(12,
+                                         
+                                         numericInput("tbarP2LBISS", 
+                                                      "Proportion of Treatment assignment", 
+                                                      min = 0.001, 
+                                                      max = 1.0, 
+                                                      value = 0.5, 
+                                                      step = 0.001)
+                                         
+                                  ) # proportion of treatment assignment
+                                ), # proprtion of treatement as assignment
+                                
+                                fluidRow(  
+                                  
+                                  column(12,
+                                         
+                                         numericInput("alphaP2LBISS", 
+                                                      "Significance Level of Tests (alpha)", 
+                                                      min = 0.001, 
+                                                      max = 0.9, 
+                                                      value = 0.05, 
+                                                      step = 0.001)
+                                         
+                                  ) #Significance Level of Tests
+                                  
+                                ), # proportion of treatment assignment and significance level of tests
+                                
+                                fluidRow(
+                                  
+                                  column(6,
+                                         actionButton("goButtonP2LBISS", "Go!") # Action Button to trigger other reactive values
+                                  )
+                                )
+                            ), # Power calculation sidebarPanel
                           
+                              mainPanel(
+                              br(),    
+                              br(),
                               fluidRow(
+                                  column(12,
+                                  tableOutput("powercalcTableP2LBISS")) #The power calculation table output
+                              ), #fluidRow for first half of the page
                                 
-                                column(10,
-                                       div(style = "display: inline-block, vertical-align:top;", 
-                                           selectInput("scenarioP2LBI", "How many design scenarios would you like to run?", 
-                                                       choices = list("One scenario" = "one", 
-                                                                      "Two scenario" = "two"))) # select input buttons div
-                                ), # column for inputs
-                                
-                                column(2, 
-                                       div(style ="display: inline-block,vertical-align:top;",
-                                           actionButton("question_scenarioP2LBI",
-                                                        label = "", 
-                                                        icon = icon("question"),
-                                                        style = "font-size: 10px;
-                                                    margin-top: 28px;")) #div for button ends
-                                ) # column for buttons       
-                                       
-                              ), # check box
-                                
-                          fluidRow(
-                                column(10,
-                                       div(style = "display: inline-block, vertical-align:top;", 
-                                           selectInput("designP2LBI", "What Research Design is this for?", 
-                                           choices = list("constantEffects" = "d2.1_m2fc", 
-                                                          "fixedEffects" = "d2.1_m2ff", 
-                                                          "randomEffects" = "d2.1_m2fr"))) # select input buttons div
-                                ), # column for inputs
-                                
-                                column(2, 
-                                       div(style ="display: inline-block,vertical-align:top;",
-                                           actionButton("question_designP2LBI",
-                                           label = "", 
-                                           icon = icon("question"),
-                                           style = "font-size: 10px;
-                                                    margin-top: 28px;")) #div for button ends
-                                ) # column for buttons
-                                
-                              ), # fluid Row to contain the question mark issue 
-                              
-                              bsPopover(id = "question_designP2LBI", 
-                                        title = NULL,
-                                        content = paste0("For more information on different designs, please click!"),
-                                        placement = "right", 
-                                        trigger = "hover", 
-                                        options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                              
-                              fluidRow(
-                                column(10,
-                                       div(style = "display: inline-block, vertical-align:top;", 
-                                           selectInput("MTPP2LBI", "Which MTP do you plan to use?", 
-                                           choices = list("Bonferroni" = "Bonferroni", 
-                                                          "Holm" = "Holm", 
-                                                          "Benjamini-Hochberg" = "BH", 
-                                                          "Westfall-Young-Single-Step" = "WY-SS", 
-                                                          "Westfall-Young-Step-Down" = "WY-SD"),
-                                                          multiple = TRUE)) # select input buttons div
-                                ), # column for inputs
-                                
-                                column(2, 
-                                       div(style ="display: inline-block, 
-                                           vertical-align:top;",
-                                           actionButton("question_mtpP2LBI",
-                                                        label = "", 
-                                                        icon = icon("question"),
-                                                        style = "font-size: 10px;
-                                                                 margin-top: 28px;")) #div for button ends
-                                ) # column for buttons
-                                
-                              ), # fluid Row to contain the question mark issue 
-                              
-                              bsPopover(id = "question_mtpP2LBI", 
-                                        title = NULL,
-                                        content = paste0("For more information on MTP, please click!"),
-                                        placement = "right", 
-                                        trigger = "hover", 
-                                        options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                              
-                              fluidRow(
-                                
-                                column(12,
-                                       numericInput("MP2LBI", 
-                                                    "Number of Outcomes", 
-                                                    min = 1, 
-                                                    max = 10, 
-                                                    value = 5, 
-                                                    step = 1)
-                                ) # column for number of outcomes
-                              
-                              ), # number of outcomes and mdes
-                              
-                              fluidRow(
-                                
-                                column(10,
-                                       textInput("MDESP2LBI", "Enter MDES vector (comma delimited)", value = "0.125,0.125,0.125, 0,0")
-                                       
-                                ), # column for MDES
-                                
-                                column(2, 
-                                       div(style ="display: inline-block, 
-                                           vertical-align:top;",
-                                           actionButton("question_mdesP2LBI",
-                                                        label = "", 
-                                                        icon = icon("question"),
-                                                        style = "font-size: 10px;
-                                                                 margin-top: 28px;")) #div for button ends
-                                ) # column for buttons
-                                
-                              ), # fluid Row to contain the question mark issue 
-                              
-                              bsPopover(id = "question_mdesP2LBI", 
-                                        title = NULL,
-                                        content = paste0("For more information on MTP, please click!"),
-                                        placement = "right", 
-                                        trigger = "hover", 
-                                        options = list(container = "body")
-                                        ), # the bsPopover for the more information section of the Shiny App
-                              
-                              fluidRow(
-                                
-                                column(12,
-                                       
-                                       numericInput("KP2LBI", "Number of Districts", min = 1, max = 100, value = 1, step = 1))
-                              ), # number of districts
-                              
-                              fluidRow(
-
-                                column(6,
-
-                                       numericInput("JP2LBI", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
-
-                                ), # number of blocks
-
-                                column(6,
-
-                                       numericInput("nbarP2LBI","Number of units per block", min = 2, max = 100, value = 20, step = 1)
-
-                                ) # number of units per blocks
-
-                              ), # Nmber of blocks and number of units per block
-                              
-                              fluidRow(
-                                
-                                column(10,
-                                       textInput("R2.1P2LBI", "Enter R2 vector (comma delimited)", value = "0.2, 0.2, 0.2, 0.2, 0.2")
-                                       
-                                ), # column for MDES
-                                
-                                column(2, 
-                                       div(style ="display: inline-block, 
-                                           vertical-align:top;",
-                                           actionButton("R2.1P2LBI",
-                                                        label = "", 
-                                                        icon = icon("question"),
-                                                        style = "font-size: 10px;
-                                                                 margin-top: 28px;")) #div for button ends
-                                ) # column for buttons
-                                
-                              ), # fluid Row to contain the question mark issue 
-                              
-                              bsPopover(id = "R2.1P2LBI", 
-                                        title = NULL,
-                                        content = paste0("For more information on MTP, please click!"),
-                                        placement = "right", 
-                                        trigger = "hover", 
-                                        options = list(container = "body")
-                              ), # the bsPopover for the more information section of the Shiny App
-                              
-                              fluidRow(
-                                column(12,
-                                       
-                                       numericInput("rhoP2LBI", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
-                                       
-                                ) # Number of Level 1 covariates
-                                
-                              ), #fluid row for block level covariate inputs
-                              
-                              fluidRow(
-                                column(12,
-                                       
-                                       numericInput("numCovar.1P2LBI", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
-                                       
-                                )# Number of Level 1 Covariates
-                                
-                              ), # column correlation btw tests & intraclass correlation!
-                              
-                              fluidRow(
-                                
-                                column(12,
-                                       
-                                       numericInput("tbarP2LBI", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
-                                       
-                                ) # proportion of treatment assignment
-                              ), # proprtion of treatement as assignment
-                              
-                              fluidRow(  
-                                
-                                column(12,
-                                       
-                                       numericInput("alphaP2LBI", "Significance Level of Tests (alpha)", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
-                                       
-                                ) #Significance Level of Tests
-                                
-                              ), # proportion of treatment assignment and significance level of tests
-                              
-                              fluidRow(
-                                
-                                column(6,
-                                       actionButton("goButtonP2LBI", "Go!") # Action Button to trigger other reactive values
-                                ), # Column for action button
-                                
-                                column(6,
-                                       actionButton("saveButtonP2LBI", "Save!")
-                                ) # Column for save button
-                              )
-                          ), # sidebarPanel
-                        
-                            
+                                br(), # To create spaces between Table and Plots
+                                br(), # To create spaces between Table and Plots
+                                br(), # To create spaces between Table and Plots
+                                br(), # To create spaces between Table and Plots
+                                br(), # To create spaces between Table and Plots
+                                br(), # To create spaces between Table and Plots
                           
-                            mainPanel(
-                            br(),    
-                            br(),
-                            conditionalPanel(
-                              condition = "input.scenarioP2LBI == 'one'",
-                              fluidRow(
-                                column(12,
-                                tableOutput("powercalcTableP2LBI")) #The power calculation table output
-                              ), #fluidRow for first half of the page
+                                fluidRow(
+                                  column(8,
+                                         plotOutput("powercalcGraphP2LBISS"))
+                                ) # end of Fluid Row
+                              ) # Power calculation Main Panel
                               
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                        
-                              fluidRow(
-                                column(6,
-                                       plotOutput("powercalcGraphP2LBI"))
-                              ) # end of Fluid Row
-                              
-                            ), # conditional panel for scenario 1
-                            
-                            conditionalPanel(
-                              condition = "input.scenarioP2LBI == 'two'",
-                              fluidRow(
-                                column(12,
-                                       tableOutput("powercalcTableP2LBISc01")) #The power calculation table output
-                              ), #fluidRow for first half of the page
-                            
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              
-                              fluidRow(
-                                column(6,
-                                       plotOutput("powercalcGraphP2LBISc01")),
-                                column(6,
-                                       plotOutput("powercalcGraphP2LBISc02"))
-                              ),
-                              # end of Fluid Row
-                              
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              
-                              fluidRow(
-                                column(12,
-                                       tableOutput("powercalcTableP2LBISc02")) #The power calculation table output
-                              ), #fluidRow for first half of the page
-                              
-                            ) # conditional panel for scenario 2
-                            
-                            
-                            
-                            
-                            ) # end of Main Panel
-                            
-                          ) #sidebar Layout
-               ) # tabPanel        
-                 ), # Calculation Tabset Panel
+                            ) # Power Calculation sidebar Layout
+                          
+                    ) # Single Scenario
+                 
+                  ) # Power Tablset Panel to hose Single and Explorer
+                 
+                 ) # Power Calculation Main and Side Bar Tab     
+                   
+               ), # End of Power Tabset
                  
                  # tabPanel("MDES Calculation",
                  #          sidebarLayout(
@@ -872,55 +854,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
   #   
   # }) # reactive expression for power
   
-  # counter for button clicking
-  # List of Data Frames
-  listDfs <- list()
-  
-  #observe Event for input parameter savings through the save Button
-  observeEvent(input$saveButtonP2LBI,{
-    
-    # counter to save the list values to store the parameters
-    counter <<- counter + 1
-    
-    # Saving the input parameters for each button click
-    inputParams <- isolate(
-    list(
-      designP2LBI = input$designP2LBI,
-      MTPP2LBI = input$MTPP2LBI,
-      MDESP2LBI = input$MDESP2LBI,
-      MP2LBI = input$MP2LBI, # The number of hypotheses/outcomes
-      JP2LBI = input$JP2LBI, # The number of schools
-      KP2LBI = input$KP2LBI, # The number of districts
-      nbarP2LBI = input$nbarP2LBI, # The number of units per block
-      tbarP2LBI = input$tbarP2LBI, # The proportion of samples that are assigned to the treatment
-      alphaP2LBI = input$alphaP2LBI,
-      numCovar.1P2LBI = input$numCovar.1P2LBI,
-      numCovar.2 = 0,
-      numCovar.3 = 0,
-      R2.1P2LBI = rep(input$R2.1P2LBI,input$MP2LBI),
-      R2.2P2LBI = rep(0.1, input$MP2LBI),
-      R2.3P2LBI = rep(0.1, input$MP2LBI),
-      ICC.2P2LBI = rep(0, input$MP2LBI),
-      ICC.3P2LBI = rep(0.2, input$MP2LBI) ,
-      rhoP2LBI = input$rhoP2LBI
-    ) # data frame for input parameters
-  ) # isolate to make sure the values for are saved only for each click
-    
-      listDfs[[counter]] <<- inputParams
-      
-      # browser()
-      
-  }) # Saving Button Click
-  
   #observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
-  observeEvent(input$goButtonP2LBI,{
+  observeEvent(input$goButtonP2LBISS,{
     
-    if(length(listDfs) == 0){
       # set a Reactive Value for Power Table
       reactPowerTable <- reactiveVal()
       
       # Rendering a reactive object table from the power function
-      output$powercalcTableP2LBI <- renderTable({
+      output$powercalcTableP2LBISS <- renderTable({
         
         # Creating a progress bar
         progress <- shiny::Progress$new()
@@ -944,24 +885,25 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
         # data frame output for the results
         dat <- as.data.frame(
-        isolate(pump_power(design = input$designP2LBI,
-                           MTP = as.character(unlist(strsplit(input$MTPP2LBI," "))),
-                           MDES = as.numeric(unlist(strsplit(input$MDESP2LBI, ","))),
-                           M = input$MP2LBI, # The number of hypotheses/outcomes
-                           J = input$JP2LBI, # The number of schools
-                           K = input$KP2LBI, # The number of districts
-                           nbar = input$nbarP2LBI, # The number of units per block
-                           Tbar = input$tbarP2LBI, # The proportion of samples that are assigned to the treatment
-                           alpha = input$alphaP2LBI,
-                           numCovar.1 = input$numCovar.1P2LBI,
+        isolate(pump_power(design = input$designP2LBISS,
+                           MTP = as.character(unlist(strsplit(input$MTPP2LBISS," "))),
+                           MDES = as.numeric(unlist(strsplit(input$MDESP2LBISS, ","))),
+                           M = input$MP2LBISS, # The number of hypotheses/outcomes
+                           J = input$JP2LBISS, # The number of schools
+                           K = input$KP2LBISS, # The number of districts
+                           nbar = input$nbarP2LBISS, # The number of units per block
+                           Tbar = input$tbarP2LBISS, # The proportion of samples that are assigned to the treatment
+                           alpha = input$alphaP2LBISS,
+                           numCovar.1 = input$numCovar.1P2LBISS,
                            numCovar.2 = 0,
                            numCovar.3 = 0,
-                           R2.1 = rep(input$R2.1P2LBI,input$MP2LBI),
-                           R2.2 = rep(0.1, input$MP2LBI),
-                           R2.3 = rep(0.1, input$MP2LBI),
-                           ICC.2 = rep(0, input$MP2LBI),
-                           ICC.3 = rep(0.2, input$MP2LBI) ,
-                           rho = input$rhoP2LBI,
+                           R2.1 = rep(input$R2.1P2LBISS,
+                                      input$MP2LBISS),
+                           R2.2 = rep(0.1, input$MP2LBISS),
+                           R2.3 = rep(0.1, input$MP2LBISS),
+                           ICC.2 = rep(0, input$MP2LBISS),
+                           ICC.3 = rep(0.2, input$MP2LBISS) ,
+                           rho = input$rhoP2LBISS,
                            omega.2 = 0,
                            omega.3 = 0.1,
                            tnum = 10000, 
@@ -977,250 +919,31 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
       
       # Rendering a reactive object table from the power function
-      output$powercalcGraphP2LBI <-renderPlot({
+      output$powercalcGraphP2LBISS <- renderPlot({
         
         dat <- reactPowerTable()
         dat$AdjType <- rownames(dat)
         dat %>%
-          dplyr::select(AdjType,D1indiv, min2, min3) %>%
+          dplyr::select_all() %>%
+          dplyr::select(-indiv.mean) %>%
           tidyr::pivot_longer(!AdjType, names_to = "powerType", values_to = "power") %>%
           ggplot(aes(x = powerType, 
                      y = power, 
                      shape = AdjType,
                      colour = AdjType)) + 
-          geom_point(size = 3)
+          geom_point(size = 5) +
+          scale_y_continuous(limits = c(0,1)) +
+          ggtitle("Adjusted Power values across different Power Definitions") +
+          theme(plot.title = element_text(size = 16,
+                                          face = "bold",
+                                          vjust = 1,
+                                          hjust = 0.5),
+                axis.text = element_text(size = 14),
+                axis.title = element_text(size = 14))
         
     }) # observe Event go Button for power
-      
-    } else if (length(listDfs) == 2){
-      
-        # set a Reactive Value for Power Table
-        reactPowerTableSc01 <- reactiveVal()
-        
-        # set a Reactive Value for Power Table
-        reactPowerTableSc02 <- reactiveVal()
-        
-        # Rendering a reactive object table from the power function
-        datSc01 <- as.data.frame(
-          isolate(pump_power(design = listDfs[[1]]$designP2LBI,
-                             MTP = as.character(unlist(strsplit(listDfs[[1]]$MTPP2LBI," "))),
-                             MDES = as.numeric(unlist(strsplit(listDfs[[1]]$MDESP2LBI, ","))),
-                             M = listDfs[[1]]$MP2LBI, # The number of hypotheses/outcomes
-                             J = listDfs[[1]]$JP2LBI, # The number of schools
-                             K = listDfs[[1]]$KP2LBI, # The number of districts
-                             nbar = listDfs[[1]]$nbarP2LBI, # The number of units per block
-                             Tbar = listDfs[[1]]$tbarP2LBI, # The proportion of samples that are assigned to the treatment
-                             alpha = listDfs[[1]]$alphaP2LBI,
-                             numCovar.1 = listDfs[[1]]$numCovar.1P2LBI,
-                             numCovar.2 = 0,
-                             numCovar.3 = 0,
-                             R2.1 = rep(listDfs[[1]]$R2.1P2LBI,
-                                        listDfs[[1]]$MP2LBI),
-                             R2.2 = rep(0.1, listDfs[[1]]$MP2LBI),
-                             R2.3 = rep(0.1, listDfs[[1]]$MP2LBI),
-                             ICC.2 = rep(0, listDfs[[1]]$MP2LBI),
-                             ICC.3 = rep(0.2, listDfs[[1]]$MP2LBI) ,
-                             rho = listDfs[[1]]$rhoP2LBI,
-                             omega.2 = 0,
-                             omega.3 = 0.1,
-                             tnum = 10000, 
-                             B = 100, 
-                             cl = NULL,
-                             updateProgress = NULL)
-          ))
-        
-        output$powercalcTableP2LBISc01 <- renderTable({
-          
-          # # Creating a progress bar
-          # progress01 <- shiny::Progress$new()
-          # progress01$set(message = "Calculating Power for Scenario 01", value = 0)
-          # # Close the progress bar when this reactive expression is done (even if there is an error)
-          # on.exit(progress01$close())
-          # 
-          # # Update Progress Bar Callback function
-          # updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-          # 
-          #   if (is.null(value)){
-          # 
-          #     value <- progress01$getValue()
-          #     value <- value + (progress01$getMax() - value)/5
-          # 
-          #   } # Progess bar in terms of values' increments
-          # 
-          #   progress01$set(value = value, detail = detail, message = message)
-          # 
-          # } # End of Callback Progress Function
-          
-          #browser()
-          # data frame output for the results
-          
-          
-          # Save the reactive Power Table
-          reactPowerTableSc01(datSc01)
-          {reactPowerTableSc01()}
-        }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
-        
-        
-        # Rendering a reactive object table from the power function
-        output$powercalcGraphP2LBISc01 <- renderPlot({
-          
-          datSc01 <- reactPowerTableSc01()
-          datSc01$AdjType <- rownames(datSc01)
-          datSc01 %>%
-            dplyr::select(AdjType,D1indiv, min2, min3) %>%
-            tidyr::pivot_longer(!AdjType, names_to = "powerType", values_to = "power") %>%
-            ggplot(aes(x = powerType, 
-                       y = power, 
-                       shape = AdjType,
-                       colour = AdjType)) + 
-            geom_point(size = 3)
-          
-        }) # observe Event go Button for power
-      
-        
-        datSc02 <- as.data.frame(
-          isolate(pump_power(design = listDfs[[2]]$designP2LBI,
-                             MTP = as.character(unlist(strsplit(listDfs[[2]]$MTPP2LBI," "))),
-                             MDES = as.numeric(unlist(strsplit(listDfs[[2]]$MDESP2LBI, ","))),
-                             M = listDfs[[2]]$MP2LBI, # The number of hypotheses/outcomes
-                             J = listDfs[[2]]$JP2LBI, # The number of schools
-                             K = listDfs[[2]]$KP2LBI, # The number of districts
-                             nbar = listDfs[[2]]$nbarP2LBI, # The number of units per block
-                             Tbar = listDfs[[2]]$tbarP2LBI, # The proportion of samples that are assigned to the treatment
-                             alpha = listDfs[[2]]$alphaP2LBI,
-                             numCovar.1 = listDfs[[2]]$numCovar.1P2LBI,
-                             numCovar.2 = 0,
-                             numCovar.3 = 0,
-                             R2.1 = rep(listDfs[[2]]$R2.1P2LBI,
-                                        listDfs[[2]]$MP2LBI),
-                             R2.2 = rep(0.1, listDfs[[2]]$MP2LBI),
-                             R2.3 = rep(0.1, listDfs[[2]]$MP2LBI),
-                             ICC.2 = rep(0, listDfs[[2]]$MP2LBI),
-                             ICC.3 = rep(0.2, listDfs[[2]]$MP2LBI) ,
-                             rho = listDfs[[2]]$rhoP2LBI,
-                             omega.2 = 0,
-                             omega.3 = 0.1,
-                             tnum = 10000, 
-                             B = 100, 
-                             cl = NULL,
-                             updateProgress = NULL)
-          ))
-        
-        # Rendering a reactive object table from the power function
-        output$powercalcTableP2LBISc02 <- renderTable({
-          
-          # # Creating a progress bar
-          # progress02 <- shiny::Progress$new()
-          # progress02$set(message = "Calculating Power for Scenario 02", value = 0)
-          # # Close the progress bar when this reactive expression is done (even if there is an error)
-          # on.exit(progress02$close())
-          # 
-          # # Update Progress Bar Callback function
-          # updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-          #   
-          #   if (is.null(value)){
-          #     
-          #     value <- progress02$getValue()
-          #     value <- value + (progress02$getMax() - value)/5
-          #     
-          #   } # Progess bar in terms of values' increments
-          #   
-          #   progress02$set(value = value, detail = detail, message = message)
-          #   
-          # } # End of Callback Progress Function
-          
-          #browser()
-          # data frame output for the results
-  
-          # Save the reactive Power Table
-          reactPowerTableSc02(datSc02)
-          {reactPowerTableSc02()}
-        }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
-        
-        # Rendering a reactive object table from the power function
-        output$powercalcGraphP2LBISc02 <- renderPlot({
-          
-          datSc02 <- reactPowerTableSc02()
-          datSc02$AdjType <- rownames(datSc02)
-          datSc02 %>%
-            dplyr::select(AdjType,D1indiv, min2, min3) %>%
-            tidyr::pivot_longer(!AdjType, names_to = "powerType", values_to = "power") %>%
-            ggplot(aes(x = powerType, 
-                       y = power, 
-                       shape = AdjType,
-                       colour = AdjType)) + 
-            geom_point(size = 3)
-          
-        })
-        
-
-    }# if only the Go Button was used without the save Button.
   
 })
-  
-  #observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
-  observeEvent(input$goButton_powerCluster,{
-    
-    #Rendering a reactive object table from the power function
-    output$powercalcCluster <- renderTable({
-      
-      #Creating a progress bar
-      progress <- shiny::Progress$new()
-      progress$set(message = "Calculating MDES", value = 0)
-      # Close the progress bar when this reactive expression is done (even if there is an error)
-      on.exit(progress$close())
-      
-      #Update Progress Bar Callback function
-      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-        
-        if (is.null(value)){
-          
-          value <- progress$getValue()
-          value <- value + (progress$getMax() - value)/5
-          
-        } # Progess bar in terms of values' increments
-        
-        progress$set(value = value, detail = detail, message = message)
-        
-      } # End of Callback Progress Function
-      
-      #displaying based on the number of sample sizes
-      #pump_power <- function(
-      #  design, MTP, MDES, M, J, K = 1, nbar, Tbar, alpha, numCovar.1 = 0, numCovar.2 = 0,
-      #  numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
-      #  rho, omega.2, omega.3 = NULL,
-      #  tnum = 10000, B = 1000, cl = NULL, updateProgress = NULL
-      #)
-      
-      isolate(pump_power(design = input$design,
-                         MTP = input$MTP,
-                         MDES = as.numeric(unlist(strsplit(input$MDES, ","))),
-                         M = input$M, # The number of hypotheses/outcomes
-                         J = input$J, # The number of schools
-                         K = input$K, # The number of districts
-                         nbar = input$nbar, # The number of units per block
-                         Tbar = input$tbar, # The proportion of samples that are assigned to the treatment
-                         alpha = input$alpha,
-                         numCovar.1 = input$numCovar.1,
-                         numCovar.2 = 0,
-                         numCovar.3 = 0,
-                         R2.1 = rep(input$R2.1,input$M),
-                         R2.2 = rep(0.1, input$M),
-                         R2.3 = NULL,
-                         ICC.2 = rep(0, input$M),
-                         ICC.3 = NULL ,
-                         rho = input$rho,
-                         omega.2 = 0,
-                         omega.3 = NULL,
-                         tnum = 10000, 
-                         B = 100, 
-                         cl = NULL,
-                         updateProgress = NULL)
-      )
-    }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
-    
-  }) # observe Event go Button for power Cluster
-  
   
   ############################################
   # MDES Server Side Calculation Begins
