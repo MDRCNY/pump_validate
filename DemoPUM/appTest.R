@@ -83,9 +83,9 @@ ui <- fluidPage(
                                 column(10,
                                        div(style = "display: inline-block, vertical-align:top;", 
                                            selectInput("designP2LBI", "What Research Design is this for?", 
-                                           choices = list("constantEffects" = "blocked_i1_2c", 
-                                                          "fixedEffects" = "blocked_i1_2f", 
-                                                          "randomEffects" = "blocked_i1_2r"))) # select input buttons div
+                                           choices = list("constantEffects" = "d2.1_m2fc", 
+                                                          "fixedEffects" = "d2.1_m2ff", 
+                                                          "randomEffects" = "d2.1_m2fr"))) # select input buttons div
                                 ), # column for inputs
                                 
                                 column(2, 
