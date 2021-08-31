@@ -1,0 +1,114 @@
+---
+title: "PowerGridTesting"
+author: "Zarni"
+date: "8/4/2021"
+output: html_document
+---
+
+```{r}
+test_results_01 <- 
+pum::pump_power_grid(design = c("d2.1_m2fr"),
+                     MTP = c("Holm", "BH") ,
+                     MDES = c(0.125, 0.125, 0.125, 0.125, 0.125),
+                     M = 5 ,
+                     J = 20,
+                     K = 1,
+                     nbar = 100,
+                     Tbar = 0.5 ,
+                     alpha = 0.05,
+                     numCovar.1 = 0,
+                     numCovar.2 = 0,
+                     numCovar.3 = 0,
+                     R2.1 = c(0.2, 0.3, 0.4, 0.5, 0.6),
+                     R2.2 = NULL,
+                     R2.3 = NULL,
+                     ICC.2 =0,
+                     ICC.3 = NULL,
+                     rho = 0.5,
+                     omega.2 = NULL,
+                     omega.3 = NULL)
+```
+
+```{r}
+View(test_results_01)
+```
+
+```{r}
+test_results_02 <- 
+pum::pump_power_grid(design = c("d2.1_m2fr", "d2.1_m2ff"),
+                     MTP = c("Holm", "BH") ,
+                     MDES = c(0.125, 0.1, 0.2, 0.15, 0.175),
+                     M = 5 ,
+                     J = 20,
+                     K = 1,
+                     nbar = 100,
+                     Tbar = 0.5 ,
+                     alpha = 0.05,
+                     numCovar.1 = 0,
+                     numCovar.2 = 0,
+                     numCovar.3 = 0,
+                     R2.1 = c(0.2, 0.2, 0.2, 0.2, 0.2),
+                     R2.2 = NULL,
+                     R2.3 = NULL,
+                     ICC.2 =0,
+                     ICC.3 = NULL,
+                     rho = 0.5,
+                     omega.2 = NULL,
+                     omega.3 = NULL)
+```
+
+```{r}
+test_results_03 <- 
+pum::pump_power_grid(design = c("d2.1_m2fr"),
+                     MTP = c("Holm", "BH") ,
+                     MDES = c(0.125),
+                     M = 5 ,
+                     J = 20,
+                     K = 1,
+                     nbar = 100,
+                     Tbar = 0.5 ,
+                     alpha = 0.05,
+                     numCovar.1 = 0,
+                     numCovar.2 = 0,
+                     numCovar.3 = 0,
+                     R2.1 = c(0.2, 0.2, 0.2, 0.2, 0.2),
+                     R2.2 = NULL,
+                     R2.3 = NULL,
+                     ICC.2 =0,
+                     ICC.3 = NULL,
+                     rho = 0.5,
+                     omega.2 = NULL,
+                     omega.3 = NULL)
+```
+
+```{r}
+View(test_results_03)
+```
+
+```{r}
+test_results_04 <- 
+pum::pump_power_grid(design = c("d2.1_m2fr"),
+                     MTP = c("Holm", "BH") ,
+                     MDES = c(0.125, 0.12, 0.1, 0.23, 0.12),
+                     M = 5 ,
+                     J = 20,
+                     K = 1,
+                     nbar = 100,
+                     Tbar = 0.5 ,
+                     alpha = 0.05,
+                     numCovar.1 = 0,
+                     numCovar.2 = 0,
+                     numCovar.3 = 0,
+                     R2.1 = c(0.2, 0.2, 0.2, 0.2, 0.2),
+                     R2.2 = NULL,
+                     R2.3 = NULL,
+                     ICC.2 =0,
+                     ICC.3 = NULL,
+                     rho = 0.5,
+                     omega.2 = NULL,
+                     omega.3 = NULL)
+```
+```{r}
+View(test_results_04)
+```
+
