@@ -8,7 +8,7 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
-run.power = TRUE
+run.power = FALSE
 run.mdes.ss = TRUE
 run.wy = FALSE
 # which designs to run
@@ -17,7 +17,7 @@ run.d2.2 = TRUE
 run.d3.1 = TRUE
 run.d3.3 = TRUE
 run.d3.2 = TRUE
-run.power.def = TRUE
+run.power.def = FALSE
 run.extremes = TRUE
 
 # simulation and user parameters
@@ -660,7 +660,8 @@ if(run.d2.2 & run.mdes.ss)
   
   mdes.results <- validate_mdes(
     user.params.list, sim.params.list,
-    design = "d2.2_m2rc", overwrite = overwrite
+    design = "d2.2_m2rc",
+    overwrite = overwrite
   )
   sample.results <- validate_sample(
     user.params.list, sim.params.list,
@@ -1438,12 +1439,12 @@ if(run.d3.2 & run.mdes.ss)
   user.params.list <- user.params.default
   sim.params.list <- sim.params.default
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
-
+  
   # assumptions
   user.params.list[['omega.2']] <- 0
-  
   user.params.list[['R2.3']] <- rep(0, M)
   user.params.list[['ICC.3']] <- rep(0, M)
+  
   mdes.results <- validate_mdes(
     user.params.list, sim.params.list,
     design = "d3.2_m3ff2rc",
@@ -1470,6 +1471,7 @@ if(run.d3.2 & run.mdes.ss)
   
   user.params.list[['R2.3']] <- user.params.default[['R2.3']]
   user.params.list[['ICC.3']] <- user.params.default[['ICC.3']]
+  
   mdes.results <- validate_mdes(
     user.params.list, sim.params.list,
     design = "d3.2_m3rr2rc",

@@ -132,7 +132,7 @@ make.model <- function(dat.m, design) {
   dat.m$S.id <- as.factor(dat.m$S.id)
   if(!is.null(dat.m$D.id)){ dat.m$D.id <- as.factor(dat.m$D.id) }
 
-  if (design == "d1.1_m2fc") {
+  if (design == "d1.1_m2cc") {
     form <- as.formula("Yobs ~ 1 + T.x + C.ijk")
     mod <- lm(form, data = dat.m)
   } else if (design == "d2.1_m2fc") {
