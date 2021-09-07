@@ -17,7 +17,7 @@ run.d2.2 = TRUE
 run.d3.1 = TRUE
 run.d3.3 = TRUE
 run.d3.2 = TRUE
-run.power.def = FALSE
+run.power.def = TRUE
 run.extremes = TRUE
 
 # simulation and user parameters
@@ -29,6 +29,7 @@ if(is.na(q)) { q <- 1 }
 user.params.default <- user.params.list
 sim.params.default <- sim.params.list
 
+# TODO: fix defaults
 
 #------------------------------------------------------------------#
 # Test WY
@@ -186,16 +187,21 @@ if(run.d2.1 & run.power)
   
   # assumptions
   user.params.list[['K']] <- 1
+  user.params.list[['J']] <- 20
   user.params.list[['ICC.3']] <- NULL
   user.params.list[['omega.3']] <- NULL
   user.params.list[['R2.3']] <- NULL
   
   #------------------------------------------------------------------#
-  # unblocked design
+  # base case
   #------------------------------------------------------------------#
-  user.params.list[['J']] <- 1
-  power.results <- validate_power(user.params.list, sim.params.list, design = "d1.1_m2fc", q = q, overwrite)
-  user.params.list[['J']] <- user.params.default[['J']]
+  
+  user.params.list[['nbar']] <- 50
+  user.params.list[['omega.2']] <- 0
+  power.results <- validate_power(user.params.list, sim.params.list, design = "d2.1_m2fc", q = q, overwrite)
+  user.params.list[['omega.2']] <- user.params.default[['omega.2']]
+  power.results <- validate_power(user.params.list, sim.params.list, design = "d2.1_m2ff", q = q, overwrite)
+  power.results <- validate_power(user.params.list, sim.params.list, design = "d2.1_m2fr", q = q, overwrite)
   
   #------------------------------------------------------------------#
   # vary sample size
@@ -221,14 +227,7 @@ if(run.d2.1 & run.power)
   print('-----------------------------------------------------------------------------')
   print(paste('Completed 6 out of', scenarios))
   print('-----------------------------------------------------------------------------')
-  
-  user.params.list[['nbar']] <- 50
-  user.params.list[['omega.2']] <- 0
-  power.results <- validate_power(user.params.list, sim.params.list, design = "d2.1_m2fc", q = q, overwrite)
-  user.params.list[['omega.2']] <- user.params.default[['omega.2']]
-  power.results <- validate_power(user.params.list, sim.params.list, design = "d2.1_m2ff", q = q, overwrite)
-  power.results <- validate_power(user.params.list, sim.params.list, design = "d2.1_m2fr", q = q, overwrite)
-  
+
   # reset
   user.params.list[['nbar']] <- user.params.default[['nbar']]
   
@@ -328,6 +327,7 @@ if(run.d2.1 & run.power)
   #------------------------------------------------------------------#
   
   user.params.list[['ICC.2']] <- rep(0.7, M)
+  
   user.params.list[['omega.2']] <- 0
   power.results <- validate_power(user.params.list, sim.params.list, design = "d2.1_m2fc", q = q, overwrite)
   user.params.list[['omega.2']] <- user.params.default[['omega.2']]
@@ -1347,6 +1347,8 @@ if(run.d3.2 & run.power)
   user.params.list[['R2.3']] <- user.params.default[['R2.3']]
   power.results <- validate_power(user.params.list, sim.params.list, design = "d3.2_m3rr2rc", q = q, overwrite)
   
+  user.params.list[['ICC.3']] <- user.params.default[['ICC.3']]
+  
   # ICC 2 = 0
   user.params.list[['ICC.2']] <- rep(0, M)
   
@@ -1443,7 +1445,6 @@ if(run.d3.2 & run.mdes.ss)
   # assumptions
   user.params.list[['omega.2']] <- 0
   user.params.list[['R2.3']] <- rep(0, M)
-  user.params.list[['ICC.3']] <- rep(0, M)
   
   mdes.results <- validate_mdes(
     user.params.list, sim.params.list,

@@ -407,7 +407,9 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           nbar = user.params.list[['nbar']],
           Tbar = sim.params.list[['Tbar']],
           alpha = sim.params.list[['alpha']],
-          numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+          numCovar.1 = user.params.list[['numCovar.1']],
+          numCovar.2 = user.params.list[['numCovar.2']],
+          numCovar.3 = user.params.list[['numCovar.3']],
           R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
           ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
           rho = user.params.list[['rho.default']],
@@ -528,7 +530,9 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
         nbar = user.params.list[['nbar']],
         Tbar = sim.params.list[['Tbar']],
         alpha = sim.params.list[['alpha']],
-        numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+        numCovar.1 = user.params.list[['numCovar.1']],
+        numCovar.2 = user.params.list[['numCovar.2']],
+        numCovar.3 = user.params.list[['numCovar.3']],
         R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
         ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
         rho = user.params.list[['rho.default']],
@@ -665,7 +669,9 @@ validate_sample <- function(user.params.list, sim.params.list, design,
         nbar = user.params.list[['nbar']],
         Tbar = sim.params.list[['Tbar']],
         alpha = sim.params.list[['alpha']],
-        numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+        numCovar.1 = user.params.list[['numCovar.1']],
+        numCovar.2 = user.params.list[['numCovar.2']],
+        numCovar.3 = user.params.list[['numCovar.3']],
         R2.1 = user.params.list[['R2.1']],
         R2.2 = user.params.list[['R2.2']],
         R2.3 = user.params.list[['R2.3']],
@@ -726,14 +732,12 @@ validate_sample <- function(user.params.list, sim.params.list, design,
 ### DEBUG
 if(FALSE)
 {
-  design = "blocked_i1_2c";
-  # design = 'simple_c2_2r';
-  # design = 'simple_c3_3r';
   MTP = 'Bonferroni';
   # MTP = 'Holm';
   # MTP = 'WY-SD';
   numZero = NULL;
   target.power = 0.8;
+  
   M = user.params.list[['M']];
   ATE_ES = user.params.list[['ATE_ES']]
   MDES = user.params.list[['ATE_ES']]
@@ -744,7 +748,6 @@ if(FALSE)
   tol = sim.params.list[['tol']];
   Tbar = sim.params.list[['Tbar']];
   alpha = sim.params.list[['alpha']];
-  numCovar.1 = 1; numCovar.2 = 1;
   R2.1 = user.params.list[['R2.1']];
   R2.2 = user.params.list[['R2.2']];
   R2.3 = user.params.list[['R2.3']];
@@ -754,15 +757,18 @@ if(FALSE)
   rho.matrix = NULL;
   omega.2 = user.params.list[['omega.2']];
   omega.3 = user.params.list[['omega.3']];
-  numCovar.1 = 1; numCovar.2 = 1; numCovar.3 = 1;
+  numCovar.1 = user.params.list[['numCovar.1']];
+  numCovar.2 = user.params.list[['numCovar.2']];
+  numCovar.3 = user.params.list[['numCovar.3']];
   tnum = sim.params.list[['tnum']]; B = sim.params.list[['B']];
   max.cum.tnum = sim.params.list[['max.cum.tnum']];
+  
+  
   updateProgress = NULL;
   typesample = 'nbar';
   # typesample = 'J';
   J0 = 10; nbar0 = 10; K0 = 4;
   two.tailed = TRUE;
-  # cl <- makeSOCKcluster(rep("localhost", sim.params.list[['ncl']]))
-  cl = NULL
+  cl = NULL;
   start.tnum = 1000; max.steps = 30; max.cum.tnum = 50000; final.tnum = 20000 
 }

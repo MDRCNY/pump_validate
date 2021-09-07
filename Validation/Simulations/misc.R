@@ -227,20 +227,26 @@ gen.power.results.plot <- function(params.file.base, design)
   if(length(power.file) == 0)
   {
     warning(paste('Results not yet computed for given parameters:', params.file.base))
-    results_plot <- NULL
+    results.plot <- NULL
   } else
   {
-    power_results <- readRDS(power.file)
-    results_plot <- ggplot(power_results, aes(x = MTP, y = value, color = method)) +
-      geom_point() +
+    power.results <- readRDS(power.file)
+    
+    power.results$compare = TRUE
+    power.results$compare[power.results$method == 'sim'] = FALSE
+    
+    results.plot <- ggplot(power.results, aes(x = MTP, y = value, color = method)) +
+      geom_point(aes(size = compare)) +
       geom_line() +
+      scale_size_manual(values = c('TRUE' = 1.5, 'FALSE' = 0)) +
+      guides(size = FALSE) +
       facet_wrap(~power_type, labeller = label_both) +
       ylab('Power') +
       ggtitle(paste('Design:', design)) +
       ylim(0, 1)
   }
 
-  return(results_plot)
+  return(results.plot)
 }
 
 #' check for existing validation file

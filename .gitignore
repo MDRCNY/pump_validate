@@ -9,6 +9,7 @@ Validation/data/*.csv
 Validation/data/
 *cache*
 Validation/*_files/*
+Validation/wy_test/*
 
 # out and error files
 *.out
