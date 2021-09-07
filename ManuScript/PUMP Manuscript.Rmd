@@ -9,6 +9,12 @@ output:
 Power Under Multiplicity Project (PUMP): An R package for estimating statistical power, minimum detectable effect sizes (MDES's) and sample sizes when adjusting for multiple hypothesis tests
 Draft outline
 
+```{r setup, include = FALSE}
+library( kableExtra )
+library( knitr )
+library( pum )
+```
+
 # Introduction
 
 ## Overview
@@ -99,6 +105,73 @@ Note that MTPs may provide either weak or strong control of the error rate they 
      + include validation template
      + include our simulation code
      + discrepancy between our results and power-up
+     
+     # Estimating Power, MDES's and Sample Sizes in Studies of Impacts on Multiple Outcomes 
+
+## Power estimation strategy
+
+In order to estimate power for a single outcome, or even a small set of outcomes, we can often use closed-form algebraic expressions derived from our assumed model.
+However, with multiple outcomes, finding such expressions can be quite difficult.
+Instead, we rely on simulation to calculate estimated power.
+
+If we were to rely on a full simulation approach, we could use the following method to estimate power:
+1. Simulate data according to the alternative hypotheses (assuming true nonzero effects).
+2. Calculate test statistics $t_1$ under the alternative hypothesis.
+3. Use these test statistics to calculate $p$-values $p_1$.
+4. Calculate power using the distribution of $p$-values.
+
+However, we can simplify this process substantially by skipping some of the steps.
+Given an assumed model and correlation structure for the test statistics, we can simulate $t_1$, the joint alternative distribution of the test statistics, directly.
+
+We now describe how to simulate $t_1$ directly.
+First, we assume a particular research design and model.
+Define $\psi_m$ as the treatment effect for outcome $m$.
+Then, we can also express the treatment effect in terms of effect size:
+
+$$ES_m = \frac{\psi_m}{\sigma_{Y,m}}$$ 
+
+where $\sigma_{Y,m}$ is the standard deviation of outcome $Y_m$.
+In order to calculate power, we are interested in the standard error of the estimated effect size, which we denote as 
+$$Q_m = SE(\hat{ES}_m).$$
+The quantity $Q_m$ is defined by the assumed model, and can be a function of the number of units at different levels, the percent of units treated, the assumed $R^2$, and other parameters.
+Finally, when testing the hypothesis for outcome $m$, the test statistics for a $t$ test is:
+$$t_m = \frac{\hat{ES}_m}{\hat{Q}_m}$$
+with degrees of freedom $df$, also defined by the assumed model.
+
+For Westfall-Young procedures, this procedure is augmented by also simulating test statistics under the null distribution.
+Under the alternative hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $\frac{\hat{ES}_m}{\hat{Q}_m}$; under the null hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $0$.
+
+## RCT Designs
+
+When designing a study, the researcher has two main choices:
+1. The design of the experiment, including how many levels, and at which level randomization occurs.
+2. The assumed model, including whether intercepts and treatment effects should be treated as constant, fixed, or random.
+
+The PUMP package supports 1, 2, or 3 level models, with randomization occurring at any level.
+For example, a design with 2 levels and randomization at level 1 is a blocked design.
+A design with 3 levels and randomization at level 3 is a cluster design.
+
+For modeling, we have the following choices.
+- Whether level 2 and level 3 intercepts are:
+  - fixed: intercepts are fixed effects constrained to have mean 0.
+  - random: intercepts are considered to be Normally distributed, allowing for partial pooling.
+- Whether level 2 and level 3 treatment effects are:
+  - constant: all units in a level have the same single average impact.
+  - fixed: each unit within a level has an individual estimated impact, with an additional mean impact.
+  - random: treatment impacts are Normally distributed around a mean impact.
+  
+The research design is denoted by $d$, followed by the number of levels and randomization level, so d3.1 is a $3$-level design with randomization at level $1$.
+The model is denoted by $m$, followed by the level and the assumption for the intercept, either $f$ or $r$ and then the assumption for the treatment impacts, $c$, $f$, or $r$.
+For example, m3ff2rc means at level $3$, we assume fixed intercepts and treatment impacts, and at level $2$ we assume random intercepts and constant treatment impacts.
+The full design and model are specified by concantenating these together, e.g. d3.2_m3ff2rc.
+
+The full list of supported models is below.
+For more details about each model, see the appendix.
+
+```{r, echo = FALSE}
+designs = supported_designs()
+kable(designs$Design)
+```
 
 # PUM-P Package (Luke - first October 1)
 * Overview of power, mdes, sample size and grid functions + plotting function
