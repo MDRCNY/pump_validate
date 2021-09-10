@@ -1186,7 +1186,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
         # data frame output for the results
         dat <- as.data.frame(
-        isolate(pump_power(design = input$designP2LBISS,
+        isolate(pum::pump_power(design = input$designP2LBISS,
                            MTP = as.character(unlist(strsplit(input$MTPP2LBISS," "))),
                            MDES = as.numeric(unlist(strsplit(input$MDESP2LBISS, ","))),
                            M = input$MP2LBISS, # The number of hypotheses/outcomes
@@ -1277,7 +1277,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       # data frame output for the results
       dat <- as.data.frame(
-        isolate(pump_power(design = input$designP2LBIE,
+        isolate(pum::pump_power_grid(design = input$designP2LBIE,
                            MTP = as.character(unlist(strsplit(input$MTPP2LBIE," "))),
                            MDES = as.numeric(unlist(strsplit(input$MDESP2LBIE, ","))),
                            M = input$MP2LBIE, # The number of hypotheses/outcomes
@@ -1291,16 +1291,13 @@ server <- shinyServer(function(input, output, session = FALSE) {
                            numCovar.3 = 0,
                            R2.1 = rep(input$R2.1P2LBIE,
                                       input$MP2LBIE),
-                           R2.2 = rep(0.1, input$MP2LBIE),
-                           R2.3 = rep(0.1, input$MP2LBIE),
-                           ICC.2 = rep(0, input$MP2LBIE),
-                           ICC.3 = rep(0.2, input$MP2LBIE) ,
+                           R2.2 = NULL,
+                           R2.3 = NULL,
+                           ICC.2 = 0,
+                           ICC.3 = NULL,
                            rho = input$rhoP2LBIE,
-                           omega.2 = 0,
-                           omega.3 = 0.1,
-                           tnum = 10000, 
-                           B = 100, 
-                           cl = NULL,
+                           omega.2 = NULL,
+                           omega.3 = NULL,
                            updateProgress = updateProgress)
         ))
       
