@@ -295,22 +295,24 @@ ui <- fluidPage(
                               mainPanel(
                               br(),    
                               br(),
+                              
                               fluidRow(
-                                  column(12,
-                                  tableOutput("powercalcTableP2LBISS")) #The power calculation table output
-                              ), #fluidRow for first half of the page
-                                
+                                column(8,
+                                       plotOutput("powercalcGraphP2LBISS"))
+                              ), # end of Fluid Row
+                                    
                                 br(), # To create spaces between Table and Plots
                                 br(), # To create spaces between Table and Plots
                                 br(), # To create spaces between Table and Plots
                                 br(), # To create spaces between Table and Plots
                                 br(), # To create spaces between Table and Plots
                                 br(), # To create spaces between Table and Plots
-                          
-                                fluidRow(
-                                  column(8,
-                                         plotOutput("powercalcGraphP2LBISS"))
-                                ) # end of Fluid Row
+                              
+                              fluidRow(
+                                column(12,
+                                       tableOutput("powercalcTableP2LBISS")) #The power calculation table output
+                              ) #fluidRow for first half of the page
+                              
                               ) # Power calculation Main Panel
                               
                             ) # Power Calculation sidebar Layout
@@ -596,22 +598,24 @@ ui <- fluidPage(
                             mainPanel(
                               br(),    
                               br(),
-                              fluidRow(
-                                column(12,
-                                       tableOutput("powercalcTableP2LBIE")) #The power calculation table output
-                              ), #fluidRow for first half of the page
-                              
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
                               
                               fluidRow(
                                 column(8,
                                        plotOutput("powercalcGraphP2LBIE"))
-                              ) # end of Fluid Row
+                              ), # end of Fluid Row
+                          
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                              
+                              fluidRow(
+                                column(12,
+                                       tableOutput("powercalcTableP2LBIE")) #The power calculation table output
+                              ) #fluidRow for first half of the page
+                              
                             ) # Power calculation Main Panel
                             
                           ) # Power Calculation sidebar Layout
@@ -1306,32 +1310,30 @@ server <- shinyServer(function(input, output, session = FALSE) {
       {reactPowerTable()}
     }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
     
-    
     # Rendering a reactive object table from the power function
-    # output$powercalcGraphP2LBIE <- renderPlot({
-    #   
-    #   dat <- reactPowerTable()
-    #   dat$AdjType <- rownames(dat)
-    #   dat %>%
-    #     dplyr::select_all() %>%
-    #     dplyr::select(-indiv.mean) %>%
-    #     tidyr::pivot_longer(!AdjType, names_to = "powerType", values_to = "power") %>%
-    #     ggplot(aes(x = powerType, 
-    #                y = power, 
-    #                shape = AdjType,
-    #                colour = AdjType)) + 
-    #     geom_point(size = 5) +
-    #     scale_y_continuous(limits = c(0,1)) +
-    #     ggtitle("Adjusted Power values across different Power Definitions") +
-    #     theme(plot.title = element_text(size = 16,
-    #                                     face = "bold",
-    #                                     vjust = 1,
-    #                                     hjust = 0.5),
-    #           axis.text = element_text(size = 14),
-    #           axis.title = element_text(size = 14))
-    #   
-    # }) # ggplot for power graph
-    
+    output$powercalcGraphP2LBIE <- renderPlot({
+      
+      dat <- reactPowerTable()
+      dat %>%
+        dplyr::select_all() %>%
+        dplyr::select(-indiv.mean, -adjustment, -design) %>%
+        tidyr::pivot_longer(!MDES, names_to = "powerType", values_to = "power") %>%
+        ggplot(aes(x = as.factor(MDES),
+                   y = power,
+                   shape = powerType,
+                   colour = powerType)) +
+        geom_point(size = 5) +
+        scale_y_continuous(limits = c(0,1)) +
+        ggtitle("Adjusted Power values across different Power Definitions & MDES values") +
+        theme(plot.title = element_text(size = 16,
+                                        face = "bold",
+                                        vjust = 1,
+                                        hjust = 0.5),
+              axis.text = element_text(size = 14),
+              axis.title = element_text(size = 14))
+
+    }) # ggplot for power graph
+
   }) # Observe Event for Explorer
   
   ############################################

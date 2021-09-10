@@ -9,7 +9,7 @@ output: html_document
 test_results_01 <- 
 pum::pump_power_grid(design = c("d2.1_m2fr"),
                      MTP = c("Holm", "BH") ,
-                     MDES = c(0.125, 0.125, 0.125, 0.125, 0.125),
+                     MDES = c(0.125, 0.2),
                      M = 5 ,
                      J = 20,
                      K = 1,
