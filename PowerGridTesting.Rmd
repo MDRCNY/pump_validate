@@ -108,6 +108,7 @@ pum::pump_power_grid(design = c("d2.1_m2fr"),
                      omega.2 = NULL,
                      omega.3 = NULL)
 ```
+
 ```{r}
 View(test_results_04)
 ```
