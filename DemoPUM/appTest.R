@@ -1184,7 +1184,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
           
         } # End of Callback Progress Function
         
-        browser()
         # data frame output for the results
         dat <- as.data.frame(
         isolate(pump_power(design = input$designP2LBISS,
