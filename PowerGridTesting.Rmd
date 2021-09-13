@@ -6,6 +6,12 @@ output: html_document
 ---
 
 ```{r}
+library(dplyr)
+```
+
+
+
+```{r}
 test_results_01 <- 
 pum::pump_power_grid(design = c("d2.1_m2fr"),
                      MTP = c("Holm", "BH") ,
@@ -32,6 +38,53 @@ pum::pump_power_grid(design = c("d2.1_m2fr"),
 ```{r}
 View(test_results_01)
 ```
+
+
+```{r}
+test_results_01_non_grid <-
+  pum::pump_power(design = c("d2.1_m2fr"),
+                  MTP = c("Holm", "BH"),
+                  MDES = c(0.125, 0.125, 0.125, 0.125, 0.125),
+                  M = 5,
+                  J = 20,
+                  K = 1,
+                  nbar = 100,
+                  Tbar = 0.5,
+                  alpha = 0.05,
+                  numCovar.1 = 0,
+                  numCovar.2 = 0,
+                  numCovar.3 = 0,
+                  R2.1 = c(0.2, 0.2, 0.2, 0.2, 0.2),
+                  R2.2 = c(0.1, 0.1, 0.1, 0.1, 0.1),
+                  R2.3 = c(0, 0, 0, 0, 0),
+                  ICC.2 = c(0, 0, 0, 0, 0),
+                  ICC.3 = c(0, 0, 0, 0, 0),
+                  rho = 0.5,
+                  omega.2 = 0,
+                  omega.3 = 0.1,
+                  long.table = TRUE)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```{r}
 test_results_02 <- 
