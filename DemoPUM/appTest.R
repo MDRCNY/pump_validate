@@ -367,14 +367,14 @@ ui <- fluidPage(
                                 
                                 column(10,
                                        div(style = "display: inline-block, vertical-align:top;", 
-                                           selectInput("explorerP2LBISS", "What Parameter would you like to vary?", 
+                                           selectInput("explorerP2LBIE", "What Parameter would you like to vary?", 
                                                        choices = list("MDES", 
                                                                       "R2"))) # select input buttons div
                                 ), # column for inputs
                                 
                                 column(2, 
                                        div(style ="display: inline-block,vertical-align:top;",
-                                           actionButton("question_explorerP2LBISS",
+                                           actionButton("question_explorerP2LBIE",
                                                         label = "", 
                                                         icon = icon("question"),
                                                         style = "font-size: 10px;
@@ -384,12 +384,12 @@ ui <- fluidPage(
                               ), # fluid Row for selection of which variables to explore
                               
                               
-                              conditionalPanel(condition = "input.explorerP2LBISS == 'MDES'",
+                              conditionalPanel(condition = "input.explorerP2LBIE == 'MDES'",
                               
                                   fluidRow(
                                     column(10,
                                            div(style = "display: inline-block, vertical-align:top;", 
-                                               selectInput("designP2LBIE", "What Research Design is this for?", 
+                                               selectInput("designP2LBIEMDES", "What Research Design is this for?", 
                                                            choices = list("constantEffects" = "d2.1_m2fc", 
                                                                           "fixedEffects" = "d2.1_m2ff", 
                                                                           "randomEffects" = "d2.1_m2fr"))) # select input buttons div
@@ -397,7 +397,7 @@ ui <- fluidPage(
                                     
                                     column(2, 
                                            div(style ="display: inline-block,vertical-align:top;",
-                                               actionButton("question_designP2LBIE",
+                                               actionButton("question_designP2LBIEMDES",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -406,7 +406,7 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "question_designP2LBIE", 
+                                  bsPopover(id = "question_designP2LBIEMDES", 
                                             title = NULL,
                                             content = paste0("For more information on different designs, please click!"),
                                             placement = "right", 
@@ -416,7 +416,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     column(10,
                                            div(style = "display: inline-block, vertical-align:top;", 
-                                               selectInput("MTPP2LBIE", "Which MTP do you plan to use?", 
+                                               selectInput("MTPP2LBIEMDES", "Which MTP do you plan to use?", 
                                                            choices = list("Bonferroni" = "Bonferroni", 
                                                                           "Holm" = "Holm", 
                                                                           "Benjamini-Hochberg" = "BH", 
@@ -428,7 +428,7 @@ ui <- fluidPage(
                                     column(2, 
                                            div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                               actionButton("question_mtpP2LBISS",
+                                               actionButton("question_mtpP2LBIEMDES",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -437,7 +437,7 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "question_mtpP2LBIE", 
+                                  bsPopover(id = "question_mtpP2LBIEMDES", 
                                             title = NULL,
                                             content = paste0("For more information on MTP, please click!"),
                                             placement = "right", 
@@ -447,7 +447,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     
                                     column(12,
-                                           numericInput("MP2LBIE", 
+                                           numericInput("MP2LBIEMDES", 
                                                         "Number of Outcomes", 
                                                         min = 1, 
                                                         max = 10, 
@@ -460,7 +460,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     
                                     column(10,
-                                           textInput("MDESP2LBIE", 
+                                           textInput("MDESP2LBIEMDES", 
                                                      "Vary MDES vector (comma delimited)", 
                                                      value = "0.125,0.125,0.125, 0,0")
                                            
@@ -469,7 +469,7 @@ ui <- fluidPage(
                                     column(2, 
                                            div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                               actionButton("question_mdesP2LBISS",
+                                               actionButton("question_mdesP2LBIEMDES",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -478,7 +478,7 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "question_mdesP2LBIE", 
+                                  bsPopover(id = "question_mdesP2LBIEMDES", 
                                             title = NULL,
                                             content = paste0("For more information on MTP, please click!"),
                                             placement = "right", 
@@ -490,7 +490,7 @@ ui <- fluidPage(
                                     
                                     column(12,
                                            
-                                           numericInput("KP2LBIE", 
+                                           numericInput("KP2LBIEMDES", 
                                                         "Number of Districts", 
                                                         min = 1, 
                                                         max = 100, 
@@ -502,7 +502,7 @@ ui <- fluidPage(
                                     
                                     column(6,
                                            
-                                           numericInput("JP2LBIE", 
+                                           numericInput("JP2LBIEMDES", 
                                                         "Number of blocks", 
                                                         min = 1, 
                                                         max = 100, 
@@ -513,7 +513,7 @@ ui <- fluidPage(
                                     
                                     column(6,
                                            
-                                           numericInput("nbarP2LBIE",
+                                           numericInput("nbarP2LBIEMDES",
                                                         "Number of units per block", 
                                                         min = 2, 
                                                         max = 100, 
@@ -527,7 +527,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     
                                     column(10,
-                                           textInput("R2.1P2LBIE", 
+                                           textInput("R2.1P2LBIEMDES", 
                                                      "Only 1 R Value allowed!", 
                                                      value = "0.2, 0.2, 0.2, 0.2, 0.2")
                                            
@@ -536,7 +536,7 @@ ui <- fluidPage(
                                     column(2, 
                                            div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                               actionButton("R2.1P2LBIE",
+                                               actionButton("R2.1P2LBIEMDES",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -545,7 +545,7 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "R2.1P2LBIE", 
+                                  bsPopover(id = "R2.1P2LBIEMDES", 
                                             title = NULL,
                                             content = paste0("For more information on MTP, please click!"),
                                             placement = "right", 
@@ -556,7 +556,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     column(12,
                                            
-                                           numericInput("rhoP2LBIE", 
+                                           numericInput("rhoP2LBIEMDES", 
                                                         "Correlation between outcomes", 
                                                         min = 0, 
                                                         max = 1, 
@@ -570,7 +570,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     column(12,
                                            
-                                           numericInput("numCovar.1P2LBIE", 
+                                           numericInput("numCovar.1P2LBIEMDES", 
                                                         "Number of Level 1 Covariates", 
                                                         min = 0, 
                                                         max = 10, 
@@ -585,7 +585,7 @@ ui <- fluidPage(
                                     
                                     column(12,
                                            
-                                           numericInput("tbarP2LBIE", 
+                                           numericInput("tbarP2LBIEMDES", 
                                                         "Proportion of Treatment assignment", 
                                                         min = 0.001, 
                                                         max = 1.0, 
@@ -599,7 +599,7 @@ ui <- fluidPage(
                                     
                                     column(12,
                                            
-                                           numericInput("alphaP2LBIE", 
+                                           numericInput("alphaP2LBIEMDES", 
                                                         "Significance Level of Tests (alpha)", 
                                                         min = 0.001, 
                                                         max = 0.9, 
@@ -613,19 +613,19 @@ ui <- fluidPage(
                                   fluidRow(
                                     
                                     column(6,
-                                           actionButton("goButtonP2LBIE", "Go!") # Action Button to trigger other reactive values
+                                           actionButton("goButtonP2LBIEMDES", "Go!") # Action Button to trigger other reactive values
                                     )
                                   ) # goButtonP2LBIE
                                   
                               ), # end of MDES condtional Panel
                               
-                        conditionalPanel(condition = "input.explorerP2LBISS == 'R2'",
+                        conditionalPanel(condition = "input.explorerP2LBIE == 'R2'",
                                                
                                   fluidRow(
                                       
                                     column(10,
                                            div(style = "display: inline-block, vertical-align:top;", 
-                                           selectInput("designP2LBIE", "What Research Design is this for?", 
+                                           selectInput("designP2LBIER2", "What Research Design is this for?", 
                                                         choices = list("constantEffects" = "d2.1_m2fc", 
                                                                        "fixedEffects" = "d2.1_m2ff", 
                                                                        "randomEffects" = "d2.1_m2fr"))) # select input buttons div
@@ -633,7 +633,7 @@ ui <- fluidPage(
                                                  
                                      column(2, 
                                            div(style ="display: inline-block,vertical-align:top;",
-                                            actionButton("question_designP2LBIE",
+                                            actionButton("question_designP2LBIER2",
                                                           label = "", 
                                                           icon = icon("question"),
                                                           style = "font-size: 10px;
@@ -642,7 +642,7 @@ ui <- fluidPage(
                                                  
                                          ), # fluid Row to contain the question mark issue 
                                                
-                                      bsPopover(id = "question_designP2LBIE", 
+                                      bsPopover(id = "question_designP2LBIER2", 
                                                 title = NULL,
                                                 content = paste0("For more information on different designs, please click!"),
                                                 placement = "right", 
@@ -653,7 +653,7 @@ ui <- fluidPage(
                                     
                                      column(10,
                                            div(style = "display: inline-block, vertical-align:top;", 
-                                           selectInput("MTPP2LBIE", "Which MTP do you plan to use?", 
+                                           selectInput("MTPP2LBIER2", "Which MTP do you plan to use?", 
                                                         choices = list("Bonferroni" = "Bonferroni", 
                                                                         "Holm" = "Holm", 
                                                                         "Benjamini-Hochberg" = "BH", 
@@ -665,7 +665,7 @@ ui <- fluidPage(
                                      column(2, 
                                           div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                          actionButton("question_mtpP2LBISS",
+                                          actionButton("question_mtpP2LBIER2",
                                           label = "", 
                                           icon = icon("question"),
                                           style = "font-size: 10px;
@@ -674,7 +674,7 @@ ui <- fluidPage(
                                                  
                                        ), # fluid Row to contain the question mark issue 
                                                
-                                      bsPopover(id = "question_mtpP2LBIE", 
+                                      bsPopover(id = "question_mtpP2LBIER2", 
                                                 title = NULL,
                                                 content = paste0("For more information on MTP, please click!"),
                                                 placement = "right", 
@@ -684,7 +684,7 @@ ui <- fluidPage(
                                       fluidRow(
                                                  
                                           column(12,
-                                            numericInput("MP2LBIE", 
+                                            numericInput("MP2LBIER2", 
                                                           "Number of Outcomes", 
                                                           min = 1, 
                                                           max = 10, 
@@ -697,7 +697,7 @@ ui <- fluidPage(
                                       fluidRow(
                                                  
                                           column(10,
-                                            textInput("MDESP2LBIE", 
+                                            textInput("MDESP2LBIER2", 
                                                       "Only 1 MDES value allowed!", 
                                                       value = "0.125,0.125,0.125, 0,0")
                                                         
@@ -706,7 +706,7 @@ ui <- fluidPage(
                                           column(2, 
                                              div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                            actionButton("question_mdesP2LBISS",
+                                            actionButton("question_mdesP2LBIER2",
                                                           label = "", 
                                                           icon = icon("question"),
                                                           style = "font-size: 10px;
@@ -715,7 +715,7 @@ ui <- fluidPage(
                                                  
                                           ), # fluid Row to contain the question mark issue 
                                                
-                                          bsPopover(id = "question_mdesP2LBIE", 
+                                          bsPopover(id = "question_mdesP2LBIER2", 
                                                     title = NULL,
                                                     content = paste0("For more information on MTP, please click!"),
                                                     placement = "right", 
@@ -726,7 +726,7 @@ ui <- fluidPage(
                                       fluidRow(
                                                  
                                           column(12,
-                                            numericInput("KP2LBIE", 
+                                            numericInput("KP2LBIER2", 
                                                           "Number of Districts", 
                                                             min = 1, 
                                                             max = 100, 
@@ -737,7 +737,7 @@ ui <- fluidPage(
                                      fluidRow(
                                                  
                                          column(6,
-                                            numericInput("JP2LBIE", 
+                                            numericInput("JP2LBIER2", 
                                                           "Number of blocks", 
                                                             min = 1, 
                                                             max = 100, 
@@ -747,7 +747,7 @@ ui <- fluidPage(
                                               ), # number of blocks
                                                  
                                          column(6,
-                                            numericInput("nbarP2LBIE",
+                                            numericInput("nbarP2LBIER2",
                                                          "Number of units per block", 
                                                             min = 2, 
                                                             max = 100, 
@@ -761,7 +761,7 @@ ui <- fluidPage(
                                     fluidRow(
                                                  
                                         column(10,
-                                            textInput("R2.1P2LBIE", 
+                                            textInput("R2.1P2LBIER2", 
                                                       "Vary R2 vector (comma delimited)", 
                                                       value = "0.2, 0.2, 0.2, 0.2, 0.2")
                                                         
@@ -770,7 +770,7 @@ ui <- fluidPage(
                                         column(2, 
                                             div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                              actionButton("R2.1P2LBIE",
+                                              actionButton("R2.1P2LBIER2",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -779,7 +779,7 @@ ui <- fluidPage(
                                                  
                                      ), # fluid Row to contain the question mark issue 
                                                
-                                       bsPopover(id = "R2.1P2LBIE", 
+                                       bsPopover(id = "R2.1P2LBIER2", 
                                                  title = NULL,
                                                  content = paste0("For more information on MTP, please click!"),
                                                  placement = "right", 
@@ -790,7 +790,7 @@ ui <- fluidPage(
                                       fluidRow(
                                         
                                             column(12,
-                                                numericInput("rhoP2LBIE", 
+                                                numericInput("rhoP2LBIER2", 
                                                              "Correlation between outcomes", 
                                                               min = 0, 
                                                               max = 1, 
@@ -804,7 +804,7 @@ ui <- fluidPage(
                                       fluidRow(
                                         
                                             column(12,
-                                                numericInput("numCovar.1P2LBIE", 
+                                                numericInput("numCovar.1P2LBIER2", 
                                                              "Number of Level 1 Covariates", 
                                                               min = 0, 
                                                               max = 10, 
@@ -818,7 +818,7 @@ ui <- fluidPage(
                                      fluidRow(
                                                  
                                            column(12,
-                                               numericInput("tbarP2LBIE", 
+                                               numericInput("tbarP2LBIER2", 
                                                              "Proportion of Treatment assignment", 
                                                               min = 0.001, 
                                                               max = 1.0, 
@@ -832,7 +832,7 @@ ui <- fluidPage(
                                     fluidRow(  
                                                  
                                           column(12,
-                                            numericInput("alphaP2LBIE", 
+                                            numericInput("alphaP2LBIER2", 
                                                           "Significance Level of Tests (alpha)", 
                                                             min = 0.001, 
                                                             max = 0.9, 
@@ -856,33 +856,55 @@ ui <- fluidPage(
                             
                             mainPanel(
                               
+                            
+                              conditionalPanel(condition = "input.explorerP2LBIE == 'MDES'",
+                                               
+                                  br(),    
+                                  br(),
+                                  
+                                  fluidRow(
+                                    column(8,
+                                           plotOutput("powercalcGraphP2LBIEMDES"))
+                                  ), # end of Fluid Row
                               
+                                  br(), # To create spaces between Table and Plots
+                                  br(), # To create spaces between Table and Plots
+                                  br(), # To create spaces between Table and Plots
+                                  br(), # To create spaces between Table and Plots
+                                  br(), # To create spaces between Table and Plots
+                                  br(), # To create spaces between Table and Plots
+                                  
+                                  fluidRow(
+                                    column(12,
+                                           tableOutput("powercalcTableP2LBIEMDES")) #The power calculation table output
+                                  ) #fluidRow for first half of the page
+                                  
+                              ), # conditional panel results for MDES
                               
-                              
-                              br(),    
-                              br(),
-                              
-                              fluidRow(
-                                column(8,
-                                       plotOutput("powercalcGraphP2LBIE"))
-                              ), # end of Fluid Row
-                          
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              
-                              fluidRow(
-                                column(12,
-                                       tableOutput("powercalcTableP2LBIE")) #The power calculation table output
-                              ) #fluidRow for first half of the page
-                              
-                              
-                              
-                              
-                              
+                              conditionalPanel(condition = "input.explorerP2LBIE == 'R2'",
+                                               
+                                               br(),    
+                                               br(),
+                                               
+                                               fluidRow(
+                                                 column(8,
+                                                        plotOutput("powercalcGraphP2LBIER2"))
+                                               ), # end of Fluid Row
+                                               
+                                               br(), # To create spaces between Table and Plots
+                                               br(), # To create spaces between Table and Plots
+                                               br(), # To create spaces between Table and Plots
+                                               br(), # To create spaces between Table and Plots
+                                               br(), # To create spaces between Table and Plots
+                                               br(), # To create spaces between Table and Plots
+                                               
+                                               fluidRow(
+                                                 column(12,
+                                                        tableOutput("powercalcTableP2LBIER2")) #The power calculation table output
+                                               ) #fluidRow for first half of the page
+                                               
+                              ) # conditional panel results for R2
+                            
                             ) # Power calculation Main Panel
                             
                           ) # Power Calculation sidebar Layout
@@ -1518,13 +1540,13 @@ server <- shinyServer(function(input, output, session = FALSE) {
 }) # observe Event go Button for power for Single Scenario
   
   # observe Event for Explorer
-  observeEvent(input$goButtonP2LBIE,{
+  observeEvent(input$goButtonP2LBIEMDES,{
     
         # set a Reactive Value for Power Table
     reactPowerTable <- reactiveVal()
     
     # Rendering a reactive object table from the power function
-    output$powercalcTableP2LBIE <- renderTable({
+    output$powercalcTableP2LBIEMDES <- renderTable({
       
       # Creating a progress bar
       progress <- shiny::Progress$new()
@@ -1548,25 +1570,25 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       # data frame output for the results
       dat <- as.data.frame(
-        isolate(pum::pump_power_grid(design = input$designP2LBIE,
-                           MTP = as.character(unlist(strsplit(input$MTPP2LBIE," "))),
-                           MDES = as.numeric(unlist(strsplit(input$MDESP2LBIE, ","))),
-                           M = input$MP2LBIE, # The number of hypotheses/outcomes
-                           J = input$JP2LBIE, # The number of schools
-                           K = input$KP2LBIE, # The number of districts
-                           nbar = input$nbarP2LBIE, # The number of units per block
-                           Tbar = input$tbarP2LBIE, # The proportion of samples that are assigned to the treatment
-                           alpha = input$alphaP2LBIE,
-                           numCovar.1 = input$numCovar.1P2LBIE,
+        isolate(pum::pump_power_grid(design = input$designP2LBIEMDES,
+                           MTP = as.character(unlist(strsplit(input$MTPP2LBIEMDES," "))),
+                           MDES = as.numeric(unlist(strsplit(input$MDESP2LBIEMDES, ","))),
+                           M = input$MP2LBIEMDES, # The number of hypotheses/outcomes
+                           J = input$JP2LBIEMDES, # The number of schools
+                           K = input$KP2LBIEMDES, # The number of districts
+                           nbar = input$nbarP2LBIEMDES, # The number of units per block
+                           Tbar = input$tbarP2LBIEMDES, # The proportion of samples that are assigned to the treatment
+                           alpha = input$alphaP2LBIEMDES,
+                           numCovar.1 = input$numCovar.1P2LBIEMDES,
                            numCovar.2 = 0,
                            numCovar.3 = 0,
-                           R2.1 = rep(input$R2.1P2LBIE,
-                                      input$MP2LBIE),
+                           R2.1 = rep(input$R2.1P2LBIEMDES,
+                                      input$MP2LBIEMDES),
                            R2.2 = NULL,
                            R2.3 = NULL,
                            ICC.2 = 0,
                            ICC.3 = NULL,
-                           rho = input$rhoP2LBIE,
+                           rho = input$rhoP2LBIEMDES,
                            omega.2 = NULL,
                            omega.3 = NULL,
                            updateProgress = updateProgress)
@@ -1578,7 +1600,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
     
     # Rendering a reactive object table from the power function
-    output$powercalcGraphP2LBIE <- renderPlot({
+    output$powercalcGraphP2LBIEMDES <- renderPlot({
       
       dat <- reactPowerTable()
       dat %>%
@@ -1606,13 +1628,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
   # observe Event for Explorer R2
   observeEvent(input$goButtonP2LBIER2,{
     
-    browser()
-    
     # set a Reactive Value for Power Table
     reactPowerTable <- reactiveVal()
     
     # Rendering a reactive object table from the power function
-    output$powercalcTableP2LBIE <- renderTable({
+    output$powercalcTableP2LBIER2 <- renderTable({
       
       # Creating a progress bar
       progress <- shiny::Progress$new()
@@ -1636,25 +1656,25 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       # data frame output for the results
       dat <- as.data.frame(
-        isolate(pum::pump_power_grid(design = input$designP2LBIE,
-                                     MTP = as.character(unlist(strsplit(input$MTPP2LBIE," "))),
-                                     MDES = as.numeric(unlist(strsplit(input$MDESP2LBIE, ","))),
-                                     M = input$MP2LBIE, # The number of hypotheses/outcomes
-                                     J = input$JP2LBIE, # The number of schools
-                                     K = input$KP2LBIE, # The number of districts
-                                     nbar = input$nbarP2LBIE, # The number of units per block
-                                     Tbar = input$tbarP2LBIE, # The proportion of samples that are assigned to the treatment
-                                     alpha = input$alphaP2LBIE,
-                                     numCovar.1 = input$numCovar.1P2LBIE,
+        isolate(pum::pump_power_grid(design = input$designP2LBIER2,
+                                     MTP = as.character(unlist(strsplit(input$MTPP2LBIER2," "))),
+                                     MDES = as.numeric(unlist(strsplit(input$MDESP2LBIER2, ","))),
+                                     M = input$MP2LBIER2, # The number of hypotheses/outcomes
+                                     J = input$JP2LBIER2, # The number of schools
+                                     K = input$KP2LBIER2, # The number of districts
+                                     nbar = input$nbarP2LBIER2, # The number of units per block
+                                     Tbar = input$tbarP2LBIER2, # The proportion of samples that are assigned to the treatment
+                                     alpha = input$alphaP2LBIER2,
+                                     numCovar.1 = input$numCovar.1P2LBIER2,
                                      numCovar.2 = 0,
                                      numCovar.3 = 0,
-                                     R2.1 = rep(input$R2.1P2LBIE,
-                                                input$MP2LBIE),
+                                     R2.1 = rep(input$R2.1P2LBIER2,
+                                                input$MP2LBIER2),
                                      R2.2 = NULL,
                                      R2.3 = NULL,
                                      ICC.2 = 0,
                                      ICC.3 = NULL,
-                                     rho = input$rhoP2LBIE,
+                                     rho = input$rhoP2LBIER2,
                                      omega.2 = NULL,
                                      omega.3 = NULL,
                                      updateProgress = updateProgress)
@@ -1666,7 +1686,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
     
     # Rendering a reactive object table from the power function
-    output$powercalcGraphP2LBIE <- renderPlot({
+    output$powercalcGraphP2LBIER2 <- renderPlot({
       
       dat <- reactPowerTable()
       dat %>%
