@@ -44,6 +44,8 @@ inst/doc
 # knitr and R markdown default cache directories
 /*_cache/
 /cache/
+/*_files/
+ManuScript/appendix/appendix_files/*
 
 # Temporary files created by R markdown
 *.utf8.md
@@ -57,3 +59,4 @@ inst/doc
 *.bbl
 *.synctex.gz
 *.out
+
