@@ -1602,14 +1602,40 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # Rendering a reactive object table from the power function
     output$powercalcGraphP2LBIEMDES <- renderPlot({
       
+      # Grab the number of outcomes
+      M <- input$MP2LBIEMDES
+      
+      # End of Minimum Power 
+      minEnd <- M - 1
+      
+      # Create color gradient for minimum power
+      mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
+      mincolours <- sort(mincolours)
+      
+      # Add complete, individual color on top of the minimum colors
+      allcolors <- c("#90ee90", "#ADD8E6", mincolours)
+      
       dat <- reactPowerTable()
-      dat %>%
-        dplyr::select_all() %>%
-        dplyr::select(-indiv.mean, -adjustment, -design) %>%
-        tidyr::pivot_longer(!MDES, names_to = "powerType", values_to = "power") %>%
+    
+      withoutIndivPower <- 
+        dat %>%
+          dplyr::select_all() %>%
+          dplyr::select(-design) %>%
+          tidyr::pivot_longer(!c(MDES,adjustment), names_to = "powerType", values_to = "power") %>%
+          dplyr::filter(!stringr::str_detect(powerType,"D")) 
+  
+      # converting Power Type to a factor
+      withoutIndivPower$powerType <- factor(withoutIndivPower$powerType, ordered = TRUE)
+      
+      #Pulling out Power Type Levels to match with all colors
+      powerTypeLevels <- levels(withoutIndivPower$powerType)
+      
+      # create value for scale color manual by matching color and Power Type
+      allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+      
+      withoutIndivPower %>%
         ggplot(aes(x = as.factor(MDES),
                    y = power,
-                   shape = powerType,
                    colour = powerType)) +
         geom_point(size = 5) +
         scale_y_continuous(limits = c(0,1)) +
@@ -1619,7 +1645,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                         vjust = 1,
                                         hjust = 0.5),
               axis.text = element_text(size = 14),
-              axis.title = element_text(size = 14))
+              axis.title = element_text(size = 14)) +
+        scale_colour_manual(values = allcolorsvalues) +
+        labs(x = "Different MDES Scenarios")
 
     }) # ggplot for power graph
 
