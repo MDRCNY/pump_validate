@@ -58,6 +58,28 @@ if (window.hljs) {
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 
 
@@ -420,11 +442,16 @@ blocked_c2_3r
 <li>how data were generated for simulations</li>
 <li>something about validation maybe? (one example or template?)</li>
 </ul>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-RN4473" class="csl-entry">
+Dong, Nianbo, and Rebecca Maynard. 2013. <span>“PowerUP!: A Tool for Calculating Minimum Detectable Effect Sizes and Minimum Required Sample Sizes for Experimental and Quasi-Experimental Design Studies.”</span> Journal Article. <em>Journal of Research on Educational Effectiveness</em> 6 (1): 24–67.
+</div>
+</div>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>For example, power estimating tools frequently used in social science research include Dong &amp; Maynard, 2013; Hedges &amp; Rhoads, 2010; Raudenbush et al., 2011; Spybrook et al., 2011).<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>For example, power estimating tools frequently used in social science research include <span class="citation">Dong and Maynard (2013)</span> Dong &amp; Maynard, 2013; Hedges &amp; Rhoads, 2010; Raudenbush et al., 2011; Spybrook et al., 2011).<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p>For a one-sided test, depending on the direction of our alternative hypothesis, the raw p-value for the <span class="math inline">\(m^{th}\)</span> test is computed as <span class="math inline">\(p_m=Pr{T_m &lt;= t_m}\)</span> or <span class="math inline">\(p_m=Pr{T_m &gt;=t_m}\)</span>.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 <li id="fn3"><p>Alternatively, MTPs can decrease the critical values for rejecting hypothesis tests. For ease of presentation, this paper focuses only on the approach of increasing p-values.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 </ol>

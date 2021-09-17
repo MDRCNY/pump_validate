@@ -5,6 +5,7 @@ output:
     df_print: paged
   html_notebook: default
   pdf_document: default
+bibliography: refs.bib
 ---
 Power Under Multiplicity Project (PUMP): An R package for estimating statistical power, minimum detectable effect sizes (MDES's) and sample sizes when adjusting for multiple hypothesis tests
 Draft outline
@@ -25,7 +26,7 @@ However, an important consequence of MTPs is a change in statistical power that 
 
 Researchers typically worry that moving from one to multiple hypothesis tests and thus employing MTPs results in a loss of power. However, that need not always be the case. Power is indeed lost if one focuses on individual power — the probability of detecting an effect of a particular size or larger for each particular hypothesis test, given that the effect truly exists. However, in studies with multiplicity, alternative definitions of power exist and in some cases may be more appropriate (Chen, Luo, Liu, & Mehrotra, 2011; Dudoit, Shaffer, & Bodrick, 2003; Senn & Bretz, 2007; Westfall, Tobias, & Wolfinger, 2011). For example, when testing for effects on multiple outcomes, one might consider 1-minimal power: the probability of detecting effects of at least a particular size (which can vary by outcome) on at least one outcome. Similarly, one might consider 1⁄2-minimal power: the probability of detecting effects of at least a particular size on at least 1⁄2 of the outcomes. Also, one might consider complete power: the power to detect effects of at least a particular size on all outcomes. The choice of definition of power depends on the objectives of the study and on how the success of the intervention is defined. The choice of definition also affects the overall extent of power.
 
-The methodological developments implemented in our R package, PUMP, and described in this paper are focused on the multiplicity problem that arises in randomized control trials (RCT's) that test an intervention's impacts on a modest number of outcomes. For example, in education a researcher might design a trial to investigate the effects of a mentoring program on three outcomes related to social and emotional development --- measures of social competence, emotional competence and self-regulation. For this type of research, the literature and tools for estimating statistical power, or for estimating sample size requirements of minimum detectable effect sizes (MDES's) that achieve a desired level of statistical power, are extensive.^[For example, power estimating tools frequently used in social science research include Dong & Maynard, 2013; Hedges & Rhoads, 2010; Raudenbush et al., 2011; Spybrook et al., 2011).] However, to our knowledge, no tools exist that take multiplicity into account.
+The methodological developments implemented in our R package, PUMP, and described in this paper are focused on the multiplicity problem that arises in randomized control trials (RCT's) that test an intervention's impacts on a modest number of outcomes. For example, in education a researcher might design a trial to investigate the effects of a mentoring program on three outcomes related to social and emotional development --- measures of social competence, emotional competence and self-regulation. For this type of research, the literature and tools for estimating statistical power, or for estimating sample size requirements of minimum detectable effect sizes (MDES's) that achieve a desired level of statistical power, are extensive.^[For example, power estimating tools frequently used in social science research include @RN4473 Dong & Maynard, 2013; Hedges & Rhoads, 2010; Raudenbush et al., 2011; Spybrook et al., 2011).] However, to our knowledge, no tools exist that take multiplicity into account.
 
 The PUMP package fills this gap. It allows users to estimate statistical power, sample size requirements or MDES's for multiple definitions of statistical power, when applying any of five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg and when using any of the following RCT designs and estimation models: 
 - Individual random assignment
@@ -208,3 +209,4 @@ are in our github repository.
 - how data were generated for simulations
 - something about validation maybe? (one example or template?)
 
+# References

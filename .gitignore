@@ -60,3 +60,5 @@ ManuScript/appendix/appendix_files/*
 *.synctex.gz
 *.out
 
+# bib file
+ManuScript/*.nb.html
