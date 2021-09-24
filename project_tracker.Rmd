@@ -22,6 +22,20 @@ This list is not complete - to be added to and checked off by everyone.
 - Potentially use simulations to estimate rho matrix for users when entering other information about data - corr between outcomes, R2's (Kristen, maybe, TBD)
 - Revisit terminology of MDES - should we use "effect size" or "ATE" instead - build into user testing (Kristin, TBD)
 
+## Kristen's todo list
+- remove dependency on multtest package
+- unit test: no covariates
+- unit test: does it work with J = 1? M = 1? K = 1?
+- unblocked design
+- allow user to give PowerUp names
+- document remaining issues with sample size/mdes code, implement correct level of warnings
+- write up WY validation
+- unit tests for correlated and uncorrelated test statistics for sample size code
+- should omega be a vector? check consistencny of all scalar and vector params
+- understand unit test with correlated outcomes
+- allow user to do no adjustment for sample size, mdes but only for individual power
+
+
 # Shiny app
 - Introduction/education matter (Kristin, 8/31)
 - Tabs completed for blocked individual RCT (Zarni, 7/31)
@@ -48,5 +62,13 @@ This list is not complete - to be added to and checked off by everyone.
 - champions for paper sections
 - planning for SREE presentation - Kristin P will share past slide deck for reference
 
-
+# Stretch goals
+- tool that helps user build a block matrix of correlations based on a list of correlations between outcomes
+- tool the helps user determine correlation between test statistics using simulation
+- resolve terminology: MDES, ES, ATE_ES, impact?
+- additional designs, including: d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors
+- for sample size, allow a vector of MDES, i.e. combination of zero and nonzero values, and allow for numZero flag
+- effect size calculator
+- speed up everything
+- WY follow up: WY with a small number of schools, large number of permutations, and no effect, do we get the intended power/p-value?  What if we don’t do any adjustment–is it because of divergent/unstable models?
 
