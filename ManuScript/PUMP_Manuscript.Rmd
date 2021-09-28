@@ -16,6 +16,13 @@ library( knitr )
 library( pum )
 ```
 
+# TODO list
+
+Topics to possibly discuss:
+
+- effect size: what it is, how to decide what it is
+- correlation between test statistics, relationship to correlation between outcomes
+
 # Introduction
 
 ## Overview
@@ -29,6 +36,7 @@ Researchers typically worry that moving from one to multiple hypothesis tests an
 The methodological developments implemented in our R package, PUMP, and described in this paper are focused on the multiplicity problem that arises in randomized control trials (RCT's) that test an intervention's impacts on a modest number of outcomes. For example, in education a researcher might design a trial to investigate the effects of a mentoring program on three outcomes related to social and emotional development --- measures of social competence, emotional competence and self-regulation. For this type of research, the literature and tools for estimating statistical power, or for estimating sample size requirements of minimum detectable effect sizes (MDES's) that achieve a desired level of statistical power, are extensive.^[For example, power estimating tools frequently used in social science research include @RN4473 Dong & Maynard, 2013; Hedges & Rhoads, 2010; Raudenbush et al., 2011; Spybrook et al., 2011).] However, to our knowledge, no tools exist that take multiplicity into account.
 
 The PUMP package fills this gap. It allows users to estimate statistical power, sample size requirements or MDES's for multiple definitions of statistical power, when applying any of five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg and when using any of the following RCT designs and estimation models: 
+
 - Individual random assignment
 - Blocked individual random assignment
    - Constant effects model (2 levels - e.g., students blocked within teachers)
@@ -54,7 +62,7 @@ power researchers specify an alternative hypothesis of at least a particular eff
 t_m = \frac{\hat{ES}_m}{SE(\hat{ES}_m)},
 \end{equation}
 
-from which a raw p-value is computed. Here, the term "raw" is used to distinguish this p-value from a p-value that has been adjusted for multiple hypothesis tests, as discussed below. The raw p-value is the probability of a test statistic being at least as extreme as the one observed, given that the null hypothesis is true. For a two-sided test, which is the focus of the discussion going forward (although the PUMP package also allows for one-sided tests), the raw p-value for the $m^{th}$ test is $p_m=2*Pr{T_m>=|t_m|}$.^[For a one-sided test, depending on the direction of our alternative hypothesis, the raw p-value for the $m^{th}$ test is computed as $p_m=Pr{T_m <= t_m}$ or $p_m=Pr{T_m >=t_m}$.] This expression means we use our knowledge of the sampling distribution of the t-statistic, and we identify where our observed test statistic falls in that distribution when it is centered around zero.
+from which a raw p-value is computed. Here, the term "raw" is used to distinguish this p-value from a p-value that has been adjusted for multiple hypothesis tests, as discussed below. The raw p-value is the probability of a test statistic being at least as extreme as the one observed, given that the null hypothesis is true. For a two-sided test, which is the focus of the discussion going forward (although the PUMP package also allows for one-sided tests), the raw p-value for the $m^{th}$ test is $p_m=2*Pr{T_m \geq |t_m|}$.^[For a one-sided test, depending on the direction of our alternative hypothesis, the raw p-value for the $m^{th}$ test is computed as $p_m=Pr{T_m \leq t_m}$ or $p_m=Pr{T_m \geq t_m}$.] This expression means we use our knowledge of the sampling distribution of the t-statistic, and we identify where our observed test statistic falls in that distribution when it is centered around zero.
 
 When testing a _single_ hypothesis under this framework (such effects are being assessed on just one outcome, so that $M=1$), researchers typically specify an acceptable maximum probability of making a Type I error, $\alpha$. A Type I error is the probability of erroneously rejecting the null hypothesis when it is true. The quantity $\alpha$ is also referred to as the significance level. If $\alpha=0.05$, then the null hypothesis is rejected if the p-value is less than $0.05$, and it is concluded that the intervention had an effect because there is less than a 5% chance that this finding is a false positive.
 
@@ -75,13 +83,14 @@ In Table 1, $B$ is the number of erroneously rejected null hypotheses, or the nu
 on independent outcomes in the case that $\alpha$ is set to $0.05$ and no MTPs are applied. The Type I error was almost $10\%$ when testing effects on two independent outcomes and $23\%$ when testing effects on five independent outcomes. These Type I error rates both correspond to the FWER. The goal of MTPs that control the FWER is to bring these percentages back down to $5\%$. 
 
 Also in Table 1, the FDR is equal to $E(\frac{B}{R})$ but is defined to be $0$ when $R=0$, or when no hypotheses are rejected. As is frequently noted in the literature (e.g., Shaffer, 1995; Schochet, 2008), the FWER and FDR have different objectives. Control of the FWER protects researchers from any spurious findings and so may be preferred when even a single false positive could lead to the wrong conclusion about the effectiveness of an intervention. On the other hand, the FDR is more lenient with false positives. Researchers may be willing to accept a few false positives, $B$, when the total number of rejected hypotheses, $R$, is large. Note that under the complete null hypothesis that all M null hypotheses are null, the FDR is equal to the FWER, because when referring back to Table 1 we
-have $FWER=P(R>0)=E(\frac{B}{R})=FDR$. However,if any effects truly exist,then $FWER>=FDR$.
+have $FWER=P(R>0)=E(\frac{B}{R})=FDR$. However,if any effects truly exist,then $FWER \geq FDR$.
 
 As a result, in the case where there is at least one false null hypothesis (at least one true effect at least as large as a specified effect size), an MTP that controls the FDR at $5\%$ will have a Type I error rate that is greater than $5\%$. Note that MTPs may provide either weak or strong control of the error rate they target. An MTP provides weak control of the FWER or the FDR at level $\alpha$ if the control can only be guaranteed when all nulls are true, or when the effects on all outcomes are zero. An MTP provides strong control of the FWER or FDR at level if the control is guaranteed when some null hypotheses are true and some are false, or when there may be effects on at least some outcomes. Of course, strong control is preferred.
 
 
 
 # Estimating Power, MDES's and Sample Sizes in Studies of Impacts on Multiple Outcomes (Kristen - first draft October 1)
+
 * Approach for estimating statistical power
   + General strategy
   + Table of all designs (showing naming convention)
@@ -101,16 +110,17 @@ However, with multiple outcomes, finding such expressions can be quite difficult
 Instead, we rely on simulation to calculate estimated power.
 
 If we were to rely on a full simulation approach, we could use the following method to estimate power:
+
 1. Simulate data according to the alternative hypotheses (assuming true nonzero effects).
 2. Calculate test statistics $t_1$ under the alternative hypothesis.
-3. Use these test statistics to calculate $p$-values $p_1$.
+3. Use these test statistics to calculate $p$-values.
 4. Calculate power using the distribution of $p$-values.
 
 However, we can simplify this process by skipping the first step.
-Given an assumed model and correlation structure for the test statistics, we can directly sample from $t_1$, the joint alternative distribution of the test statistics.
+Given an assumed model and correlation structure for the test statistics, we can directly sample from $f(t_1)$, the joint alternative distribution of the test statistics.
 This shortcut improves both the simplicity and the speed of computation.
 
-We now describe how to sample from $t_1$ directly.
+We now describe how to sample from $f(t_1)$ directly.
 First, we assume a particular research design and model.
 Define $\psi_m$ as the treatment effect for outcome $m$.
 Then, we can also express the treatment effect in terms of effect size:
@@ -124,22 +134,24 @@ The quantity $Q_m$ is defined by the assumed model, and can be a function of the
 Finally, when testing the hypothesis for outcome $m$, the test statistics for a $t$ test is:
 $$t_m = \frac{\hat{ES}_m}{\hat{Q}_m}$$
 with degrees of freedom $df$, also defined by the assumed model.
-Under the alternative hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $\frac{\hat{ES}_m}{\hat{Q}_m}$
+Under the alternative hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $\hat{ES}_m/\hat{Q}_m$.
+We choose the correlation between test statistics $\rho$ to sample jointly from $t_m, m = 1, \dots M$.
 
-For Westfall-Young procedures, this procedure is augmented by also sampling test statistics under the null distribution.
+For Westfall-Young procedures, this method is augmented by also sampling test statistics under the joint null distribution.
 Under the null hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $0$.
 
 ## RCT Designs
 
-When designing a study, the researcher has two main choices:
-1. The design of the experiment, including how many levels, and at which level randomization occurs.
-2. The assumed model, including whether intercepts and treatment effects should be treated as constant, fixed, or random.
-
-The PUMP package supports 1, 2, or 3 level models, with randomization occurring at any level.
+When designing a study, the researcher has two main choices.
+First, the researcher chooses the design of the experiment, including the number of levels, and at which level randomization occurs.
+Second, and separately, the researchers chooses an assumed model, including whether intercepts and treatment effects should be treated as constant, fixed, or random.
+The same experimental design can have different modeling choices, and these two decisions should be conceptually separated from each other.
+The PUMP package supports models with 1, 2, or 3 levels, with randomization occurring at any level.
 For example, a design with 2 levels and randomization at level 1 is a blocked design.
 A design with 3 levels and randomization at level 3 is a cluster design.
 
 For modeling, we have the following choices.
+
 - Whether level 2 and level 3 intercepts are:
   - fixed: intercepts are fixed effects constrained to have mean 0.
   - random: intercepts are considered to be Normally distributed, allowing for partial pooling.
@@ -148,12 +160,13 @@ For modeling, we have the following choices.
   - fixed: each unit within a level has an individual estimated impact, with an additional mean impact.
   - random: treatment impacts are Normally distributed around a mean impact.
   
-The research design is denoted by $d$, followed by the number of levels and randomization level, so $d3.1$ is a $3$-level design with randomization at level $1$.
+The research design is denoted by $d$, followed by the number of levels and randomization level, so `d3.1` is a $3$-level design with randomization at level $1$.
 The model is denoted by $m$, followed by the level and the assumption for the intercept, either $f$ or $r$ and then the assumption for the treatment impacts, $c$, $f$, or $r$.
-For example, $m3ff2rc$ means at level $3$, we assume fixed intercepts and treatment impacts, and at level $2$ we assume random intercepts and constant treatment impacts.
-The full design and model are specified by concatenating these together, e.g. $d3.2_m3ff2rc$.
+For example, `m3ff2rc` means at level $3$, we assume fixed intercepts and treatment impacts, and at level $2$ we assume random intercepts and constant treatment impacts.
+The full design and model are specified by concatenating these together, e.g. `d3.2_m3ff2rc`.
 
 The full list of supported models is below.
+We also including the corresponding names from the PowerUP! package where appropriate.
 For more details about each model, see the appendix.
 
 ```{r, echo = FALSE}
@@ -172,27 +185,33 @@ To perform a search, we calculate power over a range of different MDES or sample
 We discuss the algorithm for sample size, although the approach for MDES is the same.
 
 First, we begin by bounding the possible range of sample size values.
-Bonferroni is the most conservative correction, so it would result in the largest possible sample size, and thus Bonferroni provides our upper bound.
-If we are interested in complete power, we have a larger upper bound; in order to have complete power of $0.8$, we would need each outcome to have an individual power of $(\text{0.8}^(1/M))$.
+Bonferroni is the most conservative correction, so it would result in the largest possible sample size, and thus a Bonferroni correction provides our upper bound.
+If we are interested in complete power, we have a larger upper bound; in order to have complete power of $0.8$, we would need each outcome to have an individual power of $\text{0.8}^{(1/M)}$.
 On the other hand, our least conservative correction is doing no correction at all, and would result in the smallest possible sample size, so no adjustment provides our lower bound.
-If we are interested in minimal power, we must have a smaller lower bound; in order to have 1-minimal power of $0.8$, each outcome needs to have individual power of $1 - (1 - \text{0.8})^(1/M)$.
+If we are interested in minimal power, we must have a smaller lower bound; in order to have 1-minimal power of $0.8$, each outcome needs to have individual power of $1 - (1 - \text{0.8})^{(1/M)}$.
 
 Second, given our lower and upper bounds, we now use optimization to find the sample size.
-We first calculate power over a small grid of sample size points to estimate the functional form.
-Then, we fit **TODO** a quadratic function to these points, which allows us to then quickly find the sample size.
-**TODO** how much do I discuss corner cases?
+**TODO** this will be updated once we have settled on an optmization procedure!
 
 ## Validation
 
 We completed extensive validation checks to ensure our power calculation procedure was correct.
-
 First, we compared our power estimates in scenarios with only one outcome, $M = 1$, to PowerUpR!.
 Without a multiple testing procedure adjustment, our estimates match.
-In order to validate our estimates under multiplicity, we used a simulation approach.
+Second, in order to validate our estimates under multiplicity, we used a simulation approach.
 We generated many iterations of data according to the assumed design and model, calculated p-values, and calculated an empirical estimate of power and error.
 Then, we compared the PUMP results to validate that the PUMP estimates fall in the confidence interval for the simulations.
-A more detailed explanation of the validation procedure can be found in the Appendix, and full validation code and results are in our github repository.
-**TODO** update the appendix
+
+A more detailed explanation of the validation procedure can be found in the Appendix, and full validation code and results are in our github repository **TODO**.
+For some scenarios, we have discrepancies from PowerUp resulting from different modeling choices.
+For example, for certain models PowerUp assumes the intraclass correlation is zero, while we allow for nonzero values.
+When there are discrepancies, these are noted in the appendix.
+
+**TODO** update the appendix.
+
+
+
+
 
 
 # PUM-P Package (Luke - first October 1)

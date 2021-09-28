@@ -40,7 +40,9 @@ We compare three different methods of estimating power:
 * PowerUpR (only comparable for D1individual, unadjusted power)
 * Monte Carlo Simulations
 
-We compare point estimates of power from PUMP and PowerUpR for D1 individual, unadjusted power estimates. For all other types of power definitions and adjustments, we are only able to compare PUMP to the estimated power from Monte Carlo simulations. The simulations produce a 95\% confidence interval for power, and we check that the PUMP estimate is within the confidence interval.
+We compare point estimates of power from PUMP and PowerUpR for D1 individual, unadjusted power estimates.
+For all other types of power definitions and adjustments, we are only able to compare PUMP to the estimated power from Monte Carlo simulations.
+The simulations produce a 95\% confidence interval for power, and we check that the PUMP estimate is within the confidence interval.
 
 ## Monte Carlo Simulations
 
@@ -108,7 +110,11 @@ We do not vary:
 
 # Validation results
 
-Below is an example of a graph we use for validation. The red dot is the PUM estimate of power, the green dot is the PowerUpR estimate of power, and the 95% confidence intervals based on the monte carlo simulations are shown in blue. To validate that PUMP produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals. The plot shows the results across different types of power and different MTPs. We repeat this graph for each set of parameters for each design.
+Below is an example of a graph we use for validation.
+The red dot is the PUM estimate of power, the green dot is the PowerUpR estimate of power, and the 95% confidence intervals based on the monte carlo simulations are shown in blue.
+To validate that PUMP produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals.
+The plot shows the results across different types of power and different MTPs.
+We repeat this graph for each set of parameters for each design.
 
 
 ```{r}
@@ -179,36 +185,42 @@ user.params.list[['nbar']] <- 100
 ```
 
 
+**TODO** include plot
+
 ```{r validate.power, fig.height=6, fig.width=6}
-design <- "d3.2_m3ff2rc"
-user.params.list[['R2.3']] <- rep(0, M)
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-power_plot <- gen.power.results.plot(params.file.base, design)
-print(power_plot)
+# design <- "d3.2_m3ff2rc"
+# user.params.list[['R2.3']] <- rep(0, M)
+# params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+# power_plot <- gen.power.results.plot(params.file.base, design)
+# print(power_plot)
 ```
 
-Next, we validate MDES and sample size calculations. The first column shows the calculated MDES or sample size, the middle column is the power we plugged into the calculation, and the last column shows the MDES or sample size that we are targeting. Thus, ideally we want the first and last columns to match.
+Next, we validate MDES and sample size calculations.
+The first column shows the calculated MDES or sample size, the middle column is the power we plugged into the calculation, and the last column shows the MDES or sample size that we are targeting.
+Thus, ideally we want the first and last columns to match.
 
+**TODO** include tables
 ```{r}
-user.params.list[['nbar']] <- 50
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
-mdes_D1_results <- readRDS(mdes.file)
-pander::pandoc.table(
-  mdes_D1_results,
-  style = "grid", split.tables = 100, row.names = FALSE,
-  caption = design
-)
+# user.params.list[['nbar']] <- 50
+# params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+# mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
+# mdes_D1_results <- readRDS(mdes.file)
+# pander::pandoc.table(
+#   mdes_D1_results,
+#   style = "grid", split.tables = 100, row.names = FALSE,
+#   caption = design
+# )
 ```
 
+
 ```{r}
-sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
-sample_D1_results <- readRDS(sample.file)
-pander::pandoc.table(
-  sample_D1_results,
-  style = "grid", split.tables = 100, row.names = FALSE,
-  caption = design
-)
+# sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
+# sample_D1_results <- readRDS(sample.file)
+# pander::pandoc.table(
+#   sample_D1_results,
+#   style = "grid", split.tables = 100, row.names = FALSE,
+#   caption = design
+# )
 ```
 
 # Westfall-Young procedures
