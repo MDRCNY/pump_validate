@@ -22,6 +22,8 @@ Topics to possibly discuss:
 
 - effect size: what it is, how to decide what it is
 - correlation between test statistics, relationship to correlation between outcomes
+- advice on binary outcomes, consider how it affects assumptions
+- reference to literature on summarizing/collapsing outcomes
 
 # Introduction
 
