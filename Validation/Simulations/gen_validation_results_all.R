@@ -29,8 +29,6 @@ if(is.na(q)) { q <- 1 }
 user.params.default <- user.params.list
 sim.params.default <- sim.params.list
 
-# TODO: fix defaults
-
 #------------------------------------------------------------------#
 # Test WY
 #------------------------------------------------------------------#
@@ -189,8 +187,8 @@ if(run.d2.1 & run.power)
   user.params.list[['K']] <- 1
   user.params.list[['J']] <- 20
   user.params.list[['ICC.3']] <- NULL
-  user.params.list[['omega.3']] <- NULL
-  user.params.list[['R2.3']] <- NULL
+  user.params.list[['omega.3']] <- 0
+  user.params.list[['R2.3']] <- 0
   
   #------------------------------------------------------------------#
   # base case
@@ -396,9 +394,10 @@ if(run.d2.1 & run.mdes.ss)
   
   # assumptions
   user.params.list[['K']] <- 1
+  user.params.list[['J']] <- 20
   user.params.list[['ICC.3']] <- NULL
-  user.params.list[['omega.3']] <- NULL
-  user.params.list[['R2.3']] <- NULL
+  user.params.list[['omega.3']] <- 0
+  user.params.list[['R2.3']] <- 0
   
   # don't do WY for now
   sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm")
@@ -496,8 +495,8 @@ if(run.d2.2 & run.power)
   # assumptions
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
-  user.params.list[['omega.3']] <- NULL
-  user.params.list[['R2.3']] <- NULL
+  user.params.list[['omega.3']] <- 0
+  user.params.list[['R2.3']] <- 0
   user.params.list[['omega.2']] <- 0
   
   # params to help have a decent power
@@ -650,8 +649,8 @@ if(run.d2.2 & run.mdes.ss)
   # assumptions
   user.params.list[['K']] <- 1
   user.params.list[['ICC.3']] <- NULL
-  user.params.list[['omega.3']] <- NULL
-  user.params.list[['R2.3']] <- NULL
+  user.params.list[['omega.3']] <- 0
+  user.params.list[['R2.3']] <- 0
   user.params.list[['omega.2']] <- 0
   
   # params to help have a decent power
@@ -1530,10 +1529,10 @@ if(run.power.def & run.power)
   user.params.list$J <- 3
   user.params.list$K <- 22
   user.params.list$nbar <- 150
-  user.params.list$R2.1 <- 0.1
-  user.params.list$R2.2 <- 0.7
-  user.params.list$ICC.2 <- 0.05
-  user.params.list$ICC.3 <- 0.4
+  user.params.list$R2.1 <- rep(0.1, 3)
+  user.params.list$R2.2 <- rep(0.7, 3)
+  user.params.list$ICC.2 <- rep(0.05, 3)
+  user.params.list$ICC.3 <- rep(0.4, 3)
   user.params.list$rho <- 0.4
   power.results <- validate_power(user.params.list, sim.params.list, design = "d3.2_m3ff2rc", q = q, overwrite)
   
@@ -1544,10 +1543,10 @@ if(run.power.def & run.power)
   user.params.list$J <- 4
   user.params.list$K <- 17
   user.params.list$nbar <- 160
-  user.params.list$R2.1 <- 0.3
-  user.params.list$R2.2 <- 0.75
-  user.params.list$ICC.2 <- 0.05
-  user.params.list$ICC.3 <- 0.4
+  user.params.list$R2.1 <- rep(0.3, 3)
+  user.params.list$R2.2 <- rep(0.75, 3)
+  user.params.list$ICC.2 <- rep(0.05, 3)
+  user.params.list$ICC.3 <- rep(0.4, 3)
   user.params.list$rho <- 0.4
   power.results <- validate_power(user.params.list, sim.params.list, design = "d3.2_m3ff2rc", q = q, overwrite)
   
@@ -1558,10 +1557,10 @@ if(run.power.def & run.power)
   user.params.list$J <- 4
   user.params.list$K <- 16
   user.params.list$nbar <- 150
-  user.params.list$R2.1 <- 0.25
-  user.params.list$R2.2 <- 0.75
-  user.params.list$ICC.2 <- 0.05
-  user.params.list$ICC.3 <- 0.4
+  user.params.list$R2.1 <- rep(0.25, 3)
+  user.params.list$R2.2 <- rep(0.75, 3)
+  user.params.list$ICC.2 <- rep(0.05, 3)
+  user.params.list$ICC.3 <- rep(0.4, 3)
   user.params.list$rho <- 0.4
   power.results <- validate_power(user.params.list, sim.params.list, design = "d3.2_m3ff2rc", q = q, overwrite)
   
@@ -1572,10 +1571,10 @@ if(run.power.def & run.power)
   user.params.list$J <- 5
   user.params.list$K <- 18
   user.params.list$nbar <- 170
-  user.params.list$R2.1 <- 0.25
-  user.params.list$R2.2 <- 0.75
-  user.params.list$ICC.2 <- 0.05
-  user.params.list$ICC.3 <- 0.4
+  user.params.list$R2.1 <- rep(0.25, 3)
+  user.params.list$R2.2 <- rep(0.75, 3)
+  user.params.list$ICC.2 <- rep(0.05, 3)
+  user.params.list$ICC.3 <- rep(0.4, 3)
   user.params.list$rho <- 0.4
   power.results <- validate_power(user.params.list, sim.params.list, design = "d3.2_m3ff2rc", q = q, overwrite)
 }

@@ -23,18 +23,10 @@ This list is not complete - to be added to and checked off by everyone.
 - Revisit terminology of MDES - should we use "effect size" or "ATE" instead - build into user testing (Kristin, TBD)
 
 ## Kristen's todo list
-- remove dependency on multtest package
-- unit test: no covariates
-- unit test: does it work with J = 1? M = 1? K = 1?
-- unblocked design
-- allow user to give PowerUp names
 - document remaining issues with sample size/mdes code, implement correct level of warnings
-- write up WY validation
-- unit tests for correlated and uncorrelated test statistics for sample size code
-- should omega be a vector? check consistencny of all scalar and vector params
+- once sample size code is stable, rerun all validation
+- should omega be a vector? check consistency of all scalar and vector params
 - understand unit test with correlated outcomes
-- allow user to do no adjustment for sample size, mdes but only for individual power
-
 
 # Shiny app
 - Introduction/education matter (Kristin, 8/31)
@@ -71,4 +63,5 @@ This list is not complete - to be added to and checked off by everyone.
 - effect size calculator
 - speed up everything
 - WY follow up: WY with a small number of schools, large number of permutations, and no effect, do we get the intended power/p-value?  What if we don’t do any adjustment–is it because of divergent/unstable models?
+- consider whether to return S3 objects
 

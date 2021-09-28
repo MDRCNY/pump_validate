@@ -25,6 +25,8 @@ output:
 knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
 library(ggplot2)
 library(here)
+library(knitr)
+library(pum)
 source(here::here("Validation/Simulations", "misc.R"))
 ```
 
@@ -61,7 +63,7 @@ Similarly, for sample size validation, we input the already-calculated D1 indivi
 
 We use the following adjustment procedures:
   
-  * Bonferroni
+* Bonferroni
 * Benjamini Hochberg (BH)
 * Holm
 * Westfall-Young Single Step (WY-SS)
@@ -69,26 +71,17 @@ We use the following adjustment procedures:
 
 We calculate power under the following definitions:
   
-  * Individual power for each outcome (M = 3): D1indiv, D2indiv, D3indiv
+* Individual power for each outcome (M = 3): D1indiv, D2indiv, D3indiv
 * Mean individual power
 * Minimum power: min1, min2
 * Complete power
 
 We consider the following designs:
   
-* Blocked individual randomization, 2 level
-  - constant effects (blocked_i1_2c)
-  - fixed effects (blocked_i1_2f)
-  - random effects (blocked_i1_2r)
-* Blocked individual randomization, 3 level
-  - random effects (blocked_i1_3r)
-* Cluster randomization, 2 level
-  - random effects (simple_c2_2r)
-* Cluster randomization, 3 level
-  - random effects (simple_c3_3r)
-* Blocked cluster randomization, 3 level
-  - fixed effects (blocked_c2_3f)
-  - random effects (blocked_c2_3r)
+```{r, echo = FALSE}
+designs = supported_designs()
+kable(designs$Design[,1:4])
+```
 
 ## Simulation parameters
 
@@ -113,20 +106,9 @@ We do not vary:
 * Correlations between school random effects and impacts $\kappa$
 * $\rho$ informs all correlations; we keep the same correlation between covariates, residuals, impacts, random effects for all levels and across all outcomes
 
-TODO: possible things we may want to vary:
-  
-* Correlations between school random effects and impacts $\kappa$
-* Combinations of parameters instead of one at a time
-* A realistic set of parameters
-* Extreme values, i.e. $\rho = 0.95$
-  
-\newpage
-
 # Validation results
 
-Below is an example of a graph we use for validation. The red dot is the PUM estimate of power, the green dot is the PowerUpR estimate of power, and the 95% confidence intervals based on the monte carlo simulations are shown in blue. To validate that PUMP produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals. The plot shows the results across different types of power and different MTPs. 
-
-This graph in particular is for a blocked cluster design with fixed effects with a particular set of parameters. We repeat this graph for each set of parameters for each design.
+Below is an example of a graph we use for validation. The red dot is the PUM estimate of power, the green dot is the PowerUpR estimate of power, and the 95% confidence intervals based on the monte carlo simulations are shown in blue. To validate that PUMP produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals. The plot shows the results across different types of power and different MTPs. We repeat this graph for each set of parameters for each design.
 
 
 ```{r}
@@ -188,7 +170,7 @@ user.params.list <- list(
 )
 
 user.params.list[['omega.2']] <- 0
-user.params.list[['J']] <- 20
+user.params.list[['J']] <- 30
 user.params.list[['K']] <- 10
 user.params.list[['nbar']] <- 50
 sim.params.list[['S']] <- 1000
@@ -197,22 +179,23 @@ user.params.list[['nbar']] <- 100
 ```
 
 
-```{r validate.power, fig.height=8, fig.width=6}
-design <- "blocked_c2_3f"
+```{r validate.power, fig.height=6, fig.width=6}
+design <- "d3.2_m3ff2rc"
 user.params.list[['R2.3']] <- rep(0, M)
-user.params.list[['ICC.3']] <- rep(0, M)
 params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_c2_3f_nj100_power_plot <- gen.power.results.plot(params.file.base, design)
-print(blocked_c2_3f_nj100_power_plot)
+power_plot <- gen.power.results.plot(params.file.base, design)
+print(power_plot)
 ```
 
 Next, we validate MDES and sample size calculations. The first column shows the calculated MDES or sample size, the middle column is the power we plugged into the calculation, and the last column shows the MDES or sample size that we are targeting. Thus, ideally we want the first and last columns to match.
 
 ```{r}
+user.params.list[['nbar']] <- 50
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
 mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
-blocked_c2_3f_mdes_D1_results <- readRDS(mdes.file)
+mdes_D1_results <- readRDS(mdes.file)
 pander::pandoc.table(
-  blocked_c2_3f_mdes_D1_results,
+  mdes_D1_results,
   style = "grid", split.tables = 100, row.names = FALSE,
   caption = design
 )
@@ -220,9 +203,9 @@ pander::pandoc.table(
 
 ```{r}
 sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
-blocked_c2_3f_sample_D1_results <- readRDS(sample.file)
+sample_D1_results <- readRDS(sample.file)
 pander::pandoc.table(
-  blocked_c2_3f_sample_D1_results,
+  sample_D1_results,
   style = "grid", split.tables = 100, row.names = FALSE,
   caption = design
 )

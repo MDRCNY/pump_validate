@@ -1,10 +1,10 @@
 ---
 title: "PUMP manuscript draft"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
   html_notebook: default
-  pdf_document: default
 bibliography: refs.bib
 ---
 Power Under Multiplicity Project (PUMP): An R package for estimating statistical power, minimum detectable effect sizes (MDES's) and sample sizes when adjusting for multiple hypothesis tests
@@ -97,8 +97,7 @@ As a result, in the case where there is at least one false null hypothesis (at l
 ## Power estimation strategy
 
 In order to estimate power for a single outcome, or even a small set of outcomes, we can often use closed-form algebraic expressions derived from our assumed model.
-However, with multiple outcomes, finding such expressions can be quite difficult.
-We want to avoid having to derive expressions for every possible design, model, MTP, and number of outcomes.
+However, with multiple outcomes, finding such expressions can be quite difficult, or even impossible depending on the multiple testing procedure.
 Instead, we rely on simulation to calculate estimated power.
 
 If we were to rely on a full simulation approach, we could use the following method to estimate power:
@@ -107,8 +106,9 @@ If we were to rely on a full simulation approach, we could use the following met
 3. Use these test statistics to calculate $p$-values $p_1$.
 4. Calculate power using the distribution of $p$-values.
 
-However, we can simplify this process substantially by skipping the first step.
+However, we can simplify this process by skipping the first step.
 Given an assumed model and correlation structure for the test statistics, we can directly sample from $t_1$, the joint alternative distribution of the test statistics.
+This shortcut improves both the simplicity and the speed of computation.
 
 We now describe how to sample from $t_1$ directly.
 First, we assume a particular research design and model.
@@ -124,9 +124,10 @@ The quantity $Q_m$ is defined by the assumed model, and can be a function of the
 Finally, when testing the hypothesis for outcome $m$, the test statistics for a $t$ test is:
 $$t_m = \frac{\hat{ES}_m}{\hat{Q}_m}$$
 with degrees of freedom $df$, also defined by the assumed model.
+Under the alternative hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $\frac{\hat{ES}_m}{\hat{Q}_m}$
 
 For Westfall-Young procedures, this procedure is augmented by also sampling test statistics under the null distribution.
-Under the alternative hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $\frac{\hat{ES}_m}{\hat{Q}_m}$; under the null hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $0$.
+Under the null hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $0$.
 
 ## RCT Designs
 
@@ -147,10 +148,10 @@ For modeling, we have the following choices.
   - fixed: each unit within a level has an individual estimated impact, with an additional mean impact.
   - random: treatment impacts are Normally distributed around a mean impact.
   
-The research design is denoted by $d$, followed by the number of levels and randomization level, so d3.1 is a $3$-level design with randomization at level $1$.
+The research design is denoted by $d$, followed by the number of levels and randomization level, so $d3.1$ is a $3$-level design with randomization at level $1$.
 The model is denoted by $m$, followed by the level and the assumption for the intercept, either $f$ or $r$ and then the assumption for the treatment impacts, $c$, $f$, or $r$.
 For example, $m3ff2rc$ means at level $3$, we assume fixed intercepts and treatment impacts, and at level $2$ we assume random intercepts and constant treatment impacts.
-The full design and model are specified by concantenating these together, e.g. d3.2_m3ff2rc.
+The full design and model are specified by concatenating these together, e.g. $d3.2_m3ff2rc$.
 
 The full list of supported models is below.
 For more details about each model, see the appendix.
@@ -172,9 +173,9 @@ We discuss the algorithm for sample size, although the approach for MDES is the 
 
 First, we begin by bounding the possible range of sample size values.
 Bonferroni is the most conservative correction, so it would result in the largest possible sample size, and thus Bonferroni provides our upper bound.
-If we are interested in complete power, we have a larger upper bound; in order to have complete power of $0.8$, we would need each outcome to have an individual power of $(\text{target power}^(1/M))$.
-On the other hand, our most conservative correction is doing no correction at all, and would result in the smallest possible sample size, so no adjustment provides our lower bound.
-If we are interested in minimal power, we must have a smaller lower bound; in order to have 1-minimal power of $0.8$, each outcome needs to have individual power of $1 - (1 - \text{target power})^(1/M)$.
+If we are interested in complete power, we have a larger upper bound; in order to have complete power of $0.8$, we would need each outcome to have an individual power of $(\text{0.8}^(1/M))$.
+On the other hand, our least conservative correction is doing no correction at all, and would result in the smallest possible sample size, so no adjustment provides our lower bound.
+If we are interested in minimal power, we must have a smaller lower bound; in order to have 1-minimal power of $0.8$, each outcome needs to have individual power of $1 - (1 - \text{0.8})^(1/M)$.
 
 Second, given our lower and upper bounds, we now use optimization to find the sample size.
 We first calculate power over a small grid of sample size points to estimate the functional form.
@@ -183,15 +184,14 @@ Then, we fit **TODO** a quadratic function to these points, which allows us to t
 
 ## Validation
 
-We completed extensive validation to ensure our power calculation procedure was correct.
+We completed extensive validation checks to ensure our power calculation procedure was correct.
 
 First, we compared our power estimates in scenarios with only one outcome, $M = 1$, to PowerUpR!.
 Without a multiple testing procedure adjustment, our estimates match.
 In order to validate our estimates under multiplicity, we used a simulation approach.
 We generated many iterations of data according to the assumed design and model, calculated p-values, and calculated an empirical estimate of power and error.
 Then, we compared the PUMP results to validate that the PUMP estimates fall in the confidence interval for the simulations.
-A more detailed explanation of the validation procedure can be found in the Appendix, and full validation code and results
-are in our github repository.
+A more detailed explanation of the validation procedure can be found in the Appendix, and full validation code and results are in our github repository.
 **TODO** update the appendix
 
 

@@ -398,6 +398,15 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       iterator <- 0
       pump_results <- NULL
       
+      # for level 3 data
+      ICC.3 = NULL
+      if(is.null(user.params.list[['ICC.3']])){
+        ICC.3 = 0
+      } else
+      {
+        ICC.3 = user.params.list[['ICC.3']]
+      }
+      
       for (MTP in sim.params.list[['procs']]){
         pump_results_iter <- pump_power(
           design = design,
@@ -411,7 +420,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           numCovar.2 = user.params.list[['numCovar.2']],
           numCovar.3 = user.params.list[['numCovar.3']],
           R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
-          ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
+          ICC.2 = user.params.list[['ICC.2']], ICC.3 = ICC.3,
           rho = user.params.list[['rho.default']],
           omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
           tnum = sim.params.list[['tnum']], B = sim.params.list[['B']],
@@ -426,7 +435,6 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       }
       # format results table nicely
       pump_results_table <- pump_results
-      pump_results_table$MTP <- rownames(pump_results_table)
       pump_results <- melt(pump_results_table, id.vars = 'MTP')
       pump_results$method = 'pum'
       pump_results$value.type = 'adjusted_power'
@@ -512,7 +520,6 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
     }
     power.results <- readRDS(power.file)
     
-    iterator <- 0
     mdes_compare_results <- plot_data <- NULL
     for (MTP in procs){
       target.power <- power.results$value[
@@ -520,6 +527,16 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
         power.results$power_type == power.definition &
         power.results$method == 'pum'
       ]
+      
+      # for level 3 data
+      ICC.3 = NULL
+      if(is.null(user.params.list[['ICC.3']])){
+        ICC.3 = 0
+      } else
+      {
+        ICC.3 = user.params.list[['ICC.3']]
+      }
+      
       mdes_results_iter <- pump_mdes(
         design = design,
         MTP = MTP,
@@ -534,42 +551,37 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
         numCovar.2 = user.params.list[['numCovar.2']],
         numCovar.3 = user.params.list[['numCovar.3']],
         R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
-        ICC.2 = user.params.list[['ICC.2']], ICC.3 = user.params.list[['ICC.3']],
+        ICC.2 = user.params.list[['ICC.2']], ICC.3 = ICC.3,
         rho = user.params.list[['rho.default']],
         omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
-        tnum = sim.params.list[['tnum']], B = sim.params.list[['B']],
+        B = sim.params.list[['B']],
         start.tnum = sim.params.list[['start.tnum']],
         final.tnum = sim.params.list[['final.tnum']],
-        max.cum.tnum = sim.params.list[['max.cum.tnum']],
         max.steps = sim.params.list[['max.steps']],
         cl = cl
       )
-      if (iterator == 0) {
-        mdes_compare_results <- mdes_results_iter$mdes.results
-      } else {
-        mdes_compare_results <- rbind(mdes_compare_results, mdes_results_iter$mdes.results[2,])
-      }
-      iterator <- iterator + 1
-      plot_data <- rbind(plot_data, mdes_results_iter$test.pts)
+      mdes_compare_results <- rbind(mdes_compare_results, mdes_results_iter)
+      # plot_data <- rbind(plot_data, mdes_results_iter$test.pts)
     }
     
-    if(plot.path)
-    {
-      # plot_data <- plot_data[plot_data$step > 0,]
-      plot.power <- ggplot(plot_data, aes(x = step, y = power)) +
-        geom_point() + geom_line() +
-        facet_wrap(.~MTP) +
-        geom_hline(aes(yintercept = target.power)) +
-        ylim(0, 1)
-      plot.mdes <- ggplot(plot_data, aes(x = step, y = pt)) +
-        geom_point() + geom_line() +
-        facet_wrap(.~MTP)
-      print(grid.arrange(plot.power, plot.mdes, top = design))
-    }
+    # if(plot.path)
+    # {
+    #   # plot_data <- plot_data[plot_data$step > 0,]
+    #   plot.power <- ggplot(plot_data, aes(x = step, y = power)) +
+    #     geom_point() + geom_line() +
+    #     facet_wrap(.~MTP) +
+    #     geom_hline(aes(yintercept = target.power)) +
+    #     ylim(0, 1)
+    #   plot.mdes <- ggplot(plot_data, aes(x = step, y = pt)) +
+    #     geom_point() + geom_line() +
+    #     facet_wrap(.~MTP)
+    #   print(grid.arrange(plot.power, plot.mdes, top = design))
+    # }
     
     mdes.filename <- paste0(params.file.base, 'comparison_mdes_', power.definition, '_results.RDS')
     
     mdes_compare_results[,2:3] <- apply(mdes_compare_results[,2:3], 2, as.numeric)
+    mdes_compare_results <- as.data.frame(mdes_compare_results)
     mdes_compare_results = cbind(mdes_compare_results, user.params.list[['ATE_ES']][1])
     colnames(mdes_compare_results) <- c('MTP', 'Adjusted MDES', paste(power.definition, 'Power'), 'Target MDES')
     rownames(mdes_compare_results) <- NULL
@@ -646,7 +658,6 @@ validate_sample <- function(user.params.list, sim.params.list, design,
     }
     power.results <- readRDS(power.file)
     
-    iterator <- 0
     sample_compare_results <- plot_data <- NULL
     for (MTP in procs)
     {
@@ -655,6 +666,16 @@ validate_sample <- function(user.params.list, sim.params.list, design,
         power.results$power_type == power.definition &
         power.results$method == 'pum'
       ]
+      
+      # for level 3 data
+      ICC.3 = NULL
+      if(is.null(user.params.list[['ICC.3']])){
+        ICC.3 = 0
+      } else
+      {
+        ICC.3 = user.params.list[['ICC.3']]
+      }
+      
       sample_results_iter <- pump_sample(
         design = design,
         MTP = MTP,
@@ -676,7 +697,7 @@ validate_sample <- function(user.params.list, sim.params.list, design,
         R2.2 = user.params.list[['R2.2']],
         R2.3 = user.params.list[['R2.3']],
         ICC.2 = user.params.list[['ICC.2']],
-        ICC.3 = user.params.list[['ICC.3']],
+        ICC.3 = ICC.3,
         rho = user.params.list[['rho.default']],
         omega.2 = user.params.list[['omega.2']],
         omega.3 = user.params.list[['omega.3']],
@@ -684,36 +705,31 @@ validate_sample <- function(user.params.list, sim.params.list, design,
         B = sim.params.list[['B']],
         start.tnum = sim.params.list[['start.tnum']],
         final.tnum = sim.params.list[['final.tnum']],
-        max.cum.tnum = sim.params.list[['max.cum.tnum']],
         max.steps = sim.params.list[['max.steps']],
         cl = cl
       )
-      if (iterator == 0) {
-        sample_results <- sample_results_iter
-      } else {
-        sample_compare_results <- rbind(sample_compare_results, sample_results_iter$ss.results[2,])
-      }
-      iterator <- iterator + 1
-      plot_data <- rbind(plot_data, sample_results_iter$test.pts)
+      sample_compare_results <- rbind(sample_compare_results, sample_results_iter)
+      # plot_data <- rbind(plot_data, sample_results_iter$test.pts)
     }
+    sample_compare_results <- as.data.frame(sample_compare_results)
     sample_compare_results[,3:4] = apply(sample_compare_results[,3:4], 2, as.numeric)
     sample.filename <- paste0(
       params.file.base, 'comparison_sample_', typesample, '_', power.definition, '_results.RDS'
     )
     
-    if(plot.path)
-    {
-      # plot_data <- plot_data[plot_data$step > 0,]
-      plot.power = ggplot(plot_data, aes(x = step, y = power)) +
-        geom_point() + geom_line() +
-        facet_wrap(.~MTP) +
-        geom_hline(aes(yintercept = target.power)) +
-        ylim(0, 1)
-      plot.mdes = ggplot(plot_data, aes(x = step, y = pt)) +
-        geom_point() + geom_line() +
-        facet_wrap(.~MTP)
-      print(grid.arrange(plot.power, plot.mdes, top = design))
-    }
+    # if(plot.path)
+    # {
+    #   # plot_data <- plot_data[plot_data$step > 0,]
+    #   plot.power = ggplot(plot_data, aes(x = step, y = power)) +
+    #     geom_point() + geom_line() +
+    #     facet_wrap(.~MTP) +
+    #     geom_hline(aes(yintercept = target.power)) +
+    #     ylim(0, 1)
+    #   plot.mdes = ggplot(plot_data, aes(x = step, y = pt)) +
+    #     geom_point() + geom_line() +
+    #     facet_wrap(.~MTP)
+    #   print(grid.arrange(plot.power, plot.mdes, top = design))
+    # }
     
     if(sim.params.list[['parallel']])
     {
