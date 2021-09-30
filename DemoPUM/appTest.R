@@ -1516,15 +1516,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
       output$powercalcGraphP2LBISS <- renderPlot({
         
         dat <- reactPowerTable()
-        dat$AdjType <- rownames(dat)
         dat %>%
           dplyr::select_all() %>%
           dplyr::select(-indiv.mean) %>%
-          tidyr::pivot_longer(!AdjType, names_to = "powerType", values_to = "power") %>%
+          tidyr::pivot_longer(!MTP, names_to = "powerType", values_to = "power") %>%
           ggplot(aes(x = powerType, 
                      y = power, 
-                     shape = AdjType,
-                     colour = AdjType)) + 
+                     shape = MTP,
+                     colour = MTP)) + 
           geom_point(size = 5) +
           scale_y_continuous(limits = c(0,1)) +
           ggtitle("Adjusted Power values across different Power Definitions") +
