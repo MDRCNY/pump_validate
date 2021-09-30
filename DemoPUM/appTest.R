@@ -1511,7 +1511,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
         {reactPowerTable()}
             }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
   
-      
       # Rendering a reactive object table from the power function
       output$powercalcGraphP2LBISS <- renderPlot({
         
@@ -1567,6 +1566,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
       } # End of Callback Progress Function
       
+      #browser()
       # data frame output for the results
       dat <- as.data.frame(
         isolate(pum::pump_power_grid(design = input$designP2LBIEMDES,
@@ -1596,7 +1596,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       # Save the reactive Power Table
       reactPowerTable(dat)
       {reactPowerTable()}
-    }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
+    })# Wrapping a reactive expression to a reactive table object for output view
     
     # Rendering a reactive object table from the power function
     output$powercalcGraphP2LBIEMDES <- renderPlot({
@@ -1615,12 +1615,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
       allcolors <- c("#90ee90", "#ADD8E6", mincolours)
       
       dat <- reactPowerTable()
-    
+      dat <- as.data.frame(dat)
       withoutIndivPower <- 
         dat %>%
           dplyr::select_all() %>%
-          dplyr::select(-design) %>%
-          tidyr::pivot_longer(!c(MDES,adjustment), names_to = "powerType", values_to = "power") %>%
+          dplyr::select(-design, -adjustment) %>%
+          tidyr::pivot_longer(!c(MDES,MTP), names_to = "powerType", values_to = "power") %>%
           dplyr::filter(!stringr::str_detect(powerType,"D")) 
   
       # converting Power Type to a factor
