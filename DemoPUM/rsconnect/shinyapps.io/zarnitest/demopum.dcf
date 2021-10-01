@@ -1,0 +1,10 @@
+name: demopum
+title:
+username:
+account: zarnitest
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4780132
+bundleId: 5095491
+url: https://zarnitest.shinyapps.io/demopum/
+when: 1633127447.86682
