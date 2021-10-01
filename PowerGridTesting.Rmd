@@ -5,37 +5,9 @@ date: "8/4/2021"
 output: html_document
 ---
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 library(pum)
 library(dplyr)
-```
-
-```{r}
-test_results_01 <- 
-pum::pump_power_grid(design = c("d2.1_m2fr"),
-                     MTP = c("Holm", "BH") ,
-                     MDES = c(0.125, 0.2),
-                     M = 5 ,
-                     J = 20,
-                     K = 1,
-                     nbar = 100,
-                     Tbar = 0.5 ,
-                     alpha = 0.05,
-                     numCovar.1 = 0,
-                     numCovar.2 = 0,
-                     numCovar.3 = 0,
-                     R2.1 = c(0.2, 0.3, 0.4, 0.5, 0.6),
-                     R2.2 = NULL,
-                     R2.3 = NULL,
-                     ICC.2 =0,
-                     ICC.3 = NULL,
-                     rho = 0.5,
-                     omega.2 = NULL,
-                     omega.3 = NULL)
-```
-
-```{r}
-View(test_results_01)
 ```
 
 
@@ -57,12 +29,12 @@ test_results_01_non_grid_wide <-
 ```
 
 ```{r}
-View(test_results_01_non_grid_wide)
+head(test_results_01_non_grid_wide)
 ```
 
 ```{r}
 test_results_01_non_grid_long <-
-  pump_power(design="d2.2_m2rc",
+  pum::pump_power(design="d2.2_m2rc",
              MTP = c( "Holm", "Bonferroni" ),
              MDES = 0.41,
              M = 3, 
@@ -79,8 +51,69 @@ test_results_01_non_grid_long <-
 
 
 ```{r}
-View(test_results_01_non_grid_long)
+head(test_results_01_non_grid_long)
 ```
+
+
+```{r}
+test_results_01_grid_wide <- 
+pum::pump_power_grid(design = c("d2.1_m2fr"),
+                     MTP = c("Holm", "BH") ,
+                     MDES = c(0.125, 0.2),
+                     M = 5 ,
+                     J = 20,
+                     K = 1,
+                     nbar = 100,
+                     Tbar = 0.5 ,
+                     alpha = 0.05,
+                     numCovar.1 = 0,
+                     numCovar.2 = 0,
+                     numCovar.3 = 0,
+                     R2.1 = c(0.2),
+                     R2.2 = NULL,
+                     R2.3 = NULL,
+                     ICC.2 =0,
+                     ICC.3 = NULL,
+                     rho = 0.5,
+                     omega.2 = NULL,
+                     omega.3 = NULL,
+                     long.table = FALSE)
+```
+
+```{r}
+View(test_results_01_grid_wide)
+```
+
+
+```{r}
+test_results_01_grid_long <- 
+pum::pump_power_grid(design = c("d2.1_m2fr"),
+                     MTP = c("Holm") ,
+                     MDES = c(0.125, 0.2),
+                     M = 5 ,
+                     J = 20,
+                     K = 1,
+                     nbar = 100,
+                     Tbar = 0.5 ,
+                     alpha = 0.05,
+                     numCovar.1 = 0,
+                     numCovar.2 = 0,
+                     numCovar.3 = 0,
+                     R2.1 = c(0.2),
+                     R2.2 = NULL,
+                     R2.3 = NULL,
+                     ICC.2 =0,
+                     ICC.3 = NULL,
+                     rho = 0.5,
+                     omega.2 = NULL,
+                     omega.3 = NULL,
+                     long.table = TRUE)
+```
+
+```{r}
+View(test_results_01_grid_long)
+```
+
 
 
 

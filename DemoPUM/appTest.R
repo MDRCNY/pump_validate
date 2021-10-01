@@ -4,6 +4,7 @@ library(shinycssloaders) # for ui elements showing shiny loading
 library(magrittr) # piping operator
 library(ggplot2) # loading ggplot for the plot
 library(pum) # our pum library
+library(DT) # make nice shiny tables
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -863,7 +864,7 @@ ui <- fluidPage(
                                   br(),
                                   
                                   fluidRow(
-                                    column(8,
+                                    column(8, align = "center",
                                            plotOutput("powercalcGraphP2LBIEMDES"))
                                   ), # end of Fluid Row
                               
@@ -875,8 +876,8 @@ ui <- fluidPage(
                                   br(), # To create spaces between Table and Plots
                                   
                                   fluidRow(
-                                    column(12,
-                                           tableOutput("powercalcTableP2LBIEMDES")) #The power calculation table output
+                                    column(12, align = "center",
+                                           DT::dataTableOutput("powercalcTableP2LBIEMDES")) #The power calculation table output
                                   ) #fluidRow for first half of the page
                                   
                               ), # conditional panel results for MDES
@@ -887,20 +888,16 @@ ui <- fluidPage(
                                                br(),
                                                
                                                fluidRow(
-                                                 column(8,
+                                                 column(8, align = "center",
                                                         plotOutput("powercalcGraphP2LBIER2"))
                                                ), # end of Fluid Row
                                                
                                                br(), # To create spaces between Table and Plots
                                                br(), # To create spaces between Table and Plots
-                                               br(), # To create spaces between Table and Plots
-                                               br(), # To create spaces between Table and Plots
-                                               br(), # To create spaces between Table and Plots
-                                               br(), # To create spaces between Table and Plots
-                                               
+
                                                fluidRow(
-                                                 column(12,
-                                                        tableOutput("powercalcTableP2LBIER2")) #The power calculation table output
+                                                 column(12, align = "center",
+                                                        DT::dataTableOutput("powercalcTableP2LBIER2")) #The power calculation table output
                                                ) #fluidRow for first half of the page
                                                
                               ) # conditional panel results for R2
@@ -1509,7 +1506,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         # Save the reactive Power Table
         reactPowerTable(dat)
         {reactPowerTable()}
-            }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
+            })# Wrapping a reactive expression to a reactive table object for output view
   
       # Rendering a reactive object table from the power function
       output$powercalcGraphP2LBISS <- renderPlot({
@@ -1543,60 +1540,75 @@ server <- shinyServer(function(input, output, session = FALSE) {
         # set a Reactive Value for Power Table
     reactPowerTable <- reactiveVal()
     
+    # Creating a progress bar
+    progress <- shiny::Progress$new()
+    progress$set(message = "Calculating Power", value = 0)
+    # Close the progress bar when this reactive expression is done (even if there is an error)
+    on.exit(progress$close())
+    
+    # Update Progress Bar Callback function
+    updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+      
+      if (is.null(value)){
+        
+        value <- progress$getValue()
+        value <- value + (progress$getMax() - value)/5
+        
+      } # Progess bar in terms of values' increments
+      
+      progress$set(value = value, detail = detail, message = message)
+      
+    } # End of Callback Progress Function
+    
+    #browser()
+    # data frame output for the results
+    dat <- as.data.frame(
+      isolate(pum::pump_power_grid(design = input$designP2LBIEMDES,
+                                   MTP = as.character(unlist(strsplit(input$MTPP2LBIEMDES," "))),
+                                   MDES = as.numeric(unlist(strsplit(input$MDESP2LBIEMDES, ","))),
+                                   M = input$MP2LBIEMDES, # The number of hypotheses/outcomes
+                                   J = input$JP2LBIEMDES, # The number of schools
+                                   K = input$KP2LBIEMDES, # The number of districts
+                                   nbar = input$nbarP2LBIEMDES, # The number of units per block
+                                   Tbar = input$tbarP2LBIEMDES, # The proportion of samples that are assigned to the treatment
+                                   alpha = input$alphaP2LBIEMDES,
+                                   numCovar.1 = input$numCovar.1P2LBIEMDES,
+                                   numCovar.2 = 0,
+                                   numCovar.3 = 0,
+                                   R2.1 = input$R2.1P2LBIEMDES,
+                                   R2.2 = NULL,
+                                   R2.3 = NULL,
+                                   ICC.2 = 0,
+                                   ICC.3 = NULL,
+                                   rho = input$rhoP2LBIEMDES,
+                                   omega.2 = NULL,
+                                   omega.3 = NULL,
+                                   long.table = TRUE,
+                                   updateProgress = updateProgress)
+      ))
+    
+    # Pruning the data table
+    dat <- dat %>%
+      dplyr::select(-adjustment) %>%
+      dplyr::arrange(power)
+    
+    # Save the reactive Power Table
+    reactPowerTable(dat)
+    {reactPowerTable()}
+    
     # Rendering a reactive object table from the power function
-    output$powercalcTableP2LBIEMDES <- renderTable({
-      
-      # Creating a progress bar
-      progress <- shiny::Progress$new()
-      progress$set(message = "Calculating Power", value = 0)
-      # Close the progress bar when this reactive expression is done (even if there is an error)
-      on.exit(progress$close())
-      
-      # Update Progress Bar Callback function
-      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-        
-        if (is.null(value)){
-          
-          value <- progress$getValue()
-          value <- value + (progress$getMax() - value)/5
-          
-        } # Progess bar in terms of values' increments
-        
-        progress$set(value = value, detail = detail, message = message)
-        
-      } # End of Callback Progress Function
-      
-      #browser()
-      # data frame output for the results
-      dat <- as.data.frame(
-        isolate(pum::pump_power_grid(design = input$designP2LBIEMDES,
-                           MTP = as.character(unlist(strsplit(input$MTPP2LBIEMDES," "))),
-                           MDES = as.numeric(unlist(strsplit(input$MDESP2LBIEMDES, ","))),
-                           M = input$MP2LBIEMDES, # The number of hypotheses/outcomes
-                           J = input$JP2LBIEMDES, # The number of schools
-                           K = input$KP2LBIEMDES, # The number of districts
-                           nbar = input$nbarP2LBIEMDES, # The number of units per block
-                           Tbar = input$tbarP2LBIEMDES, # The proportion of samples that are assigned to the treatment
-                           alpha = input$alphaP2LBIEMDES,
-                           numCovar.1 = input$numCovar.1P2LBIEMDES,
-                           numCovar.2 = 0,
-                           numCovar.3 = 0,
-                           R2.1 = rep(input$R2.1P2LBIEMDES,
-                                      input$MP2LBIEMDES),
-                           R2.2 = NULL,
-                           R2.3 = NULL,
-                           ICC.2 = 0,
-                           ICC.3 = NULL,
-                           rho = input$rhoP2LBIEMDES,
-                           omega.2 = NULL,
-                           omega.3 = NULL,
-                           updateProgress = updateProgress)
-        ))
-      
-      # Save the reactive Power Table
-      reactPowerTable(dat)
-      {reactPowerTable()}
-    })# Wrapping a reactive expression to a reactive table object for output view
+    output$powercalcTableP2LBIEMDES <- DT::renderDataTable({
+    
+      DT::datatable(dat, 
+                    extensions = 'Buttons',
+                    options = list(
+                      paging = TRUE,
+                      pageLength = 5,
+                      scrollY = TRUE,
+                      dom = 'Bfrtip',
+                      buttons = c('csv', 'excel')
+                    ))
+    }, server = FALSE)# Wrapping a reactive expression to a reactive table object for output view
     
     # Rendering a reactive object table from the power function
     output$powercalcGraphP2LBIEMDES <- renderPlot({
@@ -1606,6 +1618,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       # End of Minimum Power 
       minEnd <- M - 1
+      minPower <- paste0(1:minEnd, "-minimum")
+
       
       # Create color gradient for minimum power
       mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
@@ -1619,12 +1633,16 @@ server <- shinyServer(function(input, output, session = FALSE) {
       withoutIndivPower <- 
         dat %>%
           dplyr::select_all() %>%
-          dplyr::select(-design, -adjustment) %>%
-          tidyr::pivot_longer(!c(MDES,MTP), names_to = "powerType", values_to = "power") %>%
-          dplyr::filter(!stringr::str_detect(powerType,"D")) 
+          dplyr::select(-design) %>%
+          dplyr::arrange(desc(power)) %>%
+          dplyr::rename(powerType = power) %>%
+          tidyr::pivot_longer(!c(MDES, powerType), names_to = "MTP", values_to = "power") %>%
+          dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) 
   
       # converting Power Type to a factor
-      withoutIndivPower$powerType <- factor(withoutIndivPower$powerType, ordered = TRUE)
+      withoutIndivPower$powerType <- factor(withoutIndivPower$powerType,
+                                            levels = c("complete", "mean individual", minPower),
+                                            ordered = TRUE)
       
       #Pulling out Power Type Levels to match with all colors
       powerTypeLevels <- levels(withoutIndivPower$powerType)
@@ -1634,7 +1652,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       withoutIndivPower %>%
         ggplot(aes(x = as.factor(MDES),
-                   y = power,
+                   y = as.numeric(power),
                    colour = powerType)) +
         geom_point(size = 5) +
         scale_y_continuous(limits = c(0,1)) +
@@ -1646,7 +1664,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
               axis.text = element_text(size = 14),
               axis.title = element_text(size = 14)) +
         scale_colour_manual(values = allcolorsvalues) +
-        labs(x = "Different MDES Scenarios")
+        labs(x = "Different MDES Scenarios",
+             y = "Power Values")
 
     }) # ggplot for power graph
 
@@ -1680,6 +1699,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
         progress$set(value = value, detail = detail, message = message)
         
       } # End of Callback Progress Function
+      
+      
       
       # data frame output for the results
       dat <- as.data.frame(
