@@ -16,8 +16,23 @@ ui <- fluidPage(
              tabsetPanel( id = "mainMenu",
                tabPanel("Home"),
                tabPanel("Educational Resources"),
+               
+               ###########################
+               # 2 Level Blocked i1 2cfr #
+               ###########################
+               
                tabPanel("2_Level_Blocked_i1_2cfr", tabsetPanel( #2LBI for 2 Level Blocked I1
+                 
+               ###########################
+               # Power Calculation       #
+               ########################### 
+                 
                tabPanel("Power Calculation", tabsetPanel( id = "subMenu",# To host Single and Explorer
+                                                          
+               ###########################
+               # Single Scenario         #
+               ###########################                                            
+                                                          
                  tabPanel("Single Scenario",
                           sidebarLayout(
                             sidebarPanel(
@@ -320,7 +335,11 @@ ui <- fluidPage(
                             ) # Power Calculation sidebar Layout
                           
                     ), # Single Scenario
-                 
+
+               ###########################
+               # Explorer                #
+               ###########################                                            
+               
                  tabPanel("Explorer",
                           sidebarLayout(
                             sidebarPanel(
@@ -772,7 +791,7 @@ ui <- fluidPage(
                                         column(2, 
                                             div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                              actionButton("R2.1P2LBIER2",
+                                              actionButton("R2.1P2LBIER2_question",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -781,7 +800,7 @@ ui <- fluidPage(
                                                  
                                      ), # fluid Row to contain the question mark issue 
                                                
-                                       bsPopover(id = "R2.1P2LBIER2", 
+                                       bsPopover(id = "R2.1P2LBIER2_question", 
                                                  title = NULL,
                                                  content = paste0("For more information on MTP, please click!"),
                                                  placement = "right", 
@@ -891,7 +910,8 @@ ui <- fluidPage(
                                                
                                                fluidRow(
                                                  column(8, align = "center",
-                                                        plotOutput("powercalcGraphP2LBIER2"))
+                                                        offset = 2,
+                                                        plotlyOutput("powercalcGraphP2LBIER2"))
                                                ), # end of Fluid Row
                                                
                                                br(), # To create spaces between Table and Plots
@@ -909,6 +929,7 @@ ui <- fluidPage(
                           ) # Power Calculation sidebar Layout
                           
                  ) # Explorer
+               
                   ) # Power Tablset Panel to hose Single and Explorer
                  
                  ) # Power Calculation Main and Side Bar Tab     
@@ -1448,6 +1469,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   # observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
   # observe Event for Single Scenario
+  
+  #################################################################################
+  # Power Calculation Single Scenario Begins - Design: 2 Level Blocked Individual #
+  #################################################################################
+  
   observeEvent(input$goButtonP2LBISS,{
     
       # set a Reactive Value for Power Table
@@ -1536,15 +1562,24 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
 }) # observe Event go Button for power for Single Scenario
   
-  # observe Event for Explorer
+  #########################################################################################
+  # Power Calculation Explorer - Varying MDES Begins - Design: 2 Level Blocked Individual #
+  #########################################################################################
+
+  # observe Event (Go Button) for Explorer
   observeEvent(input$goButtonP2LBIEMDES,{
     
-        # set a Reactive Value for Power Table
+    # set a Reactive Value for Power Table
     reactPowerTable <- reactiveVal()
+    
+    ##############################
+    # Updating the Progress Bar  # 
+    ##############################
     
     # Creating a progress bar
     progress <- shiny::Progress$new()
     progress$set(message = "Calculating Power", value = 0)
+
     # Close the progress bar when this reactive expression is done (even if there is an error)
     on.exit(progress$close())
     
@@ -1562,8 +1597,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     } # End of Callback Progress Function
     
-    #browser()
-    # data frame output for the results
+    ##############################
+    # Generating the Power Table # 
+    ##############################
+    
     dat <- as.data.frame(
       isolate(pum::pump_power_grid(design = input$designP2LBIEMDES,
                                    MTP = as.character(unlist(strsplit(input$MTPP2LBIEMDES," "))),
@@ -1589,16 +1626,19 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                    updateProgress = updateProgress)
       ))
     
-    # Pruning the data table
+    # pruning the data table
     dat <- dat %>%
       dplyr::select(-adjustment) %>%
       dplyr::arrange(power)
     
-    # Save the reactive Power Table
+    # saving the reactive power table
     reactPowerTable(dat)
     {reactPowerTable()}
     
-    # Rendering a reactive object table from the power function
+    ###############################################################
+    # Rendering a Reactive Data Table Object for the UI side      #
+    ###############################################################
+    
     output$powercalcTableP2LBIEMDES <- DT::renderDataTable({
     
       DT::datatable(dat, 
@@ -1612,59 +1652,70 @@ server <- shinyServer(function(input, output, session = FALSE) {
                     ))
     }, server = FALSE)# Wrapping a reactive expression to a reactive table object for output view
     
-    # Rendering a reactive object table from the power function
-    output$powercalcGraphP2LBIEMDES <- renderPlotly({
-      
-      # Grab the number of outcomes
-      M <- input$MP2LBIEMDES
-      
-      # End of Minimum Power 
-      minEnd <- M - 1
-      minPower <- paste0(1:minEnd, "-minimum")
-
-      
-      # Create color gradient for minimum power
-      mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
-      mincolours <- sort(mincolours)
-      
-      # Add complete, individual color on top of the minimum colors
-      allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
-      
-      dat <- reactPowerTable()
-      dat <- as.data.frame(dat)
-      
-      withoutIndivPower <- 
-        dat %>%
-          dplyr::select_all() %>%
-          dplyr::select(-design) %>%
-          dplyr::arrange(desc(power)) %>%
-          dplyr::rename(powerType = power) %>%
-          tidyr::pivot_longer(!c(MDES, powerType), names_to = "MTP", values_to = "power") %>%
-          dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
-          dplyr::mutate(powerType = ifelse(MTP == "None",
-                                           "raw mean individual",
-                                           powerType)) 
+    #####################################
+    # Preparing the data frame for Plot #
+    #####################################
   
-      #browser()
-      
-      # converting Power Type to a factor
-      withoutIndivPower$powerType <- factor(withoutIndivPower$powerType,
-                                            levels = c("complete", "mean individual", minPower, "raw mean individual"),
-                                            ordered = TRUE)
-      
-      withoutIndivPower <- withoutIndivPower %>%
-        dplyr::mutate(MDES = as.factor(MDES),
-                      power = as.numeric(power),
-                      MTP = as.factor(MTP))
-      
-      #Pulling out Power Type Levels to match with all colors
-      powerTypeLevels <- levels(withoutIndivPower$powerType)
-      
-      # create value for scale color manual by matching color and Power Type
-      allcolorsvalues <- setNames(allcolors, powerTypeLevels)
-      
-      # name of MTP
-      MTPname <- levels(withoutIndivPower$MTP)[1]
+    ## Setting up outcomes for Color gradient
+    
+    # Grab the number of outcomes
+    M <- input$MP2LBIEMDES
+    
+    # End of Minimum Power 
+    minEnd <- M - 1
+    minPower <- paste0(1:minEnd, "-minimum")
+    
+    # Create color gradient for minimum power
+    mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
+    mincolours <- sort(mincolours)
+    
+    # Add complete, individual, minimum and raw power colors
+    allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
+    
+    # Pulling the generated data table
+    dat <- reactPowerTable()
+    dat <- as.data.frame(dat)
+    
+    # Adjusting the data table for graphing
+    withoutIndivPower <- 
+      dat %>%
+      dplyr::select_all() %>%
+      dplyr::select(-design) %>%
+      dplyr::arrange(desc(power)) %>%
+      dplyr::rename(powerType = power) %>%
+      tidyr::pivot_longer(!c(MDES, powerType), names_to = "MTP", values_to = "power") %>%
+      dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
+      dplyr::mutate(powerType = ifelse(MTP == "None",
+                                       "raw mean individual",
+                                       powerType)) 
+    
+    # converting Power Type to a factor for coloring
+    withoutIndivPower$powerType <- factor(withoutIndivPower$powerType,
+                                          levels = c("complete", "mean individual", minPower, "raw mean individual"),
+                                          ordered = TRUE)
+    
+    # converting data type for graphing purposes
+    withoutIndivPower <- withoutIndivPower %>%
+      dplyr::mutate(MDES = as.factor(MDES),
+                    power = as.numeric(power),
+                    MTP = as.factor(MTP))
+    
+    # pulling out Power Type Levels to match with all colors
+    powerTypeLevels <- levels(withoutIndivPower$powerType)
+    
+    # create value for scale color manual by matching color and Power Type
+    allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+    
+    # name of MTP
+    MTPname <- levels(withoutIndivPower$MTP)[1]
+    
+    ######################
+    # Plotting the graph #
+    ######################
+
+    output$powercalcGraphP2LBIEMDES <- renderPlotly({
+    
+      # Wrapping the ggplot with plotly
       
       pg <- 
       plotly::ggplotly(ggplot2::ggplot(
@@ -1687,6 +1738,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                         hjust = 0.5)) 
         )
         
+      # plotly adjustments for margin, centering and axis titles
+      
       pg <- layout(pg, 
                    #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
                    margin=list(t = 75),
@@ -1695,6 +1748,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                  xanchor = "center",
                                  y = 0.5,
                                  title = list(text = '<b> Power Type </b>')))
+      
+      # plotly configurations to suit ourpuposes
+      
       pg %>%
         config(displaylogo = FALSE,
                collaborate = FALSE,
@@ -1725,97 +1781,231 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # set a Reactive Value for Power Table
     reactPowerTable <- reactiveVal()
     
-    # Rendering a reactive object table from the power function
-    output$powercalcTableP2LBIER2 <- renderTable({
-      
-      # Creating a progress bar
-      progress <- shiny::Progress$new()
-      progress$set(message = "Calculating Power", value = 0)
-      # Close the progress bar when this reactive expression is done (even if there is an error)
-      on.exit(progress$close())
-      
-      # Update Progress Bar Callback function
-      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-        
-        if (is.null(value)){
-          
-          value <- progress$getValue()
-          value <- value + (progress$getMax() - value)/5
-          
-        } # Progess bar in terms of values' increments
-        
-        progress$set(value = value, detail = detail, message = message)
-        
-      } # End of Callback Progress Function
-      
-      
-      
-      # data frame output for the results
-      dat <- as.data.frame(
-        isolate(pum::pump_power_grid(design = input$designP2LBIER2,
-                                     MTP = as.character(unlist(strsplit(input$MTPP2LBIER2," "))),
-                                     MDES = as.numeric(unlist(strsplit(input$MDESP2LBIER2, ","))),
-                                     M = input$MP2LBIER2, # The number of hypotheses/outcomes
-                                     J = input$JP2LBIER2, # The number of schools
-                                     K = input$KP2LBIER2, # The number of districts
-                                     nbar = input$nbarP2LBIER2, # The number of units per block
-                                     Tbar = input$tbarP2LBIER2, # The proportion of samples that are assigned to the treatment
-                                     alpha = input$alphaP2LBIER2,
-                                     numCovar.1 = input$numCovar.1P2LBIER2,
-                                     numCovar.2 = 0,
-                                     numCovar.3 = 0,
-                                     R2.1 = rep(input$R2.1P2LBIER2,
-                                                input$MP2LBIER2),
-                                     R2.2 = NULL,
-                                     R2.3 = NULL,
-                                     ICC.2 = 0,
-                                     ICC.3 = NULL,
-                                     rho = input$rhoP2LBIER2,
-                                     omega.2 = NULL,
-                                     omega.3 = NULL,
-                                     updateProgress = updateProgress)
-        ))
-      
-      # Save the reactive Power Table
-      reactPowerTable(dat)
-      {reactPowerTable()}
-    }, include.rownames = TRUE)# Wrapping a reactive expression to a reactive table object for output view
+    ##############################
+    # Updating the Progress Bar  # 
+    ##############################
     
-    # Rendering a reactive object table from the power function
-    output$powercalcGraphP2LBIER2 <- renderPlot({
+    # Creating a progress bar
+    progress <- shiny::Progress$new()
+    progress$set(message = "Calculating Power", value = 0)
+    
+    # Close the progress bar when this reactive expression is done (even if there is an error)
+    on.exit(progress$close())
+    
+    # Update Progress Bar Callback function
+    updateProgress <- function(value = NULL, detail = NULL, message = NULL){
       
-      dat <- reactPowerTable()
+      if (is.null(value)){
+        
+        value <- progress$getValue()
+        value <- value + (progress$getMax() - value)/5
+        
+      } # Progess bar in terms of values' increments
+      
+      progress$set(value = value, detail = detail, message = message)
+      
+    } # End of Callback Progress Function
+    
+    ##############################
+    # Generating the Power Table # 
+    ##############################
+    
+    
+    # pum::pump_power_grid(design = c("d2.1_m2fr"),
+    #                      MTP = c("Holm") ,
+    #                      MDES = c(0.125),
+    #                      M = 5 ,
+    #                      J = 20,
+    #                      K = 1,
+    #                      nbar = 100,
+    #                      Tbar = 0.5 ,
+    #                      alpha = 0.05,
+    #                      numCovar.1 = 0,
+    #                      numCovar.2 = 0,
+    #                      numCovar.3 = 0,
+    #                      R2.1 = c(0.2, 0.3),
+    #                      R2.2 = NULL,
+    #                      R2.3 = NULL,
+    #                      ICC.2 =0,
+    #                      ICC.3 = NULL,
+    #                      rho = 0.5,
+    #                      omega.2 = NULL,
+    #                      omega.3 = NULL,
+    #                      long.table = TRUE)
+    
+    dat <- as.data.frame(
+      isolate(pum::pump_power_grid(design = input$designP2LBIER2,
+                                   MTP = as.character(unlist(strsplit(input$MTPP2LBIER2,","))),
+                                   MDES = as.numeric(unlist(strsplit(input$MDESP2LBIER2, ","))),
+                                   M = input$MP2LBIER2, # The number of hypotheses/outcomes
+                                   J = input$JP2LBIER2, # The number of schools
+                                   K = input$KP2LBIER2, # The number of districts
+                                   nbar = input$nbarP2LBIER2, # The number of units per block
+                                   Tbar = input$tbarP2LBIER2, # The proportion of samples that are assigned to the treatment
+                                   alpha = input$alphaP2LBIER2,
+                                   numCovar.1 = input$numCovar.1P2LBIER2,
+                                   numCovar.2 = 0,
+                                   numCovar.3 = 0,
+                                   R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIER2,","))),
+                                   R2.2 = NULL,
+                                   R2.3 = NULL,
+                                   ICC.2 = 0,
+                                   ICC.3 = NULL,
+                                   rho = input$rhoP2LBIER2,
+                                   omega.2 = NULL,
+                                   omega.3 = NULL,
+                                   long.table = TRUE,
+                                   updateProgress = updateProgress)
+      ))
+    
+  
+    # pruning the data table
+    dat <- dat %>%
+      dplyr::select(-adjustment) %>%
+      dplyr::arrange(power)
+    
+    # saving the reactive power table
+    reactPowerTable(dat)
+    {reactPowerTable()}
+    
+    ###############################################################
+    # Rendering a Reactive Data Table Object for the UI side      #
+    ###############################################################
+    
+    output$powercalcTableP2LBIER2 <- DT::renderDataTable({
+      
+      DT::datatable(dat, 
+                    extensions = 'Buttons',
+                    options = list(
+                      paging = TRUE,
+                      pageLength = 5,
+                      scrollY = TRUE,
+                      dom = 'Bfrtip',
+                      buttons = c('csv', 'excel')
+                    ))
+    }, server = FALSE)# Wrapping a reactive expression to a reactive table object for output view
+    
+    #####################################
+    # Preparing the data frame for Plot #
+    #####################################
+    
+    ## Setting up outcomes for Color gradient
+    
+    # Grab the number of outcomes
+    M <- input$MP2LBIER2
+    
+    # End of Minimum Power 
+    minEnd <- M - 1
+    minPower <- paste0(1:minEnd, "-minimum")
+    
+    # Create color gradient for minimum power
+    mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
+    mincolours <- sort(mincolours)
+    
+    # Add complete, individual, minimum and raw power colors
+    allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
+    
+    # Pulling the generated data table
+    dat <- reactPowerTable()
+    dat <- as.data.frame(dat)
+
+    # Adjusting the data table for graphing
+    withoutIndivPower <- 
       dat %>%
-        dplyr::select_all() %>%
-        dplyr::select(-indiv.mean, -adjustment, -design) %>%
-        tidyr::pivot_longer(!MDES, names_to = "powerType", values_to = "power") %>%
-        ggplot(aes(x = as.factor(MDES),
-                   y = power,
-                   shape = powerType,
-                   colour = powerType)) +
-        geom_point(size = 5) +
-        scale_y_continuous(limits = c(0,1)) +
-        ggtitle("Adjusted Power values across different Power Definitions & MDES values") +
-        theme(plot.title = element_text(size = 16,
-                                        face = "bold",
-                                        vjust = 1,
-                                        hjust = 0.5),
-              axis.text = element_text(size = 14),
-              axis.title = element_text(size = 14))
+      dplyr::select_all() %>%
+      dplyr::select(-design, -MDES) %>%
+      dplyr::arrange(desc(power)) %>%
+      dplyr::rename(powerType = power) %>%
+      tidyr::pivot_longer(!c(R2.1, powerType), names_to = "MTP", values_to = "power") %>%
+      dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
+      dplyr::mutate(powerType = ifelse(MTP == "None",
+                                       "raw mean individual",
+                                       powerType)) 
+    
+    # converting Power Type to a factor for coloring
+    withoutIndivPower$powerType <- factor(withoutIndivPower$powerType,
+                                          levels = c("complete", "mean individual", minPower, "raw mean individual"),
+                                          ordered = TRUE)
+    
+    # converting data type for graphing purposes
+    withoutIndivPower <- withoutIndivPower %>%
+      dplyr::mutate(R2.1 = as.factor(R2.1),
+                    power = as.numeric(power),
+                    MTP = as.factor(MTP))
+    
+    # pulling out Power Type Levels to match with all colors
+    powerTypeLevels <- levels(withoutIndivPower$powerType)
+    
+    # create value for scale color manual by matching color and Power Type
+    allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+    
+    # name of MTP
+    MTPname <- levels(withoutIndivPower$MTP)[1]
+    
+    ######################
+    # Plotting the graph #
+    ######################
+    
+    output$powercalcGraphP2LBIER2 <- renderPlotly({
+      
+      # Wrapping the ggplot with plotly
+      
+      pg <- 
+        plotly::ggplotly(ggplot2::ggplot(
+          data = withoutIndivPower,
+          aes(x = R2.1,
+              y = power,
+              colour = powerType)) +
+            geom_point(size = 2, 
+                       position = position_jitter(width = 0.2)) +
+            scale_y_continuous(limits = c(0,1)) +
+            ggtitle(paste0(MTPname, " adjusted Power values across different \n Power Definitions & R2.1 values")) +
+            scale_colour_manual(values = allcolorsvalues) +
+            labs(x = "Different R2.1 Scenarios",
+                 y = "Power Values",
+                 colour = "") +
+            theme_linedraw() +
+            theme(plot.title = element_text(size = 16,
+                                            face = "bold",
+                                            vjust = 1,
+                                            hjust = 0.5)) 
+        )
+      
+      # plotly adjustments for margin, centering and axis titles
+      
+      pg <- layout(pg, 
+                   #title = "<b>Adjusted Power values across different \n Power Definitions & R2.1 values </b>",
+                   margin=list(t = 75),
+                   legend = list(x = 100,
+                                 orientation = "v",
+                                 xanchor = "center",
+                                 y = 0.5,
+                                 title = list(text = '<b> Power Type </b>')))
+      
+      # plotly configurations to suit ourpuposes
+      
+      pg %>%
+        config(displaylogo = FALSE,
+               collaborate = FALSE,
+               displayModeBar = TRUE,
+               modeBarButtonsToRemove = list(
+                 'sendDataToCloud',
+                 'autoScale2d',
+                 'resetScale2d',
+                 'hoverClosestCartesian',
+                 'hoverCompareCartesian',
+                 'zoom2d', 
+                 'pan2d',
+                 'select2d',
+                 'lasso2d',
+                 'zoomIn2d', 
+                 'zoomOut2d',
+                 'toggleSpikelines'
+               ))
       
     }) # ggplot for power graph
     
   }) # Observe Event for Explorer R2
-  
-
-  
-  
-  
-    
-  
-  
-  
-  
   
   
   ############################################
