@@ -314,8 +314,9 @@ ui <- fluidPage(
                               br(),
                               
                               fluidRow(
-                                column(8,
-                                       plotOutput("powercalcGraphP2LBISS"))
+                                column(8, align = "center",
+                                       offset = 2,
+                                       plotlyOutput("powercalcGraphP2LBISS"))
                               ), # end of Fluid Row
                                     
                                 br(), # To create spaces between Table and Plots
@@ -324,10 +325,10 @@ ui <- fluidPage(
                                 br(), # To create spaces between Table and Plots
                                 br(), # To create spaces between Table and Plots
                                 br(), # To create spaces between Table and Plots
-                              
+                            
                               fluidRow(
-                                column(12,
-                                       tableOutput("powercalcTableP2LBISS")) #The power calculation table output
+                                column(12, align = "center",
+                                       DT::dataTableOutput("powercalcTableP2LBISS")) #The power calculation table output
                               ) #fluidRow for first half of the page
                               
                               ) # Power calculation Main Panel
@@ -1479,76 +1480,108 @@ server <- shinyServer(function(input, output, session = FALSE) {
       # set a Reactive Value for Power Table
       reactPowerTable <- reactiveVal()
       
-      # Rendering a reactive object table from the power function
-      output$powercalcTableP2LBISS <- renderTable({
+      #########################
+      # Creating Progress bar #
+      #########################
+      
+      progress <- shiny::Progress$new()
+      progress$set(message = "Calculating Power", value = 0)
+      # Close the progress bar when this reactive expression is done (even if there is an error)
+      on.exit(progress$close())
+      
+      # Update Progress Bar Callback function
+      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
         
-        # Creating a progress bar
-        progress <- shiny::Progress$new()
-        progress$set(message = "Calculating Power", value = 0)
-        # Close the progress bar when this reactive expression is done (even if there is an error)
-        on.exit(progress$close())
+        if (is.null(value)){
+          
+          value <- progress$getValue()
+          value <- value + (progress$getMax() - value)/5
+          
+        } # Progess bar in terms of values' increments
         
-        # Update Progress Bar Callback function
-        updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-          
-          if (is.null(value)){
-            
-            value <- progress$getValue()
-            value <- value + (progress$getMax() - value)/5
-            
-          } # Progess bar in terms of values' increments
-          
-          progress$set(value = value, detail = detail, message = message)
-          
-        } # End of Callback Progress Function
+        progress$set(value = value, detail = detail, message = message)
         
-        # data frame output for the results
-        dat <- as.data.frame(
+      } # End of Callback Progress Function
+      
+      ############################
+      # Generating Power Results #
+      ############################
+      
+      dat <- as.data.frame(
         isolate(pum::pump_power(design = input$designP2LBISS,
-                           MTP = as.character(unlist(strsplit(input$MTPP2LBISS," "))),
-                           MDES = as.numeric(unlist(strsplit(input$MDESP2LBISS, ","))),
-                           M = input$MP2LBISS, # The number of hypotheses/outcomes
-                           J = input$JP2LBISS, # The number of schools
-                           K = input$KP2LBISS, # The number of districts
-                           nbar = input$nbarP2LBISS, # The number of units per block
-                           Tbar = input$tbarP2LBISS, # The proportion of samples that are assigned to the treatment
-                           alpha = input$alphaP2LBISS,
-                           numCovar.1 = input$numCovar.1P2LBISS,
-                           numCovar.2 = 0,
-                           numCovar.3 = 0,
-                           R2.1 = rep(input$R2.1P2LBISS,
-                                      input$MP2LBISS),
-                           R2.2 = rep(0.1, input$MP2LBISS),
-                           R2.3 = rep(0.1, input$MP2LBISS),
-                           ICC.2 = rep(0, input$MP2LBISS),
-                           ICC.3 = rep(0.2, input$MP2LBISS) ,
-                           rho = input$rhoP2LBISS,
-                           omega.2 = 0,
-                           omega.3 = 0.1,
-                           tnum = 10000, 
-                           B = 100, 
-                           cl = NULL,
-                           updateProgress = updateProgress)
-                      ))
-        
-        # Save the reactive Power Table
-        reactPowerTable(dat)
-        {reactPowerTable()}
-            })# Wrapping a reactive expression to a reactive table object for output view
-  
+                                MTP = as.character(unlist(strsplit(input$MTPP2LBISS," "))),
+                                MDES = as.numeric(unlist(strsplit(input$MDESP2LBISS, ","))),
+                                M = input$MP2LBISS, # The number of hypotheses/outcomes
+                                J = input$JP2LBISS, # The number of schools
+                                K = input$KP2LBISS, # The number of districts
+                                nbar = input$nbarP2LBISS, # The number of units per block
+                                Tbar = input$tbarP2LBISS, # The proportion of samples that are assigned to the treatment
+                                alpha = input$alphaP2LBISS,
+                                numCovar.1 = input$numCovar.1P2LBISS,
+                                numCovar.2 = 0,
+                                numCovar.3 = 0,
+                                R2.1 = rep(input$R2.1P2LBISS,
+                                           input$MP2LBISS),
+                                R2.2 = rep(0.1, input$MP2LBISS),
+                                R2.3 = rep(0.1, input$MP2LBISS),
+                                ICC.2 = rep(0, input$MP2LBISS),
+                                ICC.3 = rep(0.2, input$MP2LBISS) ,
+                                rho = input$rhoP2LBISS,
+                                omega.2 = 0,
+                                omega.3 = 0.1,
+                                tnum = 10000, 
+                                B = 100, 
+                                cl = NULL,
+                                updateProgress = updateProgress)
+        ))
+      
+      # Save the reactive Power Table
+      reactPowerTable(dat)
+      {reactPowerTable()}
+    
+      #################################################
+      # Rendering Single Scenario Power Table Results #
+      #################################################
+    
       # Rendering a reactive object table from the power function
-      output$powercalcGraphP2LBISS <- renderPlot({
+      output$powercalcTableP2LBISS <- renderDataTable({
         
-        dat <- reactPowerTable()
+          DT::datatable(dat,
+                        extensions = 'Buttons',
+                        options = list(
+                          paging = TRUE,
+                          pageLength = 5,
+                          scrollY = TRUE,
+                          dom = 'Bfrtip',
+                          buttons = c('csv', 'excel')
+                        ))
+            })# Wrapping a reactive expression to a reactive table object for output view
+    
+      ############################
+      # Data prepartion for plot #
+      ############################
+      dat <- reactPowerTable()
+      
+      singleScenario2LevelBlockedDatLong <- 
         dat %>%
-          dplyr::select_all() %>%
-          dplyr::select(-indiv.mean) %>%
-          tidyr::pivot_longer(!MTP, names_to = "powerType", values_to = "power") %>%
-          ggplot(aes(x = powerType, 
+        dplyr::select_all() %>%
+        dplyr::select(-indiv.mean) %>%
+        tidyr::pivot_longer(!MTP, names_to = "powerType", values_to = "power")
+      
+      ################################################
+      # Rendering Single Scenario Power Table Graphs #
+      ################################################
+      
+      output$powercalcGraphP2LBISS <- renderPlotly({
+          
+        pg <- plotly::ggplotly(
+          ggplot(
+            data = singleScenario2LevelBlockedDatLong,
+            aes(x = powerType, 
                      y = power, 
                      shape = MTP,
                      colour = MTP)) + 
-          geom_point(size = 5) +
+          geom_point(size = 2) +
           scale_y_continuous(limits = c(0,1)) +
           ggtitle("Adjusted Power values across different Power Definitions") +
           theme(plot.title = element_text(size = 16,
@@ -1556,9 +1589,41 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                           vjust = 1,
                                           hjust = 0.5),
                 axis.text = element_text(size = 14),
-                axis.title = element_text(size = 14))
+                axis.title = element_text(size = 14),
+                )
+          + labs(colour = "",
+                 shape = "")
+          ) # End of ggplot
         
-    }) # ggplot for power graph
+        pg <- layout(pg, 
+                     #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
+                     margin=list(t = 75),
+                     legend = list(x = 100,
+                                   orientation = "v",
+                                   xanchor = "center",
+                                   y = 0.5,
+                                   title = list(text = '<b> MTP Type </b>')))
+        
+        pg %>%
+          config(displaylogo = FALSE,
+                 collaborate = FALSE,
+                 displayModeBar = TRUE,
+                 modeBarButtonsToRemove = list(
+                   'sendDataToCloud',
+                   'autoScale2d',
+                   'resetScale2d',
+                   'hoverClosestCartesian',
+                   'hoverCompareCartesian',
+                   'zoom2d',
+                   'pan2d',
+                   'select2d',
+                   'lasso2d',
+                   'zoomIn2d',
+                   'zoomOut2d',
+                   'toggleSpikelines'
+                 ))
+        
+    }) # plotly graph
   
 }) # observe Event go Button for power for Single Scenario
   
