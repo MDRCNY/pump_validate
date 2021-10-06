@@ -405,13 +405,10 @@ ui <- fluidPage(
                                 
                               ), # fluid Row for selection of which variables to explore
                               
-                              
-                              conditionalPanel(condition = "input.explorerP2LBIE == 'MDES'",
-                              
                                   fluidRow(
                                     column(10,
                                            div(style = "display: inline-block, vertical-align:top;", 
-                                               selectInput("designP2LBIEMDES", "What Research Design is this for?", 
+                                               selectInput("designP2LBIE", "What Research Design is this for?", 
                                                            choices = list("constantEffects" = "d2.1_m2fc", 
                                                                           "fixedEffects" = "d2.1_m2ff", 
                                                                           "randomEffects" = "d2.1_m2fr"))) # select input buttons div
@@ -419,7 +416,7 @@ ui <- fluidPage(
                                     
                                     column(2, 
                                            div(style ="display: inline-block,vertical-align:top;",
-                                               actionButton("question_designP2LBIEMDES",
+                                               actionButton("question_designP2LBIE",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -428,7 +425,7 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "question_designP2LBIEMDES", 
+                                  bsPopover(id = "question_designP2LBIE", 
                                             title = NULL,
                                             content = paste0("For more information on different designs, please click!"),
                                             placement = "right", 
@@ -438,7 +435,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     column(10,
                                            div(style = "display: inline-block, vertical-align:top;", 
-                                               selectInput("MTPP2LBIEMDES", "Which MTP do you plan to use?", 
+                                               selectInput("MTPP2LBIE", "Which MTP do you plan to use?", 
                                                            choices = list("Bonferroni" = "Bonferroni", 
                                                                           "Holm" = "Holm", 
                                                                           "Benjamini-Hochberg" = "BH", 
@@ -450,7 +447,7 @@ ui <- fluidPage(
                                     column(2, 
                                            div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                               actionButton("question_mtpP2LBIEMDES",
+                                               actionButton("question_mtpP2LBIE",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -459,7 +456,7 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "question_mtpP2LBIEMDES", 
+                                  bsPopover(id = "question_mtpP2LBIE", 
                                             title = NULL,
                                             content = paste0("For more information on MTP, please click!"),
                                             placement = "right", 
@@ -469,7 +466,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     
                                     column(12,
-                                           numericInput("MP2LBIEMDES", 
+                                           numericInput("MP2LBIE", 
                                                         "Number of Outcomes", 
                                                         min = 1, 
                                                         max = 10, 
@@ -479,10 +476,12 @@ ui <- fluidPage(
                                     
                                   ), # number of outcomes and mdes
                                   
+                          conditionalPanel(condition = "input.explorerP2LBIE == 'MDES'",
+                                                   
                                   fluidRow(
                                     
                                     column(10,
-                                           textInput("MDESP2LBIEMDES", 
+                                           textInput("MDESP2LBIE", 
                                                      "Vary MDES vector (comma delimited)", 
                                                      value = "0.125,0.125,0.125, 0,0")
                                            
@@ -491,7 +490,7 @@ ui <- fluidPage(
                                     column(2, 
                                            div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                               actionButton("question_mdesP2LBIEMDES",
+                                               actionButton("question_mdesP2LBIE",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -500,7 +499,7 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "question_mdesP2LBIEMDES", 
+                                  bsPopover(id = "question_mdesP2LBIE", 
                                             title = NULL,
                                             content = paste0("For more information on MTP, please click!"),
                                             placement = "right", 
@@ -510,9 +509,104 @@ ui <- fluidPage(
                                   
                                   fluidRow(
                                     
+                                    column(10,
+                                           textInput("R2.1P2LBIE", 
+                                                     "Only 1 R Value allowed!", 
+                                                     value = "0.2, 0.2, 0.2, 0.2, 0.2")
+                                           
+                                    ), # column for MDES
+                                    
+                                    column(2, 
+                                           div(style ="display: inline-block, 
+                                                 vertical-align:top;",
+                                               actionButton("R2.1P2LBIE",
+                                                            label = "", 
+                                                            icon = icon("question"),
+                                                            style = "font-size: 10px;
+                                                                       margin-top: 28px;")) #div for button ends
+                                    ) # column for buttons
+                                    
+                                  ), # fluid Row to contain the question mark issue 
+                                  
+                                  bsPopover(id = "R2.1P2LBIE", 
+                                            title = NULL,
+                                            content = paste0("For more information on MTP, please click!"),
+                                            placement = "right", 
+                                            trigger = "hover", 
+                                            options = list(container = "body")
+                                  ), # the bsPopover for the more information section of the Shiny App
+                                  
+                                  
+                                  
+                          ), # End of Conditional Panel for MDES 
+                          
+                          conditionalPanel(condition = "input.explorerP2LBIE == 'R2'",
+
+                                           fluidRow(
+
+                                             column(10,
+                                                    textInput("MDESP2LBIE",
+                                                              "Only 1 MDES value allowed",
+                                                              value = "0.125,0.125,0.125, 0,0")
+
+                                             ), # column for MDES
+
+                                             column(2,
+                                                    div(style ="display: inline-block,
+                                                 vertical-align:top;",
+                                                        actionButton("question_mdesP2LBIE",
+                                                                     label = "",
+                                                                     icon = icon("question"),
+                                                                     style = "font-size: 10px;
+                                                                       margin-top: 28px;")) #div for button ends
+                                             ) # column for buttons
+
+                                           ), # fluid Row to contain the question mark issue
+
+                                           bsPopover(id = "question_mdesP2LBIE",
+                                                     title = NULL,
+                                                     content = paste0("For more information on MTP, please click!"),
+                                                     placement = "right",
+                                                     trigger = "hover",
+                                                     options = list(container = "body")
+                                           ), # the bsPopover for the more information section of the Shiny App
+                                           
+                                           fluidRow(
+                                             
+                                             column(10,
+                                                    textInput("R2.1P2LBIE", 
+                                                              "Vary R2 Value!", 
+                                                              value = "0.2, 0.2, 0.2, 0.2, 0.2")
+                                                    
+                                             ), # column for MDES
+                                             
+                                             column(2, 
+                                                    div(style ="display: inline-block, 
+                                                 vertical-align:top;",
+                                                        actionButton("question_R2.1P2LBIE",
+                                                                     label = "", 
+                                                                     icon = icon("question"),
+                                                                     style = "font-size: 10px;
+                                                                       margin-top: 28px;")) #div for button ends
+                                             ) # column for buttons
+                                             
+                                           ), # fluid Row to contain the question mark issue 
+                                           
+                                           bsPopover(id = "question_R2.1P2LBIE", 
+                                                     title = NULL,
+                                                     content = paste0("For more information on MTP, please click!"),
+                                                     placement = "right", 
+                                                     trigger = "hover", 
+                                                     options = list(container = "body")
+                                           ), # the bsPopover for the more information section of the Shiny App
+
+                          ), # End of condition for R2
+                          
+                                  fluidRow(
+                                    
                                     column(12,
                                            
-                                           numericInput("KP2LBIEMDES", 
+                                           numericInput("KP2LBIE", 
                                                         "Number of Districts", 
                                                         min = 1, 
                                                         max = 100, 
@@ -524,7 +618,7 @@ ui <- fluidPage(
                                     
                                     column(6,
                                            
-                                           numericInput("JP2LBIEMDES", 
+                                           numericInput("JP2LBIE", 
                                                         "Number of blocks", 
                                                         min = 1, 
                                                         max = 100, 
@@ -535,7 +629,7 @@ ui <- fluidPage(
                                     
                                     column(6,
                                            
-                                           numericInput("nbarP2LBIEMDES",
+                                           numericInput("nbarP2LBIE",
                                                         "Number of units per block", 
                                                         min = 2, 
                                                         max = 100, 
@@ -547,38 +641,9 @@ ui <- fluidPage(
                                   ), # Nmber of blocks and number of units per block
                                   
                                   fluidRow(
-                                    
-                                    column(10,
-                                           textInput("R2.1P2LBIEMDES", 
-                                                     "Only 1 R Value allowed!", 
-                                                     value = "0.2, 0.2, 0.2, 0.2, 0.2")
-                                           
-                                    ), # column for MDES
-                                    
-                                    column(2, 
-                                           div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                               actionButton("R2.1P2LBIEMDES",
-                                                            label = "", 
-                                                            icon = icon("question"),
-                                                            style = "font-size: 10px;
-                                                                       margin-top: 28px;")) #div for button ends
-                                    ) # column for buttons
-                                    
-                                  ), # fluid Row to contain the question mark issue 
-                                  
-                                  bsPopover(id = "R2.1P2LBIEMDES", 
-                                            title = NULL,
-                                            content = paste0("For more information on MTP, please click!"),
-                                            placement = "right", 
-                                            trigger = "hover", 
-                                            options = list(container = "body")
-                                  ), # the bsPopover for the more information section of the Shiny App
-                                  
-                                  fluidRow(
                                     column(12,
                                            
-                                           numericInput("rhoP2LBIEMDES", 
+                                           numericInput("rhoP2LBIE", 
                                                         "Correlation between outcomes", 
                                                         min = 0, 
                                                         max = 1, 
@@ -592,7 +657,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     column(12,
                                            
-                                           numericInput("numCovar.1P2LBIEMDES", 
+                                           numericInput("numCovar.1P2LBIE", 
                                                         "Number of Level 1 Covariates", 
                                                         min = 0, 
                                                         max = 10, 
@@ -607,7 +672,7 @@ ui <- fluidPage(
                                     
                                     column(12,
                                            
-                                           numericInput("tbarP2LBIEMDES", 
+                                           numericInput("tbarP2LBIE", 
                                                         "Proportion of Treatment assignment", 
                                                         min = 0.001, 
                                                         max = 1.0, 
@@ -621,7 +686,7 @@ ui <- fluidPage(
                                     
                                     column(12,
                                            
-                                           numericInput("alphaP2LBIEMDES", 
+                                           numericInput("alphaP2LBIE", 
                                                         "Significance Level of Tests (alpha)", 
                                                         min = 0.001, 
                                                         max = 0.9, 
@@ -635,245 +700,10 @@ ui <- fluidPage(
                                   fluidRow(
                                     
                                     column(6,
-                                           actionButton("goButtonP2LBIEMDES", "Go!") # Action Button to trigger other reactive values
+                                           actionButton("goButtonP2LBIE", "Go!") # Action Button to trigger other reactive values
                                     )
                                   ) # goButtonP2LBIE
                                   
-                              ), # end of MDES condtional Panel
-                              
-                        conditionalPanel(condition = "input.explorerP2LBIE == 'R2'",
-                                               
-                                  fluidRow(
-                                      
-                                    column(10,
-                                           div(style = "display: inline-block, vertical-align:top;", 
-                                           selectInput("designP2LBIER2", "What Research Design is this for?", 
-                                                        choices = list("constantEffects" = "d2.1_m2fc", 
-                                                                       "fixedEffects" = "d2.1_m2ff", 
-                                                                       "randomEffects" = "d2.1_m2fr"))) # select input buttons div
-                                          ), # column for inputs
-                                                 
-                                     column(2, 
-                                           div(style ="display: inline-block,vertical-align:top;",
-                                            actionButton("question_designP2LBIER2",
-                                                          label = "", 
-                                                          icon = icon("question"),
-                                                          style = "font-size: 10px;
-                                                          margin-top: 28px;")) #div for button ends
-                                            ) # column for buttons
-                                                 
-                                         ), # fluid Row to contain the question mark issue 
-                                               
-                                      bsPopover(id = "question_designP2LBIER2", 
-                                                title = NULL,
-                                                content = paste0("For more information on different designs, please click!"),
-                                                placement = "right", 
-                                                trigger = "hover", 
-                                                options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                                               
-                                  fluidRow(
-                                    
-                                     column(10,
-                                           div(style = "display: inline-block, vertical-align:top;", 
-                                           selectInput("MTPP2LBIER2", "Which MTP do you plan to use?", 
-                                                        choices = list("Bonferroni" = "Bonferroni", 
-                                                                        "Holm" = "Holm", 
-                                                                        "Benjamini-Hochberg" = "BH", 
-                                                                        "Westfall-Young-Single-Step" = "WY-SS", 
-                                                                        "Westfall-Young-Step-Down" = "WY-SD"),
-                                                        multiple = TRUE)) # select input buttons div
-                                        ), # column for inputs
-                                                 
-                                     column(2, 
-                                          div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                          actionButton("question_mtpP2LBIER2",
-                                          label = "", 
-                                          icon = icon("question"),
-                                          style = "font-size: 10px;
-                                          margin-top: 28px;")) #div for button ends
-                                          ) # column for buttons
-                                                 
-                                       ), # fluid Row to contain the question mark issue 
-                                               
-                                      bsPopover(id = "question_mtpP2LBIER2", 
-                                                title = NULL,
-                                                content = paste0("For more information on MTP, please click!"),
-                                                placement = "right", 
-                                                trigger = "hover", 
-                                                options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                                               
-                                      fluidRow(
-                                                 
-                                          column(12,
-                                            numericInput("MP2LBIER2", 
-                                                          "Number of Outcomes", 
-                                                          min = 1, 
-                                                          max = 10, 
-                                                          value = 5, 
-                                                          step = 1)
-                                            ) # column for number of outcomes
-                                                 
-                                        ), # number of outcomes and mdes
-                                               
-                                      fluidRow(
-                                                 
-                                          column(10,
-                                            textInput("MDESP2LBIER2", 
-                                                      "Only 1 MDES value allowed!", 
-                                                      value = "0.125,0.125,0.125, 0,0")
-                                                        
-                                          ), # column for MDES
-                                                 
-                                          column(2, 
-                                             div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                            actionButton("question_mdesP2LBIER2",
-                                                          label = "", 
-                                                          icon = icon("question"),
-                                                          style = "font-size: 10px;
-                                                                  margin-top: 28px;")) #div for button ends
-                                              ) # column for buttons
-                                                 
-                                          ), # fluid Row to contain the question mark issue 
-                                               
-                                          bsPopover(id = "question_mdesP2LBIER2", 
-                                                    title = NULL,
-                                                    content = paste0("For more information on MTP, please click!"),
-                                                    placement = "right", 
-                                                    trigger = "hover", 
-                                                    options = list(container = "body")
-                                      ), # the bsPopover for the more information section of the Shiny App
-                                               
-                                      fluidRow(
-                                                 
-                                          column(12,
-                                            numericInput("KP2LBIER2", 
-                                                          "Number of Districts", 
-                                                            min = 1, 
-                                                            max = 100, 
-                                                            value = 1, 
-                                                            step = 1))
-                                               ), # number of districts
-                                               
-                                     fluidRow(
-                                                 
-                                         column(6,
-                                            numericInput("JP2LBIER2", 
-                                                          "Number of blocks", 
-                                                            min = 1, 
-                                                            max = 100, 
-                                                            value = 50, 
-                                                            step = 1)
-                                                        
-                                              ), # number of blocks
-                                                 
-                                         column(6,
-                                            numericInput("nbarP2LBIER2",
-                                                         "Number of units per block", 
-                                                            min = 2, 
-                                                            max = 100, 
-                                                            value = 20, 
-                                                            step = 1)
-                                                        
-                                          ) # number of units per blocks
-                                                 
-                                    ), # Nmber of blocks and number of units per block
-                                               
-                                    fluidRow(
-                                                 
-                                        column(10,
-                                            textInput("R2.1P2LBIER2", 
-                                                      "Vary R2 vector (comma delimited)", 
-                                                      value = "0.2, 0.2, 0.2, 0.2, 0.2")
-                                                        
-                                             ), # column for MDES
-                                                 
-                                        column(2, 
-                                            div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                              actionButton("R2.1P2LBIER2_question",
-                                                            label = "", 
-                                                            icon = icon("question"),
-                                                            style = "font-size: 10px;
-                                                margin-top: 28px;")) #div for button ends
-                                             ) # column for buttons
-                                                 
-                                     ), # fluid Row to contain the question mark issue 
-                                               
-                                       bsPopover(id = "R2.1P2LBIER2_question", 
-                                                 title = NULL,
-                                                 content = paste0("For more information on MTP, please click!"),
-                                                 placement = "right", 
-                                                 trigger = "hover", 
-                                                 options = list(container = "body")
-                                     ), # the bsPopover for the more information section of the Shiny App
-                                               
-                                      fluidRow(
-                                        
-                                            column(12,
-                                                numericInput("rhoP2LBIER2", 
-                                                             "Correlation between outcomes", 
-                                                              min = 0, 
-                                                              max = 1, 
-                                                              value = 0.5, 
-                                                              step = 0.1 )
-                                                        
-                                                 ) # Number of Level 1 covariates
-                                                 
-                                     ), #fluid row for block level covariate inputs
-                                               
-                                      fluidRow(
-                                        
-                                            column(12,
-                                                numericInput("numCovar.1P2LBIER2", 
-                                                             "Number of Level 1 Covariates", 
-                                                              min = 0, 
-                                                              max = 10, 
-                                                              value = 1, 
-                                                              step = 1 )
-                                                        
-                                                 )# Number of Level 1 Covariates
-                                                 
-                                     ), # column correlation btw tests & intraclass correlation!
-                                               
-                                     fluidRow(
-                                                 
-                                           column(12,
-                                               numericInput("tbarP2LBIER2", 
-                                                             "Proportion of Treatment assignment", 
-                                                              min = 0.001, 
-                                                              max = 1.0, 
-                                                              value = 0.5, 
-                                                              step = 0.001)
-                                                        
-                                                 ) # proportion of treatment assignment
-                                           
-                                    ), # proprtion of treatement as assignment
-                                               
-                                    fluidRow(  
-                                                 
-                                          column(12,
-                                            numericInput("alphaP2LBIER2", 
-                                                          "Significance Level of Tests (alpha)", 
-                                                            min = 0.001, 
-                                                            max = 0.9, 
-                                                            value = 0.05, 
-                                                            step = 0.001)
-                                                        
-                                                 ) #Significance Level of Tests
-                                                 
-                                    ), # proportion of treatment assignment and significance level of tests
-                                               
-                                    fluidRow(
-                                                 
-                                          column(6,
-                                             actionButton("goButtonP2LBIER2", "Go!") # Action Button to trigger other reactive values
-                                                 )
-                                          ) # goButtonP2LBIE
-                                               
-                              ) # Conditional Panel for R2
-                              
                             ), # Power calculation sidebarPanel
                             
                             mainPanel(
@@ -1632,7 +1462,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   #########################################################################################
 
   # observe Event (Go Button) for Explorer
-  observeEvent(input$goButtonP2LBIEMDES,{
+  observeEvent(input$goButtonP2LBIE,{
     
     # set a Reactive Value for Power Table
     reactPowerTable <- reactiveVal()
@@ -1666,10 +1496,30 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # Generating the Power Table # 
     ##############################
     
+    browser()
+    
+    # Suppose Parameters are not varying
+    R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIE, ",")))
+    MDES = as.numeric(unlist(strsplit(input$MDESP2LBIE, ",")))
+    
+    # Adjusting Parameter values based on condition
+    if(input.explorerP2LBIE == 'MDES') {
+      
+      # MDES vary
+      MDES = as.numeric(unlist(strsplit(input$MDESP2LBIE, ",")))
+      
+    } else if (input.exlorerP2LBIE == 'R2'){
+      
+      # R2 vary
+      R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIE, ",")))
+      
+    }
+    
+    
     dat <- as.data.frame(
       isolate(pum::pump_power_grid(design = input$designP2LBIEMDES,
                                    MTP = as.character(unlist(strsplit(input$MTPP2LBIEMDES," "))),
-                                   MDES = as.numeric(unlist(strsplit(input$MDESP2LBIEMDES, ","))),
+                                   MDES = MDES,
                                    M = input$MP2LBIEMDES, # The number of hypotheses/outcomes
                                    J = input$JP2LBIEMDES, # The number of schools
                                    K = input$KP2LBIEMDES, # The number of districts
@@ -1679,7 +1529,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                    numCovar.1 = input$numCovar.1P2LBIEMDES,
                                    numCovar.2 = 0,
                                    numCovar.3 = 0,
-                                   R2.1 = input$R2.1P2LBIEMDES,
+                                   R2.1 = R2.1,
                                    R2.2 = NULL,
                                    R2.3 = NULL,
                                    ICC.2 = 0,
