@@ -519,7 +519,7 @@ ui <- fluidPage(
                                     column(2, 
                                            div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                               actionButton("R2.1P2LBIE",
+                                               actionButton("question_R2.1P2LBIE",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -528,7 +528,7 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "R2.1P2LBIE", 
+                                  bsPopover(id = "question_R2.1P2LBIE", 
                                             title = NULL,
                                             content = paste0("For more information on MTP, please click!"),
                                             placement = "right", 
@@ -729,7 +729,7 @@ ui <- fluidPage(
                                   
                                   fluidRow(
                                     column(12, align = "center",
-                                           DT::dataTableOutput("powercalcTableP2LBIEMDES")) #The power calculation table output
+                                           DT::dataTableOutput("powercalcTableP2LBIE")) #The power calculation table output
                                   ) #fluidRow for first half of the page
                                   
                               ), # conditional panel results for MDES
@@ -1503,30 +1503,29 @@ server <- shinyServer(function(input, output, session = FALSE) {
     MDES = as.numeric(unlist(strsplit(input$MDESP2LBIE, ",")))
     
     # Adjusting Parameter values based on condition
-    if(input.explorerP2LBIE == 'MDES') {
+    if(input$explorerP2LBIE == 'MDES') {
       
       # MDES vary
       MDES = as.numeric(unlist(strsplit(input$MDESP2LBIE, ",")))
       
-    } else if (input.exlorerP2LBIE == 'R2'){
+    } else if (input$exlorerP2LBIE == 'R2'){
       
       # R2 vary
       R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIE, ",")))
       
     }
     
-    
     dat <- as.data.frame(
-      isolate(pum::pump_power_grid(design = input$designP2LBIEMDES,
-                                   MTP = as.character(unlist(strsplit(input$MTPP2LBIEMDES," "))),
+      isolate(pum::pump_power_grid(design = input$designP2LBIE,
+                                   MTP = as.character(unlist(strsplit(input$MTPP2LBIE," "))),
                                    MDES = MDES,
-                                   M = input$MP2LBIEMDES, # The number of hypotheses/outcomes
-                                   J = input$JP2LBIEMDES, # The number of schools
-                                   K = input$KP2LBIEMDES, # The number of districts
-                                   nbar = input$nbarP2LBIEMDES, # The number of units per block
-                                   Tbar = input$tbarP2LBIEMDES, # The proportion of samples that are assigned to the treatment
-                                   alpha = input$alphaP2LBIEMDES,
-                                   numCovar.1 = input$numCovar.1P2LBIEMDES,
+                                   M = input$MP2LBIE, # The number of hypotheses/outcomes
+                                   J = input$JP2LBIE, # The number of schools
+                                   K = input$KP2LBIE, # The number of districts
+                                   nbar = input$nbarP2LBIE, # The number of units per block
+                                   Tbar = input$tbarP2LBIE, # The proportion of samples that are assigned to the treatment
+                                   alpha = input$alphaP2LBIE,
+                                   numCovar.1 = input$numCovar.1P2LBIE,
                                    numCovar.2 = 0,
                                    numCovar.3 = 0,
                                    R2.1 = R2.1,
@@ -1534,7 +1533,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                    R2.3 = NULL,
                                    ICC.2 = 0,
                                    ICC.3 = NULL,
-                                   rho = input$rhoP2LBIEMDES,
+                                   rho = input$rhoP2LBIE,
                                    omega.2 = NULL,
                                    omega.3 = NULL,
                                    long.table = TRUE,
@@ -1554,7 +1553,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # Rendering a Reactive Data Table Object for the UI side      #
     ###############################################################
     
-    output$powercalcTableP2LBIEMDES <- DT::renderDataTable({
+    output$powercalcTableP2LBIE <- DT::renderDataTable({
     
       DT::datatable(dat, 
                     extensions = 'Buttons',
