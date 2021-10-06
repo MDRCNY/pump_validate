@@ -154,13 +154,10 @@ Note that this approach of simulating test statistics builds on work by Bang, Yo
 Chen et al. (2011) derived explicit formulas for $d-$minimal powers of stepwise procedures and for complete power of single-step procedures, but only
 for up to three tests. The approach presented here is more generally applicable, as it can be used for all MTPs, for any number of tests, and for all definitions of power discussed in the present paper.
 
-To check that the power estimates obtained from the methodological approach just described are correct, two validation analyses were conducted.
-First, estimates of individual power for a single hypothesis test were compared with those computed in PowerUp! (Dong & Maynard, 2013, Table RBD2-c).
-Second, we compared PUMP power estimates - for multiple definitions of power - to those obtained from full Monte Carlo data simulations, following the approach described above.
-For each design and each modelling assumption, we documented comparisons across a wide range of scenarios. All of our validation code and results are available... 
-
 
 ## RCT Designs
+
+KP COMMENT: I WONDER IF YOU MIGHT TAKE THE TEXT FROM "POWER ESTIMATION METHODS" HERE. MAYBE ALL OF SECTION 1? OR IS THAT TOO MUCH DETAIL? THEN SECTIONS 2-7 CAN BE AN APPENDIX? 
 
 When designing a study, the researcher has two main choices.
 First, the researcher chooses the design of the experiment, including the number of levels, and at which level randomization occurs.
