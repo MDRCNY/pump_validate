@@ -29,18 +29,11 @@ This list is not complete - to be added to and checked off by everyone.
 - understand unit test with correlated outcomes
 
 # Shiny app
-- Introduction/education matter (Kristin, 8/31)
-- Tabs completed for blocked individual RCT (Zarni, 7/31)
-- Tabs built out for additional designs/models (Zarni, 8/31)
-- User testing/review complete (Team, 9/15)
-- Revisions implemented (Zarni & Kristin, 10/15)
-- Submit to Pubs for review (Zarni, 10/15)
-- Test on host server (Zarni, 8/31)
+- Aim to have draft to share in next meeting
 
 # Manuscript
-- Revisit outline & assign champions to sections (Team, 7/1)
 - Complete draft (Team, 9/30)
-- Get reviewer comments (Chuck, 10/15)
+- Get reviewer comments (Chuck, 10/15) - may drop entirely
 - Revised draft (Team, 10/31)
 
 # Video
@@ -48,11 +41,9 @@ This list is not complete - to be added to and checked off by everyone.
 - Budget video (Kristin, 8/15)
 
 # Presentation
-- Kristen presenting
+- Success! Kristin P has saved the slides for attaching to our final performance report. 
 
 # Next check-in
-- champions for paper sections
-- planning for SREE presentation - Kristin P will share past slide deck for reference
 
 # Stretch goals
 - tool that helps user build a block matrix of correlations based on a list of correlations between outcomes
