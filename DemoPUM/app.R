@@ -1,3 +1,6 @@
+#######################
+# Loading R Libraries #
+#######################
 library(shiny) # for basic templates
 library(shinyBS) # for popovers and tool tips
 library(shinycssloaders) # for ui elements showing shiny loading
@@ -6,6 +9,11 @@ library(ggplot2) # loading ggplot for the plot
 library(pum) # our pum library
 library(DT) # make nice shiny tables
 library(plotly) # Plotly for ggplot to make graphs downloadable
+
+##########################
+# Loading source R files #
+##########################
+source("ui_elements.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -103,38 +111,20 @@ ui <- fluidPage(
                                           placement = "right", 
                                           trigger = "hover", 
                                           options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                                
-                                fluidRow(
-                                  column(10,
-                                         div(style = "display: inline-block, vertical-align:top;", 
-                                             selectInput("MTPP2LBISS", "Which MTP do you plan to use?", 
-                                             choices = list("Bonferroni" = "Bonferroni", 
-                                                            "Holm" = "Holm", 
-                                                            "Benjamini-Hochberg" = "BH", 
-                                                            "Westfall-Young-Single-Step" = "WY-SS", 
-                                                            "Westfall-Young-Step-Down" = "WY-SD"),
-                                                            multiple = TRUE)) # select input buttons div
-                                  ), # column for inputs
-                                  
-                                  column(2, 
-                                         div(style ="display: inline-block, 
-                                             vertical-align:top;",
-                                             actionButton("question_mtpP2LBISS",
-                                                          label = "", 
-                                                          icon = icon("question"),
-                                                          style = "font-size: 10px;
-                                                                   margin-top: 28px;")) #div for button ends
-                                  ) # column for buttons
-                                  
-                                ), # fluid Row to contain the question mark issue 
-                                
-                                bsPopover(id = "question_mtpP2LBISS", 
-                                          title = NULL,
-                                          content = paste0("For more information on MTP, please click!"),
-                                          placement = "right", 
-                                          trigger = "hover", 
-                                          options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                                
+                               
+                          
+                             fluidRow(
+                               
+                               column(10, 
+                                      div(style = "display: inline-block, vertical-align:top;", 
+                                      mtpInput(design = "d2.1_m2ff", scenario = "single"))),
+                               
+                               column(2, 
+                                      div(style ="display: inline-block, vertical-align:top;",
+                                      mtpActionButton(design = "d2.1_m2ff", scenario = "single")
+                             ),
+                             
+ 
                                 fluidRow(
                                   
                                   column(12,
@@ -481,7 +471,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     
                                     column(10,
-                                           textInput("MDESP2LBIE", 
+                                           textInput("MDESP2LBIEMDES", 
                                                      "Vary MDES vector (comma delimited)", 
                                                      value = "0.125,0.125,0.125, 0,0")
                                            
@@ -490,7 +480,7 @@ ui <- fluidPage(
                                     column(2, 
                                            div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                               actionButton("question_mdesP2LBIE",
+                                               actionButton("question_mdesP2LBIEMDES",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -499,7 +489,7 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "question_mdesP2LBIE", 
+                                  bsPopover(id = "question_mdesP2LBIEMDES", 
                                             title = NULL,
                                             content = paste0("For more information on MTP, please click!"),
                                             placement = "right", 
@@ -510,7 +500,7 @@ ui <- fluidPage(
                                   fluidRow(
                                     
                                     column(10,
-                                           textInput("R2.1P2LBIE", 
+                                           textInput("R2.1P2LBIEMDES", 
                                                      "Only 1 R Value allowed!", 
                                                      value = "0.2, 0.2, 0.2, 0.2, 0.2")
                                            
@@ -519,7 +509,7 @@ ui <- fluidPage(
                                     column(2, 
                                            div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                               actionButton("question_R2.1P2LBIE",
+                                               actionButton("question_R2.1P2LBIEMDES",
                                                             label = "", 
                                                             icon = icon("question"),
                                                             style = "font-size: 10px;
@@ -528,13 +518,13 @@ ui <- fluidPage(
                                     
                                   ), # fluid Row to contain the question mark issue 
                                   
-                                  bsPopover(id = "question_R2.1P2LBIE", 
+                                  bsPopover(id = "question_R2.1P2LBIEMDES", 
                                             title = NULL,
                                             content = paste0("For more information on MTP, please click!"),
                                             placement = "right", 
                                             trigger = "hover", 
                                             options = list(container = "body")
-                                  ), # the bsPopover for the more information section of the Shiny App
+                                  ) # the bsPopover for the more information section of the Shiny App
                                   
                                   
                                   
@@ -545,7 +535,7 @@ ui <- fluidPage(
                                            fluidRow(
 
                                              column(10,
-                                                    textInput("MDESP2LBIE",
+                                                    textInput("MDESP2LBIER2",
                                                               "Only 1 MDES value allowed",
                                                               value = "0.125,0.125,0.125, 0,0")
 
@@ -554,7 +544,7 @@ ui <- fluidPage(
                                              column(2,
                                                     div(style ="display: inline-block,
                                                  vertical-align:top;",
-                                                        actionButton("question_mdesP2LBIE",
+                                                        actionButton("question_mdesP2LBIER2",
                                                                      label = "",
                                                                      icon = icon("question"),
                                                                      style = "font-size: 10px;
@@ -563,7 +553,7 @@ ui <- fluidPage(
 
                                            ), # fluid Row to contain the question mark issue
 
-                                           bsPopover(id = "question_mdesP2LBIE",
+                                           bsPopover(id = "question_mdesP2LBIER2",
                                                      title = NULL,
                                                      content = paste0("For more information on MTP, please click!"),
                                                      placement = "right",
@@ -574,7 +564,7 @@ ui <- fluidPage(
                                            fluidRow(
                                              
                                              column(10,
-                                                    textInput("R2.1P2LBIE", 
+                                                    textInput("R2.1P2LBIER2", 
                                                               "Vary R2 Value!", 
                                                               value = "0.2, 0.2, 0.2, 0.2, 0.2")
                                                     
@@ -583,7 +573,7 @@ ui <- fluidPage(
                                              column(2, 
                                                     div(style ="display: inline-block, 
                                                  vertical-align:top;",
-                                                        actionButton("question_R2.1P2LBIE",
+                                                        actionButton("question_R2.1P2LBIER2",
                                                                      label = "", 
                                                                      icon = icon("question"),
                                                                      style = "font-size: 10px;
@@ -592,13 +582,13 @@ ui <- fluidPage(
                                              
                                            ), # fluid Row to contain the question mark issue 
                                            
-                                           bsPopover(id = "question_R2.1P2LBIE", 
+                                           bsPopover(id = "question_R2.1P2LBIER2", 
                                                      title = NULL,
                                                      content = paste0("For more information on MTP, please click!"),
                                                      placement = "right", 
                                                      trigger = "hover", 
                                                      options = list(container = "body")
-                                           ), # the bsPopover for the more information section of the Shiny App
+                                           ) # the bsPopover for the more information section of the Shiny App
 
                           ), # End of condition for R2
                           
@@ -1271,10 +1261,10 @@ ui <- fluidPage(
             
             )# 2 Level Cluster RCT
 
-  )      
- # Fluid Page
-# set counter outside of the server call
+  ) # Tabset Panel     
+) # Tabset Panel main menu
 
+) # Fluid Page
 counter <<- 0
 
 
@@ -1419,7 +1409,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                           vjust = 1,
                                           hjust = 0.5),
                 axis.text = element_text(size = 14),
-                axis.title = element_text(size = 14),
+                axis.title = element_text(size = 14)
                 )
           + labs(colour = "",
                  shape = "")
@@ -1495,25 +1485,23 @@ server <- shinyServer(function(input, output, session = FALSE) {
     ##############################
     # Generating the Power Table # 
     ##############################
-    
-    browser()
-    
-    # Suppose Parameters are not varying
-    R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIE, ",")))
-    MDES = as.numeric(unlist(strsplit(input$MDESP2LBIE, ",")))
-    
+  
     # Adjusting Parameter values based on condition
     if(input$explorerP2LBIE == 'MDES') {
       
       # MDES vary
-      MDES = as.numeric(unlist(strsplit(input$MDESP2LBIE, ",")))
+      MDES = as.numeric(unlist(strsplit(input$MDESP2LBIEMDES, ",")))
+      R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIEMDES, ",")))
       
     } else if (input$exlorerP2LBIE == 'R2'){
       
       # R2 vary
-      R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIE, ",")))
+      R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIER2, ",")))
+      MDES = as.numeric(unlist(strsplit(input$MDESP2LBIER2, ",")))
       
     }
+    
+    #browser()
     
     dat <- as.data.frame(
       isolate(pum::pump_power_grid(design = input$designP2LBIE,
@@ -1573,7 +1561,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     ## Setting up outcomes for Color gradient
     
     # Grab the number of outcomes
-    M <- input$MP2LBIEMDES
+    M <- input$MP2LBIE
     
     # End of Minimum Power 
     minEnd <- M - 1
