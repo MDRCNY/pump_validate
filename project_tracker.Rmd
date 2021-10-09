@@ -23,9 +23,7 @@ This list is not complete - to be added to and checked off by everyone.
 - Revisit terminology of MDES - should we use "effect size" or "ATE" instead - build into user testing (Kristin, TBD)
 
 ## Kristen's todo list
-- document remaining issues with sample size/mdes code, implement correct level of warnings
 - once sample size code is stable, rerun all validation
-- should omega be a vector? check consistency of all scalar and vector params
 - understand unit test with correlated outcomes
 
 # Shiny app
