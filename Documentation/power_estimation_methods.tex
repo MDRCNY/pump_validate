@@ -317,7 +317,8 @@ To make the formula more directly comparable, we do not take this route, but one
 
 \textbf{PowerUp name:} Not applicable.
 
-\textbf{Characterization:} 1-level design, constant intercepts, constant treatment effects, no school covariates.
+\textbf{Design:} 1-level design, randomization at level 1.
+\textbf{Model:} constant intercepts, constant treatment effects, no school covariates.
 
 The model for estimating impacts on outcome $m$ is given by:
 \begin{align}
@@ -393,7 +394,9 @@ T.x <- randomizr::block_ra( S.id, prob = Tbar )
 
 \textbf{PowerUp name:} blocked\_i1\_2c
 
-\textbf{Characterization:} 2-level design, fixed intercepts, constant treatment effect, no school covariates.
+\textbf{Design:} 2-level design, randomization at level 1 (blocked).
+
+\textbf{Model:} fixed intercepts, constant treatment effect, no school covariates.
 
 When we assume constant effects, each school has its own fixed intercept for the control outcome, and the treatment effect is modeled as constant across schools.
 We can also call this a fixed effects, constant treatment model \citep{Miratrix2020}.
@@ -485,7 +488,9 @@ This can be viewed as within (PowerUp!) vs. overall (this work) effect size metr
 
 \textbf{PowerUp name:} blocked\_i1\_2f
 
-\textbf{Characterization:} 2-level design, fixed intercepts, fixed treatment effects, no school covariates.
+\textbf{Design:} 2-level design, randomization at level 1 (blocked).
+
+\textbf{Model:} fixed intercepts, fixed treatment effects, no school covariates.
 
 The constant effects model assumes treatment is the same for each block.
 If it is not, and the blocks are different sizes or have different proportions of units treated, that estimator is precision-weighted and can thus be biased.
@@ -553,7 +558,9 @@ This can be viewed as within (PowerUp!) vs. overall (this work) effect size metr
 
 \textbf{PowerUp name:} blocked\_i1\_2r
 
-\textbf{Characterization:} 2-level design, random intercepts, random treatment effect, school covariates for intercept. Powerup also has school covariates for treatment effects to allow for modeling treatment effect heterogeneity; we do not include this.
+\textbf{Design:} 2-level design, randomization at level 1 (blocked).
+
+\textbf{Model:} random intercepts, random treatment effect, school covariates for intercept. Powerup also has school covariates for treatment effects to allow for modeling treatment effect heterogeneity; we do not include this.
 
 If we are interested in generalizing from our sample to a superpopulation, we may wish to view the sample of schools themselves as representative of something larger.
 Then, if some schools have different average impacts than other schools, we have to account for the possibility that our sample of schools has an overall average impact different from the target population.
@@ -618,6 +625,72 @@ PowerUp allows for school covariates to influence the treatment impact, while we
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Design: 2 levels, Randomization: level 2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage 
+\section{Design: 2 levels, Randomization: level 2}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Simple cluster randomization, 2 level design, random effects 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Random effects (d2.2\_m2rc)}
+
+\textbf{PowerUp name:} simple\_c2\_2r
+
+
+\textbf{Design:} 2-level design, randomization at level 2 (clusters).
+
+\textbf{Model:} random intercepts, constant treatment effect for all schools, school covariates for intercept.
+
+The model for estimating impacts on outcome $m$ is given by:
+\begin{align}
+Y_{ijkm} &=  \theta_{0,jkm} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp} + r_{ijkm}\\
+\nonumber \theta_{0,jkm} &= \mu_{0,km} + \psi_{1,m} T_{jk} + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + u_{0,jkm}
+\end{align}
+with reduced form:
+\begin{align}
+Y_{ijkm} &= \psi_{1,m} T_{jk} + \mu_{0,km} + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp} + u_{0,jkm} + r_{ijkm}
+\end{align}
+and distributions:
+\begin{align}
+u_{0,jkm} &\sim N\left(0, \tau^2_{0,m}\right)\\
+\nonumber r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
+\end{align}
+
+The standard error of the treatment effect estimate is given by:
+\begin{align}
+Q_m = \sqrt{\frac{\text{ICC}_{2,m}(1 - R^2_{2,m})}{\bar{T}(1 - \bar{T}) J} + \frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}}}.\end{align}
+The degrees of freedom are
+\begin{align}\text{df}_m = J - g_{1,m} - 2.\end{align}
+
+The constant effects model means that we assume no treatment variation across our sites, i.e.:
+\begin{itemize}
+\item $\omega_{2,m} = 0$
+\end{itemize}
+
+
+\paragraph{Sample size formula.} 
+\begin{align}
+J &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\frac{ \bar{n} \text{ICC}_{2,m}(1-R^2_{2,m}) + (1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) \bar{n}} \right)\\
+\bar{n} &= \frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \left(\frac{MT_{df}}{MDES}\right)^{-2} - \text{ICC}_{2,m}(1-R^2_{2,m})  }
+\end{align}
+
+
+\paragraph{Code syntax.}
+The R model is
+\begin{verbatim}
+Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)
+\end{verbatim}
+
+The randomization scheme is: simple random sampling occurs across schools, with $J\bar{T}$ schools assigned to treatment.
+\begin{verbatim}
+T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
+\end{verbatim}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Design: 3 levels, Randomization: level 1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -640,7 +713,9 @@ We can simply use the prior 2 level designs if we lump district variation into t
 
 \textbf{PowerUp name:} blocked\_i1\_3r
 
-\textbf{Characterization:} 3-level design, random intercepts for district, random treatment effects for district, random intercepts for school, random effects for schools, school and district covariates for intercepts. Powerup also allows for school and district covariates for cross-site impact heterogeneity.
+\textbf{Design:} 3-level design, randomization at level 1 (blocked).
+
+\textbf{Model:} random intercepts for district, random treatment effects for district, random intercepts for school, random effects for schools, school and district covariates for intercepts. Powerup also allows for school and district covariates for cross-site impact heterogeneity.
 
 The model for estimating impacts on outcome $m$ is given by:
 \begin{align}
@@ -707,145 +782,8 @@ T.x <- randomizr::block_ra( S.id, prob = Tbar )
 PowerUp allows for school and district covariates to influence the treatment impact, while we do not allow for this. In PowerUp terms, we assume $R^2_{3T} = 0$ and $R^2_{2T} = 0$.
 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Design: 2 levels, Randomization: level 2
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newpage 
-\section{Design: 2 levels, Randomization: level 2}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Simple cluster randomization, 2 level design, random effects 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Random effects (d2.2\_m2rc)}
-
-\textbf{PowerUp name:} simple\_c2\_2r
-
-\textbf{Characterization:} 2-level design, random intercepts, constant treatment effect for all schools, school covariates for intercept.
-
-The model for estimating impacts on outcome $m$ is given by:
-\begin{align}
-Y_{ijkm} &=  \theta_{0,jkm} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp} + r_{ijkm}\\
-\nonumber \theta_{0,jkm} &= \mu_{0,km} + \psi_{1,m} T_{jk} + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + u_{0,jkm}
-\end{align}
-with reduced form:
-\begin{align}
-Y_{ijkm} &= \psi_{1,m} T_{jk} + \mu_{0,km} + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp} + u_{0,jkm} + r_{ijkm}
-\end{align}
-and distributions:
-\begin{align}
-u_{0,jkm} &\sim N\left(0, \tau^2_{0,m}\right)\\
-\nonumber r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
-\end{align}
-
-The standard error of the treatment effect estimate is given by:
-\begin{align}
-Q_m = \sqrt{\frac{\text{ICC}_{2,m}(1 - R^2_{2,m})}{\bar{T}(1 - \bar{T}) J} + \frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}}}.\end{align}
-The degrees of freedom are
-\begin{align}\text{df}_m = J - g_{1,m} - 2.\end{align}
-
-The constant effects model means that we assume no treatment variation across our sites, i.e.:
-\begin{itemize}
-\item $\omega_{2,m} = 0$
-\end{itemize}
-
-
-\paragraph{Sample size formula.} 
-\begin{align}
-J &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\frac{ \bar{n} \text{ICC}_{2,m}(1-R^2_{2,m}) + (1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) \bar{n}} \right)\\
-\bar{n} &= \frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \left(\frac{MT_{df}}{MDES}\right)^{-2} - \text{ICC}_{2,m}(1-R^2_{2,m})  }
-\end{align}
-
-
-\paragraph{Code syntax.}
-The R model is
-\begin{verbatim}
-Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)
-\end{verbatim}
-
-The randomization scheme is: simple random sampling occurs across schools, with $J\bar{T}$ schools assigned to treatment.
-\begin{verbatim}
-T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
-\end{verbatim}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Design: 3 levels, Randomization: level 2
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newpage 
-\section{Design: 3 levels, Randomization: level 3}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Simple cluster randomization, 3 level design, random effects 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Random effects (d3.3\_m3rc2rc)}
-
-\textbf{PowerUp name:} simple\_c3\_3r
-
-\textbf{Characterization:} 3-level design, random intercepts for districts, constant treatment effects for districts, random intercepts for schools, constant treatment effects for schools, school and district covariates for intercept.
-
-The model for estimating impacts on outcome $m$ is given by:
-\begin{align}\label{eqn:bi12c_model}
-Y_{ijkm} &=  \theta_{0,jkm} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp} + r_{ijkm}\\
-\nonumber \theta_{0,jkm} &= \mu_{0,km} + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + u_{0,jkm}\\
-\nonumber \mu_{0,km}  &= \Xi_{0,m} + \psi_{1,m} T_{k} + \sum_{s=1}^{g_{3,m}} \xi_{ms} V_{kms} + w_{0,km}
-\end{align}
-with reduced form:
-\begin{align}
-Y_{ijkm} &= \psi_{1,m} T_{k} + \Xi_{0,m} + \sum_{s=1}^{g_{3,m}} \xi_{ms} V_{kms} + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp}\\
-\nonumber &+ w_{0,km} + u_{0,jkm} + r_{ijkm}
-\end{align}
-and distributions:
-\begin{align}
-u_{0,jkm} &\sim N\left(0, \tau^2_{0,m}\right)\\
-\nonumber w_{0,jkm} &\sim N\left(0, \eta^2_{0,m}\right)\\
-\nonumber r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
-\end{align}
-
-The standard error of the treatment effect estimate is given by:
-\begin{align}
-Q_m = \sqrt{
-\frac{\text{ICC}_{3,m}(1 - R^2_{3,m})}{\bar{T}(1 - \bar{T}) K} +
-\frac{\text{ICC}_{2,m}(1 - R^2_{2,m})}{\bar{T}(1 - \bar{T}) J K } +
-\frac{(1-\text{ICC}_{2,m} - \text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J K\bar{n}} }.\end{align}
-The degrees of freedom are
-\begin{align}\text{df}_m = K - g_{3,m} - 2.\end{align}
-
-
-The constant effects model means that we assume no treatment variation across our sites, i.e.:
-\begin{itemize}
-\item $\omega_{2,m} = 0$
-\item $\omega_{3,m} = 0$
-\end{itemize}
-
-
-
-\paragraph{Sample size formula.} 
-\begin{align}
-K &= \left(\frac{MT_{df}}{MDES}\right)^2 \left( \frac{\text{ICC}_{3,m}(1-R_{3,m}^2)}{\bar{T}(1 - \bar{T})}  + \frac{\text{ICC}_{2,m} (1-R_{2,m}^2)}{\bar{T}(1 - \bar{T}) J} + \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}} \right)\\
-J&=   \frac{\bar{n}\text{ICC}_{2,m} (1-R_{2,m}^2) + (1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{n}\left(\bar{T}(1 - \bar{T}) K \left(\frac{MT_{df}}{MDES}\right)^{-2} - \text{ICC}_{3,m}(1-R_{3,m}^2)\right)} \\
-\bar{n} &= \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T})JK \left(\frac{MT_{df}}{MDES}\right)^{-2} - J\text{ICC}_{3,m}(1-R_{3,m}^2) - \text{ICC}_{2,m} (1-R_{2,m}^2)}
-\end{align}
-
-\paragraph{Code syntax.}
-The R model is
-\begin{verbatim}
-Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)
-\end{verbatim}
-
-The randomization scheme is: simple random sampling occurs across districts, with $K\bar{T}$ districts assigned to treatment.
-\begin{verbatim}
-T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
-\end{verbatim}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Design: 3 levels, Randomization: level 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
@@ -859,7 +797,9 @@ T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
 
 \textbf{PowerUp name:} blocked\_c2\_3f
 
-\textbf{Characterization:} 3-level design, fixed intercepts for districts, fixed treatment effects for districts, random intercepts for schools, constant effects for schools within a district, school covariates for intercept.
+\textbf{Design:} 3-level design, randomization at level 2 (blocked cluster).
+
+\textbf{Model:} fixed intercepts for districts, fixed treatment effects for districts, random intercepts for schools, constant effects for schools within a district, school covariates for intercept.
 
 The model for estimating impacts on outcome $m$ is given by:
 \begin{align}
@@ -933,7 +873,9 @@ T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = T
 
 \textbf{PowerUp name:} blocked\_c2\_3r
 
-\textbf{Characterization:} 3-level design, random intercepts for districts, random treatment effect for districts, random intercepts for schools, constant effects for schools within a district, school and district covariates for intercept. Powerup also allows for district covariates for treatment effects.
+\textbf{Design:} 3-level design, randomization at level 2 (blocked cluster).
+
+\textbf{Model:} random intercepts for districts, random treatment effect for districts, random intercepts for schools, constant effects for schools within a district, school and district covariates for intercept. Powerup also allows for district covariates for treatment effects.
 
 The model for estimating impacts on outcome $m$ is given by:
 \begin{align}
@@ -996,6 +938,81 @@ The randomization scheme is: simple random sampling occurs within each district,
 \begin{verbatim}
 T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
 \end{verbatim}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Design: 3 levels, Randomization: level 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage 
+\section{Design: 3 levels, Randomization: level 3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Simple cluster randomization, 3 level design, random effects 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Random effects (d3.3\_m3rc2rc)}
+
+\textbf{PowerUp name:} simple\_c3\_3r
+
+\textbf{Design:} 3-level design, randomization at level 3 (cluster).
+
+\textbf{Model:} random intercepts for districts, constant treatment effects for districts, random intercepts for schools, constant treatment effects for schools, school and district covariates for intercept.
+
+The model for estimating impacts on outcome $m$ is given by:
+\begin{align}\label{eqn:bi12c_model}
+Y_{ijkm} &=  \theta_{0,jkm} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp} + r_{ijkm}\\
+\nonumber \theta_{0,jkm} &= \mu_{0,km} + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + u_{0,jkm}\\
+\nonumber \mu_{0,km}  &= \Xi_{0,m} + \psi_{1,m} T_{k} + \sum_{s=1}^{g_{3,m}} \xi_{ms} V_{kms} + w_{0,km}
+\end{align}
+with reduced form:
+\begin{align}
+Y_{ijkm} &= \psi_{1,m} T_{k} + \Xi_{0,m} + \sum_{s=1}^{g_{3,m}} \xi_{ms} V_{kms} + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp}\\
+\nonumber &+ w_{0,km} + u_{0,jkm} + r_{ijkm}
+\end{align}
+and distributions:
+\begin{align}
+u_{0,jkm} &\sim N\left(0, \tau^2_{0,m}\right)\\
+\nonumber w_{0,jkm} &\sim N\left(0, \eta^2_{0,m}\right)\\
+\nonumber r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
+\end{align}
+
+The standard error of the treatment effect estimate is given by:
+\begin{align}
+Q_m = \sqrt{
+\frac{\text{ICC}_{3,m}(1 - R^2_{3,m})}{\bar{T}(1 - \bar{T}) K} +
+\frac{\text{ICC}_{2,m}(1 - R^2_{2,m})}{\bar{T}(1 - \bar{T}) J K } +
+\frac{(1-\text{ICC}_{2,m} - \text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J K\bar{n}} }.\end{align}
+The degrees of freedom are
+\begin{align}\text{df}_m = K - g_{3,m} - 2.\end{align}
+
+
+The constant effects model means that we assume no treatment variation across our sites, i.e.:
+\begin{itemize}
+\item $\omega_{2,m} = 0$
+\item $\omega_{3,m} = 0$
+\end{itemize}
+
+
+
+\paragraph{Sample size formula.} 
+\begin{align}
+K &= \left(\frac{MT_{df}}{MDES}\right)^2 \left( \frac{\text{ICC}_{3,m}(1-R_{3,m}^2)}{\bar{T}(1 - \bar{T})}  + \frac{\text{ICC}_{2,m} (1-R_{2,m}^2)}{\bar{T}(1 - \bar{T}) J} + \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}} \right)\\
+J&=   \frac{\bar{n}\text{ICC}_{2,m} (1-R_{2,m}^2) + (1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{n}\left(\bar{T}(1 - \bar{T}) K \left(\frac{MT_{df}}{MDES}\right)^{-2} - \text{ICC}_{3,m}(1-R_{3,m}^2)\right)} \\
+\bar{n} &= \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T})JK \left(\frac{MT_{df}}{MDES}\right)^{-2} - J\text{ICC}_{3,m}(1-R_{3,m}^2) - \text{ICC}_{2,m} (1-R_{2,m}^2)}
+\end{align}
+
+\paragraph{Code syntax.}
+The R model is
+\begin{verbatim}
+Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)
+\end{verbatim}
+
+The randomization scheme is: simple random sampling occurs across districts, with $K\bar{T}$ districts assigned to treatment.
+\begin{verbatim}
+T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
+\end{verbatim}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

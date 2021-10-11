@@ -52,5 +52,4 @@ This list is not complete - to be added to and checked off by everyone.
 - effect size calculator
 - speed up everything
 - WY follow up: WY with a small number of schools, large number of permutations, and no effect, do we get the intended power/p-value?  What if we don’t do any adjustment–is it because of divergent/unstable models?
-- consider whether to return S3 objects
 
