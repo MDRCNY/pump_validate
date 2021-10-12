@@ -22,8 +22,6 @@ ui <- fluidPage(
               tabPanel("Home"),
               tabPanel("Educational Resources"),
               tabPanel("Power Calculation", 
-                tabsetPanel(id = "subMenu",
-                  tabPanel(id = "Single Scenario",
                     sidebarLayout(
                       sidebarPanel(
                         # css to center the progress bar
@@ -61,72 +59,196 @@ ui <- fluidPage(
                             ) # html bracket
                           ) # css styling tag
                         ), # The header tag
-                                         
-                          fluidRow(
-                            column(10,
-                              div(style = "display: inline-block, vertical-align:top;", 
-                                selectInput("designP2LBISS", "What Research Design is this for?", 
-                                             choices = list("Two Level Blocked RCT - Constant Effects" = "d2.1_m2fc", 
-                                                            "Two Level Blocked RCT - Fixed Effects" = "d2.1_m2ff", 
-                                                            "Two Level Blocked RCT - Random Effects" = "d2.1_m2fr"),
-                                             selected = "d2.1_m2ff")) # select input buttons div
-                                ), # column for inputs
-                                           
-                            column(2, 
-                              div(style ="display: inline-block,vertical-align:top;",
-                                actionButton("question_designP2LBISS",
-                                              label = "", 
-                                              icon = icon("question"),
-                                              style = "font-size: 10px;
-                                              margin-top: 28px;")) #div for button ends 
-                                            ) # column for buttons
-                                ), # fluid Row to contain the question mark issue 
-                                         
-                            bsPopover(id = "question_designP2LBISS", 
-                                      title = NULL,
-                                      content = paste0("For more information on different designs, please click!"),
-                                      placement = "right", 
-                                      trigger = "hover", 
-                                      options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
                           
-                            fluidRow(
-                                column(12,
-                                 uiOutput("MTP"))
+                          fluidRow(
+                            
+                            div(style = "display: inline-block, vertical-align:top;", 
+                            column(12,
+                              selectInput("scenario", "Pick a mode of exploration",
+                                          choices = list("Single scenario" = "ss",
+                                                         "Explorer" = "ex"))
+                              
+                            )) # User Mode of Exploration
+
+                          ), # picking the type of exploration you would like to run
+                          
+                          fluidRow(
+                            
+                            div(style = "display: inline-block, vertical-align:top;", 
+                            column(12,
+                             selectInput("design", "What research design is this for?", 
+                                        choices = list("One Level RCT - Constant Effects" = "d1.1_m2cc",
+                                                       "Two Levels Blocked RCT - Constant Effects" = "d2.1_m2fc", 
+                                                       "Two Levels Blocked RCT - Fixed Effects" = "d2.1_m2ff", 
+                                                       "Two Levels Blocked RCT - Random Effects" = "d2.1_m2fr",
+                                                       "Three Levels Clustered RCT - Random Effects" = "d3.1_m3rr2rr",
+                                                       "Design 2 levels, Randomization: level 2 - Random Effects" = "d2.2_m2rc",
+                                                       "Design 3 levels, Randomization: level 3 - Random Effects" = "d3.3_m3rc2rc",
+                                                       "Design 3 levels, Randomization: level 2 - Fixed Effects" = "d3.2_m3ff2rc",
+                                                       "Design 3 levels, Randomization: level 2 - Random Effects" = "d3.2_m3rr2rc"
+                                                       ),
+                                        selected = "d2.1_m2ff")     
+
+                            )) # selecting designs
+                            
+                          ), # picking the research design    
+                        
+                           fluidRow(
+                             
+                            column(6,
+                            uiOutput("nbar")),
+                             
+                            column(6,
+                            uiOutput("j"))
+                             
+                           ), # Units per block and number of blocks  
+                          
+                           fluidRow(
+                             
+                            column(12,
+                            uiOutput("mtp"))
+                            
                             ), # MTP shared by all designs
                         
                            fluidRow(
-                                column(12,
-                                 uiOutput("M"))
+                             
+                            column(12,
+                            uiOutput("m"))
+                            
                            ), # Number of Outcomes
                         
-                           # fluidRow(
-                           #      column(12,
-                           #       uiOutput("MDES"))
-                           # ), # Minimum Detectable Effect Size
-      
-                           conditionalPanel(condition = c("input.designP2LBISS == 'd2.1_m2ff' || input.designP2LBISS == 'd2.1_m2fr'"),
-                              fluidRow(
-                                column(12,
-                                  uiOutput("R2.1"))
-                              ) # Adding R2.1 which does not exist in 1 level constant effect
-   
-                           ), # conditional Panel for the 2 level constant & fixed effects
-                              
+                           fluidRow(
+                             
+                            column(12,
+                            uiOutput("mdes"))
+                            
+                           ), # Minimum Detectable Effect Size
+                        
+                           fluidRow(
+                             
+                            column(12,
+                            uiOutput("rho"))
+                            
+                           ), # correlation between outcomes
+                           
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("numCovar.1"))
+                             
+                           ), # number of covariates in level 1
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("tbar"))
+                             
+                           ), # proportion of treatment assignment
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("alpha"))
+                             
+                           ), # alpha
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("r2.1"))
+                             
+                           ), # Adding R2.1
+
+                           conditionalPanel(condition = c("input.design == 'd2.1_m2fc' || input.design == 'd2.1_m2ff' || input.design == 'd2.1_m2fr' || 
+                                                          input.design == 'd3.1_m3rr2rr' || input.design == 'd2.2_m2rc' || input.design == 'd3.3_m3rc2rc' || 
+                                                          input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'" ),
+                                            
                             fluidRow(
+                                
+                             column(12,
+                             uiOutput("icc.2"))
+                                
+                            ) # Adding icc.2 which does not exist for level 1 constant effect
+                              
+                           ), # conditional Panel for icc.2
+                          
+                           conditionalPanel(condition = c("input.design == 'd2.1_m2fr' || 
+                                                          input.design == 'd3.1_m3rr2rr' || input.design == 'd2.2_m2rc' || input.design == 'd3.3_m3rc2rc' || 
+                                                          input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'" ),
+                                         
+                            fluidRow(
+                                           
+                             column(12,
+                             uiOutput("omega.2"))
+                                           
+                            ) # Adding omega.2 which does not exist for 2 level blocked RCT constant and fixed effects
+                                         
+                          ), # conditional Panel for omega.2
+                        
+                          conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.3_m3rc2rc' || 
+                                                          input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'"),
+                                         
+                            fluidRow(
+                                           
+                             column(12,
+                             uiOutput("r2.3"))
+                                           
+                            ), # Adding r2.3 which does not exist for 3 level designs
+                            
+                            fluidRow(
+                              
+                              column(12,
+                              uiOutput("icc.3"))
+                              
+                            ), # adding icc.3 which does not exist for 3 level designs 
+                            
+                            fluidRow(
+                              
+                              column(12,
+                              uiOutput("k"))
+                              
+                            ) # adding K for number of level 3 groupings
+                             
+                        ), # conditional Panel for level 3 designs non-random effects at the 3rd level
+                        
+                        conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.2_m3rr2rc'"),
+                                         
+                                         fluidRow(
+                                           
+                                           column(12,
+                                                  uiOutput("omega.3"))
+                                           
+                                         ) # Adding omega.3 for random effect variation at the 3rd level
+                                         
+                        ), # omega.3 for random effect variation at the 3rd level
+     
+                            fluidRow(
+                              
                               column(6,
-                                    actionButton("goButtonP2LBISS", "Go!") # Action Button to trigger other reactive values
-                                    )
-                              ) # end of fluid Row
+                              actionButton("goButtonP2LBISS", "Go!")) 
+                            
+                            ) # Action Button to trigger other reactive values
               ), # Power calculation sidebarPanel
                                        
               mainPanel(
-                br(),    
-                br(),
+                          fluidRow(
+                            
+                            column(12, align = "center",
+                                   offset = 2,
+                                   #STh here for text
+                                   )
+                            
+                          ),
+                
+                            br(),    
+                            br(),
                                          
-                            fluidRow(
+                           fluidRow(
+                             
                               column(8, align = "center",
                                         offset = 2,
                                         plotlyOutput("powercalcGraphP2LBISS"))
+                              
                             ), # end of Fluid Row
                                          
                               br(), # To create spaces between Table and Plots
@@ -137,15 +259,15 @@ ui <- fluidPage(
                               br(), # To create spaces between Table and Plots
                                          
                             fluidRow(
+                              
                               column(12, align = "center",
                                      DT::dataTableOutput("powercalcTableP2LBISS")) #The power calculation table output
+                              
                             ) #fluidRow for first half of the page
                                          
             ) # Power calculation Main Panel
                                        
           ) # Power Calculation sidebar Layout
-        ) # Single Scenario
-      ) # End of Power Panel                     
     ) # Two sub Menus possible
                
   ) # End of main tabset Panel
@@ -155,23 +277,39 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session = FALSE) {
   
+  getScenario <- reactive({
+    
+    if(input$scenario == "ss"){
+      
+      print("ss")
+      return(c("ss"))
+    
+    } else if (input$scenario == "ex"){
+      
+      print("ex")
+      return(c("ex"))
+      
+    }
+    
+  }) # get scenario from Shiny Server
+  
   ##########################################################
   # Get reactive expression for experimental chosen design #
   ##########################################################
   
   getDesign <- reactive({
     
-    if(input$designP2LBISS == "d2.1_m2ff") {
+    if(input$design == "d2.1_m2ff") {
       
       print("d2.1_m2ff")
       return(c("d2.1_m2ff"))
       
-    } else if(input$designP2LBISS == "d2.1_m2fr"){
+    } else if(input$design == "d2.1_m2fr"){
       
       print("d2.1_m2fr")
       return(c("d2.1_m2fr"))
       
-    } else if(input$designP2LBISS == "d2.1_m2fc") {
+    } else if(input$design == "d2.1_m2fc") {
       
       print("d2.1_m2fc")
       return(c("d2.1_m2fc"))
@@ -179,41 +317,154 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }
   
   }) # getDesign
-  
+
   ######################################################
   # Rendering Variable Objects to UI for chosen design #
   ######################################################
   
-  output$MTP <- renderUI({
+  output$design <- renderUI({
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        designInput(x = "design"))    
+        
+  }) # number of units per block  
+
+  ######################################################
+  # Rendering Variable Objects to UI for chosen design #
+  ######################################################
+  
+  output$nbar <- renderUI({
     
     theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
     div(style = "display: inline-block, vertical-align:top;", 
-        mtpInput(design = theDesign , scenario = "singlescenario"))
+        nbarInput(design = theDesign , scenario = theScenario))    
+    
+  }) # number of units per block
+
+  output$j <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top;", 
+        jInput(design = theDesign , scenario = theScenario))    
+    
+  }) # number of units per block
+  
+  output$mtp <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top;", 
+        mtpInput(design = theDesign , scenario = theScenario))
     
   }) # MTP for chosen design
   
-  output$M <- renderUI({
+  output$m <- renderUI({
     
     theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
     div(style = "display: inline-block, vertical-align:top;", 
-        mInput(design = theDesign, scenario = "singlescenario"))
+        mInput(design = theDesign, scenario = theScenario))
   }) # Number of Outcomes 
-  
-  # output$MDES <- renderUI({
-  #   
-  #   theDesign = as.character(getDesign())
-  #   div(style = "display: inline-block, vertical-align:top:",
-  #       mdesInput(design = theDesign, scenario = "singlescenario"))
-  # }) # Minimum detectable effect size
 
-  output$R2.1 <- renderUI({
+  output$mdes <- renderUI({
+
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top:",
+        mdesInput(design = theDesign, scenario = theScenario))
+  }) # Minimum detectable effect size
+  
+  output$rho <- renderUI({
     
     theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top:",
+        rhoInput(design = theDesign, scenario = theScenario))
+        
+  }) # correlation between test statistics
+  
+  output$numCovar.1 <- renderUI({
+  
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top:",
+        numCovar.1Input(design = theDesign, scenario = theScenario))
+    
+  }) # number of level 1 covariates
+  
+  output$tbar <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top:",
+        tbarInput(design = theDesign, scenario = theScenario))
+    
+  }) # Proportion of treatment assignment
+  
+  output$alpha <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top:",
+        alphaInput(design = theDesign, scenario = theScenario))
+    
+  }) # Significance level (alpha)
+
+  output$r2.1 <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
     div(style = "display: inline-block, vertical-align:top;", 
-        r2.1Input(design = theDesign, scenario = "singlescenario"))
+        r2.1Input(design = theDesign, scenario = theScenario))
   
   }) # R2.1 element for chosen and required designs
   
+  output$icc.2 <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top;", 
+        icc.2Input(design = theDesign, scenario = theScenario))
+    
+  }) # icc.2 element for chosen and required designs
+  
+  output$omega.2 <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top;", 
+        omega.2Input(design = theDesign, scenario = theScenario))
+    
+  }) # omega.2 element for chosen and required designs
+  
+  output$icc.3 <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top;", 
+        icc.3Input(design = theDesign, scenario = theScenario))
+    
+  }) # icc.3 element for chosen and required designs
+  
+  output$omega.3 <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top;", 
+        omega.3Input(design = theDesign, scenario = theScenario))
+    
+  }) # omega.3 element for chosen and required designs
+  
+  output$k <- renderUI({
+    
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    div(style = "display: inline-block, vertical-align:top;", 
+        kInput(design = theDesign , scenario = theScenario))    
+    
+  }) # number of level-3 groups
   
   observeEvent(input$goButtonP2LBISS,{
     
@@ -243,39 +494,104 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     } # End of Callback Progress Function
     
-    ############################
-    # Generating Power Results #
-    ############################
+    ############################################################################
+    # Generating Power Results for diffferent designs & mode of exploration    #
+    ############################################################################
     
-    #browser()
+    browser()
+    
+    # Getting the research design that we have to estimate the statistical results for
+    theDesign = as.character(getDesign())
+    theScenario = as.character(getScenario())
+    
+    # set up to receive all the input parameters
+    
+    # Get string for input subsetting
+    design_subset <- "design"
+    nbar_subset <- paste0("nbar", "_", theDesign, "_", theScenario)
+    j_subset <- paste0("j", "_", theDesign, "_", theScenario)
+    mtp_subset <- paste0("mtp", "_", theDesign,"_", theScenario)
+    m_subset <- paste0("m", "_", theDesign, "_", theScenario)
+    mdes_subset <- paste0("mdes", "_", theDesign, "_", theScenario)
+    rho_subset <- paste0("rho", "_", theDesign, "_", theScenario)
+    numCovar.1_subset <- paste0("numCovar.1","_", theDesign, "_", theScenario)
+    tbar_subset <- paste0("tbar","_", theDesign, "_", theScenario)
+    alpha_subset <- paste0("alpha", "_", theDesign, "_", theScenario)
+    r2.1_subset <- paste0("r2.1", "_", theDesign, "_", theScenario)
+    icc.2_subset <- paste0("icc.2", "_", theDesign, "_", theScenario)
+    omega.2_subset <- paste0("omega.2", "_", theDesign, "_", theScenario)
+    icc.3_subset <- paste0("icc.3", "_", theDesign, "_", theScenario)
+    k_subset <- paste0("k","_", theDesign, "_", theScenario)
+    omega.3_subset <- paste0("omega.3", "_", theDesign, "_", theScenario)
+    
+    # Pulling in values for all the designs
+    design <- input[[design_subset]]
+    nbar <- input[[nbar_subset]]
+    j <- input[[j_subset]]
+    mtp <- input[[mtp_subset]]
+    m <- input[[m_subset]]
+    mdes <- input[[mdes_subset]]
+    rho <- input[[rho_subset]]
+    numCovar.1 <- input[[numCovar.1_subset]]
+    tbar <- input[[tbar_subset]]
+    alpha <- input[[alpha_subset]]
+    r2.1 <- input[[r2.1_subset]]
+    icc.2 <- 0
+    omega.2 <- 0
+    icc.3 <- 0
+    k <- 0
+    omega.3 <- 0
+    
+    if(design %in% c("d2.1_m2fc" , "d2.1_m2ff" , "d2.1_m2fr" , "d2.2_m2rc" , "d3.1_m3rr2rr" , "d3.3_m3rc2rc" , "d3.2_m3ff2rc" , "d3.2_m3rr2rc")){
+    
+      icc.2 <- input[[icc.2_subset]]
+      
+    } 
+    
+    if (design %in% c("d2.1_m2fr", 'd3.1_m3rr2rr')){
+      
+      omega.2 <- input[[omega.2_subset]]
+      
+    } 
+    
+    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")) {
+      
+      icc.3 <- input[[icc.3_subset]]
+      
+    }
+    
+    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")){
+      
+      k <- input[[k_subset]]
+      
+    }
+    
+    if (design %in% c("d3.1_m3rr2rr", "d3.2_m3rr2rc")) {
+      
+      omega.3 <- input[[omega.3_subset]]
+      
+    }
+    
     dat <- as.data.frame(
-      isolate(pum::pump_power(design = input$designP2LBISS,
-                              MTP = as.character(unlist(strsplit(input$MTPP2LBISS," "))),
-                              MDES = as.numeric(unlist(strsplit(input$MDESP2LBISS, ","))),
-                              M = input$MP2LBISS, # The number of hypotheses/outcomes
-                              J = input$JP2LBISS, # The number of schools
-                              K = input$KP2LBISS, # The number of districts
-                              nbar = input$nbarP2LBISS, # The number of units per block
-                              Tbar = input$tbarP2LBISS, # The proportion of samples that are assigned to the treatment
-                              alpha = input$alphaP2LBISS,
-                              numCovar.1 = input$numCovar.1P2LBISS,
-                              numCovar.2 = 0,
-                              numCovar.3 = 0,
-                              R2.1 = rep(input$R2.1P2LBISS,
-                                         input$MP2LBISS),
-                              R2.2 = rep(0.1, input$MP2LBISS),
-                              R2.3 = rep(0.1, input$MP2LBISS),
-                              ICC.2 = rep(0, input$MP2LBISS),
-                              ICC.3 = rep(0.2, input$MP2LBISS) ,
-                              rho = input$rhoP2LBISS,
-                              omega.2 = 0,
-                              omega.3 = 0.1,
-                              tnum = 10000,
-                              B = 100,
-                              cl = NULL,
-                              updateProgress = updateProgress)
-     ))
-    
+        isolate(pum::pump_power(design = design,
+                                nbar = nbar, # The number of units per block
+                                J = j, # The number of schools
+                                MTP = as.character(unlist(strsplit(mtp))),
+                                M = m, # The number of hypotheses/outcomes
+                                MDES = as.numeric(unlist(strsplit(mdes, ","))),
+                                rho = rho,
+                                numCovar.1 = numCovar.1,
+                                Tbar = tbar, # The proportion of samples that are assigned to the treatment
+                                alpha = alpha,
+                                R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+                                tnum = 10000,
+                                B = 100,
+                                cl = NULL,
+                                updateProgress = updateProgress)
+                
+       )) #Power generation table
+      
+
     # Save the reactive Power Table
     reactPowerTable(dat)
     {reactPowerTable()}
