@@ -18,10 +18,10 @@ source("ui_elements.R")
 ui <- fluidPage(
   
   titlePanel(title = "Power Under Multiplicity", windowTitle = "Power Under Multiplicity"), 
-  tabsetPanel(id = "mainMenu",
-              tabPanel("Home"),
-              tabPanel("Educational Resources"),
-              tabPanel("Power Calculation", 
+  tabsetPanel(id = "tabset", type = "tabs",
+              tabPanel(title = "Home", value = "home_tab"),
+              tabPanel(title = "Educational Resources", value = "edu_tab"),
+              tabPanel(title = "Single Scenario", value = "single_scenario_tab", 
                     sidebarLayout(
                       sidebarPanel(
                         # css to center the progress bar
@@ -91,7 +91,21 @@ ui <- fluidPage(
 
                             )) # selecting designs
                             
-                          ), # picking the research design    
+                          ), # picking the research design
+                        
+                          fluidRow(
+                            
+                            div(style = "display: inline-block, vertical-align:top;",
+                            column(12,
+                              numericInput("numOutcomes", "Number of Outcomes", 
+                                           min = 1, 
+                                           max = 10, 
+                                           value = 5, 
+                                           step = 1)
+                              ) # number of Outcomes    
+                            ) # div
+                            
+                          ), # number of outcomes selection 
                         
                            fluidRow(
                              
@@ -109,14 +123,7 @@ ui <- fluidPage(
                             uiOutput("mtp"))
                             
                             ), # MTP shared by all designs
-                        
-                           fluidRow(
-                             
-                            column(12,
-                            uiOutput("m"))
-                            
-                           ), # Number of Outcomes
-                        
+                      
                            fluidRow(
                              
                             column(12,
@@ -268,8 +275,10 @@ ui <- fluidPage(
             ) # Power calculation Main Panel
                                        
           ) # Power Calculation sidebar Layout
-    ) # Two sub Menus possible
-               
+    ), # Single Scenario Tab
+    
+    tabPanel(title = "Explorer", value = "explorer_tab") # Explorer tab
+             
   ) # End of main tabset Panel
 ) # end of Fluid Page
 
@@ -277,21 +286,38 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session = FALSE) {
   
-  getScenario <- reactive({
+  ##########################################################
+  # Get reactive expression for tab
+  ##########################################################
+
+  whichTab <- reactiveValues()
+  
+  observeEvent(input$tabset, {
     
-    if(input$scenario == "ss"){
+    if(input$tabset == "explorer_tab"){
       
-      print("ss")
-      return(c("ss"))
+      print("We are outputting explorer tab")
+      whichTab$scenario<- "explorer_tab"
+    } # Grabbing the home tab
+     
+    if(input$tabset == "single_scenario_tab"){
+
+      print("We are outputting single scenario tab")
+      whichTab$scenario <- "single_scenario_tab"
+    } # Grabbing the Single Explorer tab identity to be passed into function
+
+})
+  
+  
+  ##########################################################
+  # Get reactive expression for single or explorer         #
+  ##########################################################
+  
+  getNumOutcomes <- reactive({
     
-    } else if (input$scenario == "ex"){
-      
-      print("ex")
-      return(c("ex"))
-      
-    }
+    input$numOutcomes 
     
-  }) # get scenario from Shiny Server
+  })
   
   ##########################################################
   # Get reactive expression for experimental chosen design #
@@ -336,7 +362,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$nbar <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         nbarInput(design = theDesign , scenario = theScenario))    
     
@@ -345,7 +371,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$j <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         jInput(design = theDesign , scenario = theScenario))    
     
@@ -354,7 +380,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$mtp <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         mtpInput(design = theDesign , scenario = theScenario))
     
@@ -363,23 +389,27 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$m <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         mInput(design = theDesign, scenario = theScenario))
   }) # Number of Outcomes 
 
   output$mdes <- renderUI({
-
+    
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
+    print(theNumOutcomes)
+    
     div(style = "display: inline-block, vertical-align:top:",
-        mdesInput(design = theDesign, scenario = theScenario))
+        mdesInput(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
   }) # Minimum detectable effect size
   
   output$rho <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
         rhoInput(design = theDesign, scenario = theScenario))
         
@@ -388,7 +418,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$numCovar.1 <- renderUI({
   
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
         numCovar.1Input(design = theDesign, scenario = theScenario))
     
@@ -397,7 +427,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$tbar <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
         tbarInput(design = theDesign, scenario = theScenario))
     
@@ -406,7 +436,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$alpha <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
         alphaInput(design = theDesign, scenario = theScenario))
     
@@ -415,7 +445,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$r2.1 <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         r2.1Input(design = theDesign, scenario = theScenario))
   
@@ -424,7 +454,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$icc.2 <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         icc.2Input(design = theDesign, scenario = theScenario))
     
@@ -433,7 +463,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$omega.2 <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         omega.2Input(design = theDesign, scenario = theScenario))
     
@@ -442,7 +472,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$icc.3 <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         icc.3Input(design = theDesign, scenario = theScenario))
     
@@ -451,7 +481,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$omega.3 <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         omega.3Input(design = theDesign, scenario = theScenario))
     
@@ -460,11 +490,13 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$k <- renderUI({
     
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         kInput(design = theDesign , scenario = theScenario))    
     
   }) # number of level-3 groups
+  
+
   
   observeEvent(input$goButtonP2LBISS,{
     

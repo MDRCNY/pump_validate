@@ -23,6 +23,8 @@ designInput <- function(x){
 
 nbarInput <- function(design, scenario){
   
+  print(scenario)
+  
   id <- paste0("nbar", "_", design, "_" , scenario)
   
   numericInput(id,
@@ -50,6 +52,24 @@ jInput <- function(design, scenario){
 } # number of unit per block
 
 #########################
+# Number of Outcomes (M)
+#########################
+
+mInput <- function(design, scenario){
+  
+  if(scenario == "single_scenario_tab"){
+    id <- paste0("m", "_", design, "_" , scenario)
+    numericInput(id, 
+                 "Number of Outcomes", 
+                 min = 1, 
+                 max = 10, 
+                 value = 5, 
+                 step = 1)
+  }
+  
+} # Number of Outcomes (M)
+
+#########################
 # MTP element
 #########################
 
@@ -63,6 +83,7 @@ mtpInput <- function(design, scenario){
                               "Benjamini-Hochberg" = "BH", 
                               "Westfall-Young-Single-Step" = "WY-SS", 
                               "Westfall-Young-Step-Down" = "WY-SD"),
+              selected = "Bonferroni",
               multiple = TRUE) # select input buttons div
 } # mtp input
 
@@ -89,33 +110,26 @@ mtpPopOver <- function(design, scenario){
   )
 } #mtpPop over
 
-#########################
-# Number of Outcomes (M)
-#########################
-
-mInput <- function(design, scenario){
-  
-  id <- paste0("m", "_", design, "_" , scenario)
-  numericInput(id, 
-               "Number of Outcomes", 
-               min = 1, 
-               max = 10, 
-               value = 5, 
-               step = 1)
-  
-  
-} # Number of Outcomes (M)
 
 #########################
 # Minimum Detectable Effect Size
 #########################
 
-mdesInput <- function(design, scenario){
+mdesInput <- function(design, scenario, numOutcome){
+  
+  if(length(numOutcome) == 0){
+    
+    numOutcome <- 5
+    
+  } # set default value to numOutcome
+  
+  # default mdes values whose count of number will change depending on number of outcomes
+  defaultmdesvalues <- paste0(rep(0.125, times = numOutcome), collapse = ",")
   
   id <- paste0("mdes", "_", design, "_" , scenario)
   textInput(id, 
            "Minimum detectable effect size (MDES) (Vector of length M, comma delimited)", 
-           value = "0.125,0.125,0.125, 0,0")
+           value = defaultmdesvalues)
 } # mdesInput
 
 ##################################################################################
