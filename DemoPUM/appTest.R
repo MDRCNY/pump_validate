@@ -166,68 +166,74 @@ ui <- fluidPage(
                              
                            ), # Adding R2.1
 
-                           conditionalPanel(condition = c("input.design == 'd2.1_m2fc' || input.design == 'd2.1_m2ff' || input.design == 'd2.1_m2fr' || 
-                                                          input.design == 'd3.1_m3rr2rr' || input.design == 'd2.2_m2rc' || input.design == 'd3.3_m3rc2rc' || 
-                                                          input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'" ),
-                                            
-                            fluidRow(
-                                
-                             column(12,
-                             uiOutput("icc.2"))
-                                
-                            ) # Adding icc.2 which does not exist for level 1 constant effect
+                           fluidRow(
                               
-                           ), # conditional Panel for icc.2
+                              column(12,
+                              uiOutput("icc.2"))
+                              
+                           ), # Adding icc.2
                           
-                           conditionalPanel(condition = c("input.design == 'd2.1_m2fr' || 
-                                                          input.design == 'd3.1_m3rr2rr' || input.design == 'd2.2_m2rc' || input.design == 'd3.3_m3rc2rc' || 
-                                                          input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'" ),
-                                         
-                            fluidRow(
-                                           
-                             column(12,
-                             uiOutput("omega.2"))
-                                           
-                            ) # Adding omega.2 which does not exist for 2 level blocked RCT constant and fixed effects
-                                         
-                          ), # conditional Panel for omega.2
-                        
-                          conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.3_m3rc2rc' || 
-                                                          input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'"),
-                                         
-                            fluidRow(
-                                           
-                             column(12,
-                             uiOutput("r2.3"))
-                                           
-                            ), # Adding r2.3 which does not exist for 3 level designs
-                            
-                            fluidRow(
-                              
-                              column(12,
-                              uiOutput("icc.3"))
-                              
-                            ), # adding icc.3 which does not exist for 3 level designs 
-                            
-                            fluidRow(
-                              
-                              column(12,
-                              uiOutput("k"))
-                              
-                            ) # adding K for number of level 3 groupings
+                           fluidRow(
                              
-                        ), # conditional Panel for level 3 designs non-random effects at the 3rd level
+                             column(12,
+                             uiOutput("r2.2"))
+
+                           ),
                         
-                        conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.2_m3rr2rc'"),
-                                         
-                                         fluidRow(
-                                           
-                                           column(12,
-                                                  uiOutput("omega.3"))
-                                           
-                                         ) # Adding omega.3 for random effect variation at the 3rd level
-                                         
-                        ), # omega.3 for random effect variation at the 3rd level
+                        # 
+                        #   
+                        #    conditionalPanel(condition = c("input.design == 'd2.1_m2fr' || input.design == 'd3.1_m3rr2rr'"),
+                        #                  
+                        #     fluidRow(
+                        #                    
+                        #      column(12,
+                        #      uiOutput("omega.2"))
+                        #                    
+                        #     ) # Adding omega.2 which does not exist for 2 level blocked RCT constant and fixed effects
+                        #                  
+                        #   ), # conditional Panel for omega.2
+                        # 
+                        #   conditionalPanel(condition = c("input.design == 'd3.3_m3rc2rc'"),
+                        #     
+                        #     fluidRow(
+                        #       
+                        #       column(12,
+                        #       uiOutput("r2.3"))
+                        #       
+                        #     ) # Adding r2.3
+                        #                    
+                        #   ), # conditional Panel for r2.3
+                        # 
+                        #   conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.3_m3rc2rc' || 
+                        #                                   input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'"),
+                        #                  
+                        # 
+                        #     fluidRow(
+                        #       
+                        #       column(12,
+                        #       uiOutput("icc.3"))
+                        #       
+                        #     ), # adding icc.3 which does not exist for 3 level designs 
+                        #     
+                        #     fluidRow(
+                        #       
+                        #       column(12,
+                        #       uiOutput("k"))
+                        #       
+                        #     ) # adding K for number of level 3 groupings
+                        #      
+                        # ), # conditional Panel for level 3 designs non-random effects at the 3rd level
+                        # 
+                        # conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.2_m3rr2rc'"),
+                        #                  
+                        #                  fluidRow(
+                        #                    
+                        #                    column(12,
+                        #                           uiOutput("omega.3"))
+                        #                    
+                        #                  ) # Adding omega.3 for random effect variation at the 3rd level
+                        #                  
+                        # ), # omega.3 for random effect variation at the 3rd level
      
                             fluidRow(
                               
@@ -328,14 +334,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
     if(input$design == "d2.1_m2ff") {
       
       print("d2.1_m2ff")
-      return(c("d2.1_m2ff"))
+      return(c("d2.1_m2ff"))}
       
-    } else if(input$design == "d2.1_m2fr"){
+    if(input$design == "d2.1_m2fr"){
       
       print("d2.1_m2fr")
-      return(c("d2.1_m2fr"))
+      return(c("d2.1_m2fr"))}
       
-    } else if(input$design == "d2.1_m2fc") {
+    if(input$design == "d2.1_m2fc") {
       
       print("d2.1_m2fc")
       return(c("d2.1_m2fc"))
@@ -400,8 +406,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theScenario = as.character(whichTab$scenario)
     theNumOutcomes = as.numeric(getNumOutcomes())
     
-    print(theNumOutcomes)
-    
     div(style = "display: inline-block, vertical-align:top:",
         mdesInput(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
   }) # Minimum detectable effect size
@@ -446,35 +450,116 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
+    
     div(style = "display: inline-block, vertical-align:top;", 
-        r2.1Input(design = theDesign, scenario = theScenario))
+        r2.1Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
   
   }) # R2.1 element for chosen and required designs
   
+  output$r2.2 <- renderUI({
+    
+    #  conditionalPanel(condition = c("input.design == 'd2.2_m2rc' || input.design == 'd3.3_m3rc2rc' ||
+    #                                 input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'" ),
+    
+    req(input$design)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$design == 'd2.2_m2rc' || input$design == 'd3.3_m3rc2rc'||
+       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3ff2rc'){
+      print('Design r2-2 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          r2.2Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+    
+  }) # R2.2 element for chosen and required designs
+  
   output$icc.2 <- renderUI({
     
-    theDesign = as.character(getDesign())
-    theScenario = as.character(whichTab$scenario)
-    div(style = "display: inline-block, vertical-align:top;", 
-        icc.2Input(design = theDesign, scenario = theScenario))
+    req(input$design)    # requiring design input
+    check = FALSE # checking default condition as fault
     
+    # conditions when check becomes true
+    if(input$design == 'd2.1_m2fc' || input$design == 'd2.1_m2ff' || input$design == 'd2.1_m2fr' ||
+       input$design == 'd3.1_m3rr2rr' || input$design == 'd2.2_m2rc' || input$design == 'd3.3_m3rc2rc' ||
+       input$design == 'd3.2m3ff2rc' || input$design == 'd3.2m3rr2rc'){
+      print('Design ICC2 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          icc.2Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+
   }) # icc.2 element for chosen and required designs
   
   output$omega.2 <- renderUI({
+  
+    req(input$design)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$design == 'd2.1_m2fr' || input$design == 'd3.1_m3rr2rr'){
+      print('Design omega 2 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          omega.2Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # omega.2 element for chosen and required designs
+  
+  output$r2.3 <- renderUI({
     
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
-    div(style = "display: inline-block, vertical-align:top;", 
-        omega.2Input(design = theDesign, scenario = theScenario))
+    theNumOutcomes = as.numeric(getNumOutcomes())
     
-  }) # omega.2 element for chosen and required designs
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        r2.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    
+  }) # R2.3 element for chosen and required designs
   
   output$icc.3 <- renderUI({
     
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
     div(style = "display: inline-block, vertical-align:top;", 
-        icc.3Input(design = theDesign, scenario = theScenario))
+        icc.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
     
   }) # icc.3 element for chosen and required designs
   
@@ -482,8 +567,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
     div(style = "display: inline-block, vertical-align:top;", 
-        omega.3Input(design = theDesign, scenario = theScenario))
+        omega.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
     
   }) # omega.3 element for chosen and required designs
   
@@ -491,6 +578,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
     div(style = "display: inline-block, vertical-align:top;", 
         kInput(design = theDesign , scenario = theScenario))    
     
@@ -530,28 +619,28 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # Generating Power Results for diffferent designs & mode of exploration    #
     ############################################################################
     
-    browser()
-    
     # Getting the research design that we have to estimate the statistical results for
     theDesign = as.character(getDesign())
-    theScenario = as.character(getScenario())
+    theScenario = as.character(whichTab$scenario)
     
     # set up to receive all the input parameters
     
     # Get string for input subsetting
     design_subset <- "design"
+    m_subset <- "numOutcomes"
     nbar_subset <- paste0("nbar", "_", theDesign, "_", theScenario)
     j_subset <- paste0("j", "_", theDesign, "_", theScenario)
     mtp_subset <- paste0("mtp", "_", theDesign,"_", theScenario)
-    m_subset <- paste0("m", "_", theDesign, "_", theScenario)
     mdes_subset <- paste0("mdes", "_", theDesign, "_", theScenario)
     rho_subset <- paste0("rho", "_", theDesign, "_", theScenario)
     numCovar.1_subset <- paste0("numCovar.1","_", theDesign, "_", theScenario)
     tbar_subset <- paste0("tbar","_", theDesign, "_", theScenario)
     alpha_subset <- paste0("alpha", "_", theDesign, "_", theScenario)
     r2.1_subset <- paste0("r2.1", "_", theDesign, "_", theScenario)
+    r2.2_subset <- paste0("r2.2", "_", theDesign, "_", theScenario)
     icc.2_subset <- paste0("icc.2", "_", theDesign, "_", theScenario)
     omega.2_subset <- paste0("omega.2", "_", theDesign, "_", theScenario)
+    r2.3_subset <- paste0("r2.3", "_", theDesign, "_", theScenario)
     icc.3_subset <- paste0("icc.3", "_", theDesign, "_", theScenario)
     k_subset <- paste0("k","_", theDesign, "_", theScenario)
     omega.3_subset <- paste0("omega.3", "_", theDesign, "_", theScenario)
@@ -568,11 +657,19 @@ server <- shinyServer(function(input, output, session = FALSE) {
     tbar <- input[[tbar_subset]]
     alpha <- input[[alpha_subset]]
     r2.1 <- input[[r2.1_subset]]
-    icc.2 <- 0
-    omega.2 <- 0
-    icc.3 <- 0
-    k <- 0
-    omega.3 <- 0
+    icc.2 <- "0"
+    r2.2 <- "0"
+    omega.2 <- "0"
+    r2.3 <- "0"
+    icc.3 <- "0"
+    k <- "0"
+    omega.3 <- "0"
+    
+    if(design %in% c("d2.2_m2rc", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2m3rr2rc")){
+      
+      r2.2 <- input[[r2.2_subset]]
+      
+    } # r2.2
     
     if(design %in% c("d2.1_m2fc" , "d2.1_m2ff" , "d2.1_m2fr" , "d2.2_m2rc" , "d3.1_m3rr2rr" , "d3.3_m3rc2rc" , "d3.2_m3ff2rc" , "d3.2_m3rr2rc")){
     
@@ -585,6 +682,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
       omega.2 <- input[[omega.2_subset]]
       
     } 
+    
+    if (design %in% c("d3.3_m3rc2rc")){
+      
+      r2.3 <- input[[r2.3_subset]]
+      
+    }
     
     if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")) {
       
@@ -608,7 +711,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         isolate(pum::pump_power(design = design,
                                 nbar = nbar, # The number of units per block
                                 J = j, # The number of schools
-                                MTP = as.character(unlist(strsplit(mtp))),
+                                MTP = as.character(unlist(strsplit(mtp, ","))),
                                 M = m, # The number of hypotheses/outcomes
                                 MDES = as.numeric(unlist(strsplit(mdes, ","))),
                                 rho = rho,
@@ -616,6 +719,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                 Tbar = tbar, # The proportion of samples that are assigned to the treatment
                                 alpha = alpha,
                                 R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+                                R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+                                R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+                                ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+                                ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+                                omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+                                omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
                                 tnum = 10000,
                                 B = 100,
                                 cl = NULL,
