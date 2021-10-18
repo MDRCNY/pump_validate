@@ -178,69 +178,49 @@ ui <- fluidPage(
                              column(12,
                              uiOutput("r2.2"))
 
-                           ),
+                           ), # Adding R2.2
+                           
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("omega.2"))
+                             
+                           ), # Adding omega.2
                         
-                        # 
-                        #   
-                        #    conditionalPanel(condition = c("input.design == 'd2.1_m2fr' || input.design == 'd3.1_m3rr2rr'"),
-                        #                  
-                        #     fluidRow(
-                        #                    
-                        #      column(12,
-                        #      uiOutput("omega.2"))
-                        #                    
-                        #     ) # Adding omega.2 which does not exist for 2 level blocked RCT constant and fixed effects
-                        #                  
-                        #   ), # conditional Panel for omega.2
-                        # 
-                        #   conditionalPanel(condition = c("input.design == 'd3.3_m3rc2rc'"),
-                        #     
-                        #     fluidRow(
-                        #       
-                        #       column(12,
-                        #       uiOutput("r2.3"))
-                        #       
-                        #     ) # Adding r2.3
-                        #                    
-                        #   ), # conditional Panel for r2.3
-                        # 
-                        #   conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.3_m3rc2rc' || 
-                        #                                   input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'"),
-                        #                  
-                        # 
-                        #     fluidRow(
-                        #       
-                        #       column(12,
-                        #       uiOutput("icc.3"))
-                        #       
-                        #     ), # adding icc.3 which does not exist for 3 level designs 
-                        #     
-                        #     fluidRow(
-                        #       
-                        #       column(12,
-                        #       uiOutput("k"))
-                        #       
-                        #     ) # adding K for number of level 3 groupings
-                        #      
-                        # ), # conditional Panel for level 3 designs non-random effects at the 3rd level
-                        # 
-                        # conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.2_m3rr2rc'"),
-                        #                  
-                        #                  fluidRow(
-                        #                    
-                        #                    column(12,
-                        #                           uiOutput("omega.3"))
-                        #                    
-                        #                  ) # Adding omega.3 for random effect variation at the 3rd level
-                        #                  
-                        # ), # omega.3 for random effect variation at the 3rd level
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("r2.3")      
+                                )
+                           ), # Adding r2.3
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("icc.3"))
+                             
+                           ), # Adding icc.3
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("k"))
+                             
+                           ), # Adding k
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("omega.3"))
+                             
+                           ), # Adding omega.3
      
-                            fluidRow(
+                           fluidRow(
                               
                               column(6,
                               actionButton("goButtonP2LBISS", "Go!")) 
                             
-                            ) # Action Button to trigger other reactive values
+                           ) # Action Button to trigger other reactive values
               ), # Power calculation sidebarPanel
                                        
               mainPanel(
@@ -313,7 +293,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
     } # Grabbing the Single Explorer tab identity to be passed into function
 
 })
-  
   
   ##########################################################
   # Get reactive expression for single or explorer         #
@@ -460,15 +439,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$r2.2 <- renderUI({
     
-    #  conditionalPanel(condition = c("input.design == 'd2.2_m2rc' || input.design == 'd3.3_m3rc2rc' ||
-    #                                 input.design == 'd3.2_m3ff2rc' || input.design == 'd3.2_m3rr2rc'" ),
-    
     req(input$design)    # requiring design input
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
     if(input$design == 'd2.2_m2rc' || input$design == 'd3.3_m3rc2rc'||
-       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3ff2rc'){
+       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3rr2rc'){
       print('Design r2-2 Trigger')
       check = TRUE
     }
@@ -484,7 +460,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }else{
       # leave blank otherwise
     }
-    
     
   }) # R2.2 element for chosen and required designs
   
@@ -542,50 +517,107 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$r2.3 <- renderUI({
     
-    theDesign = as.character(getDesign())
-    theScenario = as.character(whichTab$scenario)
-    theNumOutcomes = as.numeric(getNumOutcomes())
+    #   conditionalPanel(condition = c("input.design == 'd3.3_m3rc2rc'"),
     
+    req(input$design)    # requiring design input
+    check = FALSE # checking default condition as fault
     
-    div(style = "display: inline-block, vertical-align:top;", 
-        r2.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    # conditions when check becomes true
+    if(input$design == 'd3.3_m3rc2rc'){
+      print('Design r2-3 Trigger')
+      check = TRUE
+    }
     
+    # output ui when check is true
+    if(check){
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          r2.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+
   }) # R2.3 element for chosen and required designs
   
   output$icc.3 <- renderUI({
+  
+    req(input$design)    # requiring design input
+    check = FALSE # checking default condition as fault
     
-    theDesign = as.character(getDesign())
-    theScenario = as.character(whichTab$scenario)
-    theNumOutcomes = as.numeric(getNumOutcomes())
+    # conditions when check becomes true
+    if(input$design == 'd3.1_m3rr2rr' || input$design == 'd3.3_m3rc2rc'||
+       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3rr2rc'){
+      print('Design icc.3 Trigger')
+      check = TRUE
+    }
     
-    div(style = "display: inline-block, vertical-align:top;", 
-        icc.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    # output ui when check is true
+    if(check){
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          icc.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }    
     
   }) # icc.3 element for chosen and required designs
   
   output$omega.3 <- renderUI({
     
-    theDesign = as.character(getDesign())
-    theScenario = as.character(whichTab$scenario)
-    theNumOutcomes = as.numeric(getNumOutcomes())
+    # conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.2_m3rr2rc'"),
+    req(input$design)    # requiring design input
+    check = FALSE # checking default condition as fault
     
-    div(style = "display: inline-block, vertical-align:top;", 
-        omega.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    # conditions when check becomes true
+    if(input$design == 'd3.1_m3rr2rr' || input$design == 'd3.2_m3rr2rc'){
+      print('Design omega.3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          omega.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
     
   }) # omega.3 element for chosen and required designs
   
   output$k <- renderUI({
     
-    theDesign = as.character(getDesign())
-    theScenario = as.character(whichTab$scenario)
-    theNumOutcomes = as.numeric(getNumOutcomes())
+    req(input$design)    # requiring design input
+    check = FALSE # checking default condition as fault
     
-    div(style = "display: inline-block, vertical-align:top;", 
-        kInput(design = theDesign , scenario = theScenario))    
+    # conditions when check becomes true
+    if(input$design == 'd3.1_m3rr2rr' || input$design == 'd3.3_m3rc2rc'||
+       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3rr2rc'){
+      print('Design k Trigger')
+      check = TRUE
+    }
     
+    # output ui when check is true
+    if(check){
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          kInput(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }    
   }) # number of level-3 groups
-  
-
   
   observeEvent(input$goButtonP2LBISS,{
     
