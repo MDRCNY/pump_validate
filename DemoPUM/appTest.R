@@ -64,9 +64,10 @@ ui <- fluidPage(
                             
                             div(style = "display: inline-block, vertical-align:top;", 
                             column(12,
-                              selectInput("scenario", "Pick a mode of exploration",
-                                          choices = list("Single scenario" = "ss",
-                                                         "Explorer" = "ex"))
+                              selectInput("estimationSs", "What would you like to estimate?",
+                                          choices = list("Power" = "power",
+                                                         "Minimum detectable effect size" = "mdes",
+                                                         "Sample size" = "sample"))
                               
                             )) # User Mode of Exploration
 
@@ -307,22 +308,37 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   })
   
+  ######################################################################
+  # Get reactive expression for what type of estimation we are running #
+  ######################################################################
+  
+  getEstimation <- reactive({
+    
+    if(input$estimationSs == "power"){
+      
+      print("power")
+      return(c("power"))
+    }
+  
+    if(input$estimationSs == "mdes"){
+      
+      print("mdes")
+      return(c("mdes"))
+      
+    }  
+    
+    if(input$estimationSs == "sample"){
+      
+      print("sample")
+      return(c("sample"))
+      
+    }
+    
+  })
+
   ##########################################################
   # Get reactive expression for experimental chosen design #
   ##########################################################
-  
-  # choices = list("One Level RCT - Constant Effects" = "d1.1_m2cc",
-  #                "Two Levels Blocked RCT - Constant Effects" = "d2.1_m2fc", 
-  #                "Two Levels Blocked RCT - Fixed Effects" = "d2.1_m2ff", 
-  #                "Two Levels Blocked RCT - Random Effects" = "d2.1_m2fr",
-  #                "Three Levels Clustered RCT - Random Effects" = "d3.1_m3rr2rr",
-  #                "Design 2 levels, Randomization: level 2 - Random Effects" = "d2.2_m2rc",
-  #                "Design 3 levels, Randomization: level 3 - Random Effects" = "d3.3_m3rc2rc",
-  #                "Design 3 levels, Randomization: level 2 - Fixed Effects" = "d3.2_m3ff2rc",
-  #                "Design 3 levels, Randomization: level 2 - Random Effects" = "d3.2_m3rr2rc"
-  # ),
-  # 
-  # 
   
   getDesign <- reactive({
     
