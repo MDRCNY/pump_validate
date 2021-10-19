@@ -76,7 +76,7 @@ ui <- fluidPage(
                             
                             div(style = "display: inline-block, vertical-align:top;", 
                             column(12,
-                             selectInput("design", "What research design is this for?", 
+                             selectInput("designSs", "What research design is this for?", 
                                         choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m2cc",
                                                        "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
                                                        "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
@@ -97,7 +97,7 @@ ui <- fluidPage(
                             
                             div(style = "display: inline-block, vertical-align:top;",
                             column(12,
-                              numericInput("numOutcomes", "Number of Outcomes", 
+                              numericInput("numOutcomesSs", "Number of Outcomes", 
                                            min = 1, 
                                            max = 10, 
                                            value = 5, 
@@ -218,7 +218,7 @@ ui <- fluidPage(
                            fluidRow(
                               
                               column(6,
-                              actionButton("goButtonSS", "Go!")) 
+                              actionButton("goButtonSs", "Go!")) 
                             
                            ) # Action Button to trigger other reactive values
               ), # Power calculation sidebarPanel
@@ -303,7 +303,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   getNumOutcomes <- reactive({
     
-    input$numOutcomes 
+    input$numOutcomesSs 
     
   })
   
@@ -326,65 +326,54 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   getDesign <- reactive({
     
-    if(input$design == "d2.1_m2cc"){
+    if(input$designSs == "d2.1_m2cc"){
      
       print("d2.1m2cc")
       return(c("d2.1m2cc"))
     }
     
-    if(input$design == "d2.1_m2fc"){
+    if(input$designSs == "d2.1_m2fc"){
       
       print("d2.1_m2fc")
       return(c("d2.1m2cc"))
     }
     
-    if(input$design == "d2.1_m2ff") {
+    if(input$designSs == "d2.1_m2ff") {
       
       print("d2.1_m2ff")
       return(c("d2.1_m2ff"))}
       
-    if(input$design == "d2.1_m2fr"){
+    if(input$designSs == "d2.1_m2fr"){
       
       print("d2.1_m2fr")
       return(c("d2.1_m2fr"))}
     
-    if(input$design == "d3.1_m3rr2rr"){
+    if(input$designSs == "d3.1_m3rr2rr"){
       
       print("d3.1_m3rr2rr")
       return(c("d3.1_m3rr2rr"))}
     
-    if(input$design == "d2.2_m2rc"){
+    if(input$designSs == "d2.2_m2rc"){
       
       print("d2.2_m2rc")
       return(c("d2.2_m2rc"))}
     
-    if(input$design == "d3.3_m3rc2rc"){
+    if(input$designSs == "d3.3_m3rc2rc"){
       
       print("d3.3_m3rc2rc")
       return(c("d3.3_m3rc2rc"))}
     
-    if(input$design == "d3.2_m3ff2rc"){
+    if(input$designSs == "d3.2_m3ff2rc"){
       
       print("d3.2_m3ff2rc")
       return(c("d3.2_m3ff2rc"))}
     
-    if(input$design == "d3.2_m3rr2rc"){
+    if(input$designSs == "d3.2_m3rr2rc"){
       
       print("d3.2_m3rr2rc")
       return(c("d3.2_m3rr2rc"))}
     
   }) # getDesign
-
-  ######################################################
-  # Rendering Variable Objects to UI for chosen design #
-  ######################################################
-  
-  output$design <- renderUI({
-    
-    div(style = "display: inline-block, vertical-align:top;", 
-        designInput(x = "design"))    
-        
-  }) # number of units per block  
 
   ######################################################
   # Rendering Variable Objects to UI for chosen design #
@@ -485,12 +474,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$r2.2 <- renderUI({
     
-    req(input$design)    # requiring design input
+    req(input$designSs)    # requiring design input
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$design == 'd2.2_m2rc' || input$design == 'd3.3_m3rc2rc'||
-       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3rr2rc'){
+    if(input$designSs == 'd2.2_m2rc' || input$designSs == 'd3.3_m3rc2rc'||
+       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
       print('Design r2-2 Trigger')
       check = TRUE
     }
@@ -511,17 +500,18 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$icc.2 <- renderUI({
     
-    req(input$design)    # requiring design input
+    req(input$designSs)    # requiring design input
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$design == 'd2.1_m2fc' || input$design == 'd2.1_m2ff' || input$design == 'd2.1_m2fr' ||
-       input$design == 'd3.1_m3rr2rr' || input$design == 'd2.2_m2rc' || input$design == 'd3.3_m3rc2rc' ||
-       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3rr2rc'){
+    if(input$designSs == 'd2.1_m2fc' || input$designSs == 'd2.1_m2ff' || input$designSs == 'd2.1_m2fr' ||
+       input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd2.2_m2rc' || input$designSs == 'd3.3_m3rc2rc' ||
+       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
       print('Design ICC2 Trigger')
       check = TRUE
     }
     
+
     # output ui when check is true
     if(check){
       theDesign = as.character(getDesign())
@@ -538,11 +528,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$omega.2 <- renderUI({
   
-    req(input$design)    # requiring design input
+    req(input$designSs)    # requiring design input
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$design == 'd2.1_m2fr' || input$design == 'd3.1_m3rr2rr'){
+    if(input$designSs == 'd2.1_m2fr' || input$designSs == 'd3.1_m3rr2rr'){
       print('Design omega 2 Trigger')
       check = TRUE
     }
@@ -565,11 +555,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     #   conditionalPanel(condition = c("input.design == 'd3.3_m3rc2rc'"),
     
-    req(input$design)    # requiring design input
+    req(input$designSs)    # requiring design input
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$design == 'd3.3_m3rc2rc'){
+    if(input$designSs == 'd3.3_m3rc2rc'){
       print('Design r2-3 Trigger')
       check = TRUE
     }
@@ -590,12 +580,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$icc.3 <- renderUI({
   
-    req(input$design)    # requiring design input
+    req(input$designSs)    # requiring design input
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$design == 'd3.1_m3rr2rr' || input$design == 'd3.3_m3rc2rc'||
-       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3rr2rc'){
+    if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.3_m3rc2rc'||
+       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
       print('Design icc.3 Trigger')
       check = TRUE
     }
@@ -617,11 +607,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
   output$omega.3 <- renderUI({
     
     # conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.2_m3rr2rc'"),
-    req(input$design)    # requiring design input
+    req(input$designSs)    # requiring design input
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$design == 'd3.1_m3rr2rr' || input$design == 'd3.2_m3rr2rc'){
+    if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.2_m3rr2rc'){
       print('Design omega.3 Trigger')
       check = TRUE
     }
@@ -642,12 +632,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$k <- renderUI({
     
-    req(input$design)    # requiring design input
+    req(input$designSs)    # requiring design input
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$design == 'd3.1_m3rr2rr' || input$design == 'd3.3_m3rc2rc'||
-       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3rr2rc'){
+    if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.3_m3rc2rc'||
+       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
       print('Design k Trigger')
       check = TRUE
     }
@@ -665,7 +655,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }    
   }) # number of level-3 groups
   
-  observeEvent(input$goButtonSS,{
+
+  observeEvent(input$goButtonSs,{
     
     # set a Reactive Value for Power Table
     reactPowerTable <- reactiveVal()
@@ -704,8 +695,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # set up to receive all the input parameters
     
     # Get string for input subsetting
-    design_subset <- "design"
-    m_subset <- "numOutcomes"
+    design_subset <- "designSs"
+    m_subset <- "numOutcomesSs"
     nbar_subset <- paste0("nbar", "_", theDesign, "_", theScenario)
     j_subset <- paste0("j", "_", theDesign, "_", theScenario)
     mtp_subset <- paste0("mtp", "_", theDesign,"_", theScenario)
@@ -865,7 +856,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                           face = "bold",
                                           vjust = 1,
                                           hjust = 0.5),
-                axis.text = element_text(size = 14),
+                axis.text = element_text(size = 14, angle = 45),
                 axis.title = element_text(size = 14)
           )
         + labs(colour = "",

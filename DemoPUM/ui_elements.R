@@ -3,21 +3,6 @@
 ######################################################################################################################
 
 ############################
-# choice of research design
-############################
-
-designInput <- function(x){
-  
-  id <- "design"
-  selectInput(id, "What research design is this for?", 
-              choices = list("Two Level Blocked RCT - Constant Effects" = "d2.1_m2fc", 
-                             "Two Level Blocked RCT - Fixed Effects" = "d2.1_m2ff", 
-                             "Two Level Blocked RCT - Random Effects" = "d2.1_m2fr"),
-              selected = "d2.1_m2ff")
-  
-} # particular research design
-
-############################
 # Number of Units per block
 ############################
 
