@@ -77,15 +77,15 @@ ui <- fluidPage(
                             div(style = "display: inline-block, vertical-align:top;", 
                             column(12,
                              selectInput("design", "What research design is this for?", 
-                                        choices = list("One Level RCT - Constant Effects" = "d1.1_m2cc",
-                                                       "Two Levels Blocked RCT - Constant Effects" = "d2.1_m2fc", 
-                                                       "Two Levels Blocked RCT - Fixed Effects" = "d2.1_m2ff", 
-                                                       "Two Levels Blocked RCT - Random Effects" = "d2.1_m2fr",
-                                                       "Three Levels Clustered RCT - Random Effects" = "d3.1_m3rr2rr",
-                                                       "Design 2 levels, Randomization: level 2 - Random Effects" = "d2.2_m2rc",
-                                                       "Design 3 levels, Randomization: level 3 - Random Effects" = "d3.3_m3rc2rc",
-                                                       "Design 3 levels, Randomization: level 2 - Fixed Effects" = "d3.2_m3ff2rc",
-                                                       "Design 3 levels, Randomization: level 2 - Random Effects" = "d3.2_m3rr2rc"
+                                        choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m2cc",
+                                                       "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
+                                                       "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
+                                                       "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
+                                                       "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
+                                                       "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
+                                                       "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
+                                                       "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
+                                                       "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
                                                        ),
                                         selected = "d2.1_m2ff")     
 
@@ -218,12 +218,13 @@ ui <- fluidPage(
                            fluidRow(
                               
                               column(6,
-                              actionButton("goButtonP2LBISS", "Go!")) 
+                              actionButton("goButtonSS", "Go!")) 
                             
                            ) # Action Button to trigger other reactive values
               ), # Power calculation sidebarPanel
                                        
               mainPanel(
+                          # Put some text here #
                           fluidRow(
                             
                             column(12, align = "center",
@@ -276,6 +277,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
   # Get reactive expression for tab
   ##########################################################
 
+  # As it is a tab, I have to use observeEvent to see whose has actually clicked the Tab.
+  
   whichTab <- reactiveValues()
   
   observeEvent(input$tabset, {
@@ -308,7 +311,32 @@ server <- shinyServer(function(input, output, session = FALSE) {
   # Get reactive expression for experimental chosen design #
   ##########################################################
   
+  # choices = list("One Level RCT - Constant Effects" = "d1.1_m2cc",
+  #                "Two Levels Blocked RCT - Constant Effects" = "d2.1_m2fc", 
+  #                "Two Levels Blocked RCT - Fixed Effects" = "d2.1_m2ff", 
+  #                "Two Levels Blocked RCT - Random Effects" = "d2.1_m2fr",
+  #                "Three Levels Clustered RCT - Random Effects" = "d3.1_m3rr2rr",
+  #                "Design 2 levels, Randomization: level 2 - Random Effects" = "d2.2_m2rc",
+  #                "Design 3 levels, Randomization: level 3 - Random Effects" = "d3.3_m3rc2rc",
+  #                "Design 3 levels, Randomization: level 2 - Fixed Effects" = "d3.2_m3ff2rc",
+  #                "Design 3 levels, Randomization: level 2 - Random Effects" = "d3.2_m3rr2rc"
+  # ),
+  # 
+  # 
+  
   getDesign <- reactive({
+    
+    if(input$design == "d2.1_m2cc"){
+     
+      print("d2.1m2cc")
+      return(c("d2.1m2cc"))
+    }
+    
+    if(input$design == "d2.1_m2fc"){
+      
+      print("d2.1_m2fc")
+      return(c("d2.1m2cc"))
+    }
     
     if(input$design == "d2.1_m2ff") {
       
@@ -319,14 +347,32 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       print("d2.1_m2fr")
       return(c("d2.1_m2fr"))}
+    
+    if(input$design == "d3.1_m3rr2rr"){
       
-    if(input$design == "d2.1_m2fc") {
+      print("d3.1_m3rr2rr")
+      return(c("d3.1_m3rr2rr"))}
+    
+    if(input$design == "d2.2_m2rc"){
       
-      print("d2.1_m2fc")
-      return(c("d2.1_m2fc"))
+      print("d2.2_m2rc")
+      return(c("d2.2_m2rc"))}
+    
+    if(input$design == "d3.3_m3rc2rc"){
       
-    }
-  
+      print("d3.3_m3rc2rc")
+      return(c("d3.3_m3rc2rc"))}
+    
+    if(input$design == "d3.2_m3ff2rc"){
+      
+      print("d3.2_m3ff2rc")
+      return(c("d3.2_m3ff2rc"))}
+    
+    if(input$design == "d3.2_m3rr2rc"){
+      
+      print("d3.2_m3rr2rc")
+      return(c("d3.2_m3rr2rc"))}
+    
   }) # getDesign
 
   ######################################################
@@ -471,7 +517,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # conditions when check becomes true
     if(input$design == 'd2.1_m2fc' || input$design == 'd2.1_m2ff' || input$design == 'd2.1_m2fr' ||
        input$design == 'd3.1_m3rr2rr' || input$design == 'd2.2_m2rc' || input$design == 'd3.3_m3rc2rc' ||
-       input$design == 'd3.2m3ff2rc' || input$design == 'd3.2m3rr2rc'){
+       input$design == 'd3.2_m3ff2rc' || input$design == 'd3.2_m3rr2rc'){
       print('Design ICC2 Trigger')
       check = TRUE
     }
@@ -613,13 +659,13 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theNumOutcomes = as.numeric(getNumOutcomes())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          kInput(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          kInput(design = theDesign, scenario = theScenario))
     }else{
       # leave blank otherwise
     }    
   }) # number of level-3 groups
   
-  observeEvent(input$goButtonP2LBISS,{
+  observeEvent(input$goButtonSS,{
     
     # set a Reactive Value for Power Table
     reactPowerTable <- reactiveVal()
@@ -694,7 +740,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     omega.2 <- "0"
     r2.3 <- "0"
     icc.3 <- "0"
-    k <- "0"
+    k <- 1
     omega.3 <- "0"
     
     if(design %in% c("d2.2_m2rc", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2m3rr2rc")){
@@ -743,6 +789,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         isolate(pum::pump_power(design = design,
                                 nbar = nbar, # The number of units per block
                                 J = j, # The number of schools
+                                K = k, # 3 level grouping variable count
                                 MTP = as.character(unlist(strsplit(mtp, ","))),
                                 M = m, # The number of hypotheses/outcomes
                                 MDES = as.numeric(unlist(strsplit(mdes, ","))),
@@ -856,12 +903,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }) # plotly graph
     
   }) # observe Event go Button for power for Single Scenario
-  
-  
-  
-  
-  
-  
   
 }) # end of server side
 
