@@ -67,7 +67,8 @@ ui <- fluidPage(
                               selectInput("estimationSs", "What would you like to estimate?",
                                           choices = list("Power" = "power",
                                                          "Minimum detectable effect size" = "mdes",
-                                                         "Sample size" = "sample"))
+                                                         "Sample size" = "sample"),
+                                          selected = "power")
                               
                             )) # User Mode of Exploration
 
@@ -397,94 +398,104 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$nbar <- renderUI({
     
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
-        nbarInput(design = theDesign , scenario = theScenario))    
+        nbarInput(estimation = theEstimation, design = theDesign , scenario = theScenario))    
     
   }) # number of units per block
 
   output$j <- renderUI({
     
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
-        jInput(design = theDesign , scenario = theScenario))    
+        jInput(estimation = theEstimation, design = theDesign , scenario = theScenario))    
     
   }) # number of units per block
   
   output$mtp <- renderUI({
     
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
-        mtpInput(design = theDesign , scenario = theScenario))
+        mtpInput(estimation = theEstimation, design = theDesign , scenario = theScenario))
     
   }) # MTP for chosen design
   
   output$m <- renderUI({
     
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
-        mInput(design = theDesign, scenario = theScenario))
+        mInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
   }) # Number of Outcomes 
 
   output$mdes <- renderUI({
     
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     theNumOutcomes = as.numeric(getNumOutcomes())
     
     div(style = "display: inline-block, vertical-align:top:",
-        mdesInput(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+        mdesInput(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
   }) # Minimum detectable effect size
   
   output$rho <- renderUI({
     
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
-        rhoInput(design = theDesign, scenario = theScenario))
+        rhoInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
         
   }) # correlation between test statistics
   
   output$numCovar.1 <- renderUI({
   
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
-        numCovar.1Input(design = theDesign, scenario = theScenario))
+        numCovar.1Input(estimation = theEstimation, design = theDesign, scenario = theScenario))
     
   }) # number of level 1 covariates
   
   output$tbar <- renderUI({
     
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
-        tbarInput(design = theDesign, scenario = theScenario))
+        tbarInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
     
   }) # Proportion of treatment assignment
   
   output$alpha <- renderUI({
     
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
-        alphaInput(design = theDesign, scenario = theScenario))
+        alphaInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
     
   }) # Significance level (alpha)
 
   output$r2.1 <- renderUI({
     
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     theNumOutcomes = as.numeric(getNumOutcomes())
     
     
     div(style = "display: inline-block, vertical-align:top;", 
-        r2.1Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+        r2.1Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
   
   }) # R2.1 element for chosen and required designs
   
@@ -502,12 +513,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     # output ui when check is true
     if(check){
+      
+      theEstimation = as.character(getEstimation())
       theDesign = as.character(getDesign())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          r2.2Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          r2.2Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
     }else{
       # leave blank otherwise
     }
@@ -530,12 +543,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
     # output ui when check is true
     if(check){
+      
+      theEstimation = as.character(getEstimation())
       theDesign = as.character(getDesign())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          icc.2Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          icc.2Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
     }else{
       # leave blank otherwise
     }
@@ -555,6 +570,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     # output ui when check is true
     if(check){
+      
+      theEstimation = as.character(getEstimation())
       theDesign = as.character(getDesign())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
@@ -582,12 +599,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     # output ui when check is true
     if(check){
+      
+      theEstimation = as.character(getEstimation())
       theDesign = as.character(getDesign())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          r2.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          r2.3Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
     }else{
       # leave blank otherwise
     }
@@ -608,12 +627,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     # output ui when check is true
     if(check){
+      
+      theEstimation = as.character(getEstimation())
       theDesign = as.character(getDesign())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          icc.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          icc.3Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
     }else{
       # leave blank otherwise
     }    
@@ -634,12 +655,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     # output ui when check is true
     if(check){
+      
+      theEstimation = as.character(getEstimation())
       theDesign = as.character(getDesign())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          omega.3Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          omega.3Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
     }else{
       # leave blank otherwise
     }
@@ -660,12 +683,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     # output ui when check is true
     if(check){
+      
+      theEstimation = as.character(getEstimation())
       theDesign = as.character(getDesign())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          kInput(design = theDesign, scenario = theScenario))
+          kInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
     }else{
       # leave blank otherwise
     }    
@@ -705,6 +730,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     ############################################################################
     
     # Getting the research design that we have to estimate the statistical results for
+    
+    theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
     
@@ -713,22 +740,22 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # Get string for input subsetting
     design_subset <- "designSs"
     m_subset <- "numOutcomesSs"
-    nbar_subset <- paste0("nbar", "_", theDesign, "_", theScenario)
-    j_subset <- paste0("j", "_", theDesign, "_", theScenario)
-    mtp_subset <- paste0("mtp", "_", theDesign,"_", theScenario)
-    mdes_subset <- paste0("mdes", "_", theDesign, "_", theScenario)
-    rho_subset <- paste0("rho", "_", theDesign, "_", theScenario)
-    numCovar.1_subset <- paste0("numCovar.1","_", theDesign, "_", theScenario)
-    tbar_subset <- paste0("tbar","_", theDesign, "_", theScenario)
-    alpha_subset <- paste0("alpha", "_", theDesign, "_", theScenario)
-    r2.1_subset <- paste0("r2.1", "_", theDesign, "_", theScenario)
-    r2.2_subset <- paste0("r2.2", "_", theDesign, "_", theScenario)
-    icc.2_subset <- paste0("icc.2", "_", theDesign, "_", theScenario)
-    omega.2_subset <- paste0("omega.2", "_", theDesign, "_", theScenario)
-    r2.3_subset <- paste0("r2.3", "_", theDesign, "_", theScenario)
-    icc.3_subset <- paste0("icc.3", "_", theDesign, "_", theScenario)
-    k_subset <- paste0("k","_", theDesign, "_", theScenario)
-    omega.3_subset <- paste0("omega.3", "_", theDesign, "_", theScenario)
+    nbar_subset <- paste0(theEstimation, "_", "nbar", "_", theDesign, "_", theScenario)
+    j_subset <- paste0(theEstimation, "_", "j", "_", theDesign, "_", theScenario)
+    mtp_subset <- paste0(theEstimation, "_", "mtp", "_", theDesign,"_", theScenario)
+    mdes_subset <- paste0(theEstimation, "_", "mdes", "_", theDesign, "_", theScenario)
+    rho_subset <- paste0(theEstimation, "_", "rho", "_", theDesign, "_", theScenario)
+    numCovar.1_subset <- paste0(theEstimation, "_", "numCovar.1","_", theDesign, "_", theScenario)
+    tbar_subset <- paste0(theEstimation, "_", "tbar","_", theDesign, "_", theScenario)
+    alpha_subset <- paste0(theEstimation, "_", "alpha", "_", theDesign, "_", theScenario)
+    r2.1_subset <- paste0(theEstimation, "_", "r2.1", "_", theDesign, "_", theScenario)
+    r2.2_subset <- paste0(theEstimation, "_", "r2.2", "_", theDesign, "_", theScenario)
+    icc.2_subset <- paste0(theEstimation, "_", "icc.2", "_", theDesign, "_", theScenario)
+    omega.2_subset <- paste0(theEstimation, "_", "omega.2", "_", theDesign, "_", theScenario)
+    r2.3_subset <- paste0(theEstimation, "_", "r2.3", "_", theDesign, "_", theScenario)
+    icc.3_subset <- paste0(theEstimation, "_", "icc.3", "_", theDesign, "_", theScenario)
+    k_subset <- paste0(theEstimation, "_", "k","_", theDesign, "_", theScenario)
+    omega.3_subset <- paste0(theEstimation, "_", "omega.3", "_", theDesign, "_", theScenario)
     
     # Pulling in values for all the designs
     design <- input[[design_subset]]

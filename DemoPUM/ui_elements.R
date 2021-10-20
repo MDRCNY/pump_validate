@@ -6,11 +6,11 @@
 # Number of Units per block
 ############################
 
-nbarInput <- function(design, scenario){
+nbarInput <- function(estimation, design, scenario){
   
   print(scenario)
   
-  id <- paste0("nbar", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "nbar", "_", design, "_" , scenario)
   
   numericInput(id,
                "Number of units per block", 
@@ -24,9 +24,9 @@ nbarInput <- function(design, scenario){
 # Number of Blocks
 ############################
 
-jInput <- function(design, scenario){
+jInput <- function(estimation, design, scenario){
   
-  id <- paste0("j", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "j", "_", design, "_" , scenario)
   
   numericInput(id,
                "Number of blocks", 
@@ -40,17 +40,15 @@ jInput <- function(design, scenario){
 # Number of Outcomes (M)
 #########################
 
-mInput <- function(design, scenario){
+mInput <- function(estimation, design, scenario){
   
-  if(scenario == "single_scenario_tab"){
-    id <- paste0("m", "_", design, "_" , scenario)
+    id <- paste0(estimation, "_" ,"m", "_", design, "_" , scenario)
     numericInput(id, 
                  "Number of Outcomes", 
                  min = 1, 
                  max = 10, 
                  value = 5, 
                  step = 1)
-  }
   
 } # Number of Outcomes (M)
 
@@ -58,9 +56,9 @@ mInput <- function(design, scenario){
 # MTP element
 #########################
 
-mtpInput <- function(design, scenario){
+mtpInput <- function(estimation, design, scenario){
   
-  id <- paste0("mtp", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "mtp", "_", design, "_" , scenario)
   
   selectInput(id, "Multiple testing procedure (MTP)", 
               choices = list("Bonferroni" = "Bonferroni", 
@@ -72,9 +70,9 @@ mtpInput <- function(design, scenario){
               multiple = TRUE) # select input buttons div
 } # mtp input
 
-mtpActionButton <- function(design, scenario){
+mtpActionButton <- function(estimation, design, scenario){
   
-  question <- paste0("question", "mtp", design, scenario, sep = "_")
+  question <- paste0(estimation, "question", "mtp", design, scenario, sep = "_")
   actionButton(question,
                label = "", 
                icon = icon("question"),
@@ -83,9 +81,10 @@ mtpActionButton <- function(design, scenario){
   
 } # mtpAction Button
 
-mtpPopOver <- function(design, scenario){
+mtpPopOver <- function(estimation, design, scenario){
   
-  question <- paste0("question", "mtp", design, scenario, sep = "_")
+  question <- paste0(estimation, "question", "mtp", design, scenario, sep = "_")
+  
   bsPopover(id = question, 
             title = NULL,
             content = paste0("For more information on MTP, please click!"),
@@ -100,7 +99,7 @@ mtpPopOver <- function(design, scenario){
 # Minimum Detectable Effect Size
 #########################
 
-mdesInput <- function(design, scenario, numOutcome){
+mdesInput <- function(estimation, design, scenario, numOutcome){
 
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -112,7 +111,7 @@ mdesInput <- function(design, scenario, numOutcome){
   # default mdes values whose count of number will change depending on number of outcomes
   defaultmdesvalues <- paste0(rep(0.125, times = numOutcome), collapse = ",")
   
-  id <- paste0("mdes", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario)
   textInput(id, 
            "Minimum detectable effect size (MDES) (Vector of length M, comma delimited)", 
            value = defaultmdesvalues)
@@ -122,9 +121,9 @@ mdesInput <- function(design, scenario, numOutcome){
 # Correlation between test statistics (assumed to be the same between all pairs)
 ##################################################################################
 
-rhoInput <- function(design, scenario){
+rhoInput <- function(estimation, design, scenario){
   
-  id <- paste0("rho", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "rho", "_", design, "_" , scenario)
   numericInput(id, 
                "Correlation between test statistics (assumed to be the same between all pairs)", 
                min = 0, 
@@ -137,9 +136,9 @@ rhoInput <- function(design, scenario){
 # Number of level 1 covariates
 ##################################################################################
 
-numCovar.1Input <- function(design, scenario){
+numCovar.1Input <- function(estimation, design, scenario){
   
-  id <- paste0("numCovar.1", "_", design, "_", scenario)
+  id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario)
   numericInput(id, 
                "Number of level 1 covariates", 
                min = 0, 
@@ -152,9 +151,9 @@ numCovar.1Input <- function(design, scenario){
 # Proportion of treatment assignment
 ##################################################################################
 
-tbarInput <- function(design, scenario){
+tbarInput <- function(estimation, design, scenario){
   
-  id <- paste0("tbar", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario)
   numericInput(id, 
                "Proportion of treatment assignment", 
                min = 0.001, 
@@ -167,9 +166,9 @@ tbarInput <- function(design, scenario){
 # Significance level (alpha)
 ##################################################################################
 
-alphaInput <- function(design, scenario) {
+alphaInput <- function(estimation, design, scenario) {
 
-  id <- paste0("alpha", "_", design, "_", scenario)
+  id <- paste0(estimation, "_", "alpha", "_", design, "_", scenario)
   numericInput(id, 
                "Significance level (alpha)", 
                 min = 0.001, 
@@ -182,7 +181,7 @@ alphaInput <- function(design, scenario) {
 # R2.1 element
 #########################
 
-r2.1Input <- function(design, scenario, numOutcome){
+r2.1Input <- function(estimation, design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -195,7 +194,7 @@ r2.1Input <- function(design, scenario, numOutcome){
   defaultr2.1values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
   
   
-  id <- paste0("r2.1", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "r2.1", "_", design, "_" , scenario)
 
   textInput(id, 
             "Proportion of variance explained by level-1 covariates (R2.1)", 
@@ -206,7 +205,7 @@ r2.1Input <- function(design, scenario, numOutcome){
 # R2.2 element
 #########################
 
-r2.2Input <- function(design, scenario, numOutcome){
+r2.2Input <- function(estimation, design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -219,7 +218,7 @@ r2.2Input <- function(design, scenario, numOutcome){
   defaultr2.2values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
   
   
-  id <- paste0("r2.2", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "r2.2", "_", design, "_" , scenario)
   
   textInput(id, 
             "Proportion of variance explained by level-2 covariates (R2.2)", 
@@ -230,7 +229,7 @@ r2.2Input <- function(design, scenario, numOutcome){
 # ICC.2 element
 #########################
 
-icc.2Input <- function(design, scenario, numOutcome){
+icc.2Input <- function(estimation, design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -242,7 +241,7 @@ icc.2Input <- function(design, scenario, numOutcome){
   # default icc.2 values whose count of number will change depending on number of outcomes
   defaulticc.2values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
   
-  id <- paste0("icc.2", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "icc.2", "_", design, "_" , scenario)
   textInput(id, 
             "Intraclass correlation between level-2 covariates of each outcome (ICC.2)", 
             value = defaulticc.2values)
@@ -252,7 +251,7 @@ icc.2Input <- function(design, scenario, numOutcome){
 # omega.2 element
 #########################
 
-omega.2Input <- function(design, scenario, numOutcome){
+omega.2Input <- function(estimation, design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -264,7 +263,7 @@ omega.2Input <- function(design, scenario, numOutcome){
   # default omega.2 values whose count of number will change depending on number of outcomes
   defaultomega.2values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
   
-  id <- paste0("omega.2", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "omega.2", "_", design, "_" , scenario)
   textInput(id, 
             "Ratio of level-2 group covariate effect size variability to random effects variability (omega.2)", 
             value = defaultomega.2values)
@@ -275,7 +274,7 @@ omega.2Input <- function(design, scenario, numOutcome){
 # R2.3 element
 #########################
 
-r2.3Input <- function(design, scenario, numOutcome){
+r2.3Input <- function(estimation, design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -288,7 +287,7 @@ r2.3Input <- function(design, scenario, numOutcome){
   defaultr2.3values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
   
   
-  id <- paste0("r2.3", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "r2.3", "_", design, "_" , scenario)
   
   textInput(id, 
             "Proportion of variance explained by level-3 covariates (R2.3)", 
@@ -299,7 +298,7 @@ r2.3Input <- function(design, scenario, numOutcome){
 # ICC.3 element
 #########################
 
-icc.3Input <- function(design, scenario, numOutcome){
+icc.3Input <- function(estimation, design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -311,7 +310,7 @@ icc.3Input <- function(design, scenario, numOutcome){
   # default icc.3 values whose count of number will change depending on number of outcomes
   defaulticc.3values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
   
-  id <- paste0("icc.3", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "icc.3", "_", design, "_" , scenario)
   textInput(id, 
             "Intraclass correlation between level-3 covariates of each outcome (ICC.3)", 
             value = defaulticc.3values)
@@ -321,7 +320,7 @@ icc.3Input <- function(design, scenario, numOutcome){
 # omega.3 element
 #########################
 
-omega.3Input <- function(design, scenario, numOutcome){
+omega.3Input <- function(estimation, design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -333,7 +332,7 @@ omega.3Input <- function(design, scenario, numOutcome){
   # default icc.3 values whose count of number will change depending on number of outcomes
   defaultomega.3values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
   
-  id <- paste0("omega.3", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "omega.3", "_", design, "_" , scenario)
   textInput(id, 
             "Ratio of level-3 group covariate effect size variability to random effects variability (omega.3)", 
             value = defaultomega.3values)
@@ -343,9 +342,9 @@ omega.3Input <- function(design, scenario, numOutcome){
 # Number of 3-level Grouping
 ############################
 
-kInput <- function(design, scenario){
+kInput <- function(estimation, design, scenario){
   
-  id <- paste0("k", "_", design, "_" , scenario)
+  id <- paste0(estimation, "_", "k", "_", design, "_" , scenario)
   
   numericInput(id,
                "Number of level-3 groupings", 
