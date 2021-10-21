@@ -19,7 +19,13 @@ This list is not complete - to be added to and checked off by everyone.
     Still to do.
 - Submit package to CRAN - including JSS submission as vignettes in the package. 
 - Make sure all functions still work when specifying one outcome (Kristen)
-     Done      
+     Done  
+- Issue: when estimating lower-level sample sizes, it's possible for range of sample sizes to produce same power. Kristen refining returned objected to contain information of issue. Luke refining diagnostic plot. Kristenn working with Zarni to return note in Shiny, along with revised version of info in vignette. 
+- Luke has added return of all call parameters. Refining formatting. 
+- Vignettes expanding to demonstrate functionality. 
+- Add functions for expanded designs with same power - e.g. need to add d3.2_m3fc2rc - same power as d3.2_m3ff2rc
+- Change d1.1_m2cc to d1.1_m1c (and Kristen will check first)
+- Kristin will send nots about credit - including ies grant number.
 
 ## Kristen's todo list
 - once sample size code is stable, rerun all validation
@@ -29,9 +35,16 @@ This list is not complete - to be added to and checked off by everyone.
 - Aim to have draft to share in next meeting
 - Talk to Zarni about ability to do simple git pulls for updates
 
+# User testing
+- Luke and Kristen have some possible test users to reach out to
+- Not concerned with much testing of package.
+
 # Manuscript
-- Complete draft (Team, 10/31)
-- Internal review and revisions (Team, 11/30)
+- presubmission inquiry: abstract and introduction plus outline/structure - TBD whether we do it.
+- draft on 11/31 that feels close to final - then think about presubmission inquiry.
+- Luke finishing vignette and plugging in.
+- Kristen H to do first draft of conclusion.
+- Kristin P will write abstract.
 
 # Video
 - Reach out to video staff with plans and questions (Zarni, 7/31)
