@@ -479,7 +479,6 @@ ui <- fluidPage(
                           offset = 2,
                           #STh here for text
                    )
-                   
                  ),
                  
                  br(),    
@@ -544,12 +543,18 @@ server <- shinyServer(function(input, output, session = FALSE) {
 })
   
   ##########################################################
-  # Get reactive expression for single or explorer         #
+  # Get reactive expression for single       #
   ##########################################################
   
   getNumOutcomes <- reactive({
     
-    input$numOutcomesSs 
+    if(input$tabset == "single_scenario_tab"){
+      input$numOutcomesSs 
+    }  
+    
+    if(input$tabset == "explorer_tab"){
+      input$numOutcomesEx
+    }
     
   })
   
@@ -559,20 +564,20 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   getEstimation <- reactive({
     
-    if(input$estimationSs == "power"){
+    if(input$estimationSs == "power" | input$estimationEx == "power"){
       
       print("power")
       return(c("power"))
     }
   
-    if(input$estimationSs == "mdes"){
+    if(input$estimationSs == "mdes" | input$estimationEx == "mdes"){
       
       print("mdes")
       return(c("mdes"))
       
     }  
     
-    if(input$estimationSs == "sample"){
+    if(input$estimationSs == "sample" | input$estimationEx == "sample"){
       
       print("sample")
       return(c("sample"))
@@ -587,49 +592,49 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   getDesign <- reactive({
     
-    if(input$designSs == "d2.1_m2cc"){
+    if(input$designSs == "d2.1_m2cc" | input$designEx == "d2.1_m2cc"){
      
       print("d2.1m2cc")
       return(c("d2.1m2cc"))
     }
     
-    if(input$designSs == "d2.1_m2fc"){
+    if(input$designSs == "d2.1_m2fc" | input$designEx == "d2.1_m2fc"){
       
       print("d2.1_m2fc")
       return(c("d2.1m2cc"))
     }
     
-    if(input$designSs == "d2.1_m2ff") {
+    if(input$designSs == "d2.1_m2ff" | input$designEx == "d2.1_m2ff") {
       
       print("d2.1_m2ff")
       return(c("d2.1_m2ff"))}
       
-    if(input$designSs == "d2.1_m2fr"){
+    if(input$designSs == "d2.1_m2fr" | input$designEx == "d2.1_m2fr"){
       
       print("d2.1_m2fr")
       return(c("d2.1_m2fr"))}
     
-    if(input$designSs == "d3.1_m3rr2rr"){
+    if(input$designSs == "d3.1_m3rr2rr" | input$designEx == "d3.1_m3rr2rr"){
       
       print("d3.1_m3rr2rr")
       return(c("d3.1_m3rr2rr"))}
     
-    if(input$designSs == "d2.2_m2rc"){
+    if(input$designSs == "d2.2_m2rc" | input$designEx == "d2.2_m2rc" ){
       
       print("d2.2_m2rc")
       return(c("d2.2_m2rc"))}
     
-    if(input$designSs == "d3.3_m3rc2rc"){
+    if(input$designSs == "d3.3_m3rc2rc" | input$designEx == "d3.3_m3rc2rc" ){
       
       print("d3.3_m3rc2rc")
       return(c("d3.3_m3rc2rc"))}
     
-    if(input$designSs == "d3.2_m3ff2rc"){
+    if(input$designSs == "d3.2_m3ff2rc" | input$designEx == "d3.2_m3ff2rc"){
       
       print("d3.2_m3ff2rc")
       return(c("d3.2_m3ff2rc"))}
     
-    if(input$designSs == "d3.2_m3rr2rc"){
+    if(input$designSs == "d3.2_m3rr2rc" | input$designEx == "d3.2_m3rr2rc"){
       
       print("d3.2_m3rr2rc")
       return(c("d3.2_m3rr2rc"))}
@@ -650,7 +655,28 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   }) # number of units per block
 
+  output$nbarEx <- renderUI({
+    
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top;", 
+        nbarInput(estimation = theEstimation, design = theDesign , scenario = theScenario))    
+    
+  }) # number of units per block
+  
+  
   output$j <- renderUI({
+    
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top;", 
+        jInput(estimation = theEstimation, design = theDesign , scenario = theScenario))    
+    
+  }) # number of units per block
+  
+  output$jEx <- renderUI({
     
     theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
@@ -670,7 +696,26 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   }) # MTP for chosen design
   
+  output$mtpEx <- renderUI({
+    
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top;", 
+        mtpInput(estimation = theEstimation, design = theDesign , scenario = theScenario))
+    
+  }) # MTP for chosen design
+  
   output$m <- renderUI({
+    
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top;", 
+        mInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+  }) # Number of Outcomes 
+  
+  output$mEx <- renderUI({
     
     theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
@@ -680,6 +725,17 @@ server <- shinyServer(function(input, output, session = FALSE) {
   }) # Number of Outcomes 
 
   output$mdes <- renderUI({
+    
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
+    div(style = "display: inline-block, vertical-align:top:",
+        mdesInput(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+  }) # Minimum detectable effect size
+  
+  output$mdesEx <- renderUI({
     
     theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
@@ -700,8 +756,28 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
   }) # correlation between test statistics
   
+  output$rhoEx <- renderUI({
+    
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top:",
+        rhoInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    
+  }) # correlation between test statistics
+  
   output$numCovar.1 <- renderUI({
   
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top:",
+        numCovar.1Input(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    
+  }) # number of level 1 covariates
+  
+  output$numCovar.1Ex <- renderUI({
+    
     theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
     theScenario = as.character(whichTab$scenario)
@@ -720,7 +796,27 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   }) # Proportion of treatment assignment
   
+  output$tbarEx <- renderUI({
+    
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top:",
+        tbarInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    
+  }) # Proportion of treatment assignment
+  
   output$alpha <- renderUI({
+    
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top:",
+        alphaInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    
+  }) # Significance level (alpha)
+  
+  output$alphaEx <- renderUI({
     
     theEstimation = as.character(getEstimation())
     theDesign = as.character(getDesign())
@@ -741,6 +837,19 @@ server <- shinyServer(function(input, output, session = FALSE) {
     div(style = "display: inline-block, vertical-align:top;", 
         r2.1Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
   
+  }) # R2.1 element for chosen and required designs
+  
+  output$r2.1Ex <- renderUI({
+    
+    theEstimation = as.character(getEstimation())
+    theDesign = as.character(getDesign())
+    theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        r2.1Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    
   }) # R2.1 element for chosen and required designs
   
   output$r2.2 <- renderUI({
@@ -770,6 +879,35 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }
     
   }) # R2.2 element for chosen and required designs
+  
+  output$r2.2Ex <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd2.2_m2rc' || input$designEx == 'd3.3_m3rc2rc'||
+       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+      print('Design r2-2 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimation())
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          r2.2Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # R2.2 element for chosen and required designs
+  
   
   output$icc.2 <- renderUI({
     
@@ -801,6 +939,36 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
   }) # icc.2 element for chosen and required designs
   
+  output$icc.2Ex <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd2.1_m2fc' || input$designEx == 'd2.1_m2ff' || input$designEx == 'd2.1_m2fr' ||
+       input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd2.2_m2rc' || input$designEx == 'd3.3_m3rc2rc' ||
+       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+      print('Design ICC2 Trigger')
+      check = TRUE
+    }
+    
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimation())
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          icc.2Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # icc.2 element for chosen and required designs
+  
   output$omega.2 <- renderUI({
   
     req(input$designSs)    # requiring design input
@@ -808,6 +976,33 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     # conditions when check becomes true
     if(input$designSs == 'd2.1_m2fr' || input$designSs == 'd3.1_m3rr2rr'){
+      print('Design omega 2 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimation())
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          omega.2Input(design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # omega.2 element for chosen and required designs
+  
+  output$omega.2Ex <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd2.1_m2fr' || input$designEx == 'd3.1_m3rr2rr'){
       print('Design omega 2 Trigger')
       check = TRUE
     }
@@ -857,6 +1052,35 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
   }) # R2.3 element for chosen and required designs
   
+  output$r2.3Ex <- renderUI({
+    
+    #   conditionalPanel(condition = c("input.design == 'd3.3_m3rc2rc'"),
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd3.3_m3rc2rc'){
+      print('Design r2-3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimation())
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          r2.3Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # R2.3 element for chosen and required designs
+  
   output$icc.3 <- renderUI({
   
     req(input$designSs)    # requiring design input
@@ -865,6 +1089,34 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # conditions when check becomes true
     if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.3_m3rc2rc'||
        input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
+      print('Design icc.3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimation())
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          icc.3Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }    
+    
+  }) # icc.3 element for chosen and required designs
+
+  output$icc.3Ex <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd3.3_m3rc2rc'||
+       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
       print('Design icc.3 Trigger')
       check = TRUE
     }
@@ -913,6 +1165,34 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   }) # omega.3 element for chosen and required designs
   
+  output$omega.3Ex <- renderUI({
+    
+    # conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.2_m3rr2rc'"),
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd3.2_m3rr2rc'){
+      print('Design omega.3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimation())
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          omega.3Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # omega.3 element for chosen and required designs
+  
   output$k <- renderUI({
     
     req(input$designSs)    # requiring design input
@@ -940,6 +1220,32 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }    
   }) # number of level-3 groups
   
+  output$kEx <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd3.3_m3rc2rc'||
+       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+      print('Design k Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimation())
+      theDesign = as.character(getDesign())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          kInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    }else{
+      # leave blank otherwise
+    }    
+  }) # number of level-3 groups
 
   observeEvent(input$goButtonSs,{
     
