@@ -30,6 +30,12 @@ This list is not complete - to be added to and checked off by everyone.
 ## Kristen's todo list
 - once sample size code is stable, rerun all validation
 - understand unit test with correlated outcomes
+- add flag for flat power curve to help with shiny app, work with Zarni to incorporate help procedure
+- implement d3.2_m2fc2rc, update d1.1_m2cc to d1.1_m1c
+- remove just_results_table_flag
+- hash out power definitions: unadjusted p-values for complete power, whether or not to include zero outcomes for min power, complete power
+- recruit Jonathan S for testing
+- update sample size vignette
 
 # Shiny app
 - Aim to have draft to share in next meeting

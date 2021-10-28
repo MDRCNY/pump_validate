@@ -27,6 +27,7 @@ Topics to possibly discuss:
 - discuss the organization of all RCT designs--do we want to re-arrange given our new naming convention?
 - explanation of MTP procedures, like in original paper
 - Luke: would you like to add a paragraph on the optimization procedure?
+- Possibly give more context for people who aren't familiar with multilevel experiments. What is blocking? clustering? Why might you want to choose a particular RCT design?
 
 
 # Introduction
