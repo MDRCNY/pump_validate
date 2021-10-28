@@ -24,20 +24,32 @@ Topics to possibly discuss:
 - correlation between test statistics, relationship to correlation between outcomes
 - advice on binary outcomes, consider how it affects assumptions
 - reference to literature on summarizing/collapsing outcomes
+- discuss the organization of all RCT designs--do we want to re-arrange given our new naming convention?
+- explanation of MTP procedures, like in original paper
+- Luke: would you like to add a paragraph on the optimization procedure?
+
 
 # Introduction
 
 ## Overview
 
+<!-- KH comment: somewhere in intro, we need to make clear what setting we are in: multilevel RCTs-->
+
 Researchers are often interested in testing the effectiveness of an intervention on multiple outcomes, for multiple subgroups, at multiple points in time, or across multiple treatment groups. The resulting multiplicity of statistical hypothesis tests can lead to spurious findings of effects. Multiple testing procedures (MTPs) are statistical procedures that counteract this problem by adjusting p-values for effect estimates upward. When not using an MTP, the probability of false positive findings increases, sometimes dramatically, with the number of tests. When using an MTP, this probability is reduced.
 
 However, an important consequence of MTPs is a change in statistical power that can be substantial. That is, the use of MTPs changes the probability of detecting effects when they truly exist, compared with the situation when the multiplicity problem is ignored. Unfortunately, while researchers are increasingly using MTPs, they frequently ignore the power implications of their use when designing studies. Consequently, in some cases sample sizes may be too small, and studies may be underpowered to detect effects as small as a desired size. In other cases, sample sizes may be larger than needed, or studies may be powered to detect smaller effects than anticipated.
 
-Researchers typically worry that moving from one to multiple hypothesis tests and thus employing MTPs results in a loss of power. However, that need not always be the case. Power is indeed lost if one focuses on individual power — the probability of detecting an effect of a particular size or larger for each particular hypothesis test, given that the effect truly exists. However, in studies with multiplicity, alternative definitions of power exist and in some cases may be more appropriate (Chen, Luo, Liu, & Mehrotra, 2011; Dudoit, Shaffer, & Bodrick, 2003; Senn & Bretz, 2007; Westfall, Tobias, & Wolfinger, 2011). For example, when testing for effects on multiple outcomes, one might consider 1-minimal power: the probability of detecting effects of at least a particular size (which can vary by outcome) on at least one outcome. Similarly, one might consider 1⁄2-minimal power: the probability of detecting effects of at least a particular size on at least 1⁄2 of the outcomes. Also, one might consider complete power: the power to detect effects of at least a particular size on all outcomes. The choice of definition of power depends on the objectives of the study and on how the success of the intervention is defined. The choice of definition also affects the overall extent of power.
+Researchers typically worry that moving from one to multiple hypothesis tests and thus employing MTPs results in a loss of power. However, that need not always be the case. Power is indeed lost if one focuses on individual power — the probability of detecting an effect of a particular size or larger for each particular hypothesis test, given that the effect truly exists. However, in studies with multiplicity, alternative definitions of power exist and in some cases may be more appropriate (Chen, Luo, Liu, & Mehrotra, 2011; Dudoit, Shaffer, & Bodrick, 2003; Senn & Bretz, 2007; Westfall, Tobias, & Wolfinger, 2011).
+
+<!-- KH comment: I would highlight this paragraph more, as it is something we return to throughout the paper. Right now, it seems like a side note. For example, you say one "might" consider complete power, as if we may choose not to in the future, but we do want to consider complete power! Is this worth making a bulleted list, or bolding each term, etc?-->
+
+For example, when testing for effects on multiple outcomes, one might consider 1-minimal power: the probability of detecting effects of at least a particular size (which can vary by outcome) on at least one outcome. Similarly, one might consider 1⁄2-minimal power: the probability of detecting effects of at least a particular size on at least 1⁄2 of the outcomes. Also, one might consider complete power: the power to detect effects of at least a particular size on all outcomes. The choice of definition of power depends on the objectives of the study and on how the success of the intervention is defined. The choice of definition also affects the overall extent of power.
 
 The methodological developments implemented in our R package, PUMP, and described in this paper are focused on the multiplicity problem that arises in randomized control trials (RCT's) that test an intervention's impacts on a modest number of outcomes. For example, in education a researcher might design a trial to investigate the effects of a mentoring program on three outcomes related to social and emotional development --- measures of social competence, emotional competence and self-regulation. For this type of research, the literature and tools for estimating statistical power, or for estimating sample size requirements of minimum detectable effect sizes (MDES's) that achieve a desired level of statistical power, are extensive.^[For example, power estimating tools frequently used in social science research include @RN4473 Dong & Maynard, 2013; Hedges & Rhoads, 2010; Raudenbush et al., 2011; Spybrook et al., 2011).] However, to our knowledge, no tools exist that take multiplicity into account.
 
 The PUMP package fills this gap. It allows users to estimate statistical power, sample size requirements or MDES's for multiple definitions of statistical power, when applying any of five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg and when using any of the following RCT designs and estimation models: 
+
+<!-- KH COMMENT: might be worth reorganizing this table given our naming scheme, or is it replicating RCT designs section below?  Let's figure out best place to put this material-->
 
 - Individual random assignment
 - Blocked individual random assignment
@@ -51,14 +63,19 @@ The PUMP package fills this gap. It allows users to estimate statistical power, 
    - 3-level fixed-effects model (treatment at Level 2)
    - 3-level random-effects model (treatment at Level 2)
 
-For details about the assumptions for each of the estimation models, see X. 
+For details about the assumptions for each of the estimation models, see TODO. 
+
 
 
 ## Review of the multiple testing problem in a frequentist framework 
 
-This paper focuses on the frequentist framework of hypothesis testing, as it is currently the prevailing framework in education and other social policy research. 
-In the frequentist framework, when framing impacts in terms of effect sizes, one typically tests a null hypothesis of no effect, $H0_m: ES_m = 0$, against an alternative hypothesis of $H1_m: ES_m \neq 0$ for a two-sided tests or $H1_m: ES_m > 0$ or $H1_m: ES_m < 0$ for a one-sided test. For the purposes of computing
-power researchers specify an alternative hypothesis of at least a particular effect size. For example, researchers may specify an ES of $0.125.$ A significance test, such as a two-sided or one-sided t-test, is then conducted, and one obtains a test statistic given by
+This paper focuses on the frequentist framework of hypothesis testing, as it is currently the prevailing framework in education and other social policy research.
+<!-- KH COMMENT: for non-education people, effect sizes might not be a familiar concept. Is this the right place to introduce it?-->
+
+In the frequentist framework, when framing impacts in terms of effect sizes, one typically tests a null hypothesis of no effect, $H0_m: ES_m = 0$, against an alternative hypothesis of $H1_m: ES_m \neq 0$ for a two-sided tests or $H1_m: ES_m > 0$ or $H1_m: ES_m < 0$ for a one-sided test.
+<!-- KH COMMENT: I don't think we've introduced either ES or m as notation yet. Maybe also a good place to denote $M$ as the total number of tests/outcomes.-->
+For the purposes of computing power researchers specify an alternative hypothesis of at least a particular effect size. For example, researchers may specify an ES of $0.125$.
+A significance test, such as a two-sided or one-sided t-test, is then conducted, and one obtains a test statistic given by
 
 \begin{equation}
 t_m = \frac{\hat{ES}_m}{SE(\hat{ES}_m)},
@@ -73,6 +90,7 @@ When one tests _multiple_ hypotheses under this framework (such that $M>1$) and 
 Recall that the power of an individual hypothesis test is the probability of rejecting a false null hypothesis of at least a specified size. If raw p-values are adjusted upward, one is less likely to reject the null hypotheses that are true (meaning there is truly no effect of at least a specified size), which reduces the probability of Type I errors, or false positive findings. Reducing this probability is the goal of MTPs. But if raw p-values are adjusted upward, one is also less likely to reject the null hypotheses that are false (meaning there truly is an effect of at least a specified size). There-fore, all MTPs reduce individual power (the power of separate hypothesis tests for each outcome) compared with the situation when no multiplicity adjustments are made or the situation when there is only one hypothesis test.
 
 MTPs also reduce all other definitions of power compared with the situation when no multiplicity adjustments are made -- but not necessarily compared with the situation when there is only one hypothesis test. For example, 1-minimal power, the probability of detecting effects (of at least a specified size) on at least one outcome -- after adjusting for multiplicity -- is typically greater than the probability of detecting an effect of the same size on a single outcome. This increase may or may not occur with other definitions of power (e.g., the probability of detecting a third, half, or all false null hypotheses).
+
 
 ## Using MTPs to protect against spurious impact findings
 
@@ -89,9 +107,19 @@ have $FWER=P(R>0)=E(\frac{B}{R})=FDR$. However,if any effects truly exist,then $
 
 As a result, in the case where there is at least one false null hypothesis (at least one true effect at least as large as a specified effect size), an MTP that controls the FDR at $5\%$ will have a Type I error rate that is greater than $5\%$. Note that MTPs may provide either weak or strong control of the error rate they target. An MTP provides weak control of the FWER or the FDR at level $\alpha$ if the control can only be guaranteed when all nulls are true, or when the effects on all outcomes are zero. An MTP provides strong control of the FWER or FDR at level if the control is guaranteed when some null hypotheses are true and some are false, or when there may be effects on at least some outcomes. Of course, strong control is preferred.
 
+The list of multiple testing procedures supported by the PUMP package can be found below.
+
+```{r, echo = FALSE}
+info <- pump_info()
+```
+
+```{r, echo = FALSE}
+kable(info$Adjustment)
+```
 
 
-# Estimating Power, MDES's and Sample Sizes in Studies of Impacts on Multiple Outcomes (Kristen - first draft October 1)
+
+# Estimating power, MDES and sample size in studies with multiple outcomes
 
 * Approach for estimating statistical power
   + General strategy
@@ -107,66 +135,139 @@ As a result, in the case where there is at least one false null hypothesis (at l
 
 ## Power estimation strategy
 
-In order to estimate power for a single outcome, we can often use closed-form algebraic expressions derived from our assumed model.
+We take an innovative simulation-based approach to estimating power for multiple outcomes, as introduced in @Porter2018.
+In order to estimate power for a single outcome, we can often use closed-form algebraic expressions, which are derived from the assumed model.
 However, with multiple outcomes, finding such expressions can be quite difficult, or even impossible depending on the multiple testing procedure.
+In cases where it is possible to find a closed-form expression, we would need to find expressions for every design, MTP, and definition of power.
+Importantly, we would also need to find new expressions for each number of outcomes, which quickly becomes an intractable problem!
+In some cases, such as permutation-based procedures like Westfall-Young approaches, a closed-formed solution does not exist.
 Instead, we rely on simulation to calculate estimated power.
+The approach outlined below can estimate power for any scenario.
 
 If we were to rely on a full simulation approach, we could use the following method to estimate power:
 
-KP COMMENT: I INSERTED SOME EDITS AND COMMENTS BELOW ABOUT WAYS WE MIGHT EXPAND WITH A FEW MORE DETAILS. BUT I'M NOT WED TO THIS APPROACH - SEE WHAT YOU THINK AND WE CAN DISCUSS. 
+<!-- KP COMMENT: I INSERTED SOME EDITS AND COMMENTS BELOW ABOUT WAYS WE MIGHT EXPAND WITH A FEW MORE DETAILS. BUT I'M NOT WED TO THIS APPROACH - SEE WHAT YOU THINK AND WE CAN DISCUSS. -->
 
-1. *Simulate a data sample according to the alternative hypotheses.* This requires specifying values for all parameters of the data generating distribution. These parameters include: KP comment: I wonder if it would be helpful here to list the set of parameters here and their notation (drawing from your documentation for the MC simulations). This could be a place to introduce this notation for referring back to? Also, I took out the text about nonzero effects because we don't neccessarily simulate the data assuming the alternative for all M hypotheses, but rather the joint alternative (if that terminology is right or makes any sense) such that some null hypotheses are assumed to be false but some are assumed to be true. 
-2. *Calculate test statistics $t_1$ under the alternative hypothesis.* This involves fitting $M$ regression models (specified to match model assumptions) using the simulated data. We used... (comment on R function - or is that too much detail?)
-3. *Calculate adjusted $p$-values.* The test statistics can be used to compute raw (unadjusted) p-values, or these p-values are routinely returned by regression functions in software packages, along with test statistics. The $M$ raw p-values corresponding to the $M$ hypothesis tests can be then adjusted according to MTP's of focus using open-source functions such as citation("multtest") in R or user-developed functions. We developed our own function for implementing the Westfall-Young procedures, in order to allow for covariate adjustment and to take all the various data structures for the designs we cover, both which the multtest function does not support. KP QUESTION: Are we making the WY functions available through online materials (on github) - should we mention that here? 
-4. *Repeat above steps (1 through 4) a large number of times (e.g. 10,000) and calculate power.* This results in an 10,000 x $M$ matrix of adjusted p-values for each MTP of interest. For each MTP, the resulting 10K x M adjusted p-values can then be compared with a specified value of $\alpha$ and null hypothesis rejections can be recorded. Doing so results in a 10K x M matrix of hypothesis rejection indicators from which all definitions of power can be computed:
+<!-- KH response: I find the proposed changes to this particular section a bit confusing. The goal here is not to discuss the validation, but instead to discuss what we actually do in the PUMP package. I mention simulating data as what we *could* do, but then immediately say that we skip that step, and go straight to generating the test statistics. So it feels like it would confuse the reader to go into a lot of detail about how we could calculate the power using simulated data, but then turn around and say those details don't matter because we don't use them! -->
 
- * Individual power for the $m^{th}$ outcome is the proportion of the 10K rows in which the th $m^{th}$ null hypothesis was rejected (the mean of the th m column of indicators).
- * d -minimal power is the proportion of the 10K rows in which at least $d$ of the $M$ null hypotheses were rejected.^[Note that others refer to 1-minimal power simply as “minimal power” (e.g., Maurer & Lellein, 1988; Chen, Luo, Liu, & Mehrotra, 2011; Westfall, Tobias, & Wolfinger, 2011), “disjunctive power” (e.g., Bretz, Hothorn, & Westfall, 2011), or “any pair” power (Ramsey, 1978). Chen, Luo, Liu, & Mehrotra (2011) use the terminology of “r-power” for what is refered to here as d-minimal power for d>1.]
-* Complete power is the proportion of the 10K rows in which all of the null hypotheses were rejected based on the raw p-values rather than adjusted p-values.15
-The reason that complete power is based on raw p-values is that the probability of all tests having a raw p-value less than  when the null hypothesis is true is less
-than the probability that any single test would have a p-value less than $alpha$ by chance (Koch & Gansky, 1996; Westfall et al., 2011).^[Complete power does not in itself require unadjusted tests. The above approach for not adjusting tests assumes that all tests must to be statistically significant in order to claim impacts on all outcomes.]
+1. *Simulate a data sample according to the joint alternative hypothesis.*
+First, we formulate what we will refer to as the *joint alternative hypothesis*, which is the set of outcomes we assume to have nonzero treatment effects.
+We define $\psi_m$ to be the treatment effect for outcome $m$, with $M$ total outcomes.
+If we have $M = 3$ treatments, one possible joint alternative hypothesis is that all outcomes have nonzero effects: $H_A: \psi_1 \neq 0, \psi_2 \neq 0, \psi_3 \neq 0$.
+Another possible joint alternative hypothesis is that only the first two outcomes have nonzero effects: $H_A: \psi_1 \neq 0, \psi_2 \neq 0, \psi_3 = 0$.
+Then, we would generate simulated data under the joint alternative hypothesis.
+
+<!--KP comment: I wonder if it would be helpful here to list the set of parameters here and their notation (drawing from your documentation for the MC simulations). This could be a place to introduce this notation for referring back to? Also, I took out the text about nonzero effects because we don't neccessarily simulate the data assuming the alternative for all M hypotheses, but rather the joint alternative (if that terminology is right or makes any sense) such that some null hypotheses are assumed to be false but some are assumed to be true. -->
+
+<!-- KH response: I'm a bit worried that putting that detail in this spot in particular would confuse the reader. This step is introduced but then immediately afterward we say that we skip it! So it feels a bit weird to say 'here's how we would do a full simulation, but we don't actually do it here.' -->
+2. *Calculate test statistics $t_1$ under the joint alternative hypothesis.*
+Given simulated data, for example we could fit $M$ regression models (specified to match model assumptions).
+<!--KP comment: comment on R function - or is that too much detail?-->
+<!--KH response: Because we don't actually simulate data, we don't fit regression models!! -->
+3. *Calculate adjusted $p$-values.*
+The test statistics can be used to compute raw (unadjusted) $p$-values.
+<!--KH comment: similar to my point above--in this setting we are not using regression functions -->
+<!--KP QUESTION: Are we making the WY functions available through online materials (on github) - should we mention that here? -->
+<!--KH response: We are not currently surfacing the WY functions to the user, but we could! -->
+4. *Repeat above steps (1 through 3) for a large number of iterations.*
+Denote the number of iterations $tnum$. Repeating steps $1$-$3$ $tnum$ times results in a matrix of unadjusted p-values which we call $\mathbf{F}$, and is of dimension $tnum \times M$.
+5. *Adjust p-values.*
+For each row, corresponding to one simulated dataset, the $M$ raw p-values corresponding to the $M$ hypothesis tests can be adjusted according to the desired multiple testing procedure to generate a new matrix $\mathbf{G}$.
+For Bonferroni, Holm, and BH adjustments, we use the function `p.adjust` in R (found in the `stats` package).
+We developed our own function for implementing adjustment using the Westfall-Young procedures.
+6. *Calculate hypothesis rejection indicators.*
+For each MTP, the matrix of adjusted p-values $\mathbf{G}$ can then be compared with a specified value of $\alpha$ (the default is $0.05$, but the value can be changed by the user).
+For each row, which is one iteration of simulated data, we record whether or not the null hypothesis was rejected for each outcome.
+This process results in a new matrix $\mathbf{H}$, which contains hypothesis rejection indicators, and is still of dimension $tnum \times M$.
+Using $\mathbf{H}$, we can compute all definitions of power.
+7. *Calculate power.*
+To compute the different definitions of power:
+    - *Individual power for outcome $m$* is the proportion of the `tnum` rows in which the null hypothesis $m$ was rejected (the mean of column $m$ of $\mathbf{H}$).
+    - *$d$-minimal power* is the proportion of the $tnum$ rows in which at least $d$ of the $M$ null hypotheses were rejected.^[Note that others refer to 1-minimal power simply as “minimal power” (e.g., @RN33095; @RN23882; Westfall, Tobias, & Wolfinger, 2011), “disjunctive power” (e.g., Bretz, Hothorn, & Westfall, 2011), or “any pair” power (@RN33097). @RN23882 use the terminology of “r-power” for what is refered to here as d-minimal power for d>1.]
+    -  *Complete power* is the proportion of the $tnum$ rows in which all of the null hypotheses were rejected based on the raw p-values rather than adjusted $p$-values.
+
+<!--KH comment: I find the below explanation of complete power a bit short and confusing. -->
+
+The reason that complete power is based on raw p-values is that the probability of all tests having a raw p-value less than $0.05$ when the null hypothesis is true is less than the probability that any single test would have a p-value less than $\alpha$ by chance (@RN23880; Westfall et al., 2011).^[Complete power does not in itself require unadjusted tests. The above approach for not adjusting tests assumes that all tests must to be statistically significant in order to claim impacts on all outcomes.]
  
-However, we can simplify this process by skipping the first step.
+Above, we outline a full simulation-based approach for calculating power.
+We can simplify this process by skipping the first step.
 Given an assumed model and correlation structure for the test statistics, we can directly sample from $f(t_1)$, the joint alternative distribution of the test statistics.
 This shortcut vastly improves both the simplicity and the speed of computation.
+In summary, our approach is:
+
+1. **Sample** *test statistics $t_1$ under the joint alternative hypothesis.*
+2. *Calculate adjusted $p$-values.*
+3. *Repeat above steps (1 through 2) for a large number of iterations and calculate power.*
 
 We now describe how to sample from $f(t_1)$ directly.
 First, we assume a particular research design and model.
 Define $\psi_m$ as the treatment effect for outcome $m$.
 Then, we can also express the treatment effect in terms of effect size:
-
-$$ES_m = \frac{\psi_m}{\sigma_{Y,m}}$$ 
-
-where $\sigma_{Y,m}$ is the standard deviation of outcome $Y_m$.
+$$ES_m = \frac{\psi_m}{\sigma_{m}}$$ 
+where $\sigma_{m}$ is the standard deviation of outcome $Y_m$.
 In order to calculate power, we are interested in the standard error of the estimated effect size, which we denote as 
 $$Q_m = SE(\hat{ES}_m).$$
 The quantity $Q_m$ is defined by the assumed model, and can be a function of the number of units at different levels, the percent of units treated, the assumed $R^2$, and other parameters.
-Finally, when testing the hypothesis for outcome $m$, the test statistics for a $t$ test is:
+When analyzing actual data, we do not know the true value of $Q_m$, so we would need to estimate $Q_m$ by plugging in either known or estimated values of the relevant parameters.
+Some parameters, such as the percent of units treated, are known, while others, such as the $R^2$ at different levels, would need to be estimated.
+
+Given an estimate of $\hat{Q}_m$, we can arrive at the distribution of test statistics.
+When testing the hypothesis for outcome $m$, the test statistics for a $t$ test is:
 $$t_m = \frac{\hat{ES}_m}{\hat{Q}_m}$$
 with degrees of freedom $df$, also defined by the assumed model.
-Under the alternative $m^{th}$ hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $\hat{ES}_m/\hat{Q}_m$.
-We choose the correlation between test statistics $\rho$ to sample jointly from $t_m, m = 1, \dots M$.
+Under the alternative hypothesis for outcome $m$, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $\hat{ES}_m/\hat{Q}_m$.
+Finally, we choose the correlation matrix between test statistics $\rho$ to sample from the joint distribution of $t_m, m = 1, \dots M$.
 
-For Westfall-Young procedures, this method is augmented by also sampling test statistics under the joint null distribution. KP COMMENT: MAYBE UNPACK THIS/EXPLAIN A BIT HERE? . IT MIGHT BE NICE TO COMMENT HERE HOWEVER THAT BECAUSE WY REQUIRES THIS RESAMPLING, THE COMPUTATIONAL INTENSITY OF IMPLEMENTING IT ALONG WITH FULL MC SIMS IS RIDICULOUS. 
+From the power formulas, we can then also arrive at MDES and sample size calculations.
+From @RN4473, in general the MDES can be estimated as
+$$ MDES = MT_{df} \times SE / \sigma_{m} $$
+
+where $MT_{df}$ is known as the multiplier and is the sum of two $t$ statistics with  degrees of freedom $df$.
+For one-tailed tests, $MT_{df} = t_{\alpha}^\star + t_{1-\beta}^\star$ where $\alpha$ is the type I error rate and $\beta$ is the desired power. 
+For two-tailed tests, $MT_{df} = t_{\alpha/2}^\star + t_{1-\beta}^\star$.
+We do not explain the details of the derivations here; for more details and understanding, see @RN4473 or @RN27978.
+Manipulating this expression then results in sample size formulae.
+
+<!--KP COMMENT: MAYBE UNPACK THIS/EXPLAIN A BIT HERE? . IT MIGHT BE NICE TO COMMENT HERE HOWEVER THAT BECAUSE WY REQUIRES THIS RESAMPLING, THE COMPUTATIONAL INTENSITY OF IMPLEMENTING IT ALONG WITH FULL MC SIMS IS RIDICULOUS. -->
+<!--KH response: good idea, I added some more detail!-->
+
+The $p$-value adjustment using Westfall-Young procedures is the most complex.
+We briefly outline the algorithm below.
+Similar to above, we first explain a full simulation approach, and then discuss our simplification.
+Under a full simulation approach, we would first generate a single dataset under the joint alternative hypothesis and calculate a set of observed test statistics.
+Then, we would resample the simulated data, say $B = 3,000$ times, under the joint null hypothesis, and calculate test statistics on each of these resampled datasets to generate a distribution of test statistics under the joint null distribution.
+Next, we compare the distribution of observed test statistics to the distribution of test statistics under the joint null distribution to calculate $p$-values.
+We would then re-generate a new simulated dataset, and repeat the process. 
+If we were to generate $tnum = 10,000$ datasets under the joint alternative hypothesis, for each of these datasets we also generate $B = 3,000$ resampled datasets under the joint null, so we would have to generate $10,000 \times 3,000$ datasets!
+
+When we skip the simulation step, for each iteration $t$ in $1, \dots, tnum$ we generate a set of observed test statistics from the joint alternative distribution.
+Then, we augment the method by drawing $B$ samples of test statistics under the joint null rather than resampling the data $B$ times.
 Under the null hypothesis, $t_m$ has a $t$ distribution with degrees of freedom $df$ and mean $0$.
+As before, we then compare the distribution of observed test statistics to the distribution of test statistics under the joint null distribution to calculate $p$-values.
+Westfall-Young procedures are computationally intensive, so the approach of skipping the simulated data step is particularly helpful here.
+This approach substantially reduces computational time by drawing test statistics directly rather than resampling data.
+Additionally, we find that sampling the test statistics can actually produce more accurate results in some cases for WY procedures; see TODO appendix for more details.
 
-Note that this approach of simulating test statistics builds on work by Bang, Young, & George (2005), who use simulated test statistics to identify critical values based on the distribution of the maximum test statistics. Their approach produces the same estimates as the approach described here for the single-step Westfall-Young MTP.
-Chen et al. (2011) derived explicit formulas for $d-$minimal powers of stepwise procedures and for complete power of single-step procedures, but only
-for up to three tests. The approach presented here is more generally applicable, as it can be used for all MTPs, for any number of tests, and for all definitions of power discussed in the present paper.
 
+Note that this approach of simulating test statistics builds on work by @RN33089, who use simulated test statistics to identify critical values based on the distribution of the maximum test statistics.
+Their approach produces the same estimates as the approach described here for the single-step Westfall-Young MTP.
+@RN23882 derived explicit formulas for $d-$minimal powers of stepwise procedures and for complete power of single-step procedures, but only for 1, 2, or 3 tests.
+The approach presented here is more generally applicable, as it can be used for all MTPs, for any number of tests, and for all definitions of power discussed in the present paper.
 
-## RCT Designs
+## Randomized Control Trial Designs
 
-KP COMMENT: I WONDER IF YOU MIGHT TAKE THE TEXT FROM "POWER ESTIMATION METHODS" HERE. MAYBE ALL OF SECTION 1? OR IS THAT TOO MUCH DETAIL? THEN SECTIONS 2-7 CAN BE AN APPENDIX? 
+<!--KP COMMENT: I WONDER IF YOU MIGHT TAKE THE TEXT FROM "POWER ESTIMATION METHODS" HERE. MAYBE ALL OF SECTION 1? OR IS THAT TOO MUCH DETAIL? THEN SECTIONS 2-7 CAN BE AN APPENDIX?-->
+<!--KH response: I've done another pass through and I think now most of the material in Section 1 is summarized here.  Let me know if you think anything is important here and still missing! -->
 
 When designing a study, the researcher has two main choices.
 First, the researcher chooses the design of the experiment, including the number of levels, and at which level randomization occurs.
-Second, and separately, the researchers chooses an assumed model, including whether intercepts and treatment effects should be treated as constant, fixed, or random.
-The same experimental design can have different modeling choices, and these two decisions should be conceptually separated from each other.
-The PUMP package supports models with 1, 2, or 3 levels, with randomization occurring at any level.
+Second, and separately, the researchers choose an assumed model, including whether intercepts and treatment effects should be treated as constant, fixed, or random.
+For the same experimental design, the analyst can make sometimes choose from a variety of possible models, and these two decisions should be conceptually separated from each other.
+
+For the design, the PUMP package supports designs with 1, 2, or 3 levels, with randomization occurring at any level.
 For example, a design with 2 levels and randomization at level 1 is a blocked design.
 A design with 3 levels and randomization at level 3 is a cluster design.
-
 For modeling, we have the following choices.
 
 - Whether level 2 and level 3 intercepts are:
@@ -187,18 +288,30 @@ We also including the corresponding names from the PowerUP! package where approp
 For more details about each model, see the appendix.
 
 ```{r, echo = FALSE}
-designs = supported_designs()
-kable(designs$Design[,1:4])
+kable(info$Design[,1:4])
 ```
+
+### Understanding design parameters
+
+The table below shows the parameters that influence $Q_m$ formulae for different designs.
+
+```{r, echo = FALSE}
+kable(info$Parameters)
+```
+
+A few parameters warrant more explanation.
+The quantity $\text{ICC}$ is the Intraclass Correlation, and gives a measure of variation at different levels of the model.
+For each outcome, the ICC for each level is defined as the ratio of the variance at that level divided by the overall variance of the individual outcomes.
+The ICC is for the unconditional model, and therefore include the variation due to covariates.
+For each outcome, the quantity $\omega$ for each level is the ratio between impact variation at that level and mean variation at that level.
+The $R^2$ expressions are the percent of variation at a particular level predicted by covariates specific to that level.
 
 ## Estimating MDES and sample size
 
 Frequently, a researcher's main concern with power is prospectively calculating either the minimum detectable effect size (MDES) from a possible study, or determining the necessary sample size.
-With closed-form power expressions, it is easy to invert the formula to instead calculate these quantities.
-However, given our simulation approach, we instead perform a search algorithm to calculate MDES and sample size.
-
+Given our simulation approach, it is necessary to perform a search algorithm to calculate MDES and sample size.
 The user provides a particular target power, say $80\%$.
-To perform a search, we calculate power over a range of different MDES or sample size values, and then find the value that is within a specified tolerance of the target power.
+To perform a search, we calculate power over a range of different MDES or sample size values, and then find the value (of sample size of MDES) that is within a specified tolerance of the target power.
 We discuss the algorithm for sample size, although the approach for MDES is the same.
 
 First, we begin by bounding the possible range of sample size values.
@@ -208,7 +321,10 @@ On the other hand, our least conservative correction is doing no correction at a
 If we are interested in minimal power, we must have a smaller lower bound; in order to have 1-minimal power of $0.8$, each outcome needs to have individual power of $1 - (1 - \text{0.8})^{(1/M)}$.
 
 Second, given our lower and upper bounds, we now use optimization to find the sample size.
-**TODO** this will be updated once we have settled on an optmization procedure!
+**TODO** Describe the optimization procedure. (Luke?)
+
+Finally, given a proposed sample size value by the optimization procedure, we calculate the power for the given power to ensure it is within a specified tolerance of the target power.
+The default tolerance is $1%$, so given a target power of $80%$, we check whether the given sample size is between $79%$ and $81%$.
 
 ## Validation
 
@@ -216,19 +332,14 @@ We completed extensive validation checks to ensure our power calculation procedu
 First, we compared our power estimates in scenarios with only one outcome, $M = 1$, to PowerUpR!.
 Without a multiple testing procedure adjustment, our estimates match.
 Second, in order to validate our estimates under multiplicity, we used a simulation approach.
-We generated many iterations of data according to the assumed design and model, calculated p-values, and calculated an empirical estimate of power and error.
-Then, we compared the PUMP results to validate that the PUMP estimates fall in the confidence interval for the simulations.
+We generated many iterations of data according to the assumed design and model, calculated p-values, and calculated an empirical estimate of power.
+Finally, using a binomial distribution we construct confidence intervals for the power estimate.
+Then, we validated that the PUMP estimates fall within these confidence intervals.
 
 A more detailed explanation of the validation procedure can be found in the Appendix, and full validation code and results are in our github repository **TODO**.
 For some scenarios, we have discrepancies from PowerUp resulting from different modeling choices.
 For example, for certain models PowerUp assumes the intraclass correlation is zero, while we allow for nonzero values.
 When there are discrepancies, these are noted in the appendix.
-
-**TODO** update the appendix.
-
-
-
-
 
 
 # PUM-P Package (Luke - first October 1)

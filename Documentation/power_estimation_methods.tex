@@ -63,8 +63,13 @@ In particular we have:
 \item fixed, e.g. each school or district has an individual estimated impact ($u_{1,jkm}$ are fixed values constrained to have mean 0), with an additional mean impact.
 \item random ($u_{1,jkm}$ and $w_{1,km}$ are Normally distributed around a mean impact)
 \end{itemize}
-\item Whether school covariates $X_{jkmr}$ or district covariates $V_{kms}$  are included in the model for the intercept. Note that in some models, PowerUp incorporates covariates into the slope, allowing for, in principle, heterogeneous treatment efects correlated to said covariates. However, we never make this assumption, as it is unlikely to help with an evaluationg targeting an overall average impact. Including covariates in the slope terms allows for modeling treatment effect heterogeneity in principle, but this can add complexity with estimation. When this difference occurs, it is noted.
 \end{itemize}
+
+In addition, the user has choices for whether to include certain covariates in the intercept models.
+We allow for covariates to be included wherever it makes sense for the model.
+Note that in some models, PowerUp incorporates covariates into the slope, allowing for, in principle, heterogeneous treatment effects correlated to said covariates.
+However, we never make this assumption, as it is unlikely to help with an evaluating targeting an overall average impact.
+Including covariates in the slope terms allows for modeling treatment effect heterogeneity in principle, but this can add complexity with estimation. When this difference occurs, it is noted.
 
 
 
