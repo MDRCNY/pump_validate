@@ -225,7 +225,7 @@ $$ MDES = MT_{df} \times SE / \sigma_{m} $$
 
 where $MT_{df}$ is known as the multiplier and is the sum of two $t$ statistics with  degrees of freedom $df$.
 For one-tailed tests, $MT_{df} = t_{\alpha}^\star + t_{1-\beta}^\star$ where $\alpha$ is the type I error rate and $\beta$ is the desired power. 
-For two-tailed tests, $MT_{df} = t_{\alpha/2} + t_{1-\beta}$.
+For two-tailed tests, $MT_{df} = t_{\alpha/2}^\star + t_{1-\beta}^\star$.
 We do not explain the details of the derivations here; for more details and understanding, see @RN4473 or @RN27978.
 Manipulating this expression then results in sample size formulae.
 
@@ -258,7 +258,7 @@ The approach presented here is more generally applicable, as it can be used for 
 ## Randomized Control Trial Designs
 
 <!--KP COMMENT: I WONDER IF YOU MIGHT TAKE THE TEXT FROM "POWER ESTIMATION METHODS" HERE. MAYBE ALL OF SECTION 1? OR IS THAT TOO MUCH DETAIL? THEN SECTIONS 2-7 CAN BE AN APPENDIX?-->
-<!--KH response: it seems like most of the most relevant information from Section 1 has already been summarized here. I am missing details like the definition of ICC, omega, and all the other parameters--is that what you mean?  It does seem like that goes pretty far into nitty-gritty details.  -->
+<!--KH response: I've done another pass through and I think now most of the material in Section 1 is summarized here.  Let me know if you think anything is important here and still missing! -->
 
 When designing a study, the researcher has two main choices.
 First, the researcher chooses the design of the experiment, including the number of levels, and at which level randomization occurs.
