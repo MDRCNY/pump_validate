@@ -44,52 +44,54 @@ Optional topics:
 
 <!-- KH comment: we begin by discussing a bunch of things we will NOT solve, i.e. multiple subgroups, multiple points in time, etc. Can we motivate instead but just focus on multiple outcomes? In general I feel we can have a more exciting hook!-->
 
-Researchers are often interested in testing the effectiveness of an intervention on multiple outcomes, for multiple subgroups, at multiple points in time, or across multiple treatment groups.
-The resulting multiplicity of statistical hypothesis tests can lead to spurious findings of effects.
+Researchers are often interested in testing the effectiveness of an intervention on multiple outcomes.
+The resulting multiplicity of statistical hypothesis tests can lead to spurious findings of effects.^[Testing the effectiveness of an intervention for multiple subgroups, at multiple points in time, or across multiple treatment groups also results in a multiplicity of statistical hypotheses and can also lead to spurious findings of effects, but this is beyond the scope of this paper.]
 Multiple testing procedures (MTPs) are statistical procedures that counteract this problem by adjusting p-values for effect estimates; generally, $p$-values are adjusted upward to require a higher burden of proof.
 When not using an MTP, the probability of finding false positives increases, sometimes dramatically, with the number of tests.
 When using an MTP, this probability is reduced.
 
-However, an important consequence of MTPs is a change in statistical power that can be substantial.
-<!--An important consequence of using a multiple testing procedure is that there can be a substantial change in the power of the test.-->
+An important consequence of using a multiple testing procedure is that there can be a substantial change in the power of the test.
 That is, the use of MTPs changes the probability of detecting effects when they truly exist, compared with the situation when the multiplicity problem is ignored.
 Unfortunately, while researchers are increasingly using MTPs, they frequently ignore the power implications of their use when designing studies.
 Consequently, in some cases sample sizes may be too small, and studies may be underpowered to detect effects as small as a desired size.
 In other cases, sample sizes may be larger than needed, or studies may be powered to detect smaller effects than anticipated.
 
-Researchers typically worry that moving from one to multiple hypothesis tests and thus employing MTPs results in a loss of power.
-<!--Researchers typically worry that moving from one to multiple hypothesis tests, and thus employing MTPs, results in a loss of power.-->
-However, that need not always be the case.
-<!-- However, that pattern need not always be the case.-->
+Researchers typically worry that moving from one to multiple hypothesis tests, and thus employing MTPs, results in a loss of power.
+However, that pattern need not always be the case.
 Power is indeed lost if one focuses on individual power --- the probability of detecting an effect of a particular size or larger for each particular hypothesis test, given that the effect truly exists.
 However, in studies with multiplicity, alternative definitions of power exist and in some cases may be more appropriate (@RN23882; @RN23878; @RN23881; Westfall, Tobias, & Wolfinger, 2011).
 
 <!-- KH comment: I would highlight this paragraph more, as it is something we return to throughout the paper. Right now, it seems like a side note. For example, you say one "might" consider complete power, as if we may choose not to in the future, but we do want to consider complete power! Is this worth making a bulleted list, or bolding each term, etc?-->
+<!-- KP response: See my added text. I think it's accurate to say that a research might choose to consider complete power as the focus for their study - but they rarely would for power reasons, but we want to be able to compute it so they are paying attention to it or can compute it if they really do want to design their study for complete power-->
 
 For example, when testing for effects on multiple outcomes, one might consider 1-minimal power: the probability of detecting effects of at least a particular size (which can vary by outcome) on at least one outcome.
 Similarly, one might consider $1⁄2$-minimal power: the probability of detecting effects of at least a particular size on at least 
 $1⁄2$ of the outcomes.
 Also, one might consider complete power: the power to detect effects of at least a particular size on all outcomes.
 <!-- KH comment: can we get more specific in the next sentence, i.e. provide examples of when we might want to measure success in different ways?.-->
+<!-- KP: See added text below-->
 The choice of definition of power depends on the objectives of the study and on how the success of the intervention is defined.
 <!-- KH comment: the following sentence is vague, I'm not really sure what it is getting at.-->
 The choice of definition also affects the overall extent of power.
 
-The methodological developments implemented in our R package, PUMP, and described in this paper are focused on the multiplicity problem that arises in randomized control trials (RCT's) that test an intervention's impacts on a modest number of outcomes.
-<!--This paper and the R package we introduce, PUMP, focus on estimating power for multilevel randomized control trials (RCTs) that test a single intervention's impacts on a modest number of outcomes.-->
-<!-- KH comment: feels like this example should be earlier. Maybe this whole paragraph should be earlier!-->
-For example, in education a researcher might design a trial to investigate the effects of a mentoring program on three outcomes related to social and emotional development --- measures of social competence, emotional competence and self-regulation.
-<!-- KH comment: what type of research?  social and emotional development research?-->
-<!-- KH comment: we need to check on whether JSS likes footnotes-->
-For this type of research, the literature and tools for estimating statistical power, or for estimating sample size requirements of minimum detectable effect sizes (MDES's) that achieve a desired level of statistical power, are extensive.^[For example, power estimating tools frequently used in social science research include @RN4473; @RN30153; @RN23884; @RN24179).]
-<!--For this type of research, the literature and tools for estimating statistical power, sample size, and minimum detectable effect size are extensive.^[For example, power estimating tools frequently used in social science research include @RN4473; @RN30153; @RN23884; @RN24179).]-->
-However, to our knowledge, no tools exist that take multiplicity into account.
-<!--However, to our knowledge, no tools exist that take multiple outcomes into account.-->
+The prevailing default in many impact studies in the social sciences, individual power, may or may not be the most appropriate type of power.
+In some cases, it may provide misleading estimates of the probability that researchers will be able to find sufficient evidence that an intervention was successful. If the researchers’ goal is to find statistically significant estimates of effects on all primary outcomes of interest, then even after taking multiplicity adjustments into account, estimates of individual power can grossly understate the actual power required - complete power.
+On the other hand, if the researchers’ goal is to find statistically significant estimates of effects on at least one or on a small proportion of outcomes, then their power may be much better than anticipated.
+They may be able to get away with a smaller sample size, or they may be able to detect smaller effect sizes.
+The choice of power definition may not be a simple one.
+First, it may not be easy to define the success of an intervention. Even when it is easy, aligning the definition of success with a definition of power may not always be.
+For example, even if a program would be considered successful should an effect of a specified size be found for at least one outcome, researchers may still want sufficient individual power because they want to know the probability of detecting effects on each particular outcome.
+It may be best for researchers to estimate and share power estimates for multiple power definitions. For example, consider the case in which a sample size is fixed. The probability of detecting statistically significant effects (at least as large as specified effect sizes) may be unacceptably low.
+While complete power may be a goal in this case, it may be valuable for researchers to also be able to say that it is still tenable to achieve a high probability of detecting effects on at least half of the outcomes.
 
+## Summary of the PUMP R Package
+
+This paper and the R package we introduce, PUMP, focus on estimating power for multilevel randomized control trials (RCTs) that test a single intervention's impacts on a modest number of outcomes.
+For this type of research, the literature and tools for estimating statistical power, or for estimating sample size requirements of minimum detectable effect sizes (MDES's) that achieve a desired level of statistical power, are extensive.^[For example, power estimating tools frequently used in social science research include @RN4473; @RN30153; @RN23884; @RN24179).]
+However, to our knowledge, no tools exist that take multiple outcomes into account.
 
 The PUMP package fills this gap.
-It allows users to estimate statistical power, sample size requirements or MDES's for multiple definitions of statistical power, when applying any of five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg and when using any of the following RCT designs and estimation models: 
-<!--It allows users to estimate statistical power, sample size requirements, or minimum detectable effect sizes.
+It allows users to estimate statistical power, sample size requirements, or minimum detectable effect sizes.
 The estimates can be calculated for multiple definitions of statistical power, MTPs, and RCT designs and models.
 The definitions of power are individual, complete, and relevant $d$-minimal powers, depending on the number of outcomes.
 The MTPs are Bonferroni, Holm, Benjamini-Hochberg, and single-step and step-down versions of Westfall-Young.
@@ -121,12 +123,10 @@ This paper focuses on the frequentist framework of hypothesis testing, as it is 
 
 <!-- KH COMMENT: motivate why we are going into this discussion, i.e. remind reader why we need these details in order to calculate power-->
 <!-- KH COMMENT: for non-education people, effect sizes might not be a familiar concept. Maybe this is the right place to introduce it?-->
-In the frequentist framework, when framing impacts in terms of effect sizes, one typically tests a null hypothesis of no effect, $H_{0_m}: ES_m = 0$, against an alternative hypothesis $H_{1_m}: ES_m \neq 0$ for a two-sided tests or $H_{1_m}: ES_m > 0$ or $H1_m: ES_m < 0$ for a one-sided test.
-<!--In the frequentist framework, when framing impacts in terms of effect sizes, one typically tests a null hypothesis of no effect, $H_{0_m}: ES_m = 0$, against an alternative hypothesis of a nonzero effect, $H_{1_m}: ES_m \neq 0$ for a two-sided tests or $H_{1_m}: ES_m > 0$ or $H1_m: ES_m < 0$ for a one-sided test.-->
+Consider that a researchers in interested in testing the impact of an intervention on $M$ outcomes.
+In the frequentist framework, when framing impacts in terms of effect sizes, for the $m^{th}$ outcome, one typically tests a null hypothesis of no effect, $H_{0_m}: ES_m = 0$, against an alternative hypothesis $H_{1_m}: ES_m \neq 0$ for a two-sided tests or $H_{1_m}: ES_m > 0$ or $H1_m: ES_m < 0$ for a one-sided test.
 <!-- KH COMMENT: I don't think we've introduced either ES or m as notation yet. Maybe also a good place to denote $M$ as the total number of tests/outcomes.-->
-For the purposes of computing power researchers specify an alternative hypothesis of at least a particular effect size.
-<!--For the purpose of calculating power, researchers specify an alternative hypothesis of at least a particular effect size.
-For example, researchers may specify an ES of $0.125$.-->
+For the purpose of calculating power, researchers specify an alternative hypothesis of at least a particular effect size.
 For example, researchers may specify an ES of $0.125$.
 A significance test, such as a two-sided or one-sided t-test, is then conducted, and one obtains a test statistic given by
 \begin{equation}
@@ -136,8 +136,7 @@ t_m = \frac{\hat{ES}_m}{SE(\hat{ES}_m)},
 <!-- KH COMMENT: also introduct raw = unadjusted-->
 
 from which a raw p-value is computed.
-Here, the term "raw" is used to distinguish this p-value from a p-value that has been adjusted for multiple hypothesis tests, as discussed below.
-<!--Here, the term "raw" is used to distinguish this p-value from a p-value that has been adjusted using a procedure for multiple hypothesis tests, as discussed below.-->
+Here, the term "raw" is used to distinguish this p-value from a p-value that has been adjusted using a procedure for multiple hypothesis tests, as discussed below.
 The raw p-value is the probability of a test statistic being at least as extreme as the one observed, given that the null hypothesis is true.
 <!-- KH COMMENT: I'm not sure if we currently actually allow for one-sided tests, do we want to?-->
 <!-- KH COMMENT: we have not defined capital $T_m$-->
@@ -162,25 +161,23 @@ Nonetheless, any error inflation can still make it problematic to draw reliable 
 <!-- KH comment: WY can actually occassionally adjust p-values down-->
 As introduced above, to counteract the multiple testing problem, MTPs adjust p-values upward.^[Alternatively, MTPs can decrease the critical values for rejecting hypothesis tests. For ease of presentation, this paper focuses only on the approach of increasing p-values.]
 The following paragraphs describe how using a multiple testing procedure protects against false positives.
-<!--The sections that follow will describe how the MTPs do so.-->
 
 Recall that the power of an individual hypothesis test is the probability of rejecting a false null hypothesis of at least a specified size.
 If raw p-values are adjusted upward, one is less likely to reject the null hypotheses that are true (meaning there is truly no effect of at least a specified size), which reduces the probability of Type I errors, or false positive findings.
 Reducing this probability is the goal of MTPs.
-<!--Reducing the probability of false positives is the goal of MTPs.-->
 However, if raw p-values are adjusted upward, one is also less likely to reject the null hypotheses that are false (meaning there truly is an effect of at least a specified size).
 <!-- Rejecting a null hypothesis that is false is also known as a false negative--we fail to detect a true effect.-->
-Therefore, all MTPs reduce individual power (the power of separate hypothesis tests for each outcome) compared with the situation when no multiplicity adjustments are made or the situation when there is only one hypothesis test.
-<!--Therefore, MTPs generally reduce individual power compared with the situation when no multiplicity adjustments are made or the situation when there is only one hypothesis test.-->
+Therefore, all MTPs reduce individual power (the power of an individual hypothesis test) compared with the situation when no multiplicity adjustments are made or the situation when there is only one hypothesis test.
 
 MTPs also reduce all other definitions of power compared with the situation when no multiplicity adjustments are made -- but not necessarily compared with the situation when there is only one hypothesis test.
-<!-- MTPs also generally reduce power under all other definitions compared with the situation when no multiplicity adjustments are made -- but not necessarily compared with the situation when there is only one hypothesis test.-->
 For example, $1$-minimal power, the probability of detecting effects (of at least a specified size) on at least one outcome -- after adjusting for multiplicity -- is typically greater than the probability of detecting an effect of the same size on a single outcome.
 This increase may or may not occur with other definitions of power (e.g., the probability of detecting a third, half, or all false null hypotheses).
 
 
 ## Using MTPs to protect against spurious impact findings
 <!--## Multiple testing procedures-->
+
+KP Bookmark
 
 The MTPs that are the focus of this paper fall into two different classes.
 The first class reframes Type I error as a rate across the entire set or “family” of multiple hypothesis tests.
