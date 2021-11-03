@@ -127,8 +127,8 @@ In the frequentist framework, when framing impacts in terms of effect sizes, one
 For the purposes of computing power researchers specify an alternative hypothesis of at least a particular effect size.
 <!--For the purpose of calculating power, researchers specify an alternative hypothesis of at least a particular effect size.
 For example, researchers may specify an ES of $0.125$.-->
+For example, researchers may specify an ES of $0.125$.
 A significance test, such as a two-sided or one-sided t-test, is then conducted, and one obtains a test statistic given by
-
 \begin{equation}
 t_m = \frac{\hat{ES}_m}{SE(\hat{ES}_m)},
 \end{equation}
@@ -184,7 +184,7 @@ This increase may or may not occur with other definitions of power (e.g., the pr
 
 The MTPs that are the focus of this paper fall into two different classes.
 The first class reframes Type I error as a rate across the entire set or “family” of multiple hypothesis tests.
-This rate is called the familywise error rate (FWER; RN33098).
+This rate is called the familywise error rate (FWER; @RN33098).
 The FWER is typically set to the same value as the probability of a Type I error for a single test, or to $\alpha$.
 <!--The FWER is typically set to the same value as the probability of a Type I error for a single test, e.g. $\alpha$.-->
 MTPs that control the FWER at $5\%$ adjust p-values in a way that ensures that the probability of at least one Type I error across the entire set of hypothesis tests is no more than $5\%$.
