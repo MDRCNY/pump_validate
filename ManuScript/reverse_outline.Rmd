@@ -1,0 +1,33 @@
+---
+title: "PUMP Manuscript: Reverse Outline"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  html_notebook: default
+bibliography: refs.bib
+---
+
+# Overview
+
+1. Multiple outcomes and MTPs
+2. MTPs change power
+3. Other definitions of power exist
+4. Outline other definitions of power
+5. No one else has done this
+6. PUMP package
+7. RCT designs
+
+MISSING?
+
+- multilevel experiments, intro to RCT
+- assumption that we will analyze using mixed effects model.
+
+## Review of the multiple testing problem in a frequentist framework
+
+1. Frequentist framework is prevailing framework.
+2. Hypotheses, test statistic, p-value.
+3. Type I error for single test
+4. Type I error inflation
+5. MTPs reduce individual power
+6. MTPs reduce other power
