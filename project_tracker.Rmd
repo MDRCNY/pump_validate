@@ -34,7 +34,7 @@ This list is not complete - to be added to and checked off by everyone.
 - implement d3.2_m2fc2rc, update d1.1_m2cc to d1.1_m1c
 - remove just_results_table_flag
 - hash out power definitions: unadjusted p-values for complete power, whether or not to include zero outcomes for min power, complete power
-- recruit Jonathan S for testing
+- set up Jonathan S for testing
 - update sample size vignette
 - two tailed for MDES?
 - update description file
@@ -42,6 +42,7 @@ This list is not complete - to be added to and checked off by everyone.
 - recruit Evan as reader
 - search for papers in JSS
 - WY follow up: WY with a small number of schools, large number of permutations, and no effect, do we get the intended power/p-value?  What if we don’t do any adjustment–is it because of divergent/unstable models?
+- reorganize appendix to be more oriented for package
 
 # Shiny app
 - Aim to have draft to share in next meeting

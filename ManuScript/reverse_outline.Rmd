@@ -18,16 +18,57 @@ bibliography: refs.bib
 6. PUMP package
 7. RCT designs
 
-MISSING?
-
-- multilevel experiments, intro to RCT
-- assumption that we will analyze using mixed effects model.
-
 ## Review of the multiple testing problem in a frequentist framework
 
 1. Frequentist framework is prevailing framework.
 2. Hypotheses, test statistic, p-value.
 3. Type I error for single test
-4. Type I error inflation
+4. Type I error inflation for multiplte tests
 5. MTPs reduce individual power
-6. MTPs reduce other power
+6. MTP effects on other power
+
+## Using MTPs to protect against spurious impact findings
+
+1. FWER
+2. FDR
+3. Calculation of FWER and FDR
+4. Difference in objective
+5. Strong control and weak control
+
+# Estimating power, MDES and sample size in studies with multiple outcomes
+
+## Power estimation strategy
+
+1. Introduce why we need simulation approach
+2. Details of simulation approach
+3. Side note about complete power
+4. Simplification of simulation approach, and summary
+5. How to sample test statistics
+6. How to sample test statistics continued
+7. MDES and SS
+8. WY detail
+9. WY detail continued
+10. Source of idea of simulated power
+
+## Randomized Control Trial Designs and Models
+
+1. Choices: design and model
+2. Design and model details
+3. Notation
+
+### Understanding design parameters
+
+1. Detail on ICC, omega, R2
+
+## Estimating MDES and sample size
+
+1. We need a search algorithm
+2. Search algorithm bounds
+3. More detail of search algorithm
+4. Power estimation from results
+
+
+## Validation
+
+1. Validation approach
+2. See appendix for details
