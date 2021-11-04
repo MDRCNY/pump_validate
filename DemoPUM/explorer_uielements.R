@@ -3,6 +3,180 @@
 ######################################################################################################################
 
 ############################
+# Which variables you want to vary
+############################
+
+
+# "Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m2cc",
+# "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
+# "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
+# "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
+# "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
+# "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
+# "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
+# "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
+# "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
+         # uiOutput("mdes"))
+         # uiOutput("rho"))
+         # uiOutput("numCovar.1"))
+         # uiOutput("tbar"))
+         # uiOutput("alpha"))
+         # uiOutput("r2.1"))
+         # uiOutput("icc.2"))
+         # uiOutput("r2.2"))
+         # uiOutput("omega.2"))
+         # uiOutput("r2.3")      
+         # uiOutput("icc.3"))
+         # uiOutput("k"))
+         # uiOutput("omega.3"))
+
+varVaryInputEx <- function(estimation, design, scenario){
+  
+  print(paste0("I am in variable Input bar", design))
+  id <- paste0(estimation, "_", "varVary", "_", design, "_" , scenario)
+  
+   if(design == "d1.1_m2cc") {
+
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Multiple testing procedure" = "mtp",
+                                "Minimum detectable effect size" = "mdes",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1"),
+                 selected = "rho") # select input buttons div
+
+   } else if(design == "d2.1_m2fc") {
+
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Multiple testing procedure" = "mtp",
+                                "Minimum detectable effect size" = "mdes",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2"),
+                 selected = "rho") # select input buttons div
+
+   } else if(design == "d2.1_m2ff"){
+
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Multiple testing procedure" = "mtp",
+                                "Minimum detectable effect size" = "mdes",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2"),
+                 selected = "rho") # select input buttons div
+    
+   } else if(design == "d2.1_m2fr"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Multiple testing procedure" = "mtp",
+                                "Minimum detectable effect size" = "mdes",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "omega.2" = "omega.2"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d3.1_m3rr2rr"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Multiple testing procedure" = "mtp",
+                                "Minimum detectable effect size" = "mdes",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "omega.2" = "omega.2",
+                                "icc.3" = "icc.3",
+                                "omega.3" = "omega.3"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d2.2_m2rc"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Multiple testing procedure" = "mtp",
+                                "Minimum detectable effect size" = "mdes",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "r2.2" = "r2.2"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d3.3_m3rc2rc"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Multiple testing procedure" = "mtp",
+                                "Minimum detectable effect size" = "mdes",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "r2.2" = "r2.2",
+                                "r2.3" = "r2.3",
+                                "icc.3" = "icc.3"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d3.2_m3ff2rc"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Multiple testing procedure" = "mtp",
+                                "Minimum detectable effect size" = "mdes",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "r2.2" = "r2.2",
+                                "icc.3" = "icc.3"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d3.2_m3rr2rc"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Multiple testing procedure" = "mtp",
+                                "Minimum detectable effect size" = "mdes",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "r2.2" = "r2.2",
+                                "icc.3" = "icc.3",
+                                "omega.3" = "omega.3"),
+                 selected = "rho") # select input buttons div
+   }
+  
+} # number of unit per block
+
+############################
 # Number of Units per block
 ############################
 
@@ -111,6 +285,7 @@ mdesInputEx <- function(estimation, design, scenario, numOutcome){
   defaultmdesvalues <- paste0(rep(0.125, times = numOutcome), collapse = ",")
   
   id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario)
+  
   textInput(id, 
            "Minimum detectable effect size (MDES) (Vector of length M, comma delimited)", 
            value = defaultmdesvalues)
