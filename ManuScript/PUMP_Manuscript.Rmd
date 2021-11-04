@@ -35,10 +35,23 @@ Optional topics:
 - advice on binary outcomes, consider how it affects assumptions
 - reference to literature on summarizing/collapsing outcomes?
 
+Structure
+
+- include an overview of main package functionality in introduction
+- overall comment: right now, introduction focuses on the problem and methods, not on the package/solution. Doesn't necessarily feel like the intro for a software paper.
+
 
 # Introduction
 
 ## Overview
+
+<!-- KH: proposed new paragraph: brief overall intro before we dive in? -->
+In this paper, we introduce the power under multiplicity project (PUMP) package.
+PUMP allows users to estimate power for multilevel randomized control trials with multiple outcomes.
+The contribution of this package is to properly calculate power when using a multiple testing procedure to adjust for multiple tests.
+The package also allows for companion calculations of sample size and minimium detectable effect size.
+Finally, the functionality allows users to easily explore power over a range of possible values of parameters, and visualize the results.
+TODO: something about shiny?
 
 <!-- KH comment: somewhere in intro, we need to make clear what setting we are in: multilevel RCTs-->
 
