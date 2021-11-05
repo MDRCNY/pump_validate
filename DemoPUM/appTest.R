@@ -579,6 +579,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   })
   
+  
   ######################################################################
   # Get reactive expression for what type of estimation we are running #
   ######################################################################
@@ -606,7 +607,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }
     
   })
-
   
   getEstimationEx <- reactive({
     
@@ -737,6 +737,112 @@ server <- shinyServer(function(input, output, session = FALSE) {
       return(c("d3.2_m3rr2rc"))}
     
   }) # getDesignSs
+  
+  ###########################################################
+  # Get which variables to vary
+  ###########################################################
+  
+  getVarVaryEx <- reactive({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    id <- paste0(theEstimation, "_", "varVary", "_", theDesign, "_" , theScenario)
+    
+    if(!is.null(input[[id]])){
+
+      if(input[[id]] == "mtp"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("mtp"))    
+      }
+      
+      if(input[[id]] == "mdes"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("mdes"))    
+      }
+      
+      if(input[[id]] == "rho"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("rho"))    
+      }
+      
+      if(input[[id]] == "numCovar.1"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("numCovar.1"))    
+      }
+      
+      if(input[[id]] == "tbar"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("tbar"))    
+      }
+      
+      if(input[[id]] == "alpha"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("alpha"))    
+      }
+      
+      if(input$varVaryEx == "r2.1"){
+        
+        print(paste0("variable to vary is ", input$varVaryEx))  
+        return(c("r2.1"))    
+      }
+      
+      if(input[[id]] == "icc.2"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("icc.2"))    
+      }
+      
+      if(input[[id]] == "r2.2"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("icc.2"))    
+      }
+      
+      if(input[[id]] == "omega.2"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("omega.2"))    
+      }
+      
+      if(input[[id]] == "r2.3"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("r2.3"))    
+      }
+      
+      if(input[[id]] == "icc.3"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("icc.3"))    
+      }
+      
+      if(input[[id]] == "k"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("k"))    
+      }
+      
+      if(input[[id]] == "omega.3"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("omega.3"))    
+      }
+    } else {
+      
+      print("Setting a default rho variable to vary.")
+      return(c("rho"))
+      
+    }
+    
+  }) # which variable to vary
+  
   ######################################################
   # Rendering Variable Objects to UI for chosen design #
   ######################################################
@@ -808,8 +914,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
     div(style = "display: inline-block, vertical-align:top;", 
-        mtpInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario))
+        mtpInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary))
     
   }) # MTP for chosen design
   
@@ -817,7 +924,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     theEstimation = as.character(getEstimationSs())
     theDesign = as.character(getDesignSs())
-    print(theDesign)
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
         mInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
@@ -828,8 +934,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
     div(style = "display: inline-block, vertical-align:top;", 
-        mInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario))
+        mInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
   }) # Number of Outcomes 
 
   output$mdes <- renderUI({
@@ -849,9 +956,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
     theNumOutcomes = as.numeric(getNumOutcomes())
+    theVarVary = as.character(getVarVaryEx())
     
     div(style = "display: inline-block, vertical-align:top:",
-        mdesInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+        mdesInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
   }) # Minimum detectable effect size
   
   output$rho <- renderUI({
@@ -869,8 +977,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
     div(style = "display: inline-block, vertical-align:top:",
-        rhoInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario))
+        rhoInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
     
   }) # correlation between test statistics
   
@@ -889,8 +998,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
     div(style = "display: inline-block, vertical-align:top:",
-        numCovar.1InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario))
+        numCovar.1InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
     
   }) # number of level 1 covariates
   
@@ -909,8 +1019,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
     div(style = "display: inline-block, vertical-align:top:",
-        tbarInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario))
+        tbarInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
     
   }) # Proportion of treatment assignment
   
@@ -929,8 +1040,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
     div(style = "display: inline-block, vertical-align:top:",
-        alphaInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario))
+        alphaInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
     
   }) # Significance level (alpha)
 
@@ -953,10 +1065,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
     theNumOutcomes = as.numeric(getNumOutcomes())
+    theVarVary = as.character(getVarVaryEx())
     
     
     div(style = "display: inline-block, vertical-align:top;", 
-        r2.1InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+        r2.1InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
     
   }) # R2.1 element for chosen and required designs
   
@@ -1007,9 +1120,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theDesign = as.character(getDesignEx())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          r2.2InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          r2.2InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
     }else{
       # leave blank otherwise
     }
@@ -1068,9 +1182,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theDesign = as.character(getDesignSs())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          icc.2InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          icc.2InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
     }else{
       # leave blank otherwise
     }
@@ -1122,9 +1237,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theDesign = as.character(getDesignEx())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          omega.2InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          omega.2InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
     }else{
       # leave blank otherwise
     }
@@ -1180,9 +1296,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theDesign = as.character(getDesignEx())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          r2.3InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          r2.3InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
     }else{
       # leave blank otherwise
     }
@@ -1236,9 +1353,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theDesign = as.character(getDesignEx())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          icc.3InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          icc.3InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
     }else{
       # leave blank otherwise
     }    
@@ -1292,9 +1410,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theDesign = as.character(getDesignEx())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          omega.3InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+          omega.3InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
     }else{
       # leave blank otherwise
     }
@@ -1347,9 +1466,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theDesign = as.character(getDesignEx())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          kInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario))
+          kInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
     }else{
       # leave blank otherwise
     }    
