@@ -172,48 +172,79 @@ pre code {
 <div id="r-package" class="section level1">
 <h1>R package</h1>
 <ul>
-<li>Expand models (e.g. D3 designs with ICC non zero, and others discussed) &amp; validate (Kristen, TBD) Done this (in particular the ICC stuff) except for additional models, to be postponed. TO DO: Add the d1.1_mcc model (simple randomization)</li>
-<li>Run additional validation for extreme values (Kristen, TBD) Near done.</li>
+<li>Expand models (e.g. D3 designs with ICC non zero, and others discussed) &amp; validate (Kristen, TBD) Done this (in particular the ICC stuff) except for additional models, to be postponed. TO DO: Add the d1.1_mcc model (simple randomization) Done!</li>
+<li>Run additional validation for extreme values (Kristen, TBD) Done.</li>
 <li>Update with new naming convention (Kristen) Done!</li>
 <li>Complete code commenting (Kristen, TBD) Done enough.</li>
 <li>Complete all testing (Kristen and Luke, TBD) Done enough, will add tests as issues arise.</li>
-<li>Source code completed, ASCII files, with formatted help files and be packaged for easy installation. Still to do.</li>
+<li>Source code completed, ASCII files, with formatted help files and be packaged for easy installation. Work in progress.</li>
 <li>Submit package to CRAN - including JSS submission as vignettes in the package.</li>
-<li>Make sure all functions still work when specifying one outcome (Kristen, TBD)</li>
-<li>Check for cluster RCT (using simulation?) whether correlation between test statistics is still equiv to correlation between outcomes (assuming constant values of R2 across outcomes) (Kristen, TBD)</li>
-<li>Potentially use simulations to estimate rho matrix for users when entering other information about data - corr between outcomes, R2’s (Kristen, maybe, TBD)</li>
-<li>Revisit terminology of MDES - should we use “effect size” or “ATE” instead - build into user testing (Kristin, TBD)</li>
+<li>Make sure all functions still work when specifying one outcome (Kristen) Done<br />
+</li>
+<li>Issue: when estimating lower-level sample sizes, it’s possible for range of sample sizes to produce same power. Kristen refining returned objected to contain information of issue. Luke refining diagnostic plot. Kristen working with Zarni to return note in Shiny, along with revised version of info in vignette.</li>
+<li>Luke has added return of all call parameters. Refining formatting.</li>
+<li>Vignettes expanding to demonstrate functionality. Done</li>
+<li>Add functions for expanded designs with same power - e.g. need to add d3.2_m3fc2rc - same power as d3.2_m3ff2rc Done</li>
+<li>Change d1.1_m2cc to d1.1_m1c (and Kristen will check first) Done</li>
+<li>Kristin will send nots about credit - including ies grant number.</li>
 </ul>
 <div id="kristens-todo-list" class="section level2">
 <h2>Kristen’s todo list</h2>
+<p>Priority 1</p>
 <ul>
-<li>document remaining issues with sample size/mdes code, implement correct level of warnings</li>
-<li>remove dependency on multtest package</li>
-<li>allow user to give PowerUp names</li>
-<li>should omega be a vector? check consistency of all scalar and vector params</li>
-<li>understand unit test with correlated outcomes</li>
+<li>edits on shiny documentation</li>
+<li>search for papers in JSS</li>
+<li>write conclusion</li>
 </ul>
+<p>Priority 2</p>
+<ul>
+<li>set up Jonathan S for testing</li>
+<li>add flag for flat power curve to help with shiny app, work with Zarni to incorporate help procedure</li>
+</ul>
+<p>Priority 3</p>
+<ul>
+<li>once sample size code is stable, rerun all validation</li>
+<li>understand unit test with correlated outcomes</li>
+<li>update description file</li>
+<li>update WY documentation</li>
+<li>recruit Evan as reader</li>
+<li>WY follow up: WY with a small number of schools, large number of permutations, and no effect, do we get the intended power/p-value? What if we don’t do any adjustment–is it because of divergent/unstable models?</li>
+</ul>
+<div id="discussion-questions" class="section level3">
+<h3>Discussion questions</h3>
+<ul>
+<li>hash out power definitions: unadjusted p-values for complete power, whether or not to include zero outcomes for min power, complete power</li>
+<li>one tailed v. two tailed power</li>
+<li>update() for pump_sample, pump_mdes</li>
+<li>threshold for flatness?</li>
+<li>why are we hiding vignette output?</li>
+<li>better name for “design” because it currently means design + model. Scenario?</li>
+</ul>
+</div>
 </div>
 </div>
 <div id="shiny-app" class="section level1">
 <h1>Shiny app</h1>
 <ul>
-<li>Introduction/education matter (Kristin, 8/31)</li>
-<li>Tabs completed for blocked individual RCT (Zarni, 7/31)</li>
-<li>Tabs built out for additional designs/models (Zarni, 8/31)</li>
-<li>User testing/review complete (Team, 9/15)</li>
-<li>Revisions implemented (Zarni &amp; Kristin, 10/15)</li>
-<li>Submit to Pubs for review (Zarni, 10/15)</li>
-<li>Test on host server (Zarni, 8/31)</li>
+<li>Aim to have draft to share in next meeting</li>
+<li>Talk to Zarni about ability to do simple git pulls for updates</li>
+</ul>
+</div>
+<div id="user-testing" class="section level1">
+<h1>User testing</h1>
+<ul>
+<li>Luke and Kristen have some possible test users to reach out to</li>
+<li>Not concerned with much testing of package.</li>
 </ul>
 </div>
 <div id="manuscript" class="section level1">
 <h1>Manuscript</h1>
 <ul>
-<li>Revisit outline &amp; assign champions to sections (Team, 7/1)</li>
-<li>Complete draft (Team, 9/30)</li>
-<li>Get reviewer comments (Chuck, 10/15)</li>
-<li>Revised draft (Team, 10/31)</li>
+<li>presubmission inquiry: abstract and introduction plus outline/structure - TBD whether we do it.</li>
+<li>draft on 11/31 that feels close to final - then think about presubmission inquiry.</li>
+<li>Luke finishing vignette and plugging in.</li>
+<li>Kristen H to do first draft of conclusion.</li>
+<li>Kristin P will write abstract.</li>
 </ul>
 </div>
 <div id="video" class="section level1">
@@ -226,19 +257,16 @@ pre code {
 <div id="presentation" class="section level1">
 <h1>Presentation</h1>
 <ul>
-<li>Kristen presenting</li>
+<li>Success! Kristin P has saved the slides for attaching to our final performance report.</li>
 </ul>
 </div>
 <div id="next-check-in" class="section level1">
 <h1>Next check-in</h1>
-<ul>
-<li>champions for paper sections</li>
-<li>planning for SREE presentation - Kristin P will share past slide deck for reference</li>
-</ul>
 </div>
 <div id="stretch-goals" class="section level1">
 <h1>Stretch goals</h1>
 <ul>
+<li>Potentially use simulations to estimate rho matrix for users when entering other information about data - corr between outcomes, R2’s (Kristen, maybe, TBD)</li>
 <li>tool that helps user build a block matrix of correlations based on a list of correlations between outcomes</li>
 <li>tool the helps user determine correlation between test statistics using simulation</li>
 <li>resolve terminology: MDES, ES, ATE_ES, impact?</li>
@@ -246,7 +274,6 @@ pre code {
 <li>for sample size, allow a vector of MDES, i.e. combination of zero and nonzero values, and allow for numZero flag</li>
 <li>effect size calculator</li>
 <li>speed up everything</li>
-<li>WY follow up: WY with a small number of schools, large number of permutations, and no effect, do we get the intended power/p-value? What if we don’t do any adjustment–is it because of divergent/unstable models?</li>
 </ul>
 </div>
 
