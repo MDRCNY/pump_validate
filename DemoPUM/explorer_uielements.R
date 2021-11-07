@@ -212,7 +212,18 @@ mtpInputEx <- function(estimation, design, scenario, varVary){
   
   if(varVary == "mtp") {
     
-    selectInput(id, "Multiple testing procedure (MTP) <Input multiple values>", 
+    if(TRUE){
+      text_val <- HTML(paste("Multiple testing procedure (MTP) ",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    }else{
+      text_val <- HTML(paste("Multiple testing procedure (MTP) Input multiple values"))
+    }
+
+ 
+    
+    
+    
+    selectInput(id, text_val, 
                 choices = list("Bonferroni" = "Bonferroni", 
                                 "Holm" = "Holm", 
                                 "Benjamini-Hochberg" = "BH", 
@@ -423,6 +434,7 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   
   if (varVary == "r2.1") {
     # if initial values are not set yet, set it at 5.  
+    
     if(length(numOutcome) == 0){
       
       numOutcome <- 5
