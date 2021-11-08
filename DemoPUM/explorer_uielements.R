@@ -292,7 +292,7 @@ mdesInputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default mdes values whose count of number will change depending on number of outcomes
-    defaultmdesvalues <- paste0(rep(0.125, times = numOutcome), collapse = ",")
+    defaultmdesvalues <- paste0(c(0.125, 0.2), collapse = ",")
     
     id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
     
@@ -308,7 +308,7 @@ mdesInputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default mdes values whose count of number will change depending on number of outcomes
-    defaultmdesvalues <- paste0(rep(0.125, times = numOutcome), collapse = ",")
+    defaultmdesvalues <- paste0(rep(0.125, times = 1), collapse = ",")
     
     id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
     
@@ -482,8 +482,7 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default r2.1 values whose count of number will change depending on number of outcomes
-    defaultr2.1values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
-    
+    defaultr2.1values <- paste0(c(0.2, 0.3), collapse = ",")
     
     id <- paste0(estimation, "_", "r2.1", "_", design, "_" , scenario, "_", varVary)
   
@@ -500,7 +499,7 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default r2.1 values whose count of number will change depending on number of outcomes
-    defaultr2.1values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaultr2.1values <- paste0(rep(0.2, times = 1), collapse = ",")
     
     
     id <- paste0(estimation, "_", "r2.1", "_", design, "_" , scenario, "_", varVary)
@@ -536,7 +535,7 @@ r2.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default r2.2 values whose count of number will change depending on number of outcomes
-    defaultr2.2values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaultr2.2values <- paste0(c(0.2, 0.3), collapse = ",")
     
     
     id <- paste0(estimation, "_", "r2.2", "_", design, "_" , scenario, "_", varVary)
@@ -554,7 +553,7 @@ r2.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default r2.2 values whose count of number will change depending on number of outcomes
-    defaultr2.2values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaultr2.2values <- paste0(rep(0.2, times = 1), collapse = ",")
     
     
     id <- paste0(estimation, "_", "r2.2", "_", design, "_" , scenario, "_", varVary)
@@ -590,7 +589,7 @@ icc.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default icc.2 values whose count of number will change depending on number of outcomes
-    defaulticc.2values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaulticc.2values <- paste0(c(0.2, 0.3), collapse = ",")
     
     id <- paste0(estimation, "_", "icc.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
@@ -606,7 +605,7 @@ icc.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default icc.2 values whose count of number will change depending on number of outcomes
-    defaulticc.2values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaulticc.2values <- paste0(rep(0.2, times = 1), collapse = ",")
     
     id <- paste0(estimation, "_", "icc.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
@@ -639,7 +638,7 @@ omega.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default omega.2 values whose count of number will change depending on number of outcomes
-    defaultomega.2values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaultomega.2values <- paste0(c(0.2, 0.3), collapse = ",")
     
     id <- paste0(estimation, "_", "omega.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
@@ -656,7 +655,7 @@ omega.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default omega.2 values whose count of number will change depending on number of outcomes
-    defaultomega.2values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaultomega.2values <- paste0(rep(0.2, times = 1), collapse = ",")
     
     id <- paste0(estimation, "_", "omega.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
@@ -690,7 +689,7 @@ r2.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default r2.2 values whose count of number will change depending on number of outcomes
-    defaultr2.3values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaultr2.3values <- paste0(c(0.2,0.3), collapse = ",")
     
     
     id <- paste0(estimation, "_", "r2.3", "_", design, "_" , scenario, "_", varVary)
@@ -708,7 +707,7 @@ r2.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default r2.2 values whose count of number will change depending on number of outcomes
-    defaultr2.3values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaultr2.3values <- paste0(rep(0.2, times = 1), collapse = ",")
     
     
     id <- paste0(estimation, "_", "r2.3", "_", design, "_" , scenario, "_", varVary)
@@ -742,7 +741,7 @@ icc.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default icc.3 values whose count of number will change depending on number of outcomes
-    defaulticc.3values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaulticc.3values <- paste0(c(0.2, 0.3), collapse = ",")
     
     id <- paste0(estimation, "_", "icc.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
@@ -758,7 +757,7 @@ icc.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default icc.3 values whose count of number will change depending on number of outcomes
-    defaulticc.3values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaulticc.3values <- paste0(rep(0.2, times = 1), collapse = ",")
     
     id <- paste0(estimation, "_", "icc.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
@@ -790,7 +789,7 @@ omega.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default icc.3 values whose count of number will change depending on number of outcomes
-    defaultomega.3values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaultomega.3values <- paste0(c(0.2, 0.3), collapse = ",")
     
     id <- paste0(estimation, "_", "omega.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
@@ -806,7 +805,7 @@ omega.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     } # set default value to numOutcome
     
     # default icc.3 values whose count of number will change depending on number of outcomes
-    defaultomega.3values <- paste0(rep(0.2, times = numOutcome), collapse = ",")
+    defaultomega.3values <- paste0(rep(0.2, times = 1), collapse = ",")
     
     id <- paste0(estimation, "_", "omega.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
