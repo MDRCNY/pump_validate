@@ -218,10 +218,6 @@ mtpInputEx <- function(estimation, design, scenario, varVary){
     }else{
       text_val <- HTML(paste("Multiple testing procedure (MTP) Input multiple values"))
     }
-
- 
-    
-    
     
     selectInput(id, text_val, 
                 choices = list("Bonferroni" = "Bonferroni", 
@@ -278,6 +274,14 @@ mdesInputEx <- function(estimation, design, scenario, numOutcome, varVary){
 
   
   if(varVary == "mdes") {
+    
+    if(TRUE){
+      text_val <- HTML(paste("Minimum detectable effect size (MDES)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    }else{
+      text_val <- HTML(paste("Minimum detectable effect size (MDES)"))
+    }
+    
     # if initial values are not set yet, set it at 5.  
     if(length(numOutcome) == 0){
       
@@ -291,7 +295,7 @@ mdesInputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-             "Minimum detectable effect size (MDES) <Input multiple values>", 
+             text_val, 
              value = defaultmdesvalues)
   } else {
     
