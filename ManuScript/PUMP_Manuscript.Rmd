@@ -45,29 +45,50 @@ Structure
 
 ## Overview
 
-<!-- KH: proposed new paragraph: brief overall intro before we dive in? -->
+A frequent task for practitioners is to prospectively determine the statistical power of a study.
+For many simple study designs and analyses, the researcher makes a small number of choices, such as the standard deviation of the outcome and the likely effect size, and then calculates the power using a well-known expression.
+With complex study designs and analyses, this task is not always straightforward.
+First, in complex settings there may not be a closed-form expression for power.
+Second, the researcher must make a larger number of choices about the likely parameter values, and these parameters can substantially impact power.
+A variety of software packages help users estimate power in different settings.
+We extend the current available software with the power under multiplicity project (PUMP) package.
+PUMP focuses on power estimation when a researcher wishes to determine the effect of an intervention on multiple outcomes in a multilevel randomized control trial (RCT).
+
+
+
+A multilevel RCT is a setting in which units are nested in hierarchical groups.
+This setting is common in education, in which students are nested within schools, which can be then nested within school districts.
+Though we use educational experiments as a running example throughout this paper, the problem of power estimation for multilevel RCTs is not exclusive to the educational setting.
+In a single outcome scenario, the researcher must make a variety of choices for a multilevel RCT about the likely structure of the problem, such as the predictive power of covariates and the expected amount of variation.
+These parameter choices impact the power of the study.
+
+In a multiple outcome scenario, additional choices also impact the power.
+One of the most important choices is the multiple testing procedure (MTP), which is how the $p$ values will be adjusted to compensate for multiple testing.
+An important consequence of using a multiple testing procedure is that there can be a substantial change in the power of the test.
+That is, the use of an MTP changes the probability of detecting effects when they truly exist, compared with the situation when the multiplicity problem is ignored.
+Unfortunately, while researchers are increasingly using MTPs, they frequently ignore the power implications of their use when designing studies.
+Consequently, in some cases sample sizes may be too small, and studies may be underpowered to detect effects as small as a desired size.
+In other cases, sample sizes may be larger than needed, or studies may be powered to detect smaller effects than anticipated.
+
 In this paper, we introduce the power under multiplicity project (PUMP) package.
 PUMP allows users to estimate power for multilevel randomized control trials with multiple outcomes.
 The contribution of this package is to properly calculate power when using a multiple testing procedure to adjust for multiple tests.
-The package also allows for companion calculations of sample size and minimium detectable effect size.
-Finally, the functionality allows users to easily explore power over a range of possible values of parameters, and visualize the results.
-TODO: something about shiny?
+The three core functions are:
 
-<!-- KH comment: somewhere in intro, we need to make clear what setting we are in: multilevel RCTs-->
+- `pump_power()` calculates power given a design, parameters, and minimum detectable effect size
+- `pump_mdes()` calculates minimium detectable effect size given a target power
+- `pump_sample()` calculates required sample size given a target power and minimum detectable effect size
 
-<!-- KH comment: we begin by discussing a bunch of things we will NOT solve, i.e. multiple subgroups, multiple points in time, etc. Can we motivate instead but just focus on multiple outcomes? In general I feel we can have a more exciting hook!-->
+In addition to these core functions, grid and update functions are built on top of the core power function to allow users to easily explore power over a range of possible values of parameters to determine sensitivity of their power calculations to their assumptions.
+Finally, PUMP also visualizes such results graphically.
+
+## Multiple testing
 
 Researchers are often interested in testing the effectiveness of an intervention on multiple outcomes.
 The resulting multiplicity of statistical hypothesis tests can lead to spurious findings of effects.^[Testing the effectiveness of an intervention for multiple subgroups, at multiple points in time, or across multiple treatment groups also results in a multiplicity of statistical hypotheses and can also lead to spurious findings of effects, but this is beyond the scope of this paper.]
 Multiple testing procedures (MTPs) are statistical procedures that counteract this problem by adjusting p-values for effect estimates; generally, $p$-values are adjusted upward to require a higher burden of proof.
 When not using an MTP, the probability of finding false positives increases, sometimes dramatically, with the number of tests.
 When using an MTP, this probability is reduced.
-
-An important consequence of using a multiple testing procedure is that there can be a substantial change in the power of the test.
-That is, the use of MTPs changes the probability of detecting effects when they truly exist, compared with the situation when the multiplicity problem is ignored.
-Unfortunately, while researchers are increasingly using MTPs, they frequently ignore the power implications of their use when designing studies.
-Consequently, in some cases sample sizes may be too small, and studies may be underpowered to detect effects as small as a desired size.
-In other cases, sample sizes may be larger than needed, or studies may be powered to detect smaller effects than anticipated.
 
 Researchers typically worry that moving from one to multiple hypothesis tests, and thus employing MTPs, results in a loss of power.
 However, that pattern need not always be the case.
@@ -108,28 +129,13 @@ It allows users to estimate statistical power, sample size requirements, or mini
 The estimates can be calculated for multiple definitions of statistical power, MTPs, and RCT designs and models.
 The definitions of power are individual, complete, and relevant $d$-minimal powers, depending on the number of outcomes.
 The MTPs are Bonferroni, Holm, Benjamini-Hochberg, and single-step and step-down versions of Westfall-Young.
-The package supports any of the following RCT designs and estimation models:-->
-
-<!-- KH COMMENT: might be worth reorganizing this table given our naming scheme, or is it replicating RCT designs section below?  Let's figure out best place to put this material-->
-
-- Individual random assignment
-- Blocked individual random assignment
-   - Constant effects model (2 levels - e.g., students blocked within teachers)
-   - Fixed effects model (2 levels and 3 levels - e.g., students blocked within teachers within schools)
-   - Random effects model (2 levels, 3 levels)
-- Cluster random assignment
-   - 2-level model (treatment at Level 2 - e.g., at teacher level)
-   - 3-level model (treatment at Level 3 - e.g., at school level)
-- Blocked cluster random assignment
-   - 3-level fixed-effects model (treatment at Level 2)
-   - 3-level random-effects model (treatment at Level 2)
-
-For details about the assumptions for each of the estimation models, see TODO. 
+The PUMP package supports RCT designs of 1, 2, or 3 levels, with randomization at any level.
+In addition, users may make different modeling choices given a particular RCT design.
+More detail about the supported RCT designs and models can be found in Section TODO.
 
 
 <!-- KH comment: does frequentist need to be in the title?-->
 ## Review of the multiple testing problem in a frequentist framework 
-
 
 <!-- KH comment: do we need to motivate this more, or at least note that there are other options?-->
 This paper focuses on the frequentist framework of hypothesis testing, as it is currently the prevailing framework in education and other social policy research.
@@ -468,6 +474,18 @@ When there are discrepancies, these are noted in the appendix.
 * Reflections on issues that come up in vignette
   + e.g., how to come up with correlation assumption - what's needed by future researchers so can come to our tool with good assumptions
   + e.g., reinformce importance of looking at ranges when it matters a lot
+  
+# Conclusion
+
+We introduce the power under multiplicity project (PUMP) package, which estimates power for multilevel randomized control trials with multiple outcomes.
+PUMP allows users to prospectively estimate power, minimum detectable effect size, and sample size requirements for a variety of multilevel RCT designs across different definitions of power and applying different multiple testing procedures.
+The functionality of PUMP extends the R package PowerUpR!, an R package that estimates power for many of the same multilevel RCT designs, but only allows for one outcome and does not support multiple testing procedures.
+
+The main function of the PUMP package is to provide easily accessible power estimation procedures so that users can properly account for power when using multiple adjustments.
+However, one of the additional strengths of the package is the ease with which a user can explore the impact of different designs, models, and assumptions on power.
+Even if a user is only interested in a single outcome, PUMP provides useful functionality for more robust power calculations.
+A user can and should try a range of parameter values to determine the sensitivity of the power of their study to different assumptions.
+
 
 # Appendices
 - specifications/derivations for all designs
