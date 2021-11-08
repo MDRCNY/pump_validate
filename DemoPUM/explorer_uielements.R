@@ -334,24 +334,23 @@ rhoInputEx <- function(estimation, design, scenario, varVary){
       text_val <- HTML(paste("Correlation between test statistics"))
     }
     
+    # default rho values whose count of number will change depending on number of outcomes
+    defaultrhovalues <- paste0(c(0.125, 0.2), collapse = ",")
+    
     id <- paste0(estimation, "_", "rho", "_", design, "_" , scenario, "_" , varVary)
-    numericInput(id, 
-                 text_val, 
-                 min = 0, 
-                 max = 1, 
-                 value = 0.5, 
-                 step = 0.1 )
+    textInput(id, 
+              text_val, 
+              value = defaultrhovalues)
     
   } else {
     
-    id <- paste0(estimation, "_", "rho", "_", design, "_" , scenario, "_" , varVary)
-    numericInput(id, 
-                 "Correlation between test statistics (Input a single value)", 
-                 min = 0, 
-                 max = 1, 
-                 value = 0.5, 
-                 step = 0.1 )
+    # default mdes values whose count of number will change depending on number of outcomes
+    defaultrhovalues <- paste0(c(0.125))
     
+    id <- paste0(estimation, "_", "rho", "_", design, "_" , scenario, "_" , varVary)
+    textInput(id, 
+              "Correlation between test statistics (Input a single value)",
+              value = defaultrhovalues)
   }
     
 } # rhoInput
@@ -371,22 +370,22 @@ numCovar.1InputEx <- function(estimation, design, scenario, varVary){
       text_val <- HTML(paste("Number of level 1 covariates"))
     }
     
-    id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario, "_", varVary)
-    numericInput(id, 
-                 text_val, 
-                 min = 0, 
-                 max = 10, 
-                 value = 1, 
-                 step = 1 )
-  } else {
+    # default numCovariate 1 values values whose count of number will change depending on number of outcomes
+    defaultnumCovar.1values <- paste0(c(0.125, 0.2), collapse = ",")
     
     id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario, "_", varVary)
-    numericInput(id, 
-                 "Number of level 1 covariates (Input a single value)", 
-                 min = 0, 
-                 max = 10, 
-                 value = 1, 
-                 step = 1 )
+    textInput(id, 
+              text_val, 
+              value = defaultnumCovar.1values)
+  } else {
+    
+    # default numCovariate 1 values values whose count of number will change depending on number of outcomes
+    defaultnumCovar.1values <- paste0(c(0.125))
+    
+    id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario, "_", varVary)
+    textInput(id, 
+              "Number of level 1 covariates (Input a single value)", 
+              value = defaultnumCovar.1values)
   }
     
 } # number of level 1 covariates
@@ -406,21 +405,22 @@ tbarInputEx <- function(estimation, design, scenario, varVary){
       text_val <- HTML(paste("Proportion of treatment assignment"))
     }
     
-    id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario, "_", varVary)
-    numericInput(id, 
-                 text_val, 
-                 min = 0.001, 
-                 max = 1.0, 
-                 value = 0.5, 
-                 step = 0.001)
-  } else {
+    # default numCovariate 1 values values whose count of number will change depending on number of outcomes
+    defaulttbarvalues <- paste0(c(0.125, 0.2), collapse = ",")
     
     id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario, "_", varVary)
-    numericInput(id, 
-                 "Proportion of treatment assignment (Input a single value)",
-                 max = 1.0, 
-                 value = 0.5, 
-                 step = 0.001)
+    textInput(id, 
+                 text_val, 
+                 value = defaulttbarvalues)
+  } else {
+    
+    # default numCovariate 1 values values whose count of number will change depending on number of outcomes
+    defaulttbarvalues <- paste0(c(0.125))
+    
+    id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario, "_", varVary)
+    textInput(id, 
+              "Proportion of treatment assignment (Input a single value)",
+              value = defaulttbarvalues)
   }
     
 } # tbarInput
@@ -441,21 +441,23 @@ alphaInputEx <- function(estimation, design, scenario, varVary) {
     }
     
     id <- paste0(estimation, "_", "alpha", "_", design, "_", scenario, "_", varVary)
-    numericInput(id, 
-                  text_val, 
-                  min = 0.001, 
-                  max = 0.9, 
-                  value = 0.05,                     
-                  step = 0.001)
+    
+    # default numCovariate 1 values values whose count of number will change depending on number of outcomes
+    defaultalphavalues <- paste0(c(0.125, 0.2), collapse = ",")
+    
+    textInput(id, 
+                text_val, 
+                value = defaultalphavalues)
   } else {
     
     id <- paste0(estimation, "_", "alpha", "_", design, "_", scenario, "_", varVary)
-    numericInput(id, 
+    
+    # default numCovariate 1 values values whose count of number will change depending on number of outcomes
+    defaultalphavalues <- paste0(c(0.125), collapse = ",")
+    
+    textInput(id, 
                  "Significance level (alpha) (Input a single value)", 
-                 min = 0.001, 
-                 max = 0.9, 
-                 value = 0.05,                     
-                 step = 0.001)
+                 value = defaultalphavalues)
   }
     
 } #alpha
