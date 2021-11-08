@@ -134,7 +134,9 @@ varVaryInputEx <- function(estimation, design, scenario){
      
    } else if(design == "d3.2_m3rr2rc"){
      
-     print(paste0("I am in this", design))
+     
+     
+     print(paste0("I am in this ", design))
      selectInput(id, "Which variable would you like to vary?",
                  choices = list("Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
@@ -278,7 +280,7 @@ mdesInputEx <- function(estimation, design, scenario, numOutcome, varVary){
     if(TRUE){
       text_val <- HTML(paste("Minimum detectable effect size (MDES)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
-    }else{
+    } else {
       text_val <- HTML(paste("Minimum detectable effect size (MDES)"))
     }
     
@@ -311,7 +313,7 @@ mdesInputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-              "Minimum detectable effect size (MDES) <Input a single value>", 
+              "Minimum detectable effect size (MDES) (Input a single value)", 
               value = defaultmdesvalues)
   }
   
@@ -325,9 +327,16 @@ rhoInputEx <- function(estimation, design, scenario, varVary){
   
   if(varVary == "rho"){
     
+    if(TRUE){
+      text_val <- HTML(paste("Correlation between test statistics",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    }else{
+      text_val <- HTML(paste("Correlation between test statistics"))
+    }
+    
     id <- paste0(estimation, "_", "rho", "_", design, "_" , scenario, "_" , varVary)
     numericInput(id, 
-                 "Correlation between test statistics <Input multiple values>", 
+                 text_val, 
                  min = 0, 
                  max = 1, 
                  value = 0.5, 
@@ -337,7 +346,7 @@ rhoInputEx <- function(estimation, design, scenario, varVary){
     
     id <- paste0(estimation, "_", "rho", "_", design, "_" , scenario, "_" , varVary)
     numericInput(id, 
-                 "Correlation between test statistics <Input a single value>", 
+                 "Correlation between test statistics (Input a single value)", 
                  min = 0, 
                  max = 1, 
                  value = 0.5, 
@@ -355,9 +364,16 @@ numCovar.1InputEx <- function(estimation, design, scenario, varVary){
   
   if (varVary == "numCovar.1"){
     
+    if(TRUE){
+      text_val <- HTML(paste("Number of level 1 covariates",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Number of level 1 covariates"))
+    }
+    
     id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario, "_", varVary)
     numericInput(id, 
-                 "Number of level 1 covariates <Input multiple values>", 
+                 text_val, 
                  min = 0, 
                  max = 10, 
                  value = 1, 
@@ -366,7 +382,7 @@ numCovar.1InputEx <- function(estimation, design, scenario, varVary){
     
     id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario, "_", varVary)
     numericInput(id, 
-                 "Number of level 1 covariates <Input a single value>", 
+                 "Number of level 1 covariates (Input a single value)", 
                  min = 0, 
                  max = 10, 
                  value = 1, 
@@ -382,10 +398,17 @@ numCovar.1InputEx <- function(estimation, design, scenario, varVary){
 tbarInputEx <- function(estimation, design, scenario, varVary){
   
   if (varVary == "tbar") {
-
+    
+    if(TRUE){
+      text_val <- HTML(paste("Proportion of treatment assignment",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Proportion of treatment assignment"))
+    }
+    
     id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario, "_", varVary)
     numericInput(id, 
-                 "Proportion of treatment assignment <Input multiple values>", 
+                 text_val, 
                  min = 0.001, 
                  max = 1.0, 
                  value = 0.5, 
@@ -394,7 +417,7 @@ tbarInputEx <- function(estimation, design, scenario, varVary){
     
     id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario, "_", varVary)
     numericInput(id, 
-                 "Proportion of treatment assignment <Input a single value>",
+                 "Proportion of treatment assignment (Input a single value)",
                  max = 1.0, 
                  value = 0.5, 
                  step = 0.001)
@@ -410,9 +433,16 @@ alphaInputEx <- function(estimation, design, scenario, varVary) {
 
   if (varVary == "alpha"){
     
+    if(TRUE){
+      text_val <- HTML(paste("Significance level (alpha)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Significance level (alpha)"))
+    }
+    
     id <- paste0(estimation, "_", "alpha", "_", design, "_", scenario, "_", varVary)
     numericInput(id, 
-                 "Significance level (alpha) <Input multiple values>", 
+                  text_val, 
                   min = 0.001, 
                   max = 0.9, 
                   value = 0.05,                     
@@ -421,7 +451,7 @@ alphaInputEx <- function(estimation, design, scenario, varVary) {
     
     id <- paste0(estimation, "_", "alpha", "_", design, "_", scenario, "_", varVary)
     numericInput(id, 
-                 "Significance level (alpha) <Input a single value>", 
+                 "Significance level (alpha) (Input a single value)", 
                  min = 0.001, 
                  max = 0.9, 
                  value = 0.05,                     
@@ -437,7 +467,13 @@ alphaInputEx <- function(estimation, design, scenario, varVary) {
 r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   
   if (varVary == "r2.1") {
-    # if initial values are not set yet, set it at 5.  
+    
+    if(TRUE){
+      text_val <- HTML(paste("Proportion of variance explained by level-1 covariates (R2.1)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Proportion of variance explained by level-1 covariates (R2.1)"))
+    }
     
     if(length(numOutcome) == 0){
       
@@ -452,7 +488,7 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "r2.1", "_", design, "_" , scenario, "_", varVary)
   
     textInput(id, 
-              "Proportion of variance explained by level-1 covariates (R2.1) <Input multiple values>", 
+              text_val, 
               value = defaultr2.1values)
   } else {
     
@@ -470,7 +506,7 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "r2.1", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-              "Proportion of variance explained by level-1 covariates (R2.1) <Input a single value>", 
+              "Proportion of variance explained by level-1 covariates (R2.1) (Input a single value)", 
               value = defaultr2.1values)
   }
   
@@ -483,7 +519,16 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
 r2.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   
   if(varVary == "r2.2"){
-    # if initial values are not set yet, set it at 5.  
+
+    print("I am in R2.2. R2.2 is triggered")
+    
+    if(TRUE){
+      text_val <- HTML(paste("Proportion of variance explained by level-2 covariates (R2.2)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Proportion of variance explained by level-2 covariates (R2.2)"))
+    }
+    
     if(length(numOutcome) == 0){
       
       numOutcome <- 5
@@ -497,7 +542,7 @@ r2.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "r2.2", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-              "Proportion of variance explained by level-2 covariates (R2.2) <Input multiple values>", 
+              text_val, 
               value = defaultr2.2values)
   } else {
     
@@ -515,7 +560,7 @@ r2.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "r2.2", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-              "Proportion of variance explained by level-2 covariates (R2.2) <Input a single value>", 
+              "Proportion of variance explained by level-2 covariates (R2.2) (Input a single value)", 
               value = defaultr2.2values)
     
   }
@@ -530,6 +575,14 @@ icc.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   
   if (varVary == "icc.2") {
     # if initial values are not set yet, set it at 5.  
+    
+    if(TRUE){
+      text_val <- HTML(paste("Intraclass correlation between level-2 covariates of each outcome (ICC.2)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Intraclass correlation between level-2 covariates of each outcome (ICC.2)"))
+    }
+    
     if(length(numOutcome) == 0){
       
       numOutcome <- 5
@@ -541,7 +594,7 @@ icc.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "icc.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Intraclass correlation between level-2 covariates of each outcome (ICC.2) <Input multiple values>", 
+              text_val, 
               value = defaulticc.2values)
   } else {
     
@@ -557,7 +610,7 @@ icc.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "icc.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Intraclass correlation between level-2 covariates of each outcome (ICC.2) <Input a single value>", 
+              "Intraclass correlation between level-2 covariates of each outcome (ICC.2) (Input a single value)", 
               value = defaulticc.2values)
   }
   
@@ -571,6 +624,13 @@ omega.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   
   if(varVary =="omega.2"){
     
+    if(TRUE){
+      text_val <- HTML(paste("Ratio of level-2 group covariate effect size variability to random effects variability (omega.2)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Ratio of level-2 group covariate effect size variability to random effects variability (omega.2)"))
+    }
+    
     # if initial values are not set yet, set it at 5.  
     if(length(numOutcome) == 0){
       
@@ -583,7 +643,7 @@ omega.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "omega.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Ratio of level-2 group covariate effect size variability to random effects variability (omega.2) <Input multiple values>", 
+              text_val, 
               value = defaultomega.2values)
     
   } else {
@@ -600,7 +660,7 @@ omega.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "omega.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Ratio of level-2 group covariate effect size variability to random effects variability (omega.2) <Input a single value>", 
+              "Ratio of level-2 group covariate effect size variability to random effects variability (omega.2) (Input a single value)", 
               value = defaultomega.2values)
   }
   
@@ -615,6 +675,14 @@ r2.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   
   if (varVary == "r2.3") {
     # if initial values are not set yet, set it at 5.  
+    
+    if(TRUE){
+      text_val <- HTML(paste("Proportion of variance explained by level-3 covariates (R2.3)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Proportion of variance explained by level-3 covariates (R2.3)"))
+    }
+    
     if(length(numOutcome) == 0){
       
       numOutcome <- 5
@@ -628,7 +696,7 @@ r2.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "r2.3", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-              "Proportion of variance explained by level-3 covariates (R2.3) <Input multiple values>", 
+              text_val, 
               value = defaultr2.3values)
   } else {
     
@@ -646,7 +714,7 @@ r2.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "r2.3", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-              "Proportion of variance explained by level-3 covariates (R2.3) <Input a single value>", 
+              "Proportion of variance explained by level-3 covariates (R2.3) (Input a single value)", 
               value = defaultr2.3values)
   }
 } # R2.3 Input
@@ -658,7 +726,15 @@ r2.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
 icc.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   
   if (varVary == "icc.3") {
-    # if initial values are not set yet, set it at 5.  
+    # if initial values are not set yet, set it at 5.
+    
+    if(TRUE){
+      text_val <- HTML(paste("Intraclass correlation between level-3 covariates of each outcome (ICC.3)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Intraclass correlation between level-3 covariates of each outcome (ICC.3)"))
+    }  
+  
     if(length(numOutcome) == 0){
       
       numOutcome <- 5
@@ -670,7 +746,7 @@ icc.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "icc.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Intraclass correlation between level-3 covariates of each outcome (ICC.3) <Input multiple values>", 
+              text_val, 
               value = defaulticc.3values)
   } else {
     
@@ -686,7 +762,7 @@ icc.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "icc.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Intraclass correlation between level-3 covariates of each outcome (ICC.3) <Input a single value>", 
+              "Intraclass correlation between level-3 covariates of each outcome (ICC.3) (Input a single value)", 
               value = defaulticc.3values)
   }
 } #ICC.3 element
@@ -698,7 +774,15 @@ icc.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
 omega.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   
   if(varVary == "omega.3") {
-    # if initial values are not set yet, set it at 5.  
+    # if initial values are not set yet, set it at 5.
+    
+    if(TRUE){
+      text_val <- HTML(paste("Ratio of level-3 group covariate effect size variability to random effects variability (omega.3)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Ratio of level-3 group covariate effect size variability to random effects variability (omega.3)"))
+    }
+    
     if(length(numOutcome) == 0){
       
       numOutcome <- 5
@@ -710,7 +794,7 @@ omega.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "omega.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Ratio of level-3 group covariate effect size variability to random effects variability (omega.3) <Input multiple values>", 
+              text_val, 
               value = defaultomega.3values)
   } else {
     
@@ -726,7 +810,7 @@ omega.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "omega.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Ratio of level-3 group covariate effect size variability to random effects variability (omega.3) <Input a single value>", 
+              "Ratio of level-3 group covariate effect size variability to random effects variability (omega.3) (Input a single value)", 
               value = defaultomega.3values)
 
   }
@@ -741,10 +825,17 @@ kInputEx <- function(estimation, design, scenario, varVary){
   
   if(varVary == "k") {
     
+    if(TRUE){
+      text_val <- HTML(paste("Number of level-3 groupings (omega.3)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    } else {
+      text_val <- HTML(paste("Number of level-3 groupings (omega.3)"))
+    }
+    
     id <- paste0(estimation, "_", "k", "_", design, "_" , scenario, "_", varVary)
     
     numericInput(id,
-                 "Number of level-3 groupings <Input multiple values>", 
+                 text_val, 
                  min = 2, 
                  max = 100, 
                  value = 50, 
@@ -754,7 +845,7 @@ kInputEx <- function(estimation, design, scenario, varVary){
     id <- paste0(estimation, "_", "k", "_", design, "_" , scenario, "_", varVary)
     
     numericInput(id,
-                 "Number of level-3 groupings <Input a single value>", 
+                 "Number of level-3 groupings (Input a single value)", 
                  min = 2, 
                  max = 100, 
                  value = 50, 

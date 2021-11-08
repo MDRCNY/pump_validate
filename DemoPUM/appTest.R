@@ -802,7 +802,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       if(input[[id]] == "r2.2"){
         
         print(paste0("variable to vary is ", input[[id]]))  
-        return(c("icc.2"))    
+        return(c("r2.2"))    
       }
       
       if(input[[id]] == "omega.2"){
