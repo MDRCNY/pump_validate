@@ -494,13 +494,13 @@ ui <- fluidPage(
                  br(),    
                  br(),
                  
-                 fluidRow(
-                   
-                   column(8, align = "center",
-                          offset = 2,
-                          plotlyOutput("powercalcGraphP2LBIEX"))
-                   
-                 ), # end of Fluid Row
+                 # fluidRow(
+                 #   
+                 #   column(8, align = "center",
+                 #          offset = 2,
+                 #          plotlyOutput("powercalcGraphP2LBIEX"))
+                 #   
+                 # ), # end of Fluid Row
                  
                  br(), # To create spaces between Table and Plots
                  br(), # To create spaces between Table and Plots
@@ -1170,7 +1170,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     if(input$designEx == 'd2.1_m2fc' || input$designEx == 'd2.1_m2ff' || input$designEx == 'd2.1_m2fr' ||
        input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd2.2_m2rc' || input$designEx == 'd3.3_m3rc2rc' ||
        input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
-      print('Design ICC2 Trigger')
+      print('Design icc.2 Trigger')
       check = TRUE
     }
     
@@ -1179,7 +1179,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     if(check){
       
       theEstimation = as.character(getEstimationEx())
-      theDesign = as.character(getDesignSs())
+      theDesign = as.character(getDesignEx())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
       theVarVary = as.character(getVarVaryEx())
@@ -1447,6 +1447,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }    
   }) # number of level-3 groups
   
+
   output$kEx <- renderUI({
     
     req(input$designEx)    # requiring design input
@@ -1507,6 +1508,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # Generating Power Results for diffferent designs & mode of exploration    #
     ############################################################################
     
+
     # Getting the research design that we have to estimate the statistical results for
     
     theEstimation = as.character(getEstimationSs())
@@ -1751,8 +1753,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     # Getting the research design that we have to estimate the statistical results for
     
-    theEstimation = as.character(getEstimationSs())
-    theDesign = as.character(getDesignSs())
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
     theVarVary = as.character(getVarVaryEx())
     
@@ -2029,8 +2031,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     } else {
       
-      browser()  
-      
+
       
     } # mdes condition handling
     
