@@ -221,17 +221,20 @@ mtpInputEx <- function(estimation, design, scenario, varVary){
       text_val <- HTML(paste("Multiple testing procedure (MTP) Input multiple values"))
     }
     
+    # default mtp values
+    defaultmtpvalues <- paste0(c("Bonferroni", "Holm"), collapse = ",")
+    
     selectInput(id, text_val, 
                 choices = list("Bonferroni" = "Bonferroni", 
                                 "Holm" = "Holm", 
                                 "Benjamini-Hochberg" = "BH", 
                                 "Westfall-Young-Single-Step" = "WY-SS", 
                                 "Westfall-Young-Step-Down" = "WY-SD"),
-                selected = "Bonferroni",
+                selected = c("Bonferroni", "Holm"),
                 multiple = TRUE) # select input buttons div
 } else {
     
-  selectInput(id, "Multiple testing procedure (MTP) <Input only one value>", 
+  selectInput(id, "Multiple testing procedure (MTP) (Input only one value)", 
               choices = list("Bonferroni" = "Bonferroni", 
                              "Holm" = "Holm", 
                              "Benjamini-Hochberg" = "BH", 

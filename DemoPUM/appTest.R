@@ -367,14 +367,18 @@ ui <- fluidPage(
                  
                  fluidRow(
                    
-                   column(6,
-                          uiOutput("nbarEx")),
+                   column(12,
+                          uiOutput("nbarEx"))
                    
-                   column(6,
+                 ), # Units per block  
+                 
+                 fluidRow(
+                   
+                   column(12,
                           uiOutput("jEx"))
                    
-                 ), # Units per block and number of blocks  
-                 
+                 ), # number of blocks
+
                  fluidRow(
                    
                    column(12,
