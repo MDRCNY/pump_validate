@@ -342,20 +342,6 @@ ui <- fluidPage(
                        )) # selecting designs
                    
                  ), # picking the research design
-          
-                 fluidRow(
-                   
-                   div(style = "display: inline-block, vertical-align:top;",
-                       column(12,
-                              numericInput("numOutcomesEx", "Number of Outcomes", 
-                                           min = 1, 
-                                           max = 10, 
-                                           value = 5, 
-                                           step = 1)
-                       ) # number of Outcomes    
-                   ) # div
-                   
-                 ), # number of outcomes selection 
                  
                  # UI/UX input for variables to vary
                  fluidRow(
@@ -364,6 +350,13 @@ ui <- fluidPage(
                           uiOutput("varVaryEx"))
                    
                  ), # drop down for variable to vary by
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("mEx"))
+                   
+                 ), # number of outcomes selection 
                  
                  fluidRow(
                    
@@ -756,6 +749,13 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     if(!is.null(input[[id]])){
       
+      if(input[[id]] == "m"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("m"))
+        
+      }      
+      
       if(input[[id]] == "nbar"){
         
         print(paste0("variable to vary is ", input[[id]]))
@@ -888,6 +888,18 @@ server <- shinyServer(function(input, output, session = FALSE) {
         varVaryInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario))    
     
   }) # variable to vary by
+  
+  output$mEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        mInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary))    
+    
+  }) # numOutcomeEx
   
   output$nbar <- renderUI({
     
@@ -1830,7 +1842,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
     # Get string for input subsetting
     design_subset <- "designEx"
-    m_subset <- "numOutcomesEx"
+    m_subset <- paste0(theEstimation, "_", "m", "_", theDesign, "_", theScenario, "_", theVarVary)
     nbar_subset <- paste0(theEstimation, "_", "nbar", "_", theDesign, "_", theScenario, "_", theVarVary)
     j_subset <- paste0(theEstimation, "_", "j", "_", theDesign, "_", theScenario, "_", theVarVary)
     mtp_subset <- paste0(theEstimation, "_", "mtp", "_", theDesign,"_", theScenario, "_", theVarVary)
@@ -1865,7 +1877,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     omega.2 <- "0"
     r2.3 <- "0"
     icc.3 <- "0"
-    k <- 1
+    k <- "1"
     omega.3 <- "0"
     
     if(design %in% c("d2.2_m2rc", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2m3rr2rc")){
@@ -1916,7 +1928,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                               J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
                               K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
                               MTP = as.character(unlist(strsplit(mtp, ","))),
-                              M = m, # The number of hypotheses/outcomes
+                              M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
                               MDES = as.numeric(unlist(strsplit(mdes, ","))),
                               rho = as.numeric(unlist(strsplit(rho, ","))),
                               numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
@@ -1937,7 +1949,19 @@ server <- shinyServer(function(input, output, session = FALSE) {
               
       )) #Power generation table
     
-    
+    if(theVarVary == "mdes") {
+      
+      dat <- dat %>%
+        dplyr::select(-adjustment) %>%
+        dplyr::relocate(design)
+      
+    } else{
+      
+      dat <- dat %>%
+        dplyr::select(-adjustment, -MDES) %>%
+        dplyr::relocate(design)
+      
+    }
     # Save the reactive Power Table
     reactPowerTable(dat)
     {reactPowerTable()}
@@ -1955,7 +1979,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                     extensions = 'Buttons',
                     options = list(
                       paging = TRUE,
-                      pageLength = 5,
+                      pageLength = 10,
                       scrollY = TRUE,
                       dom = 'Bfrtip',
                       buttons = c('csv', 'excel')
@@ -1978,130 +2002,130 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # Preparing the data frame for Plot #
     #####################################
     
-    ## Setting up outcomes for Color gradient
-    
-    ## Setting up outcomes for Color gradient
-    
-    # Grab the number of outcomes
-    M <- input[[m_subset]]
-    
-    # End of Minimum Power 
-    minEnd <- M - 1
-    minPower <- paste0(1:minEnd, "-minimum")
-    
-    # Create color gradient for minimum power
-    mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
-    mincolours <- sort(mincolours)
-    
-    # Add complete, individual, minimum and raw power colors
-    allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
-    
-    # Pulling the generated data table
-    dat <- reactPowerTable()
-    dat <- as.data.frame(dat)
-    
-    if(theVarVary == "mdes"){
-    # Adjusting the data table for graphing
-      withoutIndivPower <- 
-        dat %>%
-        dplyr::select_all() %>%
-        dplyr::select(-design) %>%
-        dplyr::arrange(desc(power)) %>%
-        dplyr::rename(powerType = power) %>%
-        tidyr::pivot_longer(!c(MDES, powerType), names_to = "MTP", values_to = "power") %>%
-        dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
-        dplyr::mutate(powerType = ifelse(MTP == "None",
-                                         "raw mean individual",
-                                         powerType)) 
-      
-      # converting Power Type to a factor for coloring
-      withoutIndivPower$powerType <- factor(withoutIndivPower$powerType,
-                                            levels = c("complete", "mean individual", minPower, "raw mean individual"),
-                                            ordered = TRUE)
-      
-      # converting data type for graphing purposes
-      withoutIndivPower <- withoutIndivPower %>%
-        dplyr::mutate(MDES = as.factor(MDES),
-                      power = as.numeric(power),
-                      MTP = as.factor(MTP))
-      
-      # pulling out Power Type Levels to match with all colors
-      powerTypeLevels <- levels(withoutIndivPower$powerType)
-      
-      # create value for scale color manual by matching color and Power Type
-      allcolorsvalues <- setNames(allcolors, powerTypeLevels)
-      
-      # name of MTP
-      MTPname <- levels(withoutIndivPower$MTP)[1]
-      
-      ######################
-      # Plotting the graph #
-      ######################
-      
-      output$powercalcGraphP2LBIEX <- renderPlotly({
-        
-        # Wrapping the ggplot with plotly
-        
-        pg <- 
-          plotly::ggplotly(ggplot2::ggplot(
-            data = withoutIndivPower,
-            aes(x = MDES,
-                y = power,
-                colour = powerType)) +
-              geom_point(size = 2, 
-                         position = position_jitter(width = 0.2)) +
-              scale_y_continuous(limits = c(0,1)) +
-              ggtitle(paste0(MTPname, " adjusted Power values across different \n Power Definitions & MDES values")) +
-              scale_colour_manual(values = allcolorsvalues) +
-              labs(x = "Different MDES Scenarios",
-                   y = "Power Values",
-                   colour = "") +
-              theme_linedraw() +
-              theme(plot.title = element_text(size = 16,
-                                              face = "bold",
-                                              vjust = 1,
-                                              hjust = 0.5)) 
-          )
-        
-        # plotly adjustments for margin, centering and axis titles
-        
-        pg <- layout(pg, 
-                     #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
-                     margin=list(t = 75),
-                     legend = list(x = 100,
-                                   orientation = "v",
-                                   xanchor = "center",
-                                   y = 0.5,
-                                   title = list(text = '<b> Power Type </b>')))
-        
-        # plotly configurations to suit ourpuposes
-        
-        pg %>%
-          config(displaylogo = FALSE,
-                 collaborate = FALSE,
-                 displayModeBar = TRUE,
-                 modeBarButtonsToRemove = list(
-                   'sendDataToCloud',
-                   'autoScale2d',
-                   'resetScale2d',
-                   'hoverClosestCartesian',
-                   'hoverCompareCartesian',
-                   'zoom2d', 
-                   'pan2d',
-                   'select2d',
-                   'lasso2d',
-                   'zoomIn2d', 
-                   'zoomOut2d',
-                   'toggleSpikelines'
-                 ))
-        
-      }) # ggplot for power graph
-    
-    } else {
-      
-
-      
-    } # mdes condition handling
+    # ## Setting up outcomes for Color gradient
+    # 
+    # ## Setting up outcomes for Color gradient
+    # 
+    # # Grab the number of outcomes
+    # M <- input[[m_subset]]
+    # 
+    # # End of Minimum Power 
+    # minEnd <- M - 1
+    # minPower <- paste0(1:minEnd, "-minimum")
+    # 
+    # # Create color gradient for minimum power
+    # mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
+    # mincolours <- sort(mincolours)
+    # 
+    # # Add complete, individual, minimum and raw power colors
+    # allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
+    # 
+    # # Pulling the generated data table
+    # dat <- reactPowerTable()
+    # dat <- as.data.frame(dat)
+    # 
+    # if(theVarVary == "mdes"){
+    # # Adjusting the data table for graphing
+    #   withoutIndivPower <- 
+    #     dat %>%
+    #     dplyr::select_all() %>%
+    #     dplyr::select(-design) %>%
+    #     dplyr::arrange(desc(power)) %>%
+    #     dplyr::rename(powerType = power) %>%
+    #     tidyr::pivot_longer(!c(MDES, powerType), names_to = "MTP", values_to = "power") %>%
+    #     dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
+    #     dplyr::mutate(powerType = ifelse(MTP == "None",
+    #                                      "raw mean individual",
+    #                                      powerType)) 
+    #   
+    #   # converting Power Type to a factor for coloring
+    #   withoutIndivPower$powerType <- factor(withoutIndivPower$powerType,
+    #                                         levels = c("complete", "mean individual", minPower, "raw mean individual"),
+    #                                         ordered = TRUE)
+    #   
+    #   # converting data type for graphing purposes
+    #   withoutIndivPower <- withoutIndivPower %>%
+    #     dplyr::mutate(MDES = as.factor(MDES),
+    #                   power = as.numeric(power),
+    #                   MTP = as.factor(MTP))
+    #   
+    #   # pulling out Power Type Levels to match with all colors
+    #   powerTypeLevels <- levels(withoutIndivPower$powerType)
+    #   
+    #   # create value for scale color manual by matching color and Power Type
+    #   allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+    #   
+    #   # name of MTP
+    #   MTPname <- levels(withoutIndivPower$MTP)[1]
+    #   
+    #   ######################
+    #   # Plotting the graph #
+    #   ######################
+    #   
+    #   output$powercalcGraphP2LBIEX <- renderPlotly({
+    #     
+    #     # Wrapping the ggplot with plotly
+    #     
+    #     pg <- 
+    #       plotly::ggplotly(ggplot2::ggplot(
+    #         data = withoutIndivPower,
+    #         aes(x = MDES,
+    #             y = power,
+    #             colour = powerType)) +
+    #           geom_point(size = 2, 
+    #                      position = position_jitter(width = 0.2)) +
+    #           scale_y_continuous(limits = c(0,1)) +
+    #           ggtitle(paste0(MTPname, " adjusted Power values across different \n Power Definitions & MDES values")) +
+    #           scale_colour_manual(values = allcolorsvalues) +
+    #           labs(x = "Different MDES Scenarios",
+    #                y = "Power Values",
+    #                colour = "") +
+    #           theme_linedraw() +
+    #           theme(plot.title = element_text(size = 16,
+    #                                           face = "bold",
+    #                                           vjust = 1,
+    #                                           hjust = 0.5)) 
+    #       )
+    #     
+    #     # plotly adjustments for margin, centering and axis titles
+    #     
+    #     pg <- layout(pg, 
+    #                  #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
+    #                  margin=list(t = 75),
+    #                  legend = list(x = 100,
+    #                                orientation = "v",
+    #                                xanchor = "center",
+    #                                y = 0.5,
+    #                                title = list(text = '<b> Power Type </b>')))
+    #     
+    #     # plotly configurations to suit ourpuposes
+    #     
+    #     pg %>%
+    #       config(displaylogo = FALSE,
+    #              collaborate = FALSE,
+    #              displayModeBar = TRUE,
+    #              modeBarButtonsToRemove = list(
+    #                'sendDataToCloud',
+    #                'autoScale2d',
+    #                'resetScale2d',
+    #                'hoverClosestCartesian',
+    #                'hoverCompareCartesian',
+    #                'zoom2d', 
+    #                'pan2d',
+    #                'select2d',
+    #                'lasso2d',
+    #                'zoomIn2d', 
+    #                'zoomOut2d',
+    #                'toggleSpikelines'
+    #              ))
+    #     
+    #   }) # ggplot for power graph
+    # 
+    # } else {
+    #   
+    # 
+    #   
+    # } # mdes condition handling
     
       
 }) # server side call end

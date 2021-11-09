@@ -15,7 +15,8 @@ varVaryInputEx <- function(estimation, design, scenario){
 
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Units per block" = "nbar",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
                                 "rho" = "rho",
@@ -29,7 +30,8 @@ varVaryInputEx <- function(estimation, design, scenario){
 
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Units per block" = "nbar",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
                                 "Number of blocks" = "j",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
@@ -45,7 +47,8 @@ varVaryInputEx <- function(estimation, design, scenario){
 
     print(paste0("I am in this", design))
     selectInput(id, "Which variable would you like to vary?",
-                choices = list("Units per block" = "nbar",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
                                "Number of blocks" = "j",
                                "Multiple testing procedure" = "mtp",
                                "Minimum detectable effect size" = "mdes",
@@ -61,7 +64,8 @@ varVaryInputEx <- function(estimation, design, scenario){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Units per block" = "nbar",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
                                 "Number of blocks" = "j",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
@@ -78,7 +82,8 @@ varVaryInputEx <- function(estimation, design, scenario){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Units per block" = "nbar",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
                                 "Number of blocks" = "j",
                                 "Number of level-3 groupings" = "k",
                                 "Multiple testing procedure" = "mtp",
@@ -98,7 +103,8 @@ varVaryInputEx <- function(estimation, design, scenario){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Units per block" = "nbar",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
                                 "Number of blocks" = "j",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
@@ -115,7 +121,8 @@ varVaryInputEx <- function(estimation, design, scenario){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Units per block" = "nbar",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
                                 "Number of blocks" = "j",
                                 "Number of level-3 groupings" = "k",
                                 "Multiple testing procedure" = "mtp",
@@ -135,7 +142,8 @@ varVaryInputEx <- function(estimation, design, scenario){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Units per block" = "nbar",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
                                 "Number of blocks" = "j",
                                 "Number of level-3 groupings" = "k",
                                 "Multiple testing procedure" = "mtp",
@@ -154,7 +162,8 @@ varVaryInputEx <- function(estimation, design, scenario){
     
      print(paste0("I am in this ", design))
      selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Units per block" = "nbar",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
                                 "Number of blocks" = "j",
                                 "Number of level-3 groupings" = "k",
                                 "Multiple testing procedure" = "mtp",
@@ -247,16 +256,36 @@ jInputEx <- function(estimation, design, scenario, varVary){
 # Number of Outcomes (M)
 #########################
 
-mInputEx <- function(estimation, design, scenario){
+mInputEx <- function(estimation, design, scenario, varVary){
   
-    id <- paste0(estimation, "_" ,"m", "_", design, "_" , scenario)
-    numericInput(id, 
-                 "Number of Outcomes", 
-                 min = 1, 
-                 max = 10, 
-                 value = 5, 
-                 step = 1)
-  
+    id <- paste0(estimation, "_" ,"m", "_", design, "_" , scenario, "_", varVary)
+    
+    if(varVary == "m"){
+      
+      if(TRUE){
+        text_val <- HTML(paste("Number of Outcomes",
+                               "<span style=\"color:red\"> (Input multiple values) </span>"))
+      }else{
+        text_val <- HTML(paste("Number of Outcomes"))
+      }
+      
+      # default m values
+      defaultmvalues <- paste0(c(5, 10), collapse = ",")
+      
+        textInput(id, 
+                  text_val, 
+                  value = defaultmvalues)
+      
+    } else{
+      
+      # default m values
+      defaultmvalues <- paste0(c(5))
+
+      textInput(id, 
+                "Number of Outcomes (Input a single value)", 
+                value = defaultmvalues)
+    }
+
 } # Number of Outcomes (M)
 
 #########################
