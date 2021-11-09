@@ -20,25 +20,18 @@ library( pum )
 
 (written by Kristen)
 
-Topics where I think we need more detail:
+Topics where I think we may need more detail:
 
 - Luke: would you like to add a paragraph on the optimization procedure?
 - give more context for people who aren't familiar with multilevel experiments. What is blocking? clustering? Why might you want to choose a particular RCT design?
-- say this explicitly and motivate our broad choice: we are fitting mixed effects regression models. We don't explicitly say this anywhere, and perhaps should spend just 1 sentence motivating this.
 - effect size: what it is, how to decide what it is
 - correlation between test statistics, relationship to correlation between outcomes
-- organization of RCT designs in Overview--do we want to re-arrange given our new naming convention?
-- explanation of MTP procedures, like in original paper
+- explanation of all MTP procedures, like in original paper
 
 Optional topics:
 
 - advice on binary outcomes, consider how it affects assumptions
 - reference to literature on summarizing/collapsing outcomes?
-
-Structure
-
-- include an overview of main package functionality in introduction
-- overall comment: right now, introduction focuses on the problem and methods, not on the package/solution. Doesn't necessarily feel like the intro for a software paper.
 
 
 # Introduction
@@ -57,6 +50,8 @@ PUMP focuses on power estimation when a researcher wishes to determine the effec
 A multilevel RCT is a setting in which units are nested in hierarchical groups.
 This setting is common in education, in which students are nested within schools, which can be then nested within school districts.
 Though we use educational experiments as a running example throughout this paper, the problem of power estimation for multilevel RCTs is not exclusive to the educational setting.
+Our power calculations assume the user will be analyzing these experiments using frequentist mixed effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels.
+TODO: Motivat this or insert citation?
 In a single outcome scenario, the researcher must make a variety of choices for a multilevel RCT about the likely structure of the problem, such as the predictive power of covariates and the expected amount of variation.
 These parameter choices impact the power of the study.
 
@@ -127,7 +122,6 @@ It allows users to estimate statistical power, sample size requirements, or mini
 The estimates can be calculated for multiple definitions of statistical power, MTPs, and RCT designs and models.
 The definitions of power are individual, complete, and relevant $d$-minimal powers, depending on the number of outcomes.
 The MTPs are Bonferroni, Holm, Benjamini-Hochberg, and single-step and step-down versions of Westfall-Young.
-The package supports any of the following RCT designs and estimation models:
 
 <!-- KH comment: does frequentist need to be in the title?-->
 ## Review of the multiple testing problem in a frequentist framework 
