@@ -34,40 +34,37 @@ Optional topics:
 - reference to literature on summarizing/collapsing outcomes?
 
 
-# Introduction
+# Overview
 
-## Overview
+A frequent task for researchers designing randomized control trials (RCTs) is to determine the statistical power of a study - the probability of detecting an effect of a particular size or larger, given that the effect truly exists. 
+This task may be done prospectively in order to guide design decisions.
+In this case, researchers make assumptions about data paramaters and make specifications about analytic choices in order to carry out power calculations.
+Or, this may be done retrospectively, which allows researchers to plug in parameter values estimated from data.
+Prospectively, researchers may also target a specified level of statistical power (e.g. 80 or 90 percent) and calculate the required sample size for a desired minimum detectable effect size (MDES), which is the smallest true effect size that has a high probability (specified frequently to be 80 or 90 percent) estimated to be be statistically significant at a specified level (for example, at the 0.05 level).
+As an "effect size," the MDES is reported in units of standard deviations. 
+Alternatively, researchers may target a specified level of power and calculate the MDES that results for a fixed sample size. 
 
-A frequent task for practitioners is to prospectively determine the statistical power of a study.
-For many simple study designs and analyses, the researcher makes a small number of choices, such as the standard deviation of the outcome and the likely effect size, and then calculates the power using a well-known expression.
-With complex study designs and analyses, this task is not always straightforward.
-First, in complex settings there may not be a closed-form expression for power.
-Second, the researcher must make a larger number of choices about the likely parameter values, and these parameters can substantially impact power.
-A variety of software packages help users estimate power in different settings.
-We extend the current available software with the power under multiplicity project (PUMP) package.
-PUMP focuses on power estimation when a researcher wishes to determine the effect of an intervention on multiple outcomes in a multilevel randomized control trial (RCT).
-
-A multilevel RCT is a setting in which units are nested in hierarchical groups.
-This setting is common in education, in which students are nested within schools, which can be then nested within school districts.
-Though we use educational experiments as a running example throughout this paper, the problem of power estimation for multilevel RCTs is not exclusive to the educational setting.
-Our power calculations assume the user will be analyzing these experiments using frequentist mixed effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels.
-TODO: Motivat this or insert citation?
-In a single outcome scenario, the researcher must make a variety of choices for a multilevel RCT about the likely structure of the problem, such as the predictive power of covariates and the expected amount of variation.
-These parameter choices impact the power of the study.
-
-In a multiple outcome scenario, additional choices also impact the power.
-One of the most important choices is the multiple testing procedure (MTP), which is how the $p$ values will be adjusted to compensate for multiple testing.
+For a wide variety of RCT designs, researchers can take advantage of closed form solutions and numerous power estimation tools. For example, in education and social policy research, see @RN4473; @RN30153; @RN23884; @RN24179.
+In addition to specifications sample size, MDES or power, these estimation tools require the researchers to specify data parameter values (e.g., the explanatory power of baseline covariates inlcuded in the impact model and design choices (e.g. sample sizes, the proportion of units randomly assigned to treatment).
+However, an important limitation of the existing methods and tools for estimating statistical power, MDES or sample size requirements for RCTs is that they only apply to the investigation of the effect of an intervention on a *single* outcome.
+When researchers investigate the effects on an intervention on *multiple* outcomes, which is more often the case, they may adjust $p$-values upwards to account for the 
+multiple hypothesis tests in order to reduce the likelihood of spurious findings of statistically significant effects. 
+To do so, researchers may use one of several multiple testing procedures (MTPs). 
 An important consequence of using a multiple testing procedure is that there can be a substantial change in the power of the test.
 That is, the use of an MTP changes the probability of detecting effects when they truly exist, compared with the situation when the multiplicity problem is ignored.
 Unfortunately, while researchers are increasingly using MTPs, they frequently ignore the power implications of their use when designing studies.
 Consequently, in some cases sample sizes may be too small, and studies may be underpowered to detect effects as small as a desired size.
 In other cases, sample sizes may be larger than needed, or studies may be powered to detect smaller effects than anticipated.
+Therefore, it is essential for researchers take the use of MTPs into account when estimating the power, MDES or sample size requirements for their study; however, to our knowledge, no tools exist that take multiple outcomes into account.
 
-In this paper, we introduce the power under multiplicity project (PUMP) package.
-PUMP allows users to estimate power for multilevel randomized control trials with multiple outcomes.
-The contribution of this package is to properly calculate power when using a multiple testing procedure to adjust for multiple tests.
+With the introduction of the Power under Multiplicity Project (PUMP) package, we fill this gap, relying on validated methods that we have developed for a wide variety of commonly used RCT designs. 
+Most of these RCT designs are multilevel designs in which research units are nested in hierarchical groups.
+This setting is common in education research, for example, in which students are nested within schools, which can be then nested within school districts.
+Though we use educational experiments as a running example throughout this paper, the problem of power estimation for multilevel RCTs is not exclusive to the educational setting.
+Our power calculations assume the user will be analyzing these RCTs using frequentist mixed-effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels, as we explain in detail below and in Appendix X. 
+
+In this paper, we the PUMP package.
 The three core functions are:
-
 - `pump_power()` calculates power given a design, parameters, and minimum detectable effect size
 - `pump_mdes()` calculates minimium detectable effect size given a target power
 - `pump_sample()` calculates required sample size given a target power and minimum detectable effect size
@@ -75,7 +72,11 @@ The three core functions are:
 In addition to these core functions, grid and update functions are built on top of the core power function to allow users to easily explore power over a range of possible values of parameters to determine sensitivity of their power calculations to their assumptions.
 Finally, PUMP also visualizes such results graphically.
 
-## Multiple testing
+As will be explained below, the PUMP package allows users to estimate statistical power, MDES or sample size requirements for multiple definitions of statistical power that arise when investigateing effects on multiple outcomes, for multiple designs and model assumptions, and for multiple widely used MTPs: Bonferroni, Holm, Benjamini-Hochberg, and single-step and step-down versions of Westfall-Young.
+
+In the sections below, we provide a summary of the multiple testing problem, discuss how MTPs protect against spurious impact findings and describe the different strategies different MTPs take, introduce our methodology for estimating power when taking the use of MTPs into account and our extensions of the methodology to estimate MDES or power, provide a detailed overview of the PUMP package, walk through an example of using PUMP in real-world example RCT, provide guidance on specifying parameters for power, MDES and sample size requirements and conclude with suggestions for best practices.  
+
+# The multiple testing problem
 
 Researchers are often interested in testing the effectiveness of an intervention on multiple outcomes.
 The resulting multiplicity of statistical hypothesis tests can lead to spurious findings of effects.^[Testing the effectiveness of an intervention for multiple subgroups, at multiple points in time, or across multiple treatment groups also results in a multiplicity of statistical hypotheses and can also lead to spurious findings of effects, but this is beyond the scope of this paper.]
@@ -107,42 +108,26 @@ On the other hand, if the researchers’ goal is to find statistically significa
 They may be able to get away with a smaller sample size, or they may be able to detect smaller effect sizes.
 The choice of power definition may not be a simple one.
 First, it may not be easy to define the success of an intervention. Even when it is easy, aligning the definition of success with a definition of power may not always be.
-For example, even if a program would be considered successful should an effect of a specified size be found for at least one outcome, researchers may still want sufficient individual power because they want to know the probability of detecting effects on each particular outcome.
+For example, even if a program would be considered successful should an effect of a specified size (in units of standard deviations) be found for at least one outcome, researchers may still want sufficient individual power because they want to know the probability of detecting effects on each particular outcome.
 It may be best for researchers to estimate and share power estimates for multiple power definitions. For example, consider the case in which a sample size is fixed. The probability of detecting statistically significant effects (at least as large as specified effect sizes) may be unacceptably low.
 While complete power may be a goal in this case, it may be valuable for researchers to also be able to say that it is still tenable to achieve a high probability of detecting effects on at least half of the outcomes.
 
-## Summary of the PUMP R Package
-
-This paper and the R package we introduce, PUMP, focus on estimating power for multilevel randomized control trials (RCTs) that test a single intervention's impacts on a modest number of outcomes.
-For this type of research, the literature and tools for estimating statistical power, or for estimating sample size requirements of minimum detectable effect sizes (MDES's) that achieve a desired level of statistical power, are extensive.^[For example, power estimating tools frequently used in social science research include @RN4473; @RN30153; @RN23884; @RN24179).]
-However, to our knowledge, no tools exist that take multiple outcomes into account.
-
-The PUMP package fills this gap.
-It allows users to estimate statistical power, sample size requirements, or minimum detectable effect sizes.
-The estimates can be calculated for multiple definitions of statistical power, MTPs, and RCT designs and models.
-The definitions of power are individual, complete, and relevant $d$-minimal powers, depending on the number of outcomes.
-The MTPs are Bonferroni, Holm, Benjamini-Hochberg, and single-step and step-down versions of Westfall-Young.
-
-<!-- KH comment: does frequentist need to be in the title?-->
-## Review of the multiple testing problem in a frequentist framework 
 
 
 <!-- KH comment: do we need to motivate this more, or at least note that there are other options?-->
-This paper focuses on the frequentist framework of hypothesis testing, as it is currently the prevailing framework in education and other social policy research.
+Our methods focus on the frequentist framework of hypothesis testing, as it is currently the prevailing framework in education and other social policy research.
 
 <!-- KH COMMENT: motivate why we are going into this discussion, i.e. remind reader why we need these details in order to calculate power-->
 <!-- KH COMMENT: for non-education people, effect sizes might not be a familiar concept. Maybe this is the right place to introduce it?-->
+<!-- KP: I introduced in edits to very start of paper - see what you think -->
 Consider that a researchers in interested in testing the impact of an intervention on $M$ outcomes.
-In the frequentist framework, when framing impacts in terms of effect sizes, for the $m^{th}$ outcome, one typically tests a null hypothesis of no effect, $H_{0_m}: ES_m = 0$, against an alternative hypothesis $H_{1_m}: ES_m \neq 0$ for a two-sided tests or $H_{1_m}: ES_m > 0$ or $H1_m: ES_m < 0$ for a one-sided test.
-<!-- KH COMMENT: I don't think we've introduced either ES or m as notation yet. Maybe also a good place to denote $M$ as the total number of tests/outcomes.-->
+In the frequentist framework, when framing impacts in terms of effect sizes ($ES$), for the $m^{th}$ outcome, one typically tests a null hypothesis of no effect, $H_{0_m}: ES_m = 0$, against an alternative hypothesis $H_{1_m}: ES_m \neq 0$ for a two-sided tests or $H_{1_m}: ES_m > 0$ or $H1_m: ES_m < 0$ for a one-sided test.
 For the purpose of calculating power, researchers specify an alternative hypothesis of at least a particular effect size.
 For example, researchers may specify an ES of $0.125$.
 A significance test, such as a two-sided or one-sided t-test, is then conducted, and one obtains a test statistic given by
 \begin{equation}
 t_m = \frac{\hat{ES}_m}{SE(\hat{ES}_m)},
 \end{equation}
-
-<!-- KH COMMENT: also introduct raw = unadjusted-->
 
 from which a raw p-value is computed.
 Here, the term "raw" is used to distinguish this p-value from a p-value that has been adjusted using a procedure for multiple hypothesis tests, as discussed below.
@@ -154,7 +139,6 @@ For a two-sided test, which is the focus of the discussion going forward (althou
 This expression means we use our knowledge of the sampling distribution of the t-statistic, and we identify where our observed test statistic falls in that distribution when it is centered around zero.
 <!--To calculate the raw $p$-value, we use our knowledge of the sampling distribution of the t-statistic, and we identify where our observed test statistic falls in that distribution.-->
 
-<!--KH COMMENT: have we defined $M$ yet?-->
 When testing a _single_ hypothesis under this framework (effects are being assessed on just one outcome, so that $M=1$), researchers typically specify an acceptable maximum probability of making a Type I error, $\alpha$.
 A Type I error is the probability of erroneously rejecting the null hypothesis when it is true.
 The quantity $\alpha$ is also referred to as the significance level.
@@ -182,11 +166,7 @@ MTPs also reduce all other definitions of power compared with the situation when
 For example, $1$-minimal power, the probability of detecting effects (of at least a specified size) on at least one outcome -- after adjusting for multiplicity -- is typically greater than the probability of detecting an effect of the same size on a single outcome.
 This increase may or may not occur with other definitions of power (e.g., the probability of detecting a third, half, or all false null hypotheses).
 
-
-## Using MTPs to protect against spurious impact findings
-<!--## Multiple testing procedures-->
-
-KP Bookmark
+# Using MTPs to protect against spurious impact findings
 
 The MTPs that are the focus of this paper fall into two different classes.
 The first class reframes Type I error as a rate across the entire set or “family” of multiple hypothesis tests.
@@ -209,6 +189,7 @@ $M0$ and $M1$ are the unobservable numbers of true null and false null hypothese
 $R$ is the number of null hypotheses that were rejected, and $M - R$ is the number of null hypotheses that were not rejected.
 
 <!-- KH comment: maybe different notation because we use $B$ for WY?-->
+<!-- KP: good catch, we can maybe use C, D, E, F? I don't know how to draw this table in markdown-->
 In Table 1, $B$ is the number of erroneously rejected null hypotheses, or the number of false positive findings.
 Therefore, the FWER is equivalent to $Pr(B > 0)$, the probability of at least one false positive finding.
 Recall the examples above about Type I error inflation when testing for effects on independent outcomes in the case that $\alpha$ is set to $0.05$ and no MTPs are applied.
@@ -231,8 +212,13 @@ As a result, in the case where there is at least one false null hypothesis (at l
 Note that MTPs may provide either weak or strong control of the error rate they target.
 An MTP provides weak control of the FWER or the FDR at level $\alpha$ if the control can only be guaranteed when all nulls are true, or when the effects on all outcomes are zero.
 An MTP provides strong control of the FWER or FDR at level if the control is guaranteed when some null hypotheses are true and some are false, or when there may be effects on at least some outcomes.
-Of course, strong control is preferred.
-<!-- KH comment: we don't actually say which MTPs provide weak or strong control, so I would either cut out that discussion, or clarify which ones do or don't-->
+Of course, strong control is preferred.^[The single-step and step-down Westfall Young MTPs always provide at least weak control of the FWER.
+In order for these procedures to provide strong control of the FWER, they require the assumption of subset
+pivotality (Ge, Dudoit, & Speed, 2003). The distribution of the unadjusted test statistics or p-values is said to
+have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the pvalues for the subset is identical to the distribution under the complete null. A consequence of this assumption
+is that the resampling of test statistics or p-values can be done under the complete null hypothesis rather than
+under the unknown partial hypothesis (Ge et al., 2003)]
+
 
 The list of multiple testing procedures supported by the PUMP package can be found below.
 
@@ -243,8 +229,6 @@ info <- pump_info()
 ```{r, echo = FALSE}
 kable(info$Adjustment)
 ```
-
-
 
 # Estimating power, MDES and sample size in studies with multiple outcomes
 
@@ -275,15 +259,14 @@ Then, we would generate simulated data under the joint alternative hypothesis.
 <!--KP comment: I wonder if it would be helpful here to list the set of parameters here and their notation (drawing from your documentation for the MC simulations). This could be a place to introduce this notation for referring back to? Also, I took out the text about nonzero effects because we don't neccessarily simulate the data assuming the alternative for all M hypotheses, but rather the joint alternative (if that terminology is right or makes any sense) such that some null hypotheses are assumed to be false but some are assumed to be true. -->
 
 <!-- KH response: I'm a bit worried that putting that detail in this spot in particular would confuse the reader. This step is introduced but then immediately afterward we say that we skip it! So it feels a bit weird to say 'here's how we would do a full simulation, but we don't actually do it here.' -->
+<!-- I'm open to taking a different approach. Let's discuss-->
 2. *Calculate test statistics $t_1$ under the joint alternative hypothesis.*
 Given simulated data, for example we could fit $M$ regression models (specified to match model assumptions).
-<!--KP comment: comment on R function - or is that too much detail?-->
 <!--KH response: Because we don't actually simulate data, we don't fit regression models!! -->
+<!--KP: I'm confused - we do fit regression models - that's the most time-intensive part-->
 3. *Calculate adjusted $p$-values.*
 The test statistics can be used to compute raw (unadjusted) $p$-values.
 <!--KH comment: similar to my point above--in this setting we are not using regression functions -->
-<!--KP QUESTION: Are we making the WY functions available through online materials (on github) - should we mention that here? -->
-<!--KH response: We are not currently surfacing the WY functions to the user, but we could! -->
 4. *Repeat above steps (1 through 3) for a large number of iterations.*
 Denote the number of iterations $tnum$. Repeating steps $1$-$3$ $tnum$ times results in a matrix of unadjusted p-values which we call $\mathbf{F}$, and is of dimension $tnum \times M$.
 5. *Adjust p-values.*
@@ -302,18 +285,22 @@ To compute the different definitions of power:
     -  *Complete power* is the proportion of the $tnum$ rows in which all of the null hypotheses were rejected based on the raw p-values rather than adjusted $p$-values.
 
 <!--KH comment: I find the below explanation of complete power a bit short and confusing. -->
+<!--KP: me too! but I don't understand it sufficiently to say much more. Luke, can you assist? -->
 
 The reason that complete power is based on raw p-values is that the probability of all tests having a raw p-value less than $0.05$ when the null hypothesis is true is less than the probability that any single test would have a p-value less than $\alpha$ by chance (@RN23880; Westfall et al., 2011).^[Complete power does not in itself require unadjusted tests. The above approach for not adjusting tests assumes that all tests must to be statistically significant in order to claim impacts on all outcomes.]
  
 Above, we outline a full simulation-based approach for calculating power.
 We can simplify this process by skipping the first step.
+<!-- We skip steps 1 through 4-->
 Given an assumed model and correlation structure for the test statistics, we can directly sample from $f(t_1)$, the joint alternative distribution of the test statistics.
 This shortcut vastly improves both the simplicity and the speed of computation.
 In summary, our approach is:
 
 1. **Sample** *test statistics $t_1$ under the joint alternative hypothesis.*
-2. *Calculate adjusted $p$-values.*
-3. *Repeat above steps (1 through 2) for a large number of iterations and calculate power.*
+<!-- KP: I'm not sure I understand what this means here to say "sample." We generate test statistics. Is it accurate to say those are a sample of test statistics, or is it that we generate test statistics from a large number of data samples?-->
+3. *Calculate adjusted $p$-values.*
+4. *Repeat above steps (1 through 2) for a large number of iterations and calculate power.*
+<!-- KP: We don't repeat. We do it all in one swoop by generating the test statistics. And then we have to do steps 6 and 7 (but acutally # is step 5 above--> 
 
 We now describe how to sample from $f(t_1)$ directly.
 First, we assume a particular research design and model.
@@ -414,6 +401,8 @@ kable(info$Parameters)
 ```
 
 A few parameters warrant more explanation.
+<!-- KP: This is good. I assume this will be expanded. Is this where we might discuss how to think about the correlation between test statistics and discuss how the package can help with the simulations?-->
+<!-- KP: We can bullet these out. I can help expand list but don't have time now.-->
 The quantity $\text{ICC}$ is the Intraclass Correlation, and gives a measure of variation at different levels of the model.
 For each outcome, the ICC for each level is defined as the ratio of the variance at that level divided by the overall variance of the individual outcomes.
 The ICC is for the unconditional model, and therefore include the variation due to covariates.
