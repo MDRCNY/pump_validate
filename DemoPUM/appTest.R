@@ -751,9 +751,31 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
+    
     id <- paste0(theEstimation, "_", "varVary", "_", theDesign, "_" , theScenario)
     
     if(!is.null(input[[id]])){
+      
+      if(input[[id]] == "nbar"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("nbar"))
+        
+      }
+      
+      if(input[[id]] == "j"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("j"))
+  
+      }
+      
+      if(input[[id]] == "k"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("k"))
+        
+      }
 
       if(input[[id]] == "mtp"){
         
@@ -838,6 +860,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
         print(paste0("variable to vary is ", input[[id]]))  
         return(c("omega.3"))    
       }
+      
+      
+      
+      
+      
     } else {
       
       print("Setting a default rho variable to vary.")
@@ -877,8 +904,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    
     div(style = "display: inline-block, vertical-align:top;", 
-        nbarInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario))    
+        nbarInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary))    
     
   }) # number of units per block
   
@@ -925,8 +954,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theEstimation = as.character(getEstimationEx())
       theDesign = as.character(getDesignEx())
       theScenario = as.character(whichTab$scenario)
+      theVarVary = as.character(getVarVaryEx())
+
       div(style = "display: inline-block, vertical-align:top;", 
-          jInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario))
+          jInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary))
       
     } else {
       
@@ -1796,12 +1827,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theVarVary = as.character(getVarVaryEx())
     
     # set up to receive all the input parameters
-    
+  
     # Get string for input subsetting
     design_subset <- "designEx"
     m_subset <- "numOutcomesEx"
-    nbar_subset <- paste0(theEstimation, "_", "nbar", "_", theDesign, "_", theScenario)
-    j_subset <- paste0(theEstimation, "_", "j", "_", theDesign, "_", theScenario)
+    nbar_subset <- paste0(theEstimation, "_", "nbar", "_", theDesign, "_", theScenario, "_", theVarVary)
+    j_subset <- paste0(theEstimation, "_", "j", "_", theDesign, "_", theScenario, "_", theVarVary)
     mtp_subset <- paste0(theEstimation, "_", "mtp", "_", theDesign,"_", theScenario, "_", theVarVary)
     mdes_subset <- paste0(theEstimation, "_", "mdes", "_", theDesign, "_", theScenario, "_", theVarVary)
     rho_subset <- paste0(theEstimation, "_", "rho", "_", theDesign, "_", theScenario, "_", theVarVary)
@@ -1881,9 +1912,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     dat <- as.data.frame(
       isolate(pum::pump_power_grid(design = design,
-                              nbar = nbar, # The number of units per block
-                              J = j, # The number of schools
-                              K = k, # 3 level grouping variable count
+                              nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
+                              J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
+                              K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
                               MTP = as.character(unlist(strsplit(mtp, ","))),
                               M = m, # The number of hypotheses/outcomes
                               MDES = as.numeric(unlist(strsplit(mdes, ","))),
