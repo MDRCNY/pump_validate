@@ -358,6 +358,13 @@ ui <- fluidPage(
                    
                  ), # number of outcomes selection 
                  
+                 
+                 fluidRow(
+                  
+                   column(12,
+                          uiOutput("numZeroEx"))   
+                 ),
+                   
                  fluidRow(
                    
                    column(12,
@@ -571,7 +578,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }  
     
     if(input$tabset == "explorer_tab"){
-      input$numOutcomesEx
+      input$mEx
     }
     
   })
@@ -770,6 +777,13 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
       }
       
+      if(input[[id]] == "numZero"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("numZero"))
+        
+      }
+      
       if(input[[id]] == "k"){
         
         print(paste0("variable to vary is ", input[[id]]))
@@ -860,10 +874,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
         print(paste0("variable to vary is ", input[[id]]))  
         return(c("omega.3"))    
       }
-      
-      
-      
-      
       
     } else {
       
@@ -1018,7 +1028,18 @@ server <- shinyServer(function(input, output, session = FALSE) {
     div(style = "display: inline-block, vertical-align:top;", 
         mInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
   }) # Number of Outcomes 
-
+  
+  output$numZeroEx <- renderUI({
+    
+    theEstimation =  as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    div(style = "display: inline-block, vertical-align:top;", 
+        numZeroInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
+    
+  }) # Number of outcomes with zero effects
+  
   output$mdes <- renderUI({
     
     theEstimation = as.character(getEstimationSs())
@@ -1845,6 +1866,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     m_subset <- paste0(theEstimation, "_", "m", "_", theDesign, "_", theScenario, "_", theVarVary)
     nbar_subset <- paste0(theEstimation, "_", "nbar", "_", theDesign, "_", theScenario, "_", theVarVary)
     j_subset <- paste0(theEstimation, "_", "j", "_", theDesign, "_", theScenario, "_", theVarVary)
+    numZero_subset <- paste0(theEstimation, "_", "numZero", "_", theDesign, "_", theScenario, "_", theVarVary)
     mtp_subset <- paste0(theEstimation, "_", "mtp", "_", theDesign,"_", theScenario, "_", theVarVary)
     mdes_subset <- paste0(theEstimation, "_", "mdes", "_", theDesign, "_", theScenario, "_", theVarVary)
     rho_subset <- paste0(theEstimation, "_", "rho", "_", theDesign, "_", theScenario, "_", theVarVary)
@@ -1864,6 +1886,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     design <- input[[design_subset]]
     nbar <- input[[nbar_subset]]
     j <- input[[j_subset]]
+    numZero <- input[[numZero_subset]]
     mtp <- input[[mtp_subset]]
     m <- input[[m_subset]]
     mdes <- input[[mdes_subset]]
@@ -1926,6 +1949,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       isolate(pum::pump_power_grid(design = design,
                               nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
                               J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
+                              numZero = as.numeric(unlist(strsplit(numZero, ","))), # number of outcomes with zero effects
                               K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
                               MTP = as.character(unlist(strsplit(mtp, ","))),
                               M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes

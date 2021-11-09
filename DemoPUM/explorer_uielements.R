@@ -17,6 +17,7 @@ varVaryInputEx <- function(estimation, design, scenario){
      selectInput(id, "Which variable would you like to vary?",
                  choices = list("Number of outcomes" = "m",
                                 "Units per block" = "nbar",
+                                "Number of outcomes with no effects" = "numZero",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
                                 "rho" = "rho",
@@ -33,6 +34,7 @@ varVaryInputEx <- function(estimation, design, scenario){
                  choices = list("Number of outcomes" = "m",
                                 "Units per block" = "nbar",
                                 "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
                                 "rho" = "rho",
@@ -50,6 +52,7 @@ varVaryInputEx <- function(estimation, design, scenario){
                 choices = list("Number of outcomes" = "m",
                                "Units per block" = "nbar",
                                "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
                                "Multiple testing procedure" = "mtp",
                                "Minimum detectable effect size" = "mdes",
                                "rho" = "rho",
@@ -67,6 +70,7 @@ varVaryInputEx <- function(estimation, design, scenario){
                  choices = list("Number of outcomes" = "m",
                                 "Units per block" = "nbar",
                                 "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
                                 "rho" = "rho",
@@ -85,6 +89,7 @@ varVaryInputEx <- function(estimation, design, scenario){
                  choices = list("Number of outcomes" = "m",
                                 "Units per block" = "nbar",
                                 "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
                                 "Number of level-3 groupings" = "k",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
@@ -106,6 +111,7 @@ varVaryInputEx <- function(estimation, design, scenario){
                  choices = list("Number of outcomes" = "m",
                                 "Units per block" = "nbar",
                                 "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
                                 "rho" = "rho",
@@ -124,6 +130,7 @@ varVaryInputEx <- function(estimation, design, scenario){
                  choices = list("Number of outcomes" = "m",
                                 "Units per block" = "nbar",
                                 "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
                                 "Number of level-3 groupings" = "k",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
@@ -145,6 +152,7 @@ varVaryInputEx <- function(estimation, design, scenario){
                  choices = list("Number of outcomes" = "m",
                                 "Units per block" = "nbar",
                                 "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
                                 "Number of level-3 groupings" = "k",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
@@ -165,6 +173,7 @@ varVaryInputEx <- function(estimation, design, scenario){
                  choices = list("Number of outcomes" = "m",
                                 "Units per block" = "nbar",
                                 "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
                                 "Number of level-3 groupings" = "k",
                                 "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
@@ -217,6 +226,42 @@ nbarInputEx <- function(estimation, design, scenario, varVary){
   }
     
 } # number of unit per block
+
+########################################################
+# numOutcomes with Zero Effects
+########################################################
+
+numZeroInputEx <- function(estimation, design, scenario, varVary){
+  
+  id <- paste0(estimation, "_", "numZero", "_", design, "_" , scenario, "_", varVary)
+  
+  if(varVary == "numZero"){
+    
+    if(TRUE){
+      text_val <- HTML(paste("Number of outcomes with no effects",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    }else{
+      text_val <- HTML(paste("Number of units per block"))
+    }
+    
+    # default mdes values whose count of number will change depending on number of outcomes
+    defaultnumZerovalues <- paste0(c(1,2), collapse = ",")
+    
+    textInput(id,
+              text_val,
+              value = defaultnumZerovalues)
+    
+  } else {
+    
+    # default mdes values whose count of number will change depending on number of outcomes
+    defaultnumZerovalues <- paste0(c(1))
+    
+    textInput(id,
+              "Number of outcomes with no effects (Input a single value)", 
+              value = defaultnumZerovalues)
+  }
+  
+} # number of outcomes with zero effects
 
 ############################
 # Number of Blocks
