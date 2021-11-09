@@ -15,7 +15,8 @@ varVaryInputEx <- function(estimation, design, scenario){
 
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Multiple testing procedure" = "mtp",
+                 choices = list("Units per block" = "nbar",
+                                "Multiple testing procedure" = "mtp",
                                 "Minimum detectable effect size" = "mdes",
                                 "rho" = "rho",
                                 "numCovar.1" = "numCovar.1",

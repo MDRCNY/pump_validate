@@ -885,22 +885,55 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$j <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
-    theDesign = as.character(getDesignSs())
-    theScenario = as.character(whichTab$scenario)
-    div(style = "display: inline-block, vertical-align:top;", 
-        jInput(estimation = theEstimation, design = theDesign , scenario = theScenario))    
+    req(input$designSs) # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designSs != 'd1.1_m2cc'){
+      print('Design j Trigger')
+      check = TRUE
+    }  
+    
+    if(check){
+      theEstimation = as.character(getEstimationSs())
+      theDesign = as.character(getDesignSs())
+      theScenario = as.character(whichTab$scenario)
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          jInput(estimation = theEstimation, design = theDesign , scenario = theScenario))    
+      
+    } else {
+      
+      
+    }
     
   }) # number of units per block
   
   output$jEx <- renderUI({
     
-    theEstimation = as.character(getEstimationEx())
-    theDesign = as.character(getDesignEx())
-    theScenario = as.character(whichTab$scenario)
-    div(style = "display: inline-block, vertical-align:top;", 
-        jInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario))    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
     
+    # conditions when check becomes true
+    if(input$designEx != 'd1.1_m2cc'){
+      print('Design j Trigger')
+      check = TRUE
+    }
+    
+    if(check){
+      
+      theEstimation = as.character(getEstimationEx())
+      theDesign = as.character(getDesignEx())
+      theScenario = as.character(whichTab$scenario)
+      div(style = "display: inline-block, vertical-align:top;", 
+          jInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario))
+      
+    } else {
+      
+      
+    }
+      
+      
   }) # number of units per block
   
   output$mtp <- renderUI({
