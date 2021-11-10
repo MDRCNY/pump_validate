@@ -20,12 +20,12 @@
 %\setlength{\parindent}{0pt}
 %\setlength{\parskip}{12pt plus 4mm minus 3mm}
 
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{3}
 
 \begin{document}
 
-\author{Porter, Miratrix, Hunter}
-\title{Power estimation methods}
+\author{Hunter, Miratrix, Porter}
+\title{Supplementary materials: PUMP Package}
 
 \maketitle
 
@@ -34,36 +34,108 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Introduction
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
+
 \section{Introduction}
+\label{sec:intro}
+
+We model multilevel randomized control trials using mixed effects linear regression models.
+To provide a concrete example, throughout we assume an education setting, where we have students (level 1) nested within schools (level 2) within districts (level 3).
+
+Our package allows for power calculations across a range of common scenarios.
+Each scenario is categorized by two choices.
+First, the user chooses the planned experimental design (e.g., clustered data, with randomization within cluster).
+Second, the user makes modeling choices (e.g. random impacts model).
+Each of these components need to be identified and specified.
+
+The \emph{design} is characterized by the number of levels of nesting (e.g., students in schools in districts would be three levels) and the level of randomization (e.g., randomization at schools would be randomization at level 2).
+
+The outline of this appendix is as follows.
+In the introduction, we provide notation, a taxonomy for models, explain user-set parameters, and outline the power estimation strategy.
+The bulk of the appendix then provides detailed information about each supported scenario, including the assumed model and standard error.
+The next section details the assumed data generating process.
+Though we use the process for our validation procedure, it is also useful for readers who wish to understand the models and assumptions more deeply.
+Finally, the last section shows how parameters chosen by the user influence the generated data.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Model taxonomy
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Experiment and Model taxonomy}
+\subsection{Model taxonomy}
 
-Our package allows for power calculations across a range of common scenarios or \emph{Designs}.
-To identify a given design, we distinguish between the planned experimental design (e.g., clustered data, with randomization within cluster) and the model used for the planned analysis (e.g., multilevel modeling of some sort).
-Each of these components need to be identified and specified.
+The \emph{model} choices are a bit more complex.
+For the models used for analysis, we create a taxonomy by noting what modeling choice is used at each level of the model, and how covariates are used.
 
-We first identify designs by noting the number of levels of nesting (e.g., students in schools in districts would be three levels) and the level of randomization (e.g., randomization at schools would be randomization at level 2).
+First, to outline our models, we assume a set of observed quantities, shown in Table~\ref{tab:observed_param}, such as the outcomes, covariate values, and membership of each unit to level 2 or 3 units (such as assignment of a student to a school within a district).
+For all notation, we use $i$ to index individuals, $j$ to index level 2 groups, $k$ to index level 3 groups, and $m$ to index outcomes.
 
-The models are a bit more complex. For the models used for analysis, we create a taxonomy by noting what modeling choice is used at each level of the model, and how covariates are used.
+\begin{table}[h]
+\begin{tabular}{p{1.5cm} | p{16cm}}
+Param											& Description \\ \hline
+$M$												& Number of outcomes \\
+$J$												& Number of level 2 units in each level 3 group (assumed constant across level 3 groups) \\
+$K$												& Number of level 3 units \\
+$\bar{n}$										& Number of level 1 units (assumed constant across level 2 groups) \\
+$\bar{T}$										& Proportion of the sample that is assigned to the treatment group (assumed constant across groups) \\
+$N$												& Total number of units $N =\sum_{k=1}^{K} \sum_{j=1}^{J}  \bar{n}$ \\ \hline
+$S_{id}$										& Categorical variable indicating the membership of individual $i$ to a level 2 group\\
+$D_{id}$										& Categorical variable indicating the membership of individual $i$ to a level 3 group\\ \hline
+$Y_{ijmk}(0)$									& Potential outcome for unit $i$ in level 2 group $j$ in level 3 group $k$ for outcome $m$ given no treatment\\
+$Y_{ijmk}(1)$									& Potential outcome for unit $i$ in level 2 group $j$ in level 3 group$k$ for outcome $m$ given treatment\\ \hline
+$V_{km}$										& Level 3 covariates \\
+$g_{1,m}$										& Number of level 3 covariates for outcome $m$\\
+$X_{jkm}$										& Level 2 covariates \\
+$g_{2,m}$										& Number of level 2 covariates for outcome $m$\\
+$C_{ijkm}$										& Level 1 covariates \\
+$g_{1,m}$										& Number of level 1 covariates for outcome $m$\\
+\end{tabular}
+\caption{Observed quantities\label{tab:observed_param}}
+\end{table}
+
+We also assume a set of unobserved, latent parameters, shown in Table~\ref{tab:latent_param}.
+These parameters include intercepts, impacts, and coefficients on covariates.
+
+\begin{table}[h]
+\begin{tabular}{p{1.5cm} | p{16cm}}
+Param											& Description \\ \hline
+$\Xi_{0,m}$ 									& Grand mean outcome under no treatment across level 3 units for outcome $m$\\
+$\Xi_{1,m}$										& Grand mean impact across level 3 units for outcome $m$\\
+$\mu_{0,km}$									& Grand mean outcome under no treatment across level 2 units in level 3 unit $k$ for outcome $m$\\
+$\mu_{1,km}$									& Grand mean impact across level 2 units in level 3 unit $k$ for outcome $m$\\
+$\theta_{0,jkm}$								& Mean outcome under no treatment for level 2 unit $j$ in level 3 unit $k$ for outcome $m$\\
+$\psi_{1,jkm}$									& Mean impact for level 2 unit $j$ in level 3 unit $k$ for outcome $m$\\ \hline
+$w_{0,km}$										& Level 3/District intercepts\\
+$w_{1,km}$										& Level 3/District impacts \\
+$\eta^2_{0,m}$									& Variance of level 3 random effects for outcome $m$ \\
+$\eta^2_{1,m}$									& Variance of level 3 impacts for outcome $m$ (cross-district treatment heterogeneity) \\
+$\xi_m$											& Coefficient of level 3 covariates $V_{km}$ \\ \hline
+$u_{0,jkm}$										& Level 2/School intercepts\\
+$u_{1,jkm}$										& Level 2/School impacts \\
+$\tau^2_{0,m}$									& Variance of level 2 random effects for outcome $m$ \\
+$\tau^2_{1,m}$									& Variance of level 2 impacts for outcome $m$ (cross-school treatment heterogeneity) \\
+$\delta_{m}$									& Coefficient of level 2 covariates $X_{jkm}$ \\\hline
+$r_{ijkm}$										& Level 1/Individual intercepts \\
+$\sigma^2_{m}$									& Variance of individual/level 1 residuals \\
+$\gamma_{m}$									& Coefficient of individual/level 1 covariates $C_{ijkm}$ \\
+\end{tabular}
+\caption{Latent parameters\label{tab:latent_param}}
+\end{table}
+
+Now, we can create a model taxonomy, based on modeling choices for intercepts and impacts.
 In particular we have:
 \begin{itemize}
-\item Whether the school-level and district-level intercepts are:
+\item Whether the level 2 and level 3 intercepts are:
 \begin{itemize}
 \item fixed ($u_{0,jkm}$ and $w_{0,jkm}$ are fixed effects constrained to have mean 0)
 \item random ($u_{0,jkm}$ and $w_{0,jkm}$ are considered to be Normally distributed, allowing for partial pooling)
 \end{itemize}
-\item Whether the school-level and district-level treatment effects are:
+\item Whether the level 2 and level 3 treatment effects are:
 \begin{itemize}
-\item constant, e.g. all schools and districts are modeled as having a single average impact ($u_{1,jkm}= 0$ and $w_{1,km} = 0$)
-\item fixed, e.g. each school or district has an individual estimated impact ($u_{1,jkm}$ are fixed values constrained to have mean 0), with an additional mean impact.
+\item constant, e.g. all units are modeled as having a single average impact ($u_{1,jkm}= 0$ and $w_{1,km} = 0$)
+\item fixed, e.g. each unit has an individual estimated impact ($u_{1,jkm}$ are fixed values constrained to have mean 0), with an additional mean impact.
 \item random ($u_{1,jkm}$ and $w_{1,km}$ are Normally distributed around a mean impact)
 \end{itemize}
 \end{itemize}
+
 
 In addition, the user has choices for whether to include certain covariates in the intercept models.
 We allow for covariates to be included wherever it makes sense for the model.
@@ -71,156 +143,7 @@ Note that in some models, PowerUp incorporates covariates into the slope, allowi
 However, we never make this assumption, as it is unlikely to help with an evaluating targeting an overall average impact.
 Including covariates in the slope terms allows for modeling treatment effect heterogeneity in principle, but this can add complexity with estimation. When this difference occurs, it is noted.
 
-
-
-\subsection{Overall Design naming convention}
-
-The general naming convention follows:
-d[parameters]\_m[parameters]
-
-For design parameters, the first number is the number of levels, and the second is the level at which treatment is assigned.
-
-For model parameters, each set corresponds to the level, how the intercepts are modeled, and how the effects are modeled.
-
-Examples:
-\begin{itemize}
-\item d2.1\_m2rr: 2 level, individual assignment, level 2 random intercept and random treatment effect.  Corresponds to current blocked\_i1\_2r.
-\item d3.2\_m3ff2rc: 3 level, level 2 assignment, level 3 fixed intercepts and fixed treatment effects, level 2 random intercepts and constant treatment effects. Corresponds to current blocked\_c2\_3f.
-\end{itemize}
-
-\begin{table}[h!]
-\begin{tabular}{l | l}
-% \begin{tabular}{p{5cm} | p{5cm}}
-\textbf{PowerUpR!}	& \textbf{PUMP} \\ \hline
-blocked\_i1\_2c 	& d2.1\_m2fc \\
-blocked\_i1\_2f 	& d2.1\_m2ff \\
-blocked\_i1\_2r 	& d2.1\_m2fr \\
-blocked\_i1\_3r 	& d3.1\_m3rr2rr \\
-simple\_c2\_2r 		& d2.2\_m2rc \\
-simple\_c3\_3r 		& d3.3\_m3rc2rc \\
-blocked\_c2\_3f 	& d3.2\_m3ff2rc \\
-blocked\_c2\_3r 	& d3.2\_m3rr2rc \\
-\end{tabular}
-\caption{Correspondence between design names\label{tab:names}}
-\end{table}
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Notation
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Notation}
-\label{sec:notation}
-
-For all notation, we use $i$ to index individuals, $j$ to index schools, $k$ to index districts, and $m$ to index outcomes.
-Tables~\ref{tab:observed_param}-\ref{tab:derived_param} outline all important quantities for calculating power, MDES, and sample size.
-Table~\ref{tab:powerup} provides a reference for translating notation between this document and PowerUpR!
-We now provide further clarification on the parameters in Table~\ref{tab:derived_param}; for a more detailed discussion of these expressions, see Section~\ref{sec:tune}.
-
-The quantity $\text{ICC}$ is the Intraclass Correlation for the unconditional model. The following expressions include the variation, therefore, due to covariates.  All covariates are assumed to be group-mean centered and have unit variance.  (This creates the pairing of terms in the equations below.)
-
-\begin{align*}
-\text{ICC}_{3,m} &= \frac{Var(\mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\xi^2_m + \eta_{0,m}^2}{\left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}\\
-\text{ICC}_{2,m} &= \frac{Var(\theta_{0,jkm} \mid \mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\delta_m^2  + \tau_{0,m}^2}{ \left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}
-\end{align*}
-
-The quantity $\omega$ is the ratio between impact variation and mean variation.
-
-\begin{align*}
-\omega_{3,m} &=  \frac{Var(\mu_{1,jkm})}{Var(\mu_{0,km})} = \frac{\eta^2_{1,m}}{\xi^2_m + \eta_{0,m}^2}\\
-\omega_{2,m} &=  \frac{Var(\psi_{1,jkm} \mid \mu_{1,km})}{Var(\theta_{0,jkm} \mid \mu_{0,km})} = \frac{\tau^2_{1,m}}{\delta_m^2 + \tau^2_{0,m}}
-\end{align*}
-
-The $R^2$ expressions are the percent of variation at a particular level predicted by covariates specific to that level.
-
-\begin{align*}
-R_{3,m}^2 &= 1 - \frac{Var(w_{0,km})}{Var(\mu_{0,km})} = 1 - \frac{\eta^2_{0,m}}{\xi_m^2 + \eta^2_{0,m}} \\
-R_{2,m}^2 &= 1 - \frac{Var(u_{0,jkm})}{Var(\theta_{0,jkm} \mid D_{id})} = 1 - \frac{\tau^2_{0,m}}{\delta_m^2 + \tau^2_{0,m}}\\
-R^2_{1,m} &= 1 - \frac{Var(r_{ijkm})}{Var( Y_{ijkm}(0) \mid S_{id}, D_{id})} = 1 - \frac{ \sigma^2_m }{ \gamma_m^2 + \sigma^2_m }
-\end{align*}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Notation tables
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{table}[p]
-\begin{tabular}{p{1.5cm} | p{16cm}}
-Param											& Description \\ \hline
-$M$												& Number of outcomes \\
-$J$												& Number of schools in each district (assumed constant across districts) \\
-$K$												& Number of districts \\
-$\bar{n}$										& Number of individuals within each school (assumed constant across schools) \\
-$\bar{T}$										& Proportion of the sample that is assigned to the treatment group (assumed constant) \\
-$N$												& Total number of units $N =\sum_{k=1}^{K} \sum_{j=1}^{J}  \bar{n}$ \\ \hline
-$S_{id}$										& Categorical variable indicating the membership of individual $i$ to a school\\
-$D_{id}$										& Categorical variable indicating the membership of individual $i$ to a district\\ \hline
-$Y_{ijmk}(0)$									& Potential outcome for unit $i$ in school $j$ in district $k$ for outcome $m$ given no treatment\\
-$Y_{ijmk}(1)$									& Potential outcome for unit $i$ in school $j$ in district $k$ for outcome $m$ given treatment\\ \hline
-$V_{km}$										& District covariates \\
-$g_{1,m}$										& Number of district covariates for outcome $m$\\
-$X_{jkm}$										& School covariates \\
-$g_{2,m}$										& Number of school covariates for outcome $m$\\
-$C_{ijkm}$										& Individual covariates \\
-$g_{1,m}$										& Number of individual covariates for outcome $m$\\
-\end{tabular}
-\caption{Observed quantities\label{tab:observed_param}}
-\end{table}
-
-
-\begin{table}[p]
-\begin{tabular}{p{1.5cm} | p{16cm}}
-Param											& Description \\ \hline
-$\psi_{1,jkm}$									& Mean impact for school $j$ in district $k$ for outcome $m$\\ \hline
-$\xi_m$											& Coefficient of district covariates $V_{km}$ \\
-$\delta_{m}$									& Coefficient of school covariates $X_{jkm}$ \\
-$\gamma_{m}$									& Coefficient of individual covariates $C_{ijkm}$ \\
-\end{tabular}
-\caption{Parameters we estimate\label{tab:estimate_param}}
-\end{table}
-
-
-\begin{table}[p]
-\begin{tabular}{p{1.5cm} | p{16cm}}
-Param											& Description \\ \hline
-$\Xi_{0,m}$ 									& Grand mean outcome under no treatment across districts for outcome $m$\\
-$\Xi_{1,m}$										& Grand mean impact across districts for outcome $m$\\
-$\mu_{0,km}$									& Grand mean outcome under no treatment across schools in district $k$ for outcome $m$\\
-$\mu_{1,km}$									& Grand mean impact across schools in district $k$ for outcome $m$\\
-$\theta_{0,jkm}$								& Mean outcome under no treatment for school $j$ in district $k$ for outcome $m$\\
-$\psi_{1,jkm}$									& Mean impact for school $j$ in district $k$ for outcome $m$\\ \hline
-$w_{0,km}$										& District intercepts\\
-$w_{1,km}$										& District impacts \\
-$\eta^2_{0,m}$									& Variance of district random effects for outcome $m$ \\
-$\eta^2_{1,m}$									& Variance of district impacts for outcome $m$ (cross-district treatment heterogeneity) \\ \hline
-$u_{0,jkm}$										& School intercepts\\
-$u_{1,jkm}$										& School impacts \\
-$\tau^2_{0,m}$									& Variance of school random effects for outcome $m$ \\
-$\tau^2_{1,m}$									& Variance of school impacts for outcome $m$ (cross-school treatment heterogeneity) \\ \hline
-$r_{ijkm}$										& Individual intercepts \\
-$\sigma^2_{m}$									& Variance of individual/level 1 residuals \\
-\end{tabular}
-\caption{Latent parameters\label{tab:latent_param}}
-\end{table}
-
-
-\begin{table}[p]
-\begin{tabular}{l | l}
-Param				& Description																				\\ \hline
-$ES_{m}$				& effect size																				\\
-$\text{ICC}_{3,m}$			& level 3 (district) intraclass correlation													\\
-$\omega_{3,m}$		& ratio of variation of district impacts to district residuals								\\
-$\text{ICC}_{2,m}$			& level 2 (school) intraclass correlation													\\
-$\omega_{2,m}$		& ratio of variation of school impacts to school residuals									\\
-$R_{3,m}^2$			& percent of district variation explained by level 3 (district) covariate	$V_{km}$			\\
-$R_{2,m}^2$			& percent of school variation explained by level 2 (school) covariate	$X_{jkm}$			\\
-$R_{1,m}^2$			& percent of individual variation explained by level 1 (individual covariate) $C_{ijkm}$		\\
-\end{tabular}
-\caption{Derived parameters\label{tab:derived_param}}
-\end{table}
+For users familiar with PowerUP, Table~\ref{tab:powerup} provides a reference for translating notation between this document and PowerUpR!
 
 \begin{table}[p]
 \begin{tabular}{l | l | l}
@@ -256,12 +179,101 @@ $\tau_{3T3}$		& $\boldsymbol{\kappa}^{w}$ 		& Correlations between district rand
 \end{table}
 
 
+\subsection{Scenario naming convention}
+
+The package naming convention for scenarios follows:
+d[parameters]\_m[parameters]
+
+For design parameters, the first number is the number of levels, and the second is the level at which treatment is assigned.
+
+For model parameters, each set corresponds to the level, how the intercepts are modeled, and how the effects are modeled.
+
+Examples:
+\begin{itemize}
+\item d2.1\_m2rr: 2 level, individual assignment, level 2 random intercept and random treatment effect.  Corresponds to PowerUP! blocked\_i1\_2r.
+\item d3.2\_m3ff2rc: 3 level, level 2 assignment, level 3 fixed intercepts and fixed treatment effects, level 2 random intercepts and constant treatment effects. Corresponds to PowerUP! blocked\_c2\_3f.
+\end{itemize}
+
+Table~\ref{tab:names} shows the list of supported scenarios and their corresponding names in PowerUp!
+
+\begin{table}[h!]
+\begin{tabular}{l | l}
+% \begin{tabular}{p{5cm} | p{5cm}}
+\textbf{PowerUpR!}	& \textbf{PUMP} \\ \hline
+n/a 				& d1.1\_m1c \\
+blocked\_i1\_2c 	& d2.1\_m2fc \\
+blocked\_i1\_2f 	& d2.1\_m2ff \\
+blocked\_i1\_2r 	& d2.1\_m2fr \\
+blocked\_i1\_3r 	& d3.1\_m3rr2rr \\
+simple\_c2\_2r 		& d2.2\_m2rc \\
+simple\_c3\_3r 		& d3.3\_m3rc2rc \\
+blocked\_c2\_3f 	& d3.2\_m3ff2rc \\
+n/a					& d3.2\_m3fc2rc \\
+blocked\_c2\_3r 	& d3.2\_m3rr2rc \\
+\end{tabular}
+\caption{Scenarios: designs and models\label{tab:names}}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Notation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Derived parameters}
+
+To calculate power, a user must choose assumed values for some of the latent parameters.
+However, for certain parameters, the user may instead have more intuition about likely values of functions of these parameters, rather than the parameters themselves.
+For example, rather than choosing the value of the coefficient for a level 3 covariate ($\xi_m$), the user sets $R_{3,m}^2$, the amount of variation explained by level 3 covariates. 
+These derived parameters, which are functions of unobserved parameters, are listed in Table~\ref{tab:derived_param}.
+
+\begin{table}[h]
+\begin{tabular}{l | l}
+Param				& Description																				\\ \hline
+$ES_{m}$			& effect size																				\\
+$\text{ICC}_{3,m}$	& level 3 (district) intraclass correlation													\\
+$\omega_{3,m}$		& ratio of variation of district impacts to district residuals								\\
+$\text{ICC}_{2,m}$	& level 2 (school) intraclass correlation													\\
+$\omega_{2,m}$		& ratio of variation of school impacts to school residuals									\\
+$R_{3,m}^2$			& percent of district variation explained by level 3 (district) covariate	$V_{km}$			\\
+$R_{2,m}^2$			& percent of school variation explained by level 2 (school) covariate	$X_{jkm}$			\\
+$R_{1,m}^2$			& percent of individual variation explained by level 1 (individual covariate) $C_{ijkm}$		\\
+\end{tabular}
+\caption{Derived parameters\label{tab:derived_param}}
+\end{table}
+
+
+We now provide further clarification on these derived parameters.
+For a more detailed discussion of these expressions, see Section~\ref{sec:tune}.
+
+
+The quantity $\text{ICC}$ is the Intraclass Correlation for the unconditional model. The following expressions include the variation, therefore, due to covariates.  All covariates are assumed to be group-mean centered and have unit variance.  (This creates the pairing of terms in the equations below.)
+
+\begin{align*}
+\text{ICC}_{3,m} &= \frac{Var(\mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\xi^2_m + \eta_{0,m}^2}{\left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}\\
+\text{ICC}_{2,m} &= \frac{Var(\theta_{0,jkm} \mid \mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\delta_m^2  + \tau_{0,m}^2}{ \left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}
+\end{align*}
+
+The quantity $\omega$ is the ratio between impact variation and mean variation.
+
+\begin{align*}
+\omega_{3,m} &=  \frac{Var(\mu_{1,jkm})}{Var(\mu_{0,km})} = \frac{\eta^2_{1,m}}{\xi^2_m + \eta_{0,m}^2}\\
+\omega_{2,m} &=  \frac{Var(\psi_{1,jkm} \mid \mu_{1,km})}{Var(\theta_{0,jkm} \mid \mu_{0,km})} = \frac{\tau^2_{1,m}}{\delta_m^2 + \tau^2_{0,m}}
+\end{align*}
+
+The $R^2$ expressions are the percent of variation at a particular level predicted by covariates specific to that level.
+
+\begin{align*}
+R_{3,m}^2 &= 1 - \frac{Var(w_{0,km})}{Var(\mu_{0,km})} = 1 - \frac{\eta^2_{0,m}}{\xi_m^2 + \eta^2_{0,m}} \\
+R_{2,m}^2 &= 1 - \frac{Var(u_{0,jkm})}{Var(\theta_{0,jkm} \mid D_{id})} = 1 - \frac{\tau^2_{0,m}}{\delta_m^2 + \tau^2_{0,m}}\\
+R^2_{1,m} &= 1 - \frac{Var(r_{ijkm})}{Var( Y_{ijkm}(0) \mid S_{id}, D_{id})} = 1 - \frac{ \sigma^2_m }{ \gamma_m^2 + \sigma^2_m }
+\end{align*}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % General strategy
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newpage
-\subsection{General strategy}
+\subsection{Power estimation strategy}
 
 The same strategy is followed for all designs.
 First, we lay out a model for our outcomes, $Y_{ijkm}$.
@@ -316,9 +328,11 @@ To make the formula more directly comparable, we do not take this route, but one
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage
-\section{Design: 1 level, Randomization: level 1}
+\section{Scenarios}
 
-\subsection{Constant effects (d1.1\_m2cc)}
+\subsection{Design: 1 level, randomization at level 1}
+
+\subsubsection{Constant effects (d1.1\_m1c)}
 
 \textbf{PowerUp name:} Not applicable.
 
@@ -364,7 +378,7 @@ The overall treatment effect is then the average of the \texttt{T.x} terms.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage
-\section{Design: 2 levels, Randomization: level 1}
+\subsection{Design: 2 levels, randomization at level 1}
 
 This section of designs comprise what are usually referred to as \emph{multisite experiments}.
 In a multisite experiment, we have a collection of sites (here, schools) and are able to randomize the individuals within each site into treatment and control.
@@ -396,7 +410,7 @@ T.x <- randomizr::block_ra( S.id, prob = Tbar )
 % Blocked individual randomization 2 level designs, constant effects
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Constant effects (d2.1\_m2fc)}
+\subsubsection{Constant effects (d2.1\_m2fc)}
 
 \textbf{PowerUp name:} blocked\_i1\_2c
 
@@ -490,7 +504,7 @@ This can be viewed as within (PowerUp!) vs. overall (this work) effect size metr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\subsection{Fixed effects (d2.1\_m2ff)}
+\subsubsection{Fixed effects (d2.1\_m2ff)}
 
 \textbf{PowerUp name:} blocked\_i1\_2f
 
@@ -560,7 +574,7 @@ This can be viewed as within (PowerUp!) vs. overall (this work) effect size metr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\subsection{Random effects (d2.1\_m2fr)}
+\subsubsection{Random effects (d2.1\_m2fr)}
 
 \textbf{PowerUp name:} blocked\_i1\_2r
 
@@ -635,13 +649,13 @@ PowerUp allows for school covariates to influence the treatment impact, while we
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\section{Design: 2 levels, Randomization: level 2}
+\subsection{Design: 2 levels, randomization at level 2}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simple cluster randomization, 2 level design, random effects 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Random effects (d2.2\_m2rc)}
+\subsubsection{Random effects (d2.2\_m2rc)}
 
 \textbf{PowerUp name:} simple\_c2\_2r
 
@@ -701,7 +715,7 @@ T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\section{Design: 3 levels, Randomization: level 1}
+\subsection{Design: 3 levels, randomization at level 1}
 
 In these designs we have schools nested in districts, and students in schools.
 The only difference here, as compared to blocked individual randomization with 2 levels, is the third level of district.
@@ -715,7 +729,7 @@ We can simply use the prior 2 level designs if we lump district variation into t
 % Blocked individual randomization 3 level designs, random effects
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Random effects (d3.1\_m3rr2rr)}
+\subsubsection{Random effects (d3.1\_m3rr2rr)}
 
 \textbf{PowerUp name:} blocked\_i1\_3r
 
@@ -793,13 +807,13 @@ PowerUp allows for school and district covariates to influence the treatment imp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\section{Design: 3 levels, Randomization: level 2}
+\subsection{Design: 3 levels, randomization at level 2}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Blocked cluster randomization, 3 level design, fixed effects 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Fixed effects (d3.2\_m3ff2rc)}
+\subsubsection{Fixed effects (d3.2\_m3ff2rc)}
 
 \textbf{PowerUp name:} blocked\_c2\_3f
 
@@ -873,7 +887,7 @@ T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = T
 % Blocked cluster randomization, 3 level design, random effects 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
-\subsection{Random effects (d3.2\_m3rr2rc)}
+\subsubsection{Random effects (d3.2\_m3rr2rc)}
 
 \textbf{PowerUp name:} blocked\_c2\_3r
 
@@ -949,13 +963,13 @@ T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = T
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\section{Design: 3 levels, Randomization: level 3}
+\subsection{Design: 3 levels, randomization at level 3}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simple cluster randomization, 3 level design, random effects 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Random effects (d3.3\_m3rc2rc)}
+\subsubsection{Random effects (d3.3\_m3rc2rc)}
 
 \textbf{PowerUp name:} simple\_c3\_3r
 
@@ -1024,28 +1038,21 @@ T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage
-\section{The Data Generation Process}
+\section{Data generating process}
 
-We now discuss the assumed data generating process, indexed by parameters directly tied to the structural equations we use.
+We now discuss the assumed data generating process (DGP), indexed by parameters directly tied to the structural equations we use.
 Let $\boldsymbol{x}_{ijk\cdot}$ be the vector collecting all outcomes $m$.
-
-%We index as follows: $x_{ijkm}$ is variable $x$ for individual $i$ in school $j$ in district $k$ connected to outcome $m$.
-%Covariates are indexed by outcomes $m$ because we assume each outcome has its own covariate associated with that outcome.
-%For example, we may have outcomes for math, reading, and science, and pre-test values for each of these outcomes.
-%We generate districts, schools in districts, and students in schools.
 
 The data generating process is done in the following stages, outlined below.
 
 \subsection{Determine DGP parameters}
 \label{sec:dgp_param}
 
-We have already discussed many parameters in Section~\ref{sec:notation}.
+We have already discussed most of the required parameters in Section~\ref{sec:intro}.
 However, there are a few additional parameters required to generate data that do not directly feed into our equations for power or MDES, related to correlations, show in Table~\ref{tab:corr_param}.
 
 The parameters used in this section need to be picked based on desired aggregate relationships of the full data.
-See the next section for how to translate parameters such as ICC to the DGP parameters used below.
-
-%The parameters of the DGP are shown in Table~\ref{tab:base_param}.
+See the next section for how to translate parameters such as ICC to the DGP parameters
 
 \begin{table}[ht!]
 \begin{tabular}{p{1.5cm} | p{15cm}}
@@ -1354,7 +1361,7 @@ We can assign at the district, school, or individual level depending on the desi
 
 We define two main types of parameters.
 First, model parameters are those defined in Tables~\ref{tab:latent_param} and \ref{tab:corr_param}, and define the DGP.
-Second, control or derived parameters, defined in Table~\ref{tab:derived_param} indirectly tune model parameters.
+Second, control or derived parameters, defined in Table~\ref{tab:derived_param}, indirectly tune model parameters.
 Control parameters are set by the user, which then influence model parameters which are fed into the DGP.
 The mapping of control parameters to model parameters is in Table~\ref{tab:derived_param}.
 
@@ -1377,7 +1384,7 @@ We have variation at the individual, school, and district level.
 We want to be able to tune the proportion of variation in each of these levels.
 We are interested in the unconditional (covariate-free) ICC.
 
-We have for the variance of the control side
+We have for the variance of the control side:
 \begin{align*}
 Var_m( Y_{ijkm}(0) ) &= \xi_m^2 Var_m(V_{km}) + \delta_m^2 Var_m(X_{jkm}) + \gamma_m^2 Var_m(C_{ijkm}) + \eta^2_{0,m} + \tau^2_{0,m} + \sigma^2_m \\
 &=  \xi_m^2 +  \eta^2_{0,m} + \delta_m^2  + \tau^2_{0,m} + \gamma_m^2 + \sigma^2_m.
@@ -1573,7 +1580,6 @@ And similarly:
 % References
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newpage
 \bibliography{pump}
 %\bibliographystyle{plain}
 
