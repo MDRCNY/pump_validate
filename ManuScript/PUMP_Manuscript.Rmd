@@ -25,13 +25,17 @@ Topics where I think we may need more detail:
 - Luke: would you like to add a paragraph on the optimization procedure?
 - give more context for people who aren't familiar with multilevel experiments. What is blocking? clustering? Why might you want to choose a particular RCT design?
 - effect size: what it is, how to decide what it is
+-    KP: I put some minimal explanation about this at the very start of the paper and added a reference. We can discuss how much more detail. 
 - correlation between test statistics, relationship to correlation between outcomes
+-    KP: There is a section titled "understanding design parameters" - let's discuss how to fill out this section - which parameters to discuss and level of detail. Perhaps this is where this discussion of correlation of test statistics might go? I noted in Luke's vignette, he states: For further discussion of selecting these parameters see, for example, CITE Porter original paper. So let's figure out strategy for what to put in this paper and what to refer to. 
 - explanation of all MTP procedures, like in original paper
+-   KP: Maybe this can be an appendix? What did you note about appendices in the journal? 
 
 Optional topics:
 
 - advice on binary outcomes, consider how it affects assumptions
 - reference to literature on summarizing/collapsing outcomes?
+-   KP: This seems beyond scope. Luke makes a nice comment (footnote) that we are agnostic on this issue and refers to literature. We could possibly move this up too. 
 
 
 # Overview
@@ -41,7 +45,7 @@ This task may be done prospectively in order to guide design decisions.
 In this case, researchers make assumptions about data paramaters and make specifications about analytic choices in order to carry out power calculations.
 Or, this may be done retrospectively, which allows researchers to plug in parameter values estimated from data.
 Prospectively, researchers may also target a specified level of statistical power (e.g. 80 or 90 percent) and calculate the required sample size for a desired minimum detectable effect size (MDES), which is the smallest true effect size that has a high probability (specified frequently to be 80 or 90 percent) estimated to be be statistically significant at a specified level (for example, at the 0.05 level).
-As an "effect size," the MDES is reported in units of standard deviations. 
+As an "effect size," the MDES is reported in units of standard deviations. For discussion about the concepts and considerations related to MDES, see @RN27978.
 Alternatively, researchers may target a specified level of power and calculate the MDES that results for a fixed sample size. 
 
 For a wide variety of RCT designs, researchers can take advantage of closed form solutions and numerous power estimation tools. For example, in education and social policy research, see @RN4473; @RN30153; @RN23884; @RN24179.
