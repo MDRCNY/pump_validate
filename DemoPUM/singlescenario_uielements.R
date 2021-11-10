@@ -43,13 +43,29 @@ mInput <- function(estimation, design, scenario){
   
     id <- paste0(estimation, "_" ,"m", "_", design, "_" , scenario)
     numericInput(id, 
-                 "Number of Outcomes", 
+                 "Number of outcomes", 
                  min = 1, 
                  max = 10, 
                  value = 5, 
                  step = 1)
   
 } # Number of Outcomes (M)
+
+##################################################
+# Number of Outcomes with no effects
+##################################################
+
+numZeroInput <- function(estimation, design, scenario){
+  
+  id <- paste0(estimation, "_" ,"numZero", "_", design, "_" , scenario)
+  numericInput(id, 
+               "Number of outcomes with no effects", 
+               min = 1, 
+               max = 10, 
+               value = 5, 
+               step = 1)
+  
+} # number of outcomes with no effects
 
 #########################
 # MTP element
@@ -115,6 +131,31 @@ mdesInput <- function(estimation, design, scenario, numOutcome){
            "Minimum detectable effect size (MDES) (Vector of length M, comma delimited)", 
            value = defaultmdesvalues)
 } # mdesInput
+
+#########################
+# Power value
+#########################
+
+powerValuesInput <- function(estimation, design, scenario, numOutcome){
+  
+  # if initial values are not set yet, set it at 5.  
+  if(length(numOutcome) == 0){
+    
+    numOutcome <- 5
+    
+  } # set default value to numOutcome
+  
+  # default mdes values whose count of number will change depending on number of outcomes
+  defaultpowervalues <- paste0(rep(0.8, times = 1), collapse = ",")
+  
+  id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario)
+  numericInput(id, 
+            "Target power", 
+            min = 0,
+            max = 1,
+            value = defaultpowervalues,
+            step = 0.1)
+} # powerValuesInput
 
 ##################################################################################
 # Correlation between test statistics (assumed to be the same between all pairs)

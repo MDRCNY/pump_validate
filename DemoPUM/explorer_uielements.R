@@ -11,7 +11,7 @@ varVaryInputEx <- function(estimation, design, scenario){
   print(paste0("I am in variable Input bar", design))
   id <- paste0(estimation, "_", "varVary", "_", design, "_" , scenario)
   
-   if(design == "d1.1_m2cc") {
+   if(design == "d1.1_m2cc" & estimation == "power") {
 
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -27,7 +27,23 @@ varVaryInputEx <- function(estimation, design, scenario){
                                 "r2.1" = "r2.1"),
                  selected = "rho") # select input buttons div
 
-   } else if(design == "d2.1_m2fc") {
+   } else if(design == "d1.1_m2cc" & estimation == "mdes"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
+                                "Number of outcomes with no effects" = "numZero",
+                                "Multiple testing procedure" = "mtp",
+                                "Target Power" = "targetPower",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1"),
+                 selected = "rho") # select input buttons div
+
+   } else if(design == "d2.1_m2fc" & estimation == "power") {
 
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -45,7 +61,25 @@ varVaryInputEx <- function(estimation, design, scenario){
                                 "icc.2" = "icc.2"),
                  selected = "rho") # select input buttons div
 
-   } else if(design == "d2.1_m2ff"){
+   } else if(design == "d2.1_m2fc" & estimation == "mdes") {
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
+                                "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
+                                "Multiple testing procedure" = "mtp",
+                                "Target Power" = "targetPower",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d2.1_m2ff" & estimation == "power"){
 
     print(paste0("I am in this", design))
     selectInput(id, "Which variable would you like to vary?",
@@ -63,7 +97,25 @@ varVaryInputEx <- function(estimation, design, scenario){
                                "icc.2" = "icc.2"),
                  selected = "rho") # select input buttons div
     
-   } else if(design == "d2.1_m2fr"){
+   } else if(design == "d2.1_m2ff" & estimation == "mdes"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
+                                "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
+                                "Multiple testing procedure" = "mtp",
+                                "Target Power" = "targetPower",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d2.1_m2fr" & estimation == "power"){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -82,7 +134,26 @@ varVaryInputEx <- function(estimation, design, scenario){
                                 "omega.2" = "omega.2"),
                  selected = "rho") # select input buttons div
      
-   } else if(design == "d3.1_m3rr2rr"){
+   }else if(design == "d2.1_m2fr" & estimation == "mdes"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
+                                "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
+                                "Multiple testing procedure" = "mtp",
+                                "Target Power" = "targetPower",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "omega.2" = "omega.2"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d3.1_m3rr2rr" & estimation == "power"){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -104,7 +175,29 @@ varVaryInputEx <- function(estimation, design, scenario){
                                 "omega.3" = "omega.3"),
                  selected = "rho") # select input buttons div
      
-   } else if(design == "d2.2_m2rc"){
+   } else if(design == "d3.1_m3rr2rr" & estimation == "mdes"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
+                                "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
+                                "Number of level-3 groupings" = "k",
+                                "Multiple testing procedure" = "mtp",
+                                "Target Power" = "targetPower",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "omega.2" = "omega.2",
+                                "icc.3" = "icc.3",
+                                "omega.3" = "omega.3"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d2.2_m2rc" & estimation == "power"){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -123,7 +216,26 @@ varVaryInputEx <- function(estimation, design, scenario){
                                 "r2.2" = "r2.2"),
                  selected = "rho") # select input buttons div
      
-   } else if(design == "d3.3_m3rc2rc"){
+   } else if(design == "d2.2_m2rc" & estimation == "mdes"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
+                                "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
+                                "Multiple testing procedure" = "mtp",
+                                "Target Power" = "targetPower",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "r2.2" = "r2.2"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d3.3_m3rc2rc" & estimation == "power"){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -145,7 +257,29 @@ varVaryInputEx <- function(estimation, design, scenario){
                                 "icc.3" = "icc.3"),
                  selected = "rho") # select input buttons div
      
-   } else if(design == "d3.2_m3ff2rc"){
+   } else if(design == "d3.3_m3rc2rc" & estimation == "mdes"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
+                                "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
+                                "Number of level-3 groupings" = "k",
+                                "Multiple testing procedure" = "mtp",
+                                "Target Power" = "targetPower",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "r2.2" = "r2.2",
+                                "r2.3" = "r2.3",
+                                "icc.3" = "icc.3"),
+                 selected = "rho") # select input buttons divelse if(design == "d3.2_m3ff2rc"){
+
+   } else if(design == "d3.2_m3ff2rc" & estimation == "power"){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -166,7 +300,28 @@ varVaryInputEx <- function(estimation, design, scenario){
                                 "icc.3" = "icc.3"),
                  selected = "rho") # select input buttons div
      
-   } else if(design == "d3.2_m3rr2rc"){
+   } else if(design == "d3.2_m3ff2rc" & estimation == "mdes"){
+     
+     print(paste0("I am in this", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
+                                "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
+                                "Number of level-3 groupings" = "k",
+                                "Multiple testing procedure" = "mtp",
+                                "Target Power" = "targetPower",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "r2.2" = "r2.2",
+                                "icc.3" = "icc.3"),
+                 selected = "rho") # select input buttons div
+     
+   } else if(design == "d3.2_m3rr2rc" & estimation == "power"){
     
      print(paste0("I am in this ", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -187,8 +342,29 @@ varVaryInputEx <- function(estimation, design, scenario){
                                 "icc.3" = "icc.3",
                                 "omega.3" = "omega.3"),
                  selected = "rho") # select input buttons div
+     
+   } else if(design == "d3.2_m3rr2rc" & estimation == "mdes"){
+     
+     print(paste0("I am in this ", design))
+     selectInput(id, "Which variable would you like to vary?",
+                 choices = list("Number of outcomes" = "m",
+                                "Units per block" = "nbar",
+                                "Number of blocks" = "j",
+                                "Number of outcomes with no effects" = "numZero",
+                                "Number of level-3 groupings" = "k",
+                                "Multiple testing procedure" = "mtp",
+                                "Target Power" = "targetPower",
+                                "rho" = "rho",
+                                "numCovar.1" = "numCovar.1",
+                                "tbar" = "tbar",
+                                "alpha" = "alpha",
+                                "r2.1" = "r2.1",
+                                "icc.2" = "icc.2",
+                                "r2.2" = "r2.2",
+                                "icc.3" = "icc.3",
+                                "omega.3" = "omega.3"),
+                 selected = "rho") # select input buttons div
    }
-  
 } # number of unit per block
 
 ############################
@@ -334,6 +510,42 @@ mInputEx <- function(estimation, design, scenario, varVary){
 } # Number of Outcomes (M)
 
 #########################
+# Power values 
+#########################
+
+targetPowerInputEx <- function(estimation, design, scenario, numOutcome, varVary){
+  
+  id <- paste0(estimation, "_" ,"targetPower", "_", design, "_" , scenario, "_", varVary)
+  
+    if(varVary == "targetPower"){
+      
+      if(TRUE){
+        text_val <- HTML(paste("Target Power Values",
+                               "<span style=\"color:red\"> (Input multiple values) </span>"))
+      }else{
+        text_val <- HTML(paste("Target Power Values"))
+      }
+      
+      # default m values
+      defaulttargetpowervalues <- paste0(c(0.75, 0.8), collapse = ",")
+      
+      textInput(id, 
+                text_val, 
+                value = defaulttargetpowervalues)
+      
+    } else{
+      
+      # default m values
+      defaultmvalues <- paste0(c(0.8))
+      
+      textInput(id, 
+                "Target Power Values (Input a single value)", 
+                value = defaultmvalues)
+    }
+
+} # Number of Outcomes (M)
+
+#########################
 # MTP element
 #########################
 
@@ -407,49 +619,48 @@ mtpPopOverEx <- function(estimation, design, scenario, varVary){
 
 mdesInputEx <- function(estimation, design, scenario, numOutcome, varVary){
 
-  
-  if(varVary == "mdes") {
-    
-    if(TRUE){
-      text_val <- HTML(paste("Minimum detectable effect size (MDES)",
-                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    if(varVary == "mdes") {
+      
+      if(TRUE){
+        text_val <- HTML(paste("Minimum detectable effect size (MDES)",
+                               "<span style=\"color:red\"> (Input multiple values) </span>"))
+      } else {
+        text_val <- HTML(paste("Minimum detectable effect size (MDES)"))
+      }
+      
+      # if initial values are not set yet, set it at 5.  
+      if(length(numOutcome) == 0){
+        
+        numOutcome <- 5
+        
+      } # set default value to numOutcome
+      
+      # default mdes values whose count of number will change depending on number of outcomes
+      defaultmdesvalues <- paste0(c(0.125, 0.2), collapse = ",")
+      
+      id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
+      
+      textInput(id, 
+               text_val, 
+               value = defaultmdesvalues)
     } else {
-      text_val <- HTML(paste("Minimum detectable effect size (MDES)"))
+      
+      if(length(numOutcome) == 0){
+        
+        numOutcome <- 5
+        
+      } # set default value to numOutcome
+      
+      # default mdes values whose count of number will change depending on number of outcomes
+      defaultmdesvalues <- paste0(rep(0.125, times = 1), collapse = ",")
+      
+      id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
+      
+      textInput(id, 
+                "Minimum detectable effect size (MDES) (Input a single value)", 
+                value = defaultmdesvalues)
     }
-    
-    # if initial values are not set yet, set it at 5.  
-    if(length(numOutcome) == 0){
-      
-      numOutcome <- 5
-      
-    } # set default value to numOutcome
-    
-    # default mdes values whose count of number will change depending on number of outcomes
-    defaultmdesvalues <- paste0(c(0.125, 0.2), collapse = ",")
-    
-    id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
-    
-    textInput(id, 
-             text_val, 
-             value = defaultmdesvalues)
-  } else {
-    
-    if(length(numOutcome) == 0){
-      
-      numOutcome <- 5
-      
-    } # set default value to numOutcome
-    
-    # default mdes values whose count of number will change depending on number of outcomes
-    defaultmdesvalues <- paste0(rep(0.125, times = 1), collapse = ",")
-    
-    id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
-    
-    textInput(id, 
-              "Minimum detectable effect size (MDES) (Input a single value)", 
-              value = defaultmdesvalues)
-  }
-  
+
 } # mdesInput
 
 ##################################################################################
