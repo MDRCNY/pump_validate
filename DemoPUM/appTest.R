@@ -1822,7 +1822,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
                   
          )) #Power generation table
     
-
+    browser()
+      
     # Save the reactive Power Table
     reactPowerTable(dat)
     {reactPowerTable()}
@@ -2094,6 +2095,15 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     if (theEstimation == "mdes") {
       
+      browser()
+      
+      #D1indiv
+      #indiv.mean
+      #min1
+      #min2
+      #minn
+      #complete
+      
       dat <- as.data.frame(
         isolate(pum::pump_mdes_grid(design = design,
                                      nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
@@ -2103,6 +2113,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                      MTP = as.character(unlist(strsplit(mtp, ","))),
                                      M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
                                      target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+                                     power.definition = c("complete"),
+                                     tol = 0.05,
                                      rho = as.numeric(unlist(strsplit(rho, ","))),
                                      numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
                                      Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
