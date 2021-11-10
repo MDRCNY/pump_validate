@@ -715,7 +715,7 @@ numCovar.1InputEx <- function(estimation, design, scenario, varVary){
     }
     
     # default numCovariate 1 values values whose count of number will change depending on number of outcomes
-    defaultnumCovar.1values <- paste0(c(0.125, 0.2), collapse = ",")
+    defaultnumCovar.1values <- paste0(c(1, 2), collapse = ",")
     
     id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario, "_", varVary)
     textInput(id, 
@@ -724,7 +724,7 @@ numCovar.1InputEx <- function(estimation, design, scenario, varVary){
   } else {
     
     # default numCovariate 1 values values whose count of number will change depending on number of outcomes
-    defaultnumCovar.1values <- paste0(c(0.125))
+    defaultnumCovar.1values <- paste0(c(1))
     
     id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario, "_", varVary)
     textInput(id, 
