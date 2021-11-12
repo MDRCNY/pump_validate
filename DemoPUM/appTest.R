@@ -2102,6 +2102,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       #minn
       #complete
       
+      
       dat <- as.data.frame(
         isolate(pum::pump_mdes_grid(design = design,
                                      nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
@@ -2111,7 +2112,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                      MTP = as.character(unlist(strsplit(mtp, ","))),
                                      M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
                                      target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-                                     power.definition = c("indiv.mean"),
+                                     power.definition = c("min1"),
                                      tol = 0.05,
                                      rho = as.numeric(unlist(strsplit(rho, ","))),
                                      numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),

@@ -545,6 +545,28 @@ targetPowerInputEx <- function(estimation, design, scenario, numOutcome, varVary
 
 } # Number of Outcomes (M)
 
+typeSampleInputEx <- function(estimation, design, scenario, numOutcome, varVary){
+  
+  id <- paste0(estimation, "_" ,"typeSample", "_", design, "_" , scenario, "_", varVary)
+  
+
+    # default m values
+    defaulttypeSamplevalues <- paste0(c(0.8))
+    
+    textInput(id, 
+              "Target Power Values (Input a single value)", 
+              value = defaultmvalues)
+  
+  
+} # Number of Outcomes (M)
+
+
+
+
+
+
+
+
 #########################
 # MTP element
 #########################
