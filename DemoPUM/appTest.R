@@ -934,9 +934,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
-    theVarVary = as.character(getVarVaryEx())
-    
-    id <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_" , theScenario, "_", theVarVary)
+
+    id <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_" , theScenario)
 
     if(theEstimation == "sample" && !is.null(input[[id]])){
       
@@ -1090,7 +1089,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       div(style = "display: inline-block, vertical-align:top;", 
           typeOfSampleInputEx(estimation = theEstimation, design = theDesign ,
-                              scenario = theScenario, varVary = theVarVary))
+                              scenario = theScenario, input = input))
       
     } else {
       

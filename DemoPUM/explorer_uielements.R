@@ -1051,9 +1051,9 @@ targetPowerInputEx <- function(estimation, design, scenario, numOutcome, varVary
 # Which samples type to use
 ############################
 
-typeOfSampleInputEx <- function(estimation, design, scenario, varVary){
+typeOfSampleInputEx <- function(estimation, design, scenario, input){
   
-  id <- paste0(estimation, "_", "typeOfSample", "_", design, "_" , scenario, "_", varVary)
+  id <- paste0(estimation, "_", "typeOfSample", "_", design, "_" , scenario)
   
   # if the estimation is sample
   
@@ -1064,21 +1064,39 @@ typeOfSampleInputEx <- function(estimation, design, scenario, varVary){
                   selected = "nbar")
       
     } else if (design %in% c("d2.1_m2fc", "d2.1_m2ff","d2.1_m2fr","d2.2_m2rc","d2.2_m2rc")){
-      
+
       print(paste0("I am in this", design))
-      selectInput(id, "Sample type",
-                  choices = list("Units per block" = "nbar",
-                                 "Number of blocks" = "j"),
-                  selected = "nbar")
+      if(is.null((input[[id]]))){
+        selectInput(id, "Sample type",
+                    choices = list("Units per block" = "nbar",
+                                   "Number of blocks" = "j"),
+                    selected = "nbar")
+      }else{
+        selectInput(id, "Sample type",
+                    choices = list("Units per block" = "nbar",
+                                   "Number of blocks" = "j"),
+                    selected = input[[id]])
+      }
+      
     
     } else {
-      
+ 
       print(paste0("I am in this", design))
-      selectInput(id, "Sample type",
-                  choices = list("Units per block" = "nbar",
-                                 "Number of blocks" = "j",
-                                 "Number of 3-level groupings" = "k"),
-                  selected = "nbar")
+      
+      if(is.null((input[[id]]))){
+        selectInput(id, "Sample type",
+                    choices = list("Units per block" = "nbar",
+                                   "Number of blocks" = "j",
+                                   "Number of 3-level groupings" = "k"),
+                    selected = "nbar")
+      }else{
+        selectInput(id, "Sample type",
+                    choices = list("Units per block" = "nbar",
+                                   "Number of blocks" = "j",
+                                   "Number of 3-level groupings" = "k"),
+                    selected = input[[id]])
+      }
+     
     } 
     
   
