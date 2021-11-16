@@ -2292,6 +2292,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     } else if (theEstimation == "mdes"){
       
+      browser()
+      
       dat <- dat[, c(2,3,4,5,1)]
       
     } else if (theEstimation == "sample" & theVarVary != "mdes"){
@@ -2479,8 +2481,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
     } else if (theEstimation == "mdes") {
       
-      #browser()
-      
       # Grab the number of outcomes
       M <- as.numeric(input[[m_subset]])
       
@@ -2503,6 +2503,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       varVaryItem <- names(dat)[2]
       MTPname <- dat[["MTP"]][1]
 
+      browser()
+      
       # Adjusting the data table for graphing
       withoutIndivPower <-
         dat %>%
@@ -2510,7 +2512,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         dplyr::select(-design, -MTP) %>%
         dplyr::arrange(desc(Adjusted.MDES)) %>%
         dplyr::rename(Adjusted_MDES = Adjusted.MDES) %>%
-        tidyr::pivot_longer(!c(varVaryItem,Adjusted_MDES), names_to = "Power_Definition", values_to = "power") 
+        tidyr::pivot_longer(!c(varVaryItem,Adjusted_MDES), names_to = "Power_Definition", values_to = "powerType") 
       
       # converting data type for graphing purposes
       withoutIndivPower <- withoutIndivPower %>%
@@ -2533,6 +2535,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       # Plotting the graph #
       ######################
       
+      
       output$powercalcGraphP2LBIEX <- renderPlotly({
         
         # Wrapping the ggplot with plotly
@@ -2542,7 +2545,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
             data = withoutIndivPower,
             aes_string(x = varVaryItem,
                        y = "Adjusted_MDES",
-                       colour = "Power_Definition")) +
+                       colour = "powerType")) +
               geom_point(size = 2,
                          position = position_jitter(width = 0.2)) +
               scale_y_continuous(limits = c(0,1)) +
@@ -2616,7 +2619,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       dat <- as.data.frame(dat)
       
       # Pulling out the variable that we are varying
-      varVaryItem <- names(dat)[2]
+      varVaryItem <- names(dat)[3]
       MTPname <- dat[["MTP"]][1]
       
       # Adjusting the data table for graphing
@@ -2624,9 +2627,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
         dat %>%
         dplyr::select_all() %>%
         dplyr::select(-design, -MTP) %>%
-        dplyr::arrange(desc(Adjusted.MDES)) %>%
-        dplyr::rename(Adjusted_MDES = Adjusted.MDES) %>%
-        tidyr::pivot_longer(!c(varVaryItem,Adjusted_MDES), names_to = "Power_Definition", values_to = "power") 
+        dplyr::arrange(desc(Sample.size)) %>%
+        dplyr::rename(Sample_size = Sample.size) %>%
+        tidyr::pivot_longer(!c(varVaryItem,Sample_size), names_to = "Power_Definition", values_to = "power") 
       
       # converting data type for graphing purposes
       withoutIndivPower <- withoutIndivPower %>%
