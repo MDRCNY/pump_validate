@@ -17,7 +17,7 @@ varVaryInputEx <- function(estimation, design, scenario, sampleType){
   print(paste0("I am in variable Input bar", design))
   id <- paste0(estimation, "_", "varVary", "_", design, "_" , scenario, "_", sampleType)
   
-   if(design == "d1.1_m2cc" & estimation == "power") {
+   if(design == "d1.1_m1c" & estimation == "power") {
 
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -33,7 +33,7 @@ varVaryInputEx <- function(estimation, design, scenario, sampleType){
                                 "r2.1" = "r2.1"),
                  selected = "rho") # select input buttons div
 
-   } else if(design == "d1.1_m2cc" & estimation == "mdes"){
+   } else if(design == "d1.1_m1c" & estimation == "mdes"){
      
      print(paste0("I am in this", design))
      selectInput(id, "Which variable would you like to vary?",
@@ -377,7 +377,7 @@ varVaryInputEx <- function(estimation, design, scenario, sampleType){
      # sampleType - nbar, j, k
      
 
-     if(design == "d1.1_m2cc" & sampleType == "nbar") {
+     if(design == "d1.1_m1c" & sampleType == "nbar") {
        
        print(paste0("I am in this", design))
        selectInput(id, "Which variable would you like to vary?",

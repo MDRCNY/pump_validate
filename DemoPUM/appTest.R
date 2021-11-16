@@ -2066,14 +2066,16 @@ server <- shinyServer(function(input, output, session = FALSE) {
     icc.3_subset <- paste0(theEstimation, "_", "icc.3", "_", theDesign, "_", theScenario, "_", theVarVary)
     k_subset <- paste0(theEstimation, "_", "k","_", theDesign, "_", theScenario, "_", theVarVary)
     omega.3_subset <- paste0(theEstimation, "_", "omega.3", "_", theDesign, "_", theScenario, "_", theVarVary)
-    
+    typeOfSample_subset <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_", theScenario)
+
+
     # Pulling in values for all the designs
     design <- input[[design_subset]]
-    nbar <- input[[nbar_subset]]
-    j <- input[[j_subset]]
     numZero <- input[[numZero_subset]]
     mtp <- input[[mtp_subset]]
     m <- input[[m_subset]]
+    nbar <- input[[nbar_subset]]
+    j <- input[[j_subset]]
     rho <- input[[rho_subset]]
     numCovar.1 <- input[[numCovar.1_subset]]
     tbar <- input[[tbar_subset]]
@@ -2101,6 +2103,20 @@ server <- shinyServer(function(input, output, session = FALSE) {
       targetPower <- input[[targetPower_subset]]
       
     }
+    
+    if (theEstimation == "sample"){
+      
+      mdes_subset <- paste0(theEstimation, "_", "mdes", "_", theDesign, "_", theScenario, "_", theVarVary)
+      mdes <- input[[mdes_subset]]
+      
+      targetPower_subset <- paste0(theEstimation, "_", "targetPower", "_", theDesign, "_", theScenario, "_", theVarVary)
+      targetPower <- input[[targetPower_subset]]
+      
+      typeOfSample_subset <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_", theScenario)
+      typeOfSample <- input[[typeOfSample_subset]]
+      
+    }
+    
     
     if(design %in% c("d1.1_m1c")){
       
@@ -2149,6 +2165,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
       omega.3 <- input[[omega.3_subset]]
       
     }
+    
+    
+    
     
     if (theEstimation == "power") {
       
@@ -2200,7 +2219,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                      M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
                                      target.power = as.numeric(unlist(strsplit(targetPower, ","))),
                                      power.definition = c("indiv.mean"),
-                                     tol = 0.05,
                                      rho = as.numeric(unlist(strsplit(rho, ","))),
                                      numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
                                      Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
@@ -2213,6 +2231,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                      omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
                                      omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
                                      long.table = TRUE,
+                                     tol = 0.01,
                                      tnum = 10000,
                                      B = 100,
                                      cl = NULL,
@@ -2224,9 +2243,39 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     if (theEstimation == "sample"){
       
+      if(design %in% c("d1.1_m1c")) {
+        
+        browser()
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            J = 1,
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = "indiv.mean",
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+          ))
       
-      
-      
+      }
+        
+        
     }
     
     
@@ -2245,7 +2294,23 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       dat <- dat[, c(2,3,4,5,1)]
       
+    } else if (theEstimation == "sample" & theVarVary != "mdes"){
+      
+      dat <- dat %>%
+        dplyr::select(-MDES)
+      
+      dat <- dat[, c(2,3,4,5,6,7,1)]
+      
+    } else if (theEstimation == "sample" & theVarVary == "mdes"){
+      
+      dat <- dat %>%
+        dplyr::relocate(design)
+      
+      dat <- dat[, c(1,4,3,5,6,7,2)]
+      
     }
+    
+    
     # Save the reactive Power Table
     reactPowerTable(dat)
     {reactPowerTable()}
@@ -2438,6 +2503,122 @@ server <- shinyServer(function(input, output, session = FALSE) {
       varVaryItem <- names(dat)[2]
       MTPname <- dat[["MTP"]][1]
 
+      # Adjusting the data table for graphing
+      withoutIndivPower <-
+        dat %>%
+        dplyr::select_all() %>%
+        dplyr::select(-design, -MTP) %>%
+        dplyr::arrange(desc(Adjusted.MDES)) %>%
+        dplyr::rename(Adjusted_MDES = Adjusted.MDES) %>%
+        tidyr::pivot_longer(!c(varVaryItem,Adjusted_MDES), names_to = "Power_Definition", values_to = "power") 
+      
+      # converting data type for graphing purposes
+      withoutIndivPower <- withoutIndivPower %>%
+        dplyr::mutate(power = as.numeric(Adjusted_MDES),
+                      Power_Definition = as.factor(Power_Definition))
+      
+      # Converting to factor the variable that we are varying
+      withoutIndivPower[[1]] <- as.factor(withoutIndivPower[[1]])
+      
+      # Adding that MTP name
+      withoutIndivPower$MTPname <- MTPname
+      
+      # pulling out Power Type Levels to match with all colors
+      powerTypeLevels <- levels(withoutIndivPower$powerType)
+      
+      # create value for scale color manual by matching color and Power Type
+      allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+      
+      ######################
+      # Plotting the graph #
+      ######################
+      
+      output$powercalcGraphP2LBIEX <- renderPlotly({
+        
+        # Wrapping the ggplot with plotly
+        
+        pg <-
+          plotly::ggplotly(ggplot2::ggplot(
+            data = withoutIndivPower,
+            aes_string(x = varVaryItem,
+                       y = "Adjusted_MDES",
+                       colour = "Power_Definition")) +
+              geom_point(size = 2,
+                         position = position_jitter(width = 0.2)) +
+              scale_y_continuous(limits = c(0,1)) +
+              ggtitle(paste0(MTPname, " adjusted MDES values across different \n Power Definitions & ", varVaryItem, " values")) +
+              scale_colour_manual(values = allcolorsvalues) +
+              labs(x = paste0("Different ", varVaryItem, " Scenarios"),
+                   y = "Adjusted MDES Values",
+                   colour = "") +
+              theme_linedraw() +
+              theme(plot.title = element_text(size = 16,
+                                              face = "bold",
+                                              vjust = 1,
+                                              hjust = 0.5))
+          )
+        
+        # plotly adjustments for margin, centering and axis titles
+        
+        pg <- layout(pg,
+                     #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
+                     margin=list(t = 75),
+                     legend = list(x = 100,
+                                   orientation = "v",
+                                   xanchor = "center",
+                                   y = 0.5,
+                                   title = list(text = '<b> Power Type </b>')))
+        
+        # plotly configurations to suit ourpuposes
+        
+        pg %>%
+          config(displaylogo = FALSE,
+                 collaborate = FALSE,
+                 displayModeBar = TRUE,
+                 modeBarButtonsToRemove = list(
+                   'sendDataToCloud',
+                   'autoScale2d',
+                   'resetScale2d',
+                   'hoverClosestCartesian',
+                   'hoverCompareCartesian',
+                   'zoom2d',
+                   'pan2d',
+                   'select2d',
+                   'lasso2d',
+                   'zoomIn2d',
+                   'zoomOut2d',
+                   'toggleSpikelines'
+                 ))
+        
+      }) # ggplot for power graph
+      
+      
+    } else if (theEstimation == "sample"){
+      
+      browser()
+      
+      # Grab the number of outcomes
+      M <- as.numeric(input[[m_subset]])
+      
+      # End of Minimum Power
+      minEnd <- M - 1
+      minPower <- paste0(1:minEnd, "-minimum")
+      
+      # Create color gradient for minimum power
+      mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
+      mincolours <- sort(mincolours)
+      
+      # Add complete, individual, minimum and raw power colors
+      allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
+      
+      # Pulling the generated data table
+      dat <- reactPowerTable()
+      dat <- as.data.frame(dat)
+      
+      # Pulling out the variable that we are varying
+      varVaryItem <- names(dat)[2]
+      MTPname <- dat[["MTP"]][1]
+      
       # Adjusting the data table for graphing
       withoutIndivPower <-
         dat %>%
