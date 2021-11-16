@@ -1157,7 +1157,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theScenario = as.character(whichTab$scenario)
     theVarVary = as.character(getVarVaryEx())
     
-    if(theDesign == "power"){
+    if(theEstimation == "power"){
       div(style = "display: inline-block, vertical-align:top;", 
           numZeroInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
     } else {
@@ -2195,7 +2195,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
         isolate(pum::pump_mdes_grid(design = design,
                                      nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
                                      J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
-                                     numZero = as.numeric(unlist(strsplit(numZero, ","))), # number of outcomes with zero effects
                                      K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
                                      MTP = as.character(unlist(strsplit(mtp, ","))),
                                      M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
@@ -2221,7 +2220,15 @@ server <- shinyServer(function(input, output, session = FALSE) {
                 
         )) #Power generation table
       
-    } # the estimation is power
+    } # the estimation is mdes
+    
+    if (theEstimation == "sample"){
+      
+      
+      
+      
+    }
+    
     
     if(theVarVary == "mdes" & theEstimation == "power") {
       
