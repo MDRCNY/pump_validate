@@ -81,7 +81,7 @@ ui <- fluidPage(
                             div(style = "display: inline-block, vertical-align:top;", 
                             column(12,
                              selectInput("designSs", "What research design is this for?", 
-                                        choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m2cc",
+                                        choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
                                                        "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
                                                        "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
                                                        "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
@@ -341,7 +341,7 @@ ui <- fluidPage(
                    div(style = "display: inline-block, vertical-align:top;", 
                        column(12,
                               selectInput("designEx", "What research design is this for?", 
-                                          choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m2cc",
+                                          choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
                                                          "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
                                                          "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
                                                          "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
@@ -358,6 +358,14 @@ ui <- fluidPage(
                  ), # picking the research design
                  
                  # UI/UX input for variables to vary
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("typeOfSampleEx"))
+                   
+                 ), # type of sample to estimate
+            
                  fluidRow(
                    
                    column(12,
@@ -634,7 +642,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   })
   
   getEstimationEx <- reactive({
-    
+
     if(input$estimationEx == "power"){
       
       print("power")
@@ -663,10 +671,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   getDesignSs <- reactive({
     
-    if(input$designSs == "d1.1_m2cc"){
+    if(input$designSs == "d1.1_m1c"){
      
-      print("d1.1_m2cc")
-      return(c("d1.1_m2cc"))
+      print("d1.1_m1c")
+      return(c("d1.1_m1c"))
     }
     
     if(input$designSs == "d2.1_m2fc"){
@@ -714,10 +722,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
   getDesignEx <- reactive({
     
-    if(input$designEx == "d1.1_m2cc"){
+    if(input$designEx == "d1.1_m1c"){
       
-      print("d1.1_m2cc")
-      return(c("d1.1_m2cc"))
+      print("d1.1_m1c")
+      return(c("d1.1_m1c"))
     }
     
     if(input$designEx == "d2.1_m2fc"){
@@ -768,13 +776,17 @@ server <- shinyServer(function(input, output, session = FALSE) {
   ###########################################################
   
   getVarVaryEx <- reactive({
-    
+
     theEstimation = as.character(getEstimationEx())
+
     theDesign = as.character(getDesignEx())
+
     theScenario = as.character(whichTab$scenario)
     
-    id <- paste0(theEstimation, "_", "varVary", "_", theDesign, "_" , theScenario)
+    theSampleType = as.character(getTypeOfSampleEx())
     
+    id <- paste0(theEstimation, "_", "varVary", "_", theDesign, "_" , theScenario, "_", theSampleType)
+  
     if(!is.null(input[[id]])){
       
       if(input[[id]] == "m"){
@@ -902,6 +914,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
         return(c("omega.3"))    
       }
       
+      
+      
     } else {
       
       print("Setting a default rho variable to vary.")
@@ -910,6 +924,49 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }
     
   }) # which variable to vary
+  
+  ###########################################################
+  # Get which sample type we are selecting
+  ###########################################################
+  
+  getTypeOfSampleEx <- reactive({
+
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    
+    id <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_" , theScenario, "_", theVarVary)
+
+    if(theEstimation == "sample" && !is.null(input[[id]])){
+      
+      #req(input[[id]])
+    
+      if (input[[id]] == "nbar"){
+
+        return(c("nbar"))
+        
+      } else if (input[[id]] == "j"){
+        
+        return(c("j"))
+        
+      } else if (input[[id]] == "k"){
+        
+        return(c("k"))
+        
+      } 
+      
+    } else if (theEstimation == "sample" && is.null(input[[id]])) {
+      
+        return(c("nbar"))  
+      
+    } else {
+      
+        return(c("none"))
+      
+    }
+    
+  })
   
   ######################################################
   # Rendering Variable Objects to UI for chosen design #
@@ -920,9 +977,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
+    theSampleType = as.character(getTypeOfSampleEx())
+    
+    print(paste0("The current sample type is: ", theSampleType))
     
     div(style = "display: inline-block, vertical-align:top;", 
-        varVaryInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario))    
+        varVaryInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, sampleType = theSampleType))    
     
   }) # variable to vary by
   
@@ -954,9 +1014,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
     theVarVary = as.character(getVarVaryEx())
+    theTypeOfSample = as.character(getTypeOfSampleEx())
     
     div(style = "display: inline-block, vertical-align:top;", 
-        nbarInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary))    
+        nbarInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary, typeOfSample = theTypeOfSample))    
     
   }) # number of units per block
   
@@ -966,7 +1027,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designSs != 'd1.1_m2cc'){
+    if(input$designSs != 'd1.1_m1c'){
       print('Design j Trigger')
       check = TRUE
     }  
@@ -992,7 +1053,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designEx != 'd1.1_m2cc'){
+    if(input$designEx != 'd1.1_m1c'){
       print('Design j Trigger')
       check = TRUE
     }
@@ -1003,9 +1064,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theDesign = as.character(getDesignEx())
       theScenario = as.character(whichTab$scenario)
       theVarVary = as.character(getVarVaryEx())
-
+      theTypeOfSample = as.character(getTypeOfSampleEx())
+      
       div(style = "display: inline-block, vertical-align:top;", 
-          jInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary))
+          jInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary, typeOfSample = theTypeOfSample))
       
     } else {
       
@@ -1014,6 +1076,29 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       
   }) # number of units per block
+  
+  output$typeOfSampleEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    
+    print(theVarVary)
+    
+    if(theEstimation == "sample" && length(theVarVary ) > 0){
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          typeOfSampleInputEx(estimation = theEstimation, design = theDesign ,
+                              scenario = theScenario, varVary = theVarVary))
+      
+    } else {
+      
+    }
+  
+  
+  })
+
   
   output$mtp <- renderUI({
     
@@ -1072,9 +1157,15 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
     theVarVary = as.character(getVarVaryEx())
-    div(style = "display: inline-block, vertical-align:top;", 
-        numZeroInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
     
+    if(theDesign == "power"){
+      div(style = "display: inline-block, vertical-align:top;", 
+          numZeroInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
+    } else {
+      
+      
+    }
+      
   }) # Number of outcomes with zero effects
   
   output$mdes <- renderUI({
@@ -1102,7 +1193,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theNumOutcomes = as.numeric(getNumOutcomes())
     theVarVary = as.character(getVarVaryEx())
     
-    if(theEstimation == "power"){
+    if(theEstimation == "power" | theEstimation == "sample"){
       div(style = "display: inline-block, vertical-align:top:",
           mdesInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
       
@@ -1139,7 +1230,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theVarVary = as.character(getVarVaryEx())
     
     
-    if(theEstimation == "mdes"){
+    if(theEstimation == "mdes" | theEstimation == "sample"){
       div(style = "display: inline-block, vertical-align:top:",
           targetPowerInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
     } else {
@@ -1655,9 +1746,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
       theVarVary = as.character(getVarVaryEx())
+      theTypeOfSample = as.character(getTypeOfSampleEx())
       
       div(style = "display: inline-block, vertical-align:top;", 
-          kInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
+          kInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary, typeOfSample = theTypeOfSample))
     }else{
       # leave blank otherwise
     }    
@@ -1747,7 +1839,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     omega.3 <- "0"
     
     
-    if(design %in% c("d1.1_m2cc")){
+    if(design %in% c("d1.1_m1c")){
       
       j <- 1
       
@@ -2011,7 +2103,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     }
     
-    if(design %in% c("d1.1_m2cc")){
+    if(design %in% c("d1.1_m1c")){
       
       j <- c("1")
       
@@ -2061,8 +2153,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     if (theEstimation == "power") {
       
-          browser()
-
           dat <- as.data.frame(
           isolate(pum::pump_power_grid(design = design,
                                   nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
@@ -2102,7 +2192,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
       #minn
       #complete
       
-      
       dat <- as.data.frame(
         isolate(pum::pump_mdes_grid(design = design,
                                      nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
@@ -2112,7 +2201,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                      MTP = as.character(unlist(strsplit(mtp, ","))),
                                      M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
                                      target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-                                     power.definition = c("min1"),
+                                     power.definition = c("indiv.mean"),
                                      tol = 0.05,
                                      rho = as.numeric(unlist(strsplit(rho, ","))),
                                      numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
@@ -2138,13 +2227,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
     if(theVarVary == "mdes" & theEstimation == "power") {
       
       dat <- dat %>%
-        dplyr::select(-adjustment) %>%
         dplyr::relocate(design)
       
     } else if (theEstimation == "power"){
       
       dat <- dat %>%
-        dplyr::select(-adjustment, -MDES) %>%
+        dplyr::select(-MDES) %>%
         dplyr::relocate(design)
       
     } else if (theEstimation == "mdes"){
