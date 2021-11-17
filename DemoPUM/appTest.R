@@ -2170,7 +2170,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     
     if (theEstimation == "power") {
-      
+  
           dat <- as.data.frame(
           isolate(pum::pump_power_grid(design = design,
                                   nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
@@ -2198,7 +2198,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                   updateProgress = updateProgress)
                   
           )) #Power generation table
-    
+          
+    # clean the data table names
+          dat <- janitor::clean_names(dat)
+          
   } # the estimation is power
     
     if (theEstimation == "mdes") {
@@ -2239,6 +2242,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
                 
         )) #Power generation table
       
+      # clean the data table names
+      dat <- janitor::clean_names(dat)
+      
     } # the estimation is mdes
     
     if (theEstimation == "sample"){
@@ -2278,6 +2284,45 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
     }
     
+    # matching the var vary names
+    
+    if (theVarVary == "numZero") {
+      
+      theVarVary <- "num_zero"
+      
+    } else if (theVarVary == "numCovar.1") {
+      
+      theVarVary <- "num_covar_1"
+      
+    } else if (theVarVary == "r2.1") {
+      
+      theVarVary <- "r2_1"
+      
+    } else if (theVarVary == "icc.2") {
+      
+      theVarVary <- "icc_2"
+      
+    } else if (theVarVary == "r2.2") {
+      
+      theVarVary <- "r2_2"
+      
+    } else if (theVarVary == "icc.3") {
+      
+      theVarVary <- "icc_3"
+      
+    } else if (theVarVary == "omega.2") {
+      
+      theVarVary <- "omega_2"
+      
+    } else if (theVarVary == "omega.3") {
+      
+      theVarVary <- "omega_3"
+      
+    } else if (theVarVary == "targetPower") {
+      
+      theVarVary <- "target_power"
+      
+    }
     
     if(theVarVary == "mdes" & theEstimation == "power") {
       
@@ -2287,14 +2332,12 @@ server <- shinyServer(function(input, output, session = FALSE) {
     } else if (theEstimation == "power"){
       
       dat <- dat %>%
-        dplyr::select(-MDES) %>%
+        dplyr::select(-mdes) %>%
         dplyr::relocate(design)
       
     } else if (theEstimation == "mdes"){
       
-      browser()
-      
-      dat <- dat[, c(2,3,4,5,1)]
+      dat <- dat[, c("design", "power_definition",theVarVary, "adjusted_mdes","indiv_mean_power", "mtp")]
       
     } else if (theEstimation == "sample" & theVarVary != "mdes"){
       
@@ -2302,7 +2345,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         dplyr::select(-MDES)
       
       dat <- dat[, c(2,3,4,5,6,7,1)]
-      
+
     } else if (theEstimation == "sample" & theVarVary == "mdes"){
       
       dat <- dat %>%
@@ -2378,7 +2421,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       dat <- as.data.frame(dat)
       
       # Pulling out the variable that we are varying
-      varVaryItem <- names(dat)[2]
+      varVaryItem <- theVarVary 
+
   
       # Adjusting the data table for graphing
         withoutIndivPower <-
@@ -2387,9 +2431,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
           dplyr::select(-design) %>%
           dplyr::arrange(desc(power)) %>%
           dplyr::rename(powerType = power) %>%
-          tidyr::pivot_longer(!c(varVaryItem,powerType), names_to = "MTP", values_to = "power") %>%
+          tidyr::pivot_longer(!c(varVaryItem,powerType), names_to = "mtp", values_to = "power") %>%
           dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
-          dplyr::mutate(powerType = ifelse(MTP == "None",
+          dplyr::mutate(powerType = ifelse(mtp == "None",
                                            "raw mean individual",
                                            powerType))
   
@@ -2401,7 +2445,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         # converting data type for graphing purposes
         withoutIndivPower <- withoutIndivPower %>%
           dplyr::mutate(power = as.numeric(power),
-                        MTP = as.factor(MTP))
+                        MTP = as.factor(mtp))
         
         # Converting to factor the variable that we are varying
         withoutIndivPower[[1]] <- as.factor(withoutIndivPower[[1]])
@@ -2414,7 +2458,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         allcolorsvalues <- setNames(allcolors, powerTypeLevels)
   
         # name of MTP
-        MTPname <- levels(withoutIndivPower$MTP)[1]
+        mtpname <- levels(withoutIndivPower$mtp)[1]
   
         ######################
         # Plotting the graph #
@@ -2433,7 +2477,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                 geom_point(size = 2,
                            position = position_jitter(width = 0.2)) +
                 scale_y_continuous(limits = c(0,1)) +
-                ggtitle(paste0(MTPname, " adjusted Power values across different \n Power Definitions & ", varVaryItem, " values")) +
+                ggtitle(paste0(mtpname, " adjusted Power values across different \n Power Definitions & ", varVaryItem, " values")) +
                 scale_colour_manual(values = allcolorsvalues) +
                 labs(x = paste0("Different ", varVaryItem, " Scenarios"),
                      y = "Power Values",
@@ -2498,38 +2542,34 @@ server <- shinyServer(function(input, output, session = FALSE) {
       # Pulling the generated data table
       dat <- reactPowerTable()
       dat <- as.data.frame(dat)
-      
+  
       # Pulling out the variable that we are varying
-      varVaryItem <- names(dat)[2]
-      MTPname <- dat[["MTP"]][1]
+      varVaryItem <- theVarVary
+      mtpname <- dat[["mtp"]][1]
 
-      browser()
-      
       # Adjusting the data table for graphing
       withoutIndivPower <-
         dat %>%
         dplyr::select_all() %>%
-        dplyr::select(-design, -MTP) %>%
-        dplyr::arrange(desc(Adjusted.MDES)) %>%
-        dplyr::rename(Adjusted_MDES = Adjusted.MDES) %>%
-        tidyr::pivot_longer(!c(varVaryItem,Adjusted_MDES), names_to = "Power_Definition", values_to = "powerType") 
-      
+        dplyr::select(-design, -mtp) %>%
+        dplyr::arrange(desc(adjusted_mdes))
+
       # converting data type for graphing purposes
       withoutIndivPower <- withoutIndivPower %>%
-        dplyr::mutate(power = as.numeric(Adjusted_MDES),
-                      Power_Definition = as.factor(Power_Definition))
+        dplyr::mutate(adjusted_mdes = as.numeric(adjusted_mdes),
+                      power_definition = as.factor(power_definition))
       
       # Converting to factor the variable that we are varying
-      withoutIndivPower[[1]] <- as.factor(withoutIndivPower[[1]])
+      withoutIndivPower[[varVaryItem]] <- as.factor(withoutIndivPower[[varVaryItem]])
       
       # Adding that MTP name
-      withoutIndivPower$MTPname <- MTPname
+      withoutIndivPower$mtpname <- mtpname
       
-      # pulling out Power Type Levels to match with all colors
-      powerTypeLevels <- levels(withoutIndivPower$powerType)
-      
-      # create value for scale color manual by matching color and Power Type
-      allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+      # # pulling out Power Type Levels to match with all colors
+      # powerTypeLevels <- levels(withoutIndivPower$power_type)
+      # 
+      # # create value for scale color manual by matching color and Power Type
+      # allcolorsvalues <- setNames(allcolors, powerTypeLevels)
       
       ######################
       # Plotting the graph #
@@ -2544,13 +2584,13 @@ server <- shinyServer(function(input, output, session = FALSE) {
           plotly::ggplotly(ggplot2::ggplot(
             data = withoutIndivPower,
             aes_string(x = varVaryItem,
-                       y = "Adjusted_MDES",
-                       colour = "powerType")) +
+                       y = "adjusted_mdes",
+                       colour = "power_definition")) +
               geom_point(size = 2,
                          position = position_jitter(width = 0.2)) +
               scale_y_continuous(limits = c(0,1)) +
-              ggtitle(paste0(MTPname, " adjusted MDES values across different \n Power Definitions & ", varVaryItem, " values")) +
-              scale_colour_manual(values = allcolorsvalues) +
+              ggtitle(paste0(mtpname, " adjusted mdes values across different \n Power Definitions & ", varVaryItem, " values")) +
+              #scale_colour_manual(values = allcolorsvalues) +
               labs(x = paste0("Different ", varVaryItem, " Scenarios"),
                    y = "Adjusted MDES Values",
                    colour = "") +
