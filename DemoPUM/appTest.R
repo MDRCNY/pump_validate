@@ -2251,8 +2251,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       if(design %in% c("d1.1_m1c")) {
         
-        browser()
-        
         dat <- as.data.frame(isolate(
           pump_sample_grid(
             design = design,
@@ -2278,7 +2276,199 @@ server <- shinyServer(function(input, output, session = FALSE) {
             updateProgress = updateProgress)
           
           ))
-      
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+      } else if (design %in% c("d2.1_m2fc", "d2.1_m2ff", "d2.1_m2fr", "d2.2_m2rc") && typeOfSample == "nbar"){
+  
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            J = as.numeric(unlist(strsplit(j, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = "indiv.mean",
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+    
+      } else if (design %in% c("d2.1_m2fc", "d2.1_m2ff", "d2.1_m2fr", "d2.2_m2rc") && typeOfSample == "j") {
+        
+        if(typeOfSample == "j"){
+          
+          typeOfSample <- "J"
+          
+        }
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            nbar = as.numeric(unlist(strsplit(nbar, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = "indiv.mean",
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+      } else if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc") && typeOfSample == "nbar") {
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            J = as.numeric(unlist(strsplit(j, ","))),
+            K = as.numeric(unlist(strsplit(k, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = "indiv.mean",
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+      } else if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc") && typeOfSample == "j") {
+        
+        if(typeOfSample == "j"){
+          
+          typeOfSample <- "J"
+          
+        }
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            nbar = as.numeric(unlist(strsplit(j, ","))),
+            K = as.numeric(unlist(strsplit(k, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = "indiv.mean",
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+        
+      } else if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc") && typeOfSample == "k") {
+        
+        if(typeOfSample == "k"){
+          
+          typeOfSample <- "K"
+          
+        }
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            nbar = as.numeric(unlist(strsplit(j, ","))),
+            J = as.numeric(unlist(strsplit(k, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = "indiv.mean",
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
       }
         
         
@@ -2342,16 +2532,19 @@ server <- shinyServer(function(input, output, session = FALSE) {
     } else if (theEstimation == "sample" & theVarVary != "mdes"){
       
       dat <- dat %>%
-        dplyr::select(-MDES)
-      
-      dat <- dat[, c(2,3,4,5,6,7,1)]
+        dplyr::select(-mdes)
+    
+      dat <- dat[, c("design",theVarVary,"sample_type",
+                     "sample_size","power_definition",powerColNames,mtpColNames)]
 
+      
     } else if (theEstimation == "sample" & theVarVary == "mdes"){
       
       dat <- dat %>%
         dplyr::relocate(design)
       
-      dat <- dat[, c(1,4,3,5,6,7,2)]
+      dat <- dat[, c("design",theVarVary,"sample_type",
+                     "sample_size","power_definition",mtpColNames)]
       
     }
     
@@ -2477,10 +2670,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
                 geom_point(size = 2,
                            position = position_jitter(width = 0.2)) +
                 scale_y_continuous(limits = c(0,1)) +
-                ggtitle(paste0(mtpname, " adjusted Power values across different \n Power Definitions & ", varVaryItem, " values")) +
+                ggtitle(paste0(mtpname, " adjusted power values across different \n power Definitions & ", varVaryItem, " values")) +
                 scale_colour_manual(values = allcolorsvalues) +
-                labs(x = paste0("Different ", varVaryItem, " Scenarios"),
-                     y = "Power Values",
+                labs(x = paste0("Different ", varVaryItem, " scenarios"),
+                     y = "Power values",
                      colour = "") +
                 theme_linedraw() +
                 theme(plot.title = element_text(size = 16,
@@ -2551,7 +2744,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       withoutIndivPower <-
         dat %>%
         dplyr::select_all() %>%
-        dplyr::select(-design, -mtp) %>%
+        #dplyr::select(-design, -mtp) %>%
         dplyr::arrange(desc(adjusted_mdes))
 
       # converting data type for graphing purposes
@@ -2589,10 +2782,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
               geom_point(size = 2,
                          position = position_jitter(width = 0.2)) +
               scale_y_continuous(limits = c(0,1)) +
-              ggtitle(paste0(mtpname, " adjusted mdes values across different \n Power Definitions & ", varVaryItem, " values")) +
+              ggtitle(paste0(mtpname, " adjusted mdes values across different \n power Definitions & ", varVaryItem, " values")) +
               #scale_colour_manual(values = allcolorsvalues) +
-              labs(x = paste0("Different ", varVaryItem, " Scenarios"),
-                   y = "Adjusted MDES Values",
+              labs(x = paste0("Different ", varVaryItem, " scenarios"),
+                   y = "Adjusted mdes values",
                    colour = "") +
               theme_linedraw() +
               theme(plot.title = element_text(size = 16,
@@ -2638,8 +2831,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     } else if (theEstimation == "sample"){
       
-      browser()
-      
       # Grab the number of outcomes
       M <- as.numeric(input[[m_subset]])
       
@@ -2659,34 +2850,31 @@ server <- shinyServer(function(input, output, session = FALSE) {
       dat <- as.data.frame(dat)
       
       # Pulling out the variable that we are varying
-      varVaryItem <- names(dat)[3]
-      MTPname <- dat[["MTP"]][1]
+      varVaryItem <- theVarVary
+      MTPname <- dat[["mtp"]][1]
       
       # Adjusting the data table for graphing
       withoutIndivPower <-
         dat %>%
         dplyr::select_all() %>%
-        dplyr::select(-design, -MTP) %>%
-        dplyr::arrange(desc(Sample.size)) %>%
-        dplyr::rename(Sample_size = Sample.size) %>%
-        tidyr::pivot_longer(!c(varVaryItem,Sample_size), names_to = "Power_Definition", values_to = "power") 
-      
+        dplyr::arrange(desc(sample_size))
+
       # converting data type for graphing purposes
       withoutIndivPower <- withoutIndivPower %>%
-        dplyr::mutate(power = as.numeric(Adjusted_MDES),
-                      Power_Definition = as.factor(Power_Definition))
+        dplyr::mutate(sample_size = as.numeric(sample_size),
+                      power_definition = as.factor(power_definition))
       
       # Converting to factor the variable that we are varying
-      withoutIndivPower[[1]] <- as.factor(withoutIndivPower[[1]])
+      withoutIndivPower[[varVaryItem]] <- as.factor(withoutIndivPower[[varVaryItem]])
       
       # Adding that MTP name
       withoutIndivPower$MTPname <- MTPname
       
-      # pulling out Power Type Levels to match with all colors
-      powerTypeLevels <- levels(withoutIndivPower$powerType)
-      
-      # create value for scale color manual by matching color and Power Type
-      allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+      # # pulling out Power Type Levels to match with all colors
+      # powerTypeLevels <- levels(withoutIndivPower$powerType)
+      # 
+      # # create value for scale color manual by matching color and Power Type
+      # allcolorsvalues <- setNames(allcolors, powerTypeLevels)
       
       ######################
       # Plotting the graph #
@@ -2700,15 +2888,15 @@ server <- shinyServer(function(input, output, session = FALSE) {
           plotly::ggplotly(ggplot2::ggplot(
             data = withoutIndivPower,
             aes_string(x = varVaryItem,
-                       y = "Adjusted_MDES",
-                       colour = "Power_Definition")) +
+                       y = "sample_size",
+                       colour = "power_definition")) +
               geom_point(size = 2,
                          position = position_jitter(width = 0.2)) +
-              scale_y_continuous(limits = c(0,1)) +
-              ggtitle(paste0(MTPname, " adjusted MDES values across different \n Power Definitions & ", varVaryItem, " values")) +
-              scale_colour_manual(values = allcolorsvalues) +
-              labs(x = paste0("Different ", varVaryItem, " Scenarios"),
-                   y = "Adjusted MDES Values",
+              #scale_y_continuous(limits = c(0,1)) +
+              ggtitle(paste0(MTPname, " adjusted sample sizes across different \n power Definitions & ", varVaryItem, " values")) +
+              #scale_colour_manual(values = allcolorsvalues) +
+              labs(x = paste0("Different ", varVaryItem, " scenarios"),
+                   y = "Sample size",
                    colour = "") +
               theme_linedraw() +
               theme(plot.title = element_text(size = 16,
