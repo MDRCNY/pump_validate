@@ -245,10 +245,9 @@ ui <- fluidPage(
                           # Put some text here #
                           fluidRow(
                             
-                            column(12, align = "center",
-                                   offset = 2,
-                                   #STh here for text
-                                   )
+                            column(12, 
+                                   align = "center",
+                                   offset = 2)
                             
                           ),
                 
@@ -414,6 +413,13 @@ ui <- fluidPage(
                           uiOutput("mdesEx"))
                    
                  ), # Minimum Detectable Effect Size
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("powerDefinitionEx"))
+                   
+                 ), # Power definition options
                  
                  fluidRow(
                    
@@ -967,6 +973,140 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   })
   
+  ############################################################
+  # Get power definition reactive values out
+  ############################################################
+  
+  getPowerDefinition <- reactive({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+
+    mid <- paste0(theEstimation, "_" ,"m", "_", theDesign, "_" , theScenario, "_", theVarVary)
+    numZeroid <- paste0(theEstimation, "_", "numZero", "_", theDesign, "_" , theScenario, "_", theVarVary)
+    
+    if(!is.null(input[[mid]])){
+      
+      M <- input[[mid]]
+      
+    } else if(!is.null(input[[mid]] & !is.null(input[[numZeroid]]))){
+      
+      M <- input[[mid]]
+      numZero <- input[[numZeroid]]
+      
+      M <- as.character(abs(M - numZero))
+      
+    } else {
+      
+      M <- 1
+    }
+    
+    if (is.null(M) | is.na(M) | M == 0){
+      
+     return(c(""))
+      
+    }
+    else if (M == "1") {
+      return(c( "Individual" = "indiv.mean",
+                "Complete" = "complete"
+      ))
+    } # end of if statement
+    else if (M == "2"){
+      return(c( "Individual" = "indiv.mean",
+                "Complete" = "complete",
+                "1-minimal" = "min1"
+      ))
+    }# first else if
+    else if (M == "3"){
+      return(c("Individual" = "indiv.mean",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2"
+      ))
+    }# second else if
+    else if (M == "4"){
+      return(c("Individual" = "indiv.mean",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3"
+      ))
+    }# third else if
+    else if (M == "5"){
+      return(c("Individual" = "indiv.mean",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4"
+      ))
+    }# fourth else if
+    else if (M == "6"){
+      return(c("Individual" = "indiv.mean",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5"
+      ))
+    }# fifth else if
+    else if (M == "7"){
+      return(c("Individual" = "indiv.mean",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6" 
+      ))
+    }# sixth else if
+    else if (M == "8"){
+      return(c("Individual" = "indiv.mean",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6",
+               "7-minmal"  = "min7"
+      ))
+    }# seventh else if
+    else if (M == "9"){
+      return(c("Individual" = "indiv.mean",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6",
+               "7-minmal"  = "min7",
+               "8-minmal"  = "min8"
+      ))
+    }# eight else if
+    else if (M == "10"){
+      return(c("Individual" = "indiv.mean",
+               "Complete" = "complete",
+               "1-minimal" = "min1",
+               "2-minimal" = "min2",
+               "3-minimal" = "min3",
+               "4-minimal" = "min4",
+               "5-minimal" = "min5",
+               "6-minimal" = "min6",
+               "7-minmal"  = "min7",
+               "8-minmal"  = "min8",
+               "9-minmal" = "min9"
+      ))
+    }# tenth else if
+  }) # end of Power Reactive reactive expression
+  
+
+  
   ######################################################
   # Rendering Variable Objects to UI for chosen design #
   ######################################################
@@ -984,6 +1124,29 @@ server <- shinyServer(function(input, output, session = FALSE) {
         varVaryInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, sampleType = theSampleType))    
     
   }) # variable to vary by
+  
+  output$powerDefinitionEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    theSampleType = as.character(getTypeOfSampleEx())
+    
+    if(!is.null(getPowerDefinition())){
+      thePowerDefOptions = as.list(getPowerDefinition())
+      div(style = "display: inline-block, vertical-align:top;", 
+          powerDefinitionInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary,
+                                  selection = thePowerDefOptions))
+    } else {
+      
+      thePowerDefOptions = as.list(c("Individual" = "indiv.mean","Complete" = "complete"))
+      div(style = "display: inline-block, vertical-align:top;", 
+          powerDefinitionInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary,
+                                 typeOfSample = theSampleType, selection = thePowerDefOptions))
+    }
+  
+  }) # numOutcomeEx
   
   output$mEx <- renderUI({
     
@@ -1815,7 +1978,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     icc.3_subset <- paste0(theEstimation, "_", "icc.3", "_", theDesign, "_", theScenario)
     k_subset <- paste0(theEstimation, "_", "k","_", theDesign, "_", theScenario)
     omega.3_subset <- paste0(theEstimation, "_", "omega.3", "_", theDesign, "_", theScenario)
-    
+
     # Pulling in values for all the designs
     design <- input[[design_subset]]
     nbar <- input[[nbar_subset]]
@@ -2044,6 +2207,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
     theVarVary = as.character(getVarVaryEx())
+    theTypeOfSample = as.character(getTypeOfSampleEx())
+
     
     # set up to receive all the input parameters
   
@@ -2067,7 +2232,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     k_subset <- paste0(theEstimation, "_", "k","_", theDesign, "_", theScenario, "_", theVarVary)
     omega.3_subset <- paste0(theEstimation, "_", "omega.3", "_", theDesign, "_", theScenario, "_", theVarVary)
     typeOfSample_subset <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_", theScenario)
-
+    powerDefinition_subset <- paste0(theEstimation, "_", "powerDefinition", "_", theDesign, "_" , theScenario, "_", theVarVary)
+    
 
     # Pulling in values for all the designs
     design <- input[[design_subset]]

@@ -785,6 +785,19 @@ varVaryInputEx <- function(estimation, design, scenario, sampleType){
    }
 } # number of unit per block
 
+############################
+# Power definition function
+############################
+
+powerDefinitionInputEx <- function(estimation, design, scenario, varVary, selection) {
+  
+  id <- paste0(estimation, "_", "powerDefinition", "_", design, "_" , scenario, "_", varVary)
+  
+  selectInput(id, "Select definition of power",
+              choices = selection,
+              selected = selection[[1]])
+
+} # definition of power
 
 ############################
 # Number of Units per block
