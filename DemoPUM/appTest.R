@@ -977,6 +977,17 @@ server <- shinyServer(function(input, output, session = FALSE) {
   # Get power definition reactive values out
   ############################################################
   
+  function_m <- function(m){
+    if(m == 1){
+      res <- c('indiv.mean', 'complete')
+      names(res) <- c('Individual', 'Complete')
+      return(res)
+    }
+    res <- c('indiv.mean', 'complete', paste('min', 1:(m-1), sep = ''))
+    names(res) <- c('Individual', 'Complete',  paste(1:(m-1),'minimal', sep = '-'))
+    return(res)
+  }
+  
   getPowerDefinition <- reactive({
     
     theEstimation = as.character(getEstimationEx())
@@ -987,122 +998,28 @@ server <- shinyServer(function(input, output, session = FALSE) {
     mid <- paste0(theEstimation, "_" ,"m", "_", theDesign, "_" , theScenario, "_", theVarVary)
     numZeroid <- paste0(theEstimation, "_", "numZero", "_", theDesign, "_" , theScenario, "_", theVarVary)
     
-    if(!is.null(input[[mid]])){
-      
-      M <- input[[mid]]
-      
-    } else if(!is.null(input[[mid]] & !is.null(input[[numZeroid]]))){
-      
-      M <- input[[mid]]
-      numZero <- input[[numZeroid]]
-      
-      M <- as.character(abs(M - numZero))
-      
-    } else {
-      
+  
+    if(!is.null(input[[mid]]) & !is.null(input[[numZeroid]])){
+        M <- input[[mid]] %>% as.numeric()
+        numZero <- input[[numZeroid]] %>% as.numeric()
+        M <- abs(M - numZero)
+    }else if(!is.null(input[[mid]])){
+      M <- input[[mid]] %>% as.numeric()
+    }else{
       M <- 1
     }
-    
+    print(M)
+ 
+  
     if (is.null(M) | is.na(M) | M == 0){
-      
-     return(c(""))
-      
+     return("")
+    }else{
+      print('-----computing function m----')
+      print(function_m(M))
+      print('---------')
+      return(function_m(M))
     }
-    else if (M == "1") {
-      return(c( "Individual" = "indiv.mean",
-                "Complete" = "complete"
-      ))
-    } # end of if statement
-    else if (M == "2"){
-      return(c( "Individual" = "indiv.mean",
-                "Complete" = "complete",
-                "1-minimal" = "min1"
-      ))
-    }# first else if
-    else if (M == "3"){
-      return(c("Individual" = "indiv.mean",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2"
-      ))
-    }# second else if
-    else if (M == "4"){
-      return(c("Individual" = "indiv.mean",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3"
-      ))
-    }# third else if
-    else if (M == "5"){
-      return(c("Individual" = "indiv.mean",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4"
-      ))
-    }# fourth else if
-    else if (M == "6"){
-      return(c("Individual" = "indiv.mean",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5"
-      ))
-    }# fifth else if
-    else if (M == "7"){
-      return(c("Individual" = "indiv.mean",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6" 
-      ))
-    }# sixth else if
-    else if (M == "8"){
-      return(c("Individual" = "indiv.mean",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6",
-               "7-minmal"  = "min7"
-      ))
-    }# seventh else if
-    else if (M == "9"){
-      return(c("Individual" = "indiv.mean",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6",
-               "7-minmal"  = "min7",
-               "8-minmal"  = "min8"
-      ))
-    }# eight else if
-    else if (M == "10"){
-      return(c("Individual" = "indiv.mean",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6",
-               "7-minmal"  = "min7",
-               "8-minmal"  = "min8",
-               "9-minmal" = "min9"
-      ))
-    }# tenth else if
+
   }) # end of Power Reactive reactive expression
   
 
@@ -1143,7 +1060,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       thePowerDefOptions = as.list(c("Individual" = "indiv.mean","Complete" = "complete"))
       div(style = "display: inline-block, vertical-align:top;", 
           powerDefinitionInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary,
-                                 typeOfSample = theSampleType, selection = thePowerDefOptions))
+                                 selection = thePowerDefOptions))
     }
   
   }) # numOutcomeEx
@@ -2247,6 +2164,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     tbar <- input[[tbar_subset]]
     alpha <- input[[alpha_subset]]
     r2.1 <- input[[r2.1_subset]]
+    powerDefinition <- input[[powerDefinition_subset]]
     icc.2 <- "0"
     r2.2 <- "0"
     omega.2 <- "0"
@@ -2254,7 +2172,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     icc.3 <- "0"
     k <- "1"
     omega.3 <- "0"
-    
+
     # parameters specific to each estimation
     if (theEstimation == "power"){
       
@@ -2367,17 +2285,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
           
     # clean the data table names
           dat <- janitor::clean_names(dat)
+
           
   } # the estimation is power
     
     if (theEstimation == "mdes") {
-      
-      #D1indiv
-      #indiv.mean
-      #min1
-      #min2
-      #minn
-      #complete
       
       dat <- as.data.frame(
         isolate(pum::pump_mdes_grid(design = design,
@@ -2387,7 +2299,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                      MTP = as.character(unlist(strsplit(mtp, ","))),
                                      M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
                                      target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-                                     power.definition = c("indiv.mean"),
+                                     power.definition = powerDefinition,
                                      rho = as.numeric(unlist(strsplit(rho, ","))),
                                      numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
                                      Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
@@ -2410,6 +2322,39 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       # clean the data table names
       dat <- janitor::clean_names(dat)
+      powerColName <- names(dat)[ncol(dat)]
+      
+      # browser()
+      
+      # dat2 <- as.data.frame(
+      #   isolate(pum::pump_mdes_grid(design = design,
+      #                               nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
+      #                               J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
+      #                               K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
+      #                               MTP = as.character(unlist(strsplit(mtp, ","))),
+      #                               M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
+      #                               target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+      #                               power.definition = "none",
+      #                               rho = as.numeric(unlist(strsplit(rho, ","))),
+      #                               numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+      #                               Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
+      #                               alpha = as.numeric(unlist(strsplit(alpha, ","))),
+      #                               R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+      #                               R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+      #                               R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+      #                               ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+      #                               ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+      #                               omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+      #                               omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+      #                               long.table = TRUE,
+      #                               tol = 0.01,
+      #                               tnum = 10000,
+      #                               B = 100,
+      #                               cl = NULL,
+      #                               updateProgress = updateProgress)
+      #           
+      #   )) #Power generation table
+      
       
     } # the estimation is mdes
     
@@ -2426,7 +2371,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
             MDES = as.numeric(unlist(strsplit(mdes, ","))),
             M = as.numeric(unlist(strsplit(m, ","))),
             target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-            power.definition = "indiv.mean",
+            power.definition = powerDefinition,
             rho = as.numeric(unlist(strsplit(rho, ","))),
             numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
             Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
@@ -2459,7 +2404,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
             MDES = as.numeric(unlist(strsplit(mdes, ","))),
             M = as.numeric(unlist(strsplit(m, ","))),
             target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-            power.definition = "indiv.mean",
+            power.definition = powerDefinition,
             rho = as.numeric(unlist(strsplit(rho, ","))),
             numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
             Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
@@ -2498,7 +2443,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
             MDES = as.numeric(unlist(strsplit(mdes, ","))),
             M = as.numeric(unlist(strsplit(m, ","))),
             target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-            power.definition = "indiv.mean",
+            power.definition = powerDefinition,
             rho = as.numeric(unlist(strsplit(rho, ","))),
             numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
             Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
@@ -2532,7 +2477,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
             MDES = as.numeric(unlist(strsplit(mdes, ","))),
             M = as.numeric(unlist(strsplit(m, ","))),
             target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-            power.definition = "indiv.mean",
+            power.definition = powerDefinition,
             rho = as.numeric(unlist(strsplit(rho, ","))),
             numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
             Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
@@ -2572,7 +2517,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
             MDES = as.numeric(unlist(strsplit(mdes, ","))),
             M = as.numeric(unlist(strsplit(m, ","))),
             target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-            power.definition = "indiv.mean",
+            power.definition = powerDefinition,
             rho = as.numeric(unlist(strsplit(rho, ","))),
             numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
             Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
@@ -2613,7 +2558,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
             MDES = as.numeric(unlist(strsplit(mdes, ","))),
             M = as.numeric(unlist(strsplit(m, ","))),
             target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-            power.definition = "indiv.mean",
+            power.definition = powerDefinition,
             rho = as.numeric(unlist(strsplit(rho, ","))),
             numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
             Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
@@ -2680,6 +2625,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     }
     
+    #######################################################################
+    
     if(theVarVary == "mdes" & theEstimation == "power") {
       
       dat <- dat %>%
@@ -2693,7 +2640,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     } else if (theEstimation == "mdes"){
       
-      dat <- dat[, c("design", "power_definition",theVarVary, "adjusted_mdes","indiv_mean_power", "mtp")]
+      dat <- dat[, c("design", "power_definition",theVarVary, "adjusted_mdes",powerColName, "mtp")]
       
     } else if (theEstimation == "sample" & theVarVary != "mdes"){
       
@@ -2728,6 +2675,25 @@ server <- shinyServer(function(input, output, session = FALSE) {
     #browser()
     output$powercalcTableP2LBIEX <- renderDataTable({
       
+      if(theEstimation == "power"){
+        
+        curatedDat <- 
+          dat %>% dplyr::filter(
+            !stringr::str_detect(power, "individual outcome (\\d+)")
+          )
+        
+        DT::datatable(curatedDat,
+                      extensions = 'Buttons',
+                      options = list(
+                        paging = TRUE,
+                        pageLength = 10,
+                        scrollY = TRUE,
+                        dom = 'Bfrtip',
+                        buttons = c('csv', 'excel')
+                      ))
+        
+      } else {
+      
       DT::datatable(dat,
                     extensions = 'Buttons',
                     options = list(
@@ -2737,6 +2703,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
                       dom = 'Bfrtip',
                       buttons = c('csv', 'excel')
                     ))
+      }
+        
     })# Wrapping a reactive expression to a reactive table object for output view
     
     ############################
