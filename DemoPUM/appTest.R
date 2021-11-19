@@ -977,14 +977,26 @@ server <- shinyServer(function(input, output, session = FALSE) {
   # Get power definition reactive values out
   ############################################################
   
-  function_m <- function(m){
+  function_m <- function(m, numZero){
     if(m == 1){
+      
       res <- c('indiv.mean', 'complete')
       names(res) <- c('Individual', 'Complete')
       return(res)
+      
     }
-    res <- c('indiv.mean', 'complete', paste('min', 1:(m-1), sep = ''))
-    names(res) <- c('Individual', 'Complete',  paste(1:(m-1),'minimal', sep = '-'))
+    
+    if(numZero > 0){
+      
+      res <- c('indiv.mean', paste('min', 1:(m-1), sep = ''))
+      names(res) <- c('Individual', paste(1:(m-1),'minimal', sep = '-'))
+      return(res)
+      
+    }
+    
+      res <- c('indiv.mean', 'complete', paste('min', 1:(m-1), sep = ''))
+      names(res) <- c('Individual', 'Complete',  paste(1:(m-1),'minimal', sep = '-'))
+      
     return(res)
   }
   
@@ -1005,8 +1017,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
         M <- abs(M - numZero)
     }else if(!is.null(input[[mid]])){
       M <- input[[mid]] %>% as.numeric()
+      numZero <- 0
     }else{
       M <- 1
+      numZero <- 0
     }
     print(M)
  
@@ -1015,9 +1029,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
      return("")
     }else{
       print('-----computing function m----')
-      print(function_m(M))
+      print(function_m(M, numZero = numZero))
       print('---------')
-      return(function_m(M))
+      return(function_m(M, numZero = numZero))
     }
 
   }) # end of Power Reactive reactive expression
@@ -2284,9 +2298,25 @@ server <- shinyServer(function(input, output, session = FALSE) {
           )) #Power generation table
           
     # clean the data table names
-          dat <- janitor::clean_names(dat)
+    dat <- janitor::clean_names(dat)
 
-          
+    # Power definition key and value table
+    M <- as.numeric(m)
+    res <- c('mean individual', 'complete',  paste(1:(M-1),'minimum', sep = '-'))    
+    names(res) <- c('indiv.mean', 'complete', paste('min', 1:(M-1), sep = ''))
+    
+    # Pulling out the power definition of interest
+    def_power_subset <- input[[powerDefinition_subset]]
+    
+    # Pulling out the power definition of interest matched with what's in the output table
+    def_power_filter <- res[[def_power_subset]]
+    
+    # Pulling out only that power definition
+    dat <- 
+      dat %>% 
+        dplyr::filter(power %in% def_power_filter) %>%
+        dplyr::mutate(power = ifelse(power == "mean individual", "individual power", power))
+  
   } # the estimation is power
     
     if (theEstimation == "mdes") {
@@ -2311,9 +2341,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                      ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
                                      omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
                                      omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
-                                     long.table = TRUE,
+                                     #long.table = TRUE,
                                      tol = 0.01,
-                                     tnum = 10000,
+                                     #tnum = 10000,
                                      B = 100,
                                      cl = NULL,
                                      updateProgress = updateProgress)
@@ -2324,7 +2354,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       dat <- janitor::clean_names(dat)
       powerColName <- names(dat)[ncol(dat)]
       
-      # browser()
+      browser()
       
       # dat2 <- as.data.frame(
       #   isolate(pum::pump_mdes_grid(design = design,
@@ -2749,7 +2779,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       # Pulling out the variable that we are varying
       varVaryItem <- theVarVary 
-
   
       # Adjusting the data table for graphing
         withoutIndivPower <-
@@ -2766,7 +2795,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
         # converting Power Type to a factor for coloring
         withoutIndivPower$powerType <- factor(withoutIndivPower$powerType,
-                                              levels = c("complete", "mean individual", minPower, "raw mean individual"),
+                                              levels = c("complete", "individual power", minPower, "raw mean individual"),
                                               ordered = TRUE)
   
         # converting data type for graphing purposes
@@ -2801,8 +2830,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
               aes_string(x = varVaryItem,
                   y = "power",
                   colour = "powerType")) +
-                geom_point(size = 2,
-                           position = position_jitter(width = 0.2)) +
+                geom_point(size = 2) +
                 scale_y_continuous(limits = c(0,1)) +
                 ggtitle(paste0(mtpname, " adjusted power values across different \n power Definitions & ", varVaryItem, " values")) +
                 scale_colour_manual(values = allcolorsvalues) +
@@ -2851,6 +2879,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         }) # ggplot for power graph
         
     } else if (theEstimation == "mdes") {
+      
       
       # Grab the number of outcomes
       M <- as.numeric(input[[m_subset]])
@@ -2913,8 +2942,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
             aes_string(x = varVaryItem,
                        y = "adjusted_mdes",
                        colour = "power_definition")) +
-              geom_point(size = 2,
-                         position = position_jitter(width = 0.2)) +
+              geom_point(size = 2) +
               scale_y_continuous(limits = c(0,1)) +
               ggtitle(paste0(mtpname, " adjusted mdes values across different \n power Definitions & ", varVaryItem, " values")) +
               #scale_colour_manual(values = allcolorsvalues) +
