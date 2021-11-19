@@ -17,6 +17,14 @@ library(scales) # for breaks on ggplot2
 source("singlescenario_uielements.R")
 source("explorer_uielements.R")
 
+
+#devtools::install_bioc('multtest')
+#devtools::install_bioc('blkvar')
+# devtools::install_github("ZarniHtet13/pum-p",
+#                          auth_token = "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", force = T, dep = T)
+
+
+
 ui <- fluidPage(
   
   useShinyFeedback(),
@@ -2864,7 +2872,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
               data = withoutIndivPower,
               aes_string(x = varVaryItem,
                   y = "power",
-                  colour = "powerType")) +
+                  colour = "powerType",
+                  shape = "MTP")) +
                 geom_point(size = 2) +
                 scale_y_continuous(limits = c(0,1)) +
                 ggtitle(paste0(mtpname, " adjusted power values across different \n power Definitions & ", varVaryItem, " values")) +
@@ -3028,19 +3037,19 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     } else if (theEstimation == "sample"){
       
-      # Grab the number of outcomes
-      M <- as.numeric(input[[m_subset]])
-      
-      # End of Minimum Power
-      minEnd <- M - 1
-      minPower <- paste0(1:minEnd, "-minimum")
-      
-      # Create color gradient for minimum power
-      mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
-      mincolours <- sort(mincolours)
-      
-      # Add complete, individual, minimum and raw power colors
-      allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
+      # # Grab the number of outcomes
+      # M <- as.numeric(input[[m_subset]])
+      # 
+      # # End of Minimum Power
+      # minEnd <- M - 1
+      # minPower <- paste0(1:minEnd, "-minimum")
+      # 
+      # # Create color gradient for minimum power
+      # mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
+      # mincolours <- sort(mincolours)
+      # 
+      # # Add complete, individual, minimum and raw power colors
+      # allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
       
       # Pulling the generated data table
       dat <- reactPowerTable()

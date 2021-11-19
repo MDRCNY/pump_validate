@@ -18,7 +18,7 @@
 
 # Loading the libraries
 library(abind)
-library(blkvar)
+# library(blkvar)
 library(dplyr)       # for combing data frames
 library(foreach)
 library(ggplot2)
