@@ -3,50 +3,34 @@
 #######################
 library(shiny) # for basic templates
 library(shinyBS) # for popovers and tool tips
-library(shinycssloaders) # for ui elements showing shiny loading
+library(shinycssloaders) # for elements showing shiny loading
 library(magrittr) # piping operator
 library(ggplot2) # loading ggplot for the plot
 library(pum) # our pum library
 library(DT) # make nice shiny tables
 library(plotly) # Plotly for ggplot to make graphs downloadable
-
+library(shinyFeedback)
+library(scales) # for breaks on ggplot2
 ##########################
 # Loading source R files #
 ##########################
-source("ui_elements.R")
+source("singlescenario_uielements.R")
+source("explorer_uielements.R")
 
 ui <- fluidPage(
   
-  # Nav Bar to construct the set of options we have along with the name of the title
-  
+  useShinyFeedback(),
   titlePanel(title = "Power Under Multiplicity", windowTitle = "Power Under Multiplicity"), 
-  tabsetPanel( id = "mainMenu",
-               tabPanel("Home"),
-               tabPanel("Educational Resources"),
-               
-               ###########################
-               # 2 Level Blocked i1 2cfr #
-               ###########################
-               
-               tabPanel("2_Level_Blocked_i1_2cfr", tabsetPanel( #2LBI for 2 Level Blocked I1
-                 
-                 ###########################
-                 # Power Calculation       #
-                 ########################### 
-                 
-                 tabPanel("Power Calculation", tabsetPanel( id = "subMenu",# To host Single and Explorer
-                                                            
-                ###########################
-                # Single Scenario         #
-                ###########################                                            
-                                                            
-                tabPanel("Single Scenario",
-                                                                     sidebarLayout(
-                                                                       sidebarPanel(
-                                                                         # css to center the progress bar
-                                                                         tags$head(
-                                                                           tags$style(
-                                                                             HTML(".shiny-notification {
+  tabsetPanel(id = "tabset", type = "tabs",
+              tabPanel(title = "Home", value = "home_tab"),
+              tabPanel(title = "Educational Resources", value = "edu_tab"),
+              tabPanel(title = "Single Scenario", value = "single_scenario_tab", 
+                    sidebarLayout(
+                      sidebarPanel(
+                        # css to center the progress bar
+                        tags$head(
+                        tags$style(
+                          HTML(".shiny-notification {
                               height: 50px;
                               width: 600px;
                               position:fixed;
@@ -55,10 +39,8 @@ ui <- fluidPage(
                               right: calc(15%);
                               font-size: 100%;
                               text-align: center;
-                              
                               }
                               .progress-message {
-                              
                               padding-top: 0px;
                               padding-right: 3px;
                               padding-bottom: 3px;
@@ -67,9 +49,7 @@ ui <- fluidPage(
                               font-style: italic !important;
                               font-size: 15px;
                               }
-                              
                               .progress-detail {
-                              
                               padding-top: 0px;
                               padding-right: 3px;
                               padding-bottom: 3px;
@@ -78,267 +58,238 @@ ui <- fluidPage(
                               font-style: italic !important;
                               font-size: 15px;
                               }
-                              
                               "
-                                                                             ) # html bracket
-                                                                           ) # css styling tag
-                                                                         ), # The header tag
-                                                                         
-                                                                         fluidRow(
-                                                                           column(10,
-                                                                                  div(style = "display: inline-block, vertical-align:top;", 
-                                                                                      selectInput("designP2LBISS", "What Research Design is this for?", 
-                                                                                                  choices = list("constantEffects" = "d2.1_m2fc", 
-                                                                                                                 "fixedEffects" = "d2.1_m2ff", 
-                                                                                                                 "randomEffects" = "d2.1_m2fr"))) # select input buttons div
-                                                                           ), # column for inputs
-                                                                           
-                                                                           column(2, 
-                                                                                  div(style ="display: inline-block,vertical-align:top;",
-                                                                                      actionButton("question_designP2LBISS",
-                                                                                                   label = "", 
-                                                                                                   icon = icon("question"),
-                                                                                                   style = "font-size: 10px;
-                                                      margin-top: 28px;")) #div for button ends
-                                                                           ) # column for buttons
-                                                                           
-                                                                         ), # fluid Row to contain the question mark issue 
-                                                                         
-                                                                         bsPopover(id = "question_designP2LBISS", 
-                                                                                   title = NULL,
-                                                                                   content = paste0("For more information on different designs, please click!"),
-                                                                                   placement = "right", 
-                                                                                   trigger = "hover", 
-                                                                                   options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                                                                         
-                                                                         fluidRow(
-                                                                           column(10,
-                                                                                  div(style = "display: inline-block, vertical-align:top;", 
-                                                                                  mtpInput(design = "output.design", scenario = "singlescenario")
-                                                                           )), # column for inputs
-                                                                           
-                                                                           column(2, 
-                                                                                  div(style ="display: inline-block, vertical-align:top;",
-                                                                                  mtpActionButton(design = "d2.1_m2ff", scenario = "singlescenario")
-                                                                           
-                                                                         ))
-                                                                         ),
-                                                                         
-                                                                    
+                            ) # html bracket
+                          ) # css styling tag
+                        ), # The header tag
+                          
+                          fluidRow(
+                            
+                            div(style = "display: inline-block, vertical-align:top;", 
+                            column(12,
+                              selectInput("estimationSs", "What would you like to estimate?",
+                                          choices = list("Power" = "power",
+                                                         "Minimum detectable effect size" = "mdes",
+                                                         "Sample size" = "sample"),
+                                          selected = "power")
+                              
+                            )) # User Mode of Exploration
 
-                                                                         fluidRow(
-                                                                           
-                                                                           column(12,
-                                                                                  numericInput("MP2LBISS", 
-                                                                                               "Number of Outcomes", 
-                                                                                               min = 1, 
-                                                                                               max = 10, 
-                                                                                               value = 5, 
-                                                                                               step = 1)
-                                                                           ) # column for number of outcomes
-                                                                           
-                                                                         ), # number of outcomes and mdes
-                                                                         
-                                                                         fluidRow(
-                                                                           
-                                                                           column(10,
-                                                                                  textInput("MDESP2LBISS", 
-                                                                                            "Enter MDES vector (comma delimited)", 
-                                                                                            value = "0.125,0.125,0.125, 0,0")
-                                                                                  
-                                                                           ), # column for MDES
-                                                                           
-                                                                           column(2, 
-                                                                                  div(style ="display: inline-block, 
-                                             vertical-align:top;",
-                                                                                      actionButton("question_mdesP2LBISS",
-                                                                                                   label = "", 
-                                                                                                   icon = icon("question"),
-                                                                                                   style = "font-size: 10px;
-                                                                   margin-top: 28px;")) #div for button ends
-                                                                           ) # column for buttons
-                                                                           
-                                                                         ), # fluid Row to contain the question mark issue 
-                                                                         
-                                                                         bsPopover(id = "question_mdesP2LBISS", 
-                                                                                   title = NULL,
-                                                                                   content = paste0("For more information on MTP, please click!"),
-                                                                                   placement = "right", 
-                                                                                   trigger = "hover", 
-                                                                                   options = list(container = "body")
-                                                                         ), # the bsPopover for the more information section of the Shiny App
-                                                                         
-                                                                         fluidRow(
-                                                                           
-                                                                           column(12,
-                                                                                  
-                                                                                  numericInput("KP2LBISS", 
-                                                                                               "Number of Districts", 
-                                                                                               min = 1, 
-                                                                                               max = 100, 
-                                                                                               value = 1, 
-                                                                                               step = 1))
-                                                                         ), # number of districts
-                                                                         
-                                                                         fluidRow(
-                                                                           
-                                                                           column(6,
-                                                                                  
-                                                                                  numericInput("JP2LBISS", 
-                                                                                               "Number of blocks", 
-                                                                                               min = 1, 
-                                                                                               max = 100, 
-                                                                                               value = 50, 
-                                                                                               step = 1)
-                                                                                  
-                                                                           ), # number of blocks
-                                                                           
-                                                                           column(6,
-                                                                                  
-                                                                                  numericInput("nbarP2LBISS",
-                                                                                               "Number of units per block", 
-                                                                                               min = 2, 
-                                                                                               max = 100, 
-                                                                                               value = 20, 
-                                                                                               step = 1)
-                                                                                  
-                                                                           ) # number of units per blocks
-                                                                           
-                                                                         ), # Nmber of blocks and number of units per block
-                                                                         
-                                                                         fluidRow(
-                                                                           
-                                                                           column(10,
-                                                                                  textInput("R2.1P2LBISS", 
-                                                                                            "Enter R2 vector (comma delimited)", 
-                                                                                            value = "0.2, 0.2, 0.2, 0.2, 0.2")
-                                                                                  
-                                                                           ), # column for MDES
-                                                                           
-                                                                           column(2, 
-                                                                                  div(style ="display: inline-block, 
-                                             vertical-align:top;",
-                                                                                      actionButton("R2.1P2LBISS",
-                                                                                                   label = "", 
-                                                                                                   icon = icon("question"),
-                                                                                                   style = "font-size: 10px;
-                                                                   margin-top: 28px;")) #div for button ends
-                                                                           ) # column for buttons
-                                                                           
-                                                                         ), # fluid Row to contain the question mark issue 
-                                                                         
-                                                                         bsPopover(id = "R2.1P2LBISS", 
-                                                                                   title = NULL,
-                                                                                   content = paste0("For more information on MTP, please click!"),
-                                                                                   placement = "right", 
-                                                                                   trigger = "hover", 
-                                                                                   options = list(container = "body")
-                                                                         ), # the bsPopover for the more information section of the Shiny App
-                                                                         
-                                                                         fluidRow(
-                                                                           column(12,
-                                                                                  
-                                                                                  numericInput("rhoP2LBISS", 
-                                                                                               "Correlation between outcomes", 
-                                                                                               min = 0, 
-                                                                                               max = 1, 
-                                                                                               value = 0.5, 
-                                                                                               step = 0.1 )
-                                                                                  
-                                                                           ) # Number of Level 1 covariates
-                                                                           
-                                                                         ), #fluid row for block level covariate inputs
-                                                                         
-                                                                         fluidRow(
-                                                                           column(12,
-                                                                                  
-                                                                                  numericInput("numCovar.1P2LBISS", 
-                                                                                               "Number of Level 1 Covariates", 
-                                                                                               min = 0, 
-                                                                                               max = 10, 
-                                                                                               value = 1, 
-                                                                                               step = 1 )
-                                                                                  
-                                                                           )# Number of Level 1 Covariates
-                                                                           
-                                                                         ), # column correlation btw tests & intraclass correlation!
-                                                                         
-                                                                         fluidRow(
-                                                                           
-                                                                           column(12,
-                                                                                  
-                                                                                  numericInput("tbarP2LBISS", 
-                                                                                               "Proportion of Treatment assignment", 
-                                                                                               min = 0.001, 
-                                                                                               max = 1.0, 
-                                                                                               value = 0.5, 
-                                                                                               step = 0.001)
-                                                                                  
-                                                                           ) # proportion of treatment assignment
-                                                                         ), # proprtion of treatement as assignment
-                                                                         
-                                                                         fluidRow(  
-                                                                           
-                                                                           column(12,
-                                                                                  
-                                                                                  numericInput("alphaP2LBISS", 
-                                                                                               "Significance Level of Tests (alpha)", 
-                                                                                               min = 0.001, 
-                                                                                               max = 0.9, 
-                                                                                               value = 0.05, 
-                                                                                               step = 0.001)
-                                                                                  
-                                                                           ) #Significance Level of Tests
-                                                                           
-                                                                         ), # proportion of treatment assignment and significance level of tests
-                                                                         
-                                                                         fluidRow(
-                                                                           
-                                                                           column(6,
-                                                                                  actionButton("goButtonP2LBISS", "Go!") # Action Button to trigger other reactive values
-                                                                           )
-                                                                         )
-                                                                       ), # Power calculation sidebarPanel
-                                                                       
-                                                                       mainPanel(
-                                                                         br(),    
-                                                                         br(),
-                                                                         
-                                                                         fluidRow(
-                                                                           column(8, align = "center",
-                                                                                  offset = 2,
-                                                                                  plotlyOutput("powercalcGraphP2LBISS"))
-                                                                         ), # end of Fluid Row
-                                                                         
-                                                                         br(), # To create spaces between Table and Plots
-                                                                         br(), # To create spaces between Table and Plots
-                                                                         br(), # To create spaces between Table and Plots
-                                                                         br(), # To create spaces between Table and Plots
-                                                                         br(), # To create spaces between Table and Plots
-                                                                         br(), # To create spaces between Table and Plots
-                                                                         
-                                                                         fluidRow(
-                                                                           column(12, align = "center",
-                                                                                  DT::dataTableOutput("powercalcTableP2LBISS")) #The power calculation table output
-                                                                         ) #fluidRow for first half of the page
-                                                                         
-                                                                       ) # Power calculation Main Panel
-                                                                       
-                                                                     ) # Power Calculation sidebar Layout
-                                                                     
-                                                            ), # Single Scenario
-                                                            
-                                                            ###########################
-                                                            # Explorer                #
-                                                            ###########################                                            
-                                                            
-                                                            tabPanel("Explorer",
-                                                                     sidebarLayout(
-                                                                       sidebarPanel(
-                                                                         # css to center the progress bar
-                                                                         tags$head(
-                                                                           tags$style(
-                                                                             HTML(".shiny-notification {
+                          ), # picking the type of exploration you would like to run
+                          
+                          fluidRow(
+                            
+                            div(style = "display: inline-block, vertical-align:top;", 
+                            column(12,
+                             selectInput("designSs", "What research design is this for?", 
+                                        choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
+                                                       "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
+                                                       "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
+                                                       "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
+                                                       "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
+                                                       "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
+                                                       "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
+                                                       "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
+                                                       "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
+                                                       ),
+                                        selected = "d2.1_m2ff")     
+
+                            )) # selecting designs
+                            
+                          ), # picking the research design
+                        
+                          fluidRow(
+                            
+                            div(style = "display: inline-block, vertical-align:top;",
+                            column(12,
+                              numericInput("numOutcomesSs", "Number of outcomes", 
+                                           min = 1, 
+                                           max = 10, 
+                                           value = 5, 
+                                           step = 1)
+                              ) # number of Outcomes    
+                            ) # div
+                            
+                          ), # number of outcomes selection 
+                        
+                           fluidRow(
+                             
+                            column(6,
+                            uiOutput("nbar")),
+                             
+                            column(6,
+                            uiOutput("j"))
+                             
+                           ), # Units per block and number of blocks
+                        
+                           # fluidRow(
+                           #   
+                           #   column(12,
+                           #   uiOutput("numZero"))
+                           #   
+                           # ), # number of outcomes with no effects
+                          
+                           fluidRow(
+                             
+                            column(12,
+                            uiOutput("mtp"))
+                            
+                            ), # MTP shared by all designs
+                      
+                           fluidRow(
+                             
+                            column(12,
+                            uiOutput("mdes"))
+                            
+                           ), # Minimum Detectable Effect Size
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("powerValues"))
+                             
+                           ), # power values
+                        
+                           fluidRow(
+                             
+                            column(12,
+                            uiOutput("rho"))
+                            
+                           ), # correlation between outcomes
+                           
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("numCovar.1"))
+                             
+                           ), # number of covariates in level 1
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("tbar"))
+                             
+                           ), # proportion of treatment assignment
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("alpha"))
+                             
+                           ), # alpha
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("r2.1"))
+                             
+                           ), # Adding R2.1
+
+                           fluidRow(
+                              
+                              column(12,
+                              uiOutput("icc.2"))
+                              
+                           ), # Adding icc.2
+                          
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("r2.2"))
+
+                           ), # Adding R2.2
+                           
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("omega.2"))
+                             
+                           ), # Adding omega.2
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("r2.3")      
+                                )
+                           ), # Adding r2.3
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("icc.3"))
+                             
+                           ), # Adding icc.3
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("k"))
+                             
+                           ), # Adding k
+                        
+                           fluidRow(
+                             
+                             column(12,
+                             uiOutput("omega.3"))
+                             
+                           ), # Adding omega.3
+     
+                           fluidRow(
+                              
+                              column(6,
+                              actionButton("goButtonSs", "Go!")) 
+                            
+                           ) # Action Button to trigger other reactive values
+              ), # Power calculation sidebarPanel
+                                       
+              mainPanel(
+                          # Put some text here #
+                          fluidRow(
+                            
+                            column(12, 
+                                   align = "center",
+                                   offset = 2)
+                            
+                          ),
+                
+                            br(),    
+                            br(),
+                                         
+                           fluidRow(
+                             
+                              column(8, align = "center",
+                                        offset = 2,
+                                        plotlyOutput("powercalcGraphP2LBISS"))
+                              
+                            ), # end of Fluid Row
+                                         
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                              br(), # To create spaces between Table and Plots
+                                         
+                            fluidRow(
+                              
+                              column(12, align = "center",
+                                     DT::dataTableOutput("powercalcTableP2LBISS")) #The power calculation table output
+                              
+                            ) #fluidRow for first half of the page
+                                         
+            ) # Power calculation Main Panel
+          ) # Power Calculation sidebar Layout
+          
+    ), # Single Scenario Tab
+    
+    tabPanel(title = "Explorer", value = "explorer_tab",
+  
+             sidebarLayout(
+               sidebarPanel(
+                 # css to center the progress bar
+                 tags$head(
+                   tags$style(
+                     HTML(".shiny-notification {
                               height: 50px;
                               width: 600px;
                               position:fixed;
@@ -347,10 +298,8 @@ ui <- fluidPage(
                               right: calc(15%);
                               font-size: 100%;
                               text-align: center;
-                              
                               }
                               .progress-message {
-                              
                               padding-top: 0px;
                               padding-right: 3px;
                               padding-bottom: 3px;
@@ -359,9 +308,7 @@ ui <- fluidPage(
                               font-style: italic !important;
                               font-size: 15px;
                               }
-                              
                               .progress-detail {
-                              
                               padding-top: 0px;
                               padding-right: 3px;
                               padding-bottom: 3px;
@@ -370,1219 +317,1743 @@ ui <- fluidPage(
                               font-style: italic !important;
                               font-size: 15px;
                               }
-                              
                               "
-                                                                             ) # html bracket
-                                                                           ) # css styling tag
-                                                                         ), # The header tag
-                                                                         
-                                                                         fluidRow(
-                                                                           
-                                                                           column(10,
-                                                                                  div(style = "display: inline-block, vertical-align:top;", 
-                                                                                      selectInput("explorerP2LBIE", "What Parameter would you like to vary?", 
-                                                                                                  choices = list("MDES", 
-                                                                                                                 "R2"))) # select input buttons div
-                                                                           ), # column for inputs
-                                                                           
-                                                                           column(2, 
-                                                                                  div(style ="display: inline-block,vertical-align:top;",
-                                                                                      actionButton("question_explorerP2LBIE",
-                                                                                                   label = "", 
-                                                                                                   icon = icon("question"),
-                                                                                                   style = "font-size: 10px;
-                                                      margin-top: 28px;")) #div for button ends
-                                                                           ) # column for buttons
-                                                                           
-                                                                         ), # fluid Row for selection of which variables to explore
-                                                                         
-                                                                         
-                                                                         conditionalPanel(condition = "input.explorerP2LBIE == 'MDES'",
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            column(10,
-                                                                                                   div(style = "display: inline-block, vertical-align:top;", 
-                                                                                                       selectInput("designP2LBIEMDES", "What Research Design is this for?", 
-                                                                                                                   choices = list("constantEffects" = "d2.1_m2fc", 
-                                                                                                                                  "fixedEffects" = "d2.1_m2ff", 
-                                                                                                                                  "randomEffects" = "d2.1_m2fr"))) # select input buttons div
-                                                                                            ), # column for inputs
-                                                                                            
-                                                                                            column(2, 
-                                                                                                   div(style ="display: inline-block,vertical-align:top;",
-                                                                                                       actionButton("question_designP2LBIEMDES",
-                                                                                                                    label = "", 
-                                                                                                                    icon = icon("question"),
-                                                                                                                    style = "font-size: 10px;
-                                                          margin-top: 28px;")) #div for button ends
-                                                                                            ) # column for buttons
-                                                                                            
-                                                                                          ), # fluid Row to contain the question mark issue 
-                                                                                          
-                                                                                          bsPopover(id = "question_designP2LBIEMDES", 
-                                                                                                    title = NULL,
-                                                                                                    content = paste0("For more information on different designs, please click!"),
-                                                                                                    placement = "right", 
-                                                                                                    trigger = "hover", 
-                                                                                                    options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            column(10,
-                                                                                                   div(style = "display: inline-block, vertical-align:top;", 
-                                                                                                       selectInput("MTPP2LBIEMDES", "Which MTP do you plan to use?", 
-                                                                                                                   choices = list("Bonferroni" = "Bonferroni", 
-                                                                                                                                  "Holm" = "Holm", 
-                                                                                                                                  "Benjamini-Hochberg" = "BH", 
-                                                                                                                                  "Westfall-Young-Single-Step" = "WY-SS", 
-                                                                                                                                  "Westfall-Young-Step-Down" = "WY-SD"),
-                                                                                                                   multiple = TRUE)) # select input buttons div
-                                                                                            ), # column for inputs
-                                                                                            
-                                                                                            column(2, 
-                                                                                                   div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                                                                                       actionButton("question_mtpP2LBIEMDES",
-                                                                                                                    label = "", 
-                                                                                                                    icon = icon("question"),
-                                                                                                                    style = "font-size: 10px;
-                                                                       margin-top: 28px;")) #div for button ends
-                                                                                            ) # column for buttons
-                                                                                            
-                                                                                          ), # fluid Row to contain the question mark issue 
-                                                                                          
-                                                                                          bsPopover(id = "question_mtpP2LBIEMDES", 
-                                                                                                    title = NULL,
-                                                                                                    content = paste0("For more information on MTP, please click!"),
-                                                                                                    placement = "right", 
-                                                                                                    trigger = "hover", 
-                                                                                                    options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(12,
-                                                                                                   numericInput("MP2LBIEMDES", 
-                                                                                                                "Number of Outcomes", 
-                                                                                                                min = 1, 
-                                                                                                                max = 10, 
-                                                                                                                value = 5, 
-                                                                                                                step = 1)
-                                                                                            ) # column for number of outcomes
-                                                                                            
-                                                                                          ), # number of outcomes and mdes
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(10,
-                                                                                                   textInput("MDESP2LBIEMDES", 
-                                                                                                             "Vary MDES vector (comma delimited)", 
-                                                                                                             value = "0.125,0.125,0.125, 0,0")
-                                                                                                   
-                                                                                            ), # column for MDES
-                                                                                            
-                                                                                            column(2, 
-                                                                                                   div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                                                                                       actionButton("question_mdesP2LBIEMDES",
-                                                                                                                    label = "", 
-                                                                                                                    icon = icon("question"),
-                                                                                                                    style = "font-size: 10px;
-                                                                       margin-top: 28px;")) #div for button ends
-                                                                                            ) # column for buttons
-                                                                                            
-                                                                                          ), # fluid Row to contain the question mark issue 
-                                                                                          
-                                                                                          bsPopover(id = "question_mdesP2LBIEMDES", 
-                                                                                                    title = NULL,
-                                                                                                    content = paste0("For more information on MTP, please click!"),
-                                                                                                    placement = "right", 
-                                                                                                    trigger = "hover", 
-                                                                                                    options = list(container = "body")
-                                                                                          ), # the bsPopover for the more information section of the Shiny App
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(12,
-                                                                                                   
-                                                                                                   numericInput("KP2LBIEMDES", 
-                                                                                                                "Number of Districts", 
-                                                                                                                min = 1, 
-                                                                                                                max = 100, 
-                                                                                                                value = 1, 
-                                                                                                                step = 1))
-                                                                                          ), # number of districts
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(6,
-                                                                                                   
-                                                                                                   numericInput("JP2LBIEMDES", 
-                                                                                                                "Number of blocks", 
-                                                                                                                min = 1, 
-                                                                                                                max = 100, 
-                                                                                                                value = 50, 
-                                                                                                                step = 1)
-                                                                                                   
-                                                                                            ), # number of blocks
-                                                                                            
-                                                                                            column(6,
-                                                                                                   
-                                                                                                   numericInput("nbarP2LBIEMDES",
-                                                                                                                "Number of units per block", 
-                                                                                                                min = 2, 
-                                                                                                                max = 100, 
-                                                                                                                value = 20, 
-                                                                                                                step = 1)
-                                                                                                   
-                                                                                            ) # number of units per blocks
-                                                                                            
-                                                                                          ), # Nmber of blocks and number of units per block
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(10,
-                                                                                                   textInput("R2.1P2LBIEMDES", 
-                                                                                                             "Only 1 R Value allowed!", 
-                                                                                                             value = "0.2, 0.2, 0.2, 0.2, 0.2")
-                                                                                                   
-                                                                                            ), # column for MDES
-                                                                                            
-                                                                                            column(2, 
-                                                                                                   div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                                                                                       actionButton("R2.1P2LBIEMDES",
-                                                                                                                    label = "", 
-                                                                                                                    icon = icon("question"),
-                                                                                                                    style = "font-size: 10px;
-                                                                       margin-top: 28px;")) #div for button ends
-                                                                                            ) # column for buttons
-                                                                                            
-                                                                                          ), # fluid Row to contain the question mark issue 
-                                                                                          
-                                                                                          bsPopover(id = "R2.1P2LBIEMDES", 
-                                                                                                    title = NULL,
-                                                                                                    content = paste0("For more information on MTP, please click!"),
-                                                                                                    placement = "right", 
-                                                                                                    trigger = "hover", 
-                                                                                                    options = list(container = "body")
-                                                                                          ), # the bsPopover for the more information section of the Shiny App
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            column(12,
-                                                                                                   
-                                                                                                   numericInput("rhoP2LBIEMDES", 
-                                                                                                                "Correlation between outcomes", 
-                                                                                                                min = 0, 
-                                                                                                                max = 1, 
-                                                                                                                value = 0.5, 
-                                                                                                                step = 0.1 )
-                                                                                                   
-                                                                                            ) # Number of Level 1 covariates
-                                                                                            
-                                                                                          ), #fluid row for block level covariate inputs
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            column(12,
-                                                                                                   
-                                                                                                   numericInput("numCovar.1P2LBIEMDES", 
-                                                                                                                "Number of Level 1 Covariates", 
-                                                                                                                min = 0, 
-                                                                                                                max = 10, 
-                                                                                                                value = 1, 
-                                                                                                                step = 1 )
-                                                                                                   
-                                                                                            )# Number of Level 1 Covariates
-                                                                                            
-                                                                                          ), # column correlation btw tests & intraclass correlation!
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(12,
-                                                                                                   
-                                                                                                   numericInput("tbarP2LBIEMDES", 
-                                                                                                                "Proportion of Treatment assignment", 
-                                                                                                                min = 0.001, 
-                                                                                                                max = 1.0, 
-                                                                                                                value = 0.5, 
-                                                                                                                step = 0.001)
-                                                                                                   
-                                                                                            ) # proportion of treatment assignment
-                                                                                          ), # proprtion of treatement as assignment
-                                                                                          
-                                                                                          fluidRow(  
-                                                                                            
-                                                                                            column(12,
-                                                                                                   
-                                                                                                   numericInput("alphaP2LBIEMDES", 
-                                                                                                                "Significance Level of Tests (alpha)", 
-                                                                                                                min = 0.001, 
-                                                                                                                max = 0.9, 
-                                                                                                                value = 0.05, 
-                                                                                                                step = 0.001)
-                                                                                                   
-                                                                                            ) #Significance Level of Tests
-                                                                                            
-                                                                                          ), # proportion of treatment assignment and significance level of tests
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(6,
-                                                                                                   actionButton("goButtonP2LBIEMDES", "Go!") # Action Button to trigger other reactive values
-                                                                                            )
-                                                                                          ) # goButtonP2LBIE
-                                                                                          
-                                                                         ), # end of MDES condtional Panel
-                                                                         
-                                                                         conditionalPanel(condition = "input.explorerP2LBIE == 'R2'",
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(10,
-                                                                                                   div(style = "display: inline-block, vertical-align:top;", 
-                                                                                                       selectInput("designP2LBIER2", "What Research Design is this for?", 
-                                                                                                                   choices = list("constantEffects" = "d2.1_m2fc", 
-                                                                                                                                  "fixedEffects" = "d2.1_m2ff", 
-                                                                                                                                  "randomEffects" = "d2.1_m2fr"))) # select input buttons div
-                                                                                            ), # column for inputs
-                                                                                            
-                                                                                            column(2, 
-                                                                                                   div(style ="display: inline-block,vertical-align:top;",
-                                                                                                       actionButton("question_designP2LBIER2",
-                                                                                                                    label = "", 
-                                                                                                                    icon = icon("question"),
-                                                                                                                    style = "font-size: 10px;
-                                                          margin-top: 28px;")) #div for button ends
-                                                                                            ) # column for buttons
-                                                                                            
-                                                                                          ), # fluid Row to contain the question mark issue 
-                                                                                          
-                                                                                          bsPopover(id = "question_designP2LBIER2", 
-                                                                                                    title = NULL,
-                                                                                                    content = paste0("For more information on different designs, please click!"),
-                                                                                                    placement = "right", 
-                                                                                                    trigger = "hover", 
-                                                                                                    options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(10,
-                                                                                                   div(style = "display: inline-block, vertical-align:top;", 
-                                                                                                       selectInput("MTPP2LBIER2", "Which MTP do you plan to use?", 
-                                                                                                                   choices = list("Bonferroni" = "Bonferroni", 
-                                                                                                                                  "Holm" = "Holm", 
-                                                                                                                                  "Benjamini-Hochberg" = "BH", 
-                                                                                                                                  "Westfall-Young-Single-Step" = "WY-SS", 
-                                                                                                                                  "Westfall-Young-Step-Down" = "WY-SD"),
-                                                                                                                   multiple = TRUE)) # select input buttons div
-                                                                                            ), # column for inputs
-                                                                                            
-                                                                                            column(2, 
-                                                                                                   div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                                                                                       actionButton("question_mtpP2LBIER2",
-                                                                                                                    label = "", 
-                                                                                                                    icon = icon("question"),
-                                                                                                                    style = "font-size: 10px;
-                                          margin-top: 28px;")) #div for button ends
-                                                                                            ) # column for buttons
-                                                                                            
-                                                                                          ), # fluid Row to contain the question mark issue 
-                                                                                          
-                                                                                          bsPopover(id = "question_mtpP2LBIER2", 
-                                                                                                    title = NULL,
-                                                                                                    content = paste0("For more information on MTP, please click!"),
-                                                                                                    placement = "right", 
-                                                                                                    trigger = "hover", 
-                                                                                                    options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(12,
-                                                                                                   numericInput("MP2LBIER2", 
-                                                                                                                "Number of Outcomes", 
-                                                                                                                min = 1, 
-                                                                                                                max = 10, 
-                                                                                                                value = 5, 
-                                                                                                                step = 1)
-                                                                                            ) # column for number of outcomes
-                                                                                            
-                                                                                          ), # number of outcomes and mdes
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(10,
-                                                                                                   textInput("MDESP2LBIER2", 
-                                                                                                             "Only 1 MDES value allowed!", 
-                                                                                                             value = "0.125,0.125,0.125, 0,0")
-                                                                                                   
-                                                                                            ), # column for MDES
-                                                                                            
-                                                                                            column(2, 
-                                                                                                   div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                                                                                       actionButton("question_mdesP2LBIER2",
-                                                                                                                    label = "", 
-                                                                                                                    icon = icon("question"),
-                                                                                                                    style = "font-size: 10px;
-                                                                  margin-top: 28px;")) #div for button ends
-                                                                                            ) # column for buttons
-                                                                                            
-                                                                                          ), # fluid Row to contain the question mark issue 
-                                                                                          
-                                                                                          bsPopover(id = "question_mdesP2LBIER2", 
-                                                                                                    title = NULL,
-                                                                                                    content = paste0("For more information on MTP, please click!"),
-                                                                                                    placement = "right", 
-                                                                                                    trigger = "hover", 
-                                                                                                    options = list(container = "body")
-                                                                                          ), # the bsPopover for the more information section of the Shiny App
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(12,
-                                                                                                   numericInput("KP2LBIER2", 
-                                                                                                                "Number of Districts", 
-                                                                                                                min = 1, 
-                                                                                                                max = 100, 
-                                                                                                                value = 1, 
-                                                                                                                step = 1))
-                                                                                          ), # number of districts
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(6,
-                                                                                                   numericInput("JP2LBIER2", 
-                                                                                                                "Number of blocks", 
-                                                                                                                min = 1, 
-                                                                                                                max = 100, 
-                                                                                                                value = 50, 
-                                                                                                                step = 1)
-                                                                                                   
-                                                                                            ), # number of blocks
-                                                                                            
-                                                                                            column(6,
-                                                                                                   numericInput("nbarP2LBIER2",
-                                                                                                                "Number of units per block", 
-                                                                                                                min = 2, 
-                                                                                                                max = 100, 
-                                                                                                                value = 20, 
-                                                                                                                step = 1)
-                                                                                                   
-                                                                                            ) # number of units per blocks
-                                                                                            
-                                                                                          ), # Nmber of blocks and number of units per block
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(10,
-                                                                                                   textInput("R2.1P2LBIER2", 
-                                                                                                             "Vary R2 vector (comma delimited)", 
-                                                                                                             value = "0.2, 0.2, 0.2, 0.2, 0.2")
-                                                                                                   
-                                                                                            ), # column for MDES
-                                                                                            
-                                                                                            column(2, 
-                                                                                                   div(style ="display: inline-block, 
-                                                 vertical-align:top;",
-                                                                                                       actionButton("R2.1P2LBIER2_question",
-                                                                                                                    label = "", 
-                                                                                                                    icon = icon("question"),
-                                                                                                                    style = "font-size: 10px;
-                                                margin-top: 28px;")) #div for button ends
-                                                                                            ) # column for buttons
-                                                                                            
-                                                                                          ), # fluid Row to contain the question mark issue 
-                                                                                          
-                                                                                          bsPopover(id = "R2.1P2LBIER2_question", 
-                                                                                                    title = NULL,
-                                                                                                    content = paste0("For more information on MTP, please click!"),
-                                                                                                    placement = "right", 
-                                                                                                    trigger = "hover", 
-                                                                                                    options = list(container = "body")
-                                                                                          ), # the bsPopover for the more information section of the Shiny App
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(12,
-                                                                                                   numericInput("rhoP2LBIER2", 
-                                                                                                                "Correlation between outcomes", 
-                                                                                                                min = 0, 
-                                                                                                                max = 1, 
-                                                                                                                value = 0.5, 
-                                                                                                                step = 0.1 )
-                                                                                                   
-                                                                                            ) # Number of Level 1 covariates
-                                                                                            
-                                                                                          ), #fluid row for block level covariate inputs
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(12,
-                                                                                                   numericInput("numCovar.1P2LBIER2", 
-                                                                                                                "Number of Level 1 Covariates", 
-                                                                                                                min = 0, 
-                                                                                                                max = 10, 
-                                                                                                                value = 1, 
-                                                                                                                step = 1 )
-                                                                                                   
-                                                                                            )# Number of Level 1 Covariates
-                                                                                            
-                                                                                          ), # column correlation btw tests & intraclass correlation!
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(12,
-                                                                                                   numericInput("tbarP2LBIER2", 
-                                                                                                                "Proportion of Treatment assignment", 
-                                                                                                                min = 0.001, 
-                                                                                                                max = 1.0, 
-                                                                                                                value = 0.5, 
-                                                                                                                step = 0.001)
-                                                                                                   
-                                                                                            ) # proportion of treatment assignment
-                                                                                            
-                                                                                          ), # proprtion of treatement as assignment
-                                                                                          
-                                                                                          fluidRow(  
-                                                                                            
-                                                                                            column(12,
-                                                                                                   numericInput("alphaP2LBIER2", 
-                                                                                                                "Significance Level of Tests (alpha)", 
-                                                                                                                min = 0.001, 
-                                                                                                                max = 0.9, 
-                                                                                                                value = 0.05, 
-                                                                                                                step = 0.001)
-                                                                                                   
-                                                                                            ) #Significance Level of Tests
-                                                                                            
-                                                                                          ), # proportion of treatment assignment and significance level of tests
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            
-                                                                                            column(6,
-                                                                                                   actionButton("goButtonP2LBIER2", "Go!") # Action Button to trigger other reactive values
-                                                                                            )
-                                                                                          ) # goButtonP2LBIE
-                                                                                          
-                                                                         ) # Conditional Panel for R2
-                                                                         
-                                                                       ), # Power calculation sidebarPanel
-                                                                       
-                                                                       mainPanel(
-                                                                         
-                                                                         
-                                                                         conditionalPanel(condition = "input.explorerP2LBIE == 'MDES'",
-                                                                                          
-                                                                                          br(),    
-                                                                                          br(),
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            column(8, align = "center",
-                                                                                                   offset = 2,
-                                                                                                   plotlyOutput("powercalcGraphP2LBIEMDES"))
-                                                                                          ), # end of Fluid Row
-                                                                                          
-                                                                                          br(), # To create spaces between Table and Plots
-                                                                                          br(), # To create spaces between Table and Plots
-                                                                                          br(), # To create spaces between Table and Plots
-                                                                                          br(), # To create spaces between Table and Plots
-                                                                                          br(), # To create spaces between Table and Plots
-                                                                                          br(), # To create spaces between Table and Plots
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            column(12, align = "center",
-                                                                                                   DT::dataTableOutput("powercalcTableP2LBIEMDES")) #The power calculation table output
-                                                                                          ) #fluidRow for first half of the page
-                                                                                          
-                                                                         ), # conditional panel results for MDES
-                                                                         
-                                                                         conditionalPanel(condition = "input.explorerP2LBIE == 'R2'",
-                                                                                          
-                                                                                          br(),    
-                                                                                          br(),
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            column(8, align = "center",
-                                                                                                   offset = 2,
-                                                                                                   plotlyOutput("powercalcGraphP2LBIER2"))
-                                                                                          ), # end of Fluid Row
-                                                                                          
-                                                                                          br(), # To create spaces between Table and Plots
-                                                                                          br(), # To create spaces between Table and Plots
-                                                                                          
-                                                                                          fluidRow(
-                                                                                            column(12, align = "center",
-                                                                                                   DT::dataTableOutput("powercalcTableP2LBIER2")) #The power calculation table output
-                                                                                          ) #fluidRow for first half of the page
-                                                                                          
-                                                                         ) # conditional panel results for R2
-                                                                         
-                                                                       ) # Power calculation Main Panel
-                                                                       
-                                                                     ) # Power Calculation sidebar Layout
-                                                                     
-                                                            ) # Explorer
-                                                            
-                 ) # Power Tablset Panel to hose Single and Explorer
+                     ) # html bracket
+                   ) # css styling tag
+                 ), # The header tag
                  
-                 ) # Power Calculation Main and Side Bar Tab     
+                 fluidRow(
+                   
+                   div(style = "display: inline-block, vertical-align:top;", 
+                       column(12,
+                              selectInput("estimationEx", "What would you like to estimate?",
+                                          choices = list("Power" = "power",
+                                                         "Minimum detectable effect size" = "mdes",
+                                                         "Sample size" = "sample"),
+                                          selected = "power")
+                              
+                       )) # User Mode of Exploration
+                   
+                 ), # picking the type of exploration you would like to run
                  
-               ) # End of Power Tabset
+                 fluidRow(
+                   
+                   div(style = "display: inline-block, vertical-align:top;", 
+                       column(12,
+                              selectInput("designEx", "What research design is this for?", 
+                                          choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
+                                                         "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
+                                                         "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
+                                                         "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
+                                                         "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
+                                                         "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
+                                                         "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
+                                                         "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
+                                                         "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
+                                          ),
+                                          selected = "d2.1_m2ff")     
+                              
+                       )) # selecting designs
+                   
+                 ), # picking the research design
+                 
+                 # UI/UX input for variables to vary
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("typeOfSampleEx"))
+                   
+                 ), # type of sample to estimate
+            
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("varVaryEx"))
+                   
+                 ), # drop down for variable to vary by
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("mEx"))
+                   
+                 ), # number of outcomes selection 
+                 
+                 
+                 fluidRow(
+                  
+                   column(12,
+                          uiOutput("numZeroEx"))   
+                 ),
+                   
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("nbarEx"))
+                   
+                 ), # Units per block  
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("jEx"))
+                   
+                 ), # number of blocks
+
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("mtpEx"))
+                   
+                 ), # MTP shared by all designs
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("mdesEx"))
+                   
+                 ), # Minimum Detectable Effect Size
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("powerDefinitionEx"))
+                   
+                 ), # Power definition options
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("targetPowerEx"))
+                   
+                 ), # Target power values
+
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("rhoEx"))
+                   
+                 ), # correlation between outcomes
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("numCovar.1Ex"))
+                   
+                 ), # number of covariates in level 1
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("tbarEx"))
+                   
+                 ), # proportion of treatment assignment
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("alphaEx"))
+                   
+                 ), # alpha
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("r2.1Ex"))
+                   
+                 ), # Adding R2.1
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("icc.2Ex"))
+                   
+                 ), # Adding icc.2
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("r2.2Ex"))
+                   
+                 ), # Adding R2.2
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("omega.2Ex"))
+                   
+                 ), # Adding omega.2
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("r2.3Ex")      
+                   )
+                 ), # Adding r2.3
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("icc.3Ex"))
+                   
+                 ), # Adding icc.3
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("kEx"))
+                   
+                 ), # Adding k
+                 
+                 fluidRow(
+                   
+                   column(12,
+                          uiOutput("omega.3Ex"))
+                   
+                 ), # Adding omega.3
+                 
+                 fluidRow(
+                   
+                   column(6,
+                          actionButton("goButtonEx", "Go!")) 
+                   
+                 ) # Action Button to trigger other reactive values
+               ), # Power calculation sidebarPanel
                
-               # tabPanel("MDES Calculation",
-               #          sidebarLayout(
-               #            sidebarPanel(
-               #              
-               #              # css to center the progress bar
-               #              tags$head(
-               #                tags$style(
-               #                  HTML(".shiny-notification {
-               #         height: 50px;
-               #         width: 600px;
-               #         position:fixed;
-               #         top: calc(50% - 50px);
-               #         left: calc(45%);
-               #         right: calc(15%);
-               #         font-size: 100%;
-               #         text-align: center;
-               #         
-               #        }
-               #          .progress-message {
-               #         
-               #         padding-top: 0px;
-               #         padding-right: 3px;
-               #         padding-bottom: 3px;
-               #         padding-left: 10px;
-               #         font-weight: normal !important;
-               #         font-style: italic !important;
-               #         font-size: 15px;
-               #        }
-               #    
-               #          .progress-detail {
-               # 
-               #         padding-top: 0px;
-               #         padding-right: 3px;
-               #         padding-bottom: 3px;
-               #         padding-left: 3px;
-               #         font-weight: normal;
-               #         font-style: italic !important;
-               #         font-size: 15px;
-               #        }
-               #      "
-               #                  ) # html bracket
-               #                ) # css styling tag
-               #              ), # The header tag
-               #              
-               #              fluidRow(
-               #                column(6,
-               #                       div(style = "display: inline-block, vertical-align:top;", 
-               #                           selectInput("MTP_mdes", "MTP", 
-               #                                       choices = list("Bonferroni" = "BF", 
-               #                                                      "Benjamini-Hocheberg" = "BH", 
-               #                                                      "Holms" = "HO", 
-               #                                                      "Westfall-Young-SS" = "WY-SS", 
-               #                                                      "Westfall-Young-SD" = "WY-SD"),
-               #                                       selected = "BF")) # select input buttons div
-               #                       
-               #                ), # MTP, the Mutliple Testing Procedure in Use
-               #                
-               #                column(6,
-               #                       numericInput("M_mdes", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
-               #                ) # M, the number of outcomes in use
-               #              ), # Fluid Row for MTP and M outcomes
-               #              
-               #              fluidRow(
-               #                
-               #                column(10,
-               #                       numericInput("numFalse_mdes", "Number of Outcomes with an expected non-zero effects", value = 3, min = 0, max = 10, step = 1)
-               #                ), # column for outcomes with actual effect size
-               #                
-               #                column(2,
-               #                       div(style ="display: inline-block, vertical-align:top;",actionButton("question_mdes_mdes",label = "", icon = icon("question"))) #div for button ends                            
-               #                ) # column for action button
-               #                
-               #              ), # MDES and number of outcomes with expected actual effect
-               #              
-               #              fluidRow(
-               #                column(6,
-               #                       numericInput("J_mdes", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
-               #                ), # Number of Blocks
-               #                
-               #                column(6,
-               #                       numericInput("n.j_mdes","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
-               #                       
-               #                ) # Fluid Row for Number of units per block and Number of units
-               #                
-               #              ), # Number of Block and Sample Size
-               #              
-               #              fluidRow(
-               #                column(6,
-               #                       numericInput("alpha_mdes", "Alpha value", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
-               #                ), # alpha value
-               #                
-               #                column(6,
-               #                       numericInput("me_mdes", "Margin of error", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
-               #                ) # Margins of error
-               #              ), # For Alpha and Margin of Error
-               #              
-               #              fluidRow(
-               #                
-               #                column(6,
-               #                       numericInput("numCovar.1_mdes", "Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
-               #                ), # number of covariates at level 1
-               #                
-               #                column(6,
-               #                       numericInput("R2.1_mdes", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
-               #                ) # R2 (explanatory power at level 1)
-               #              ), # Number of Level 1 covariates and R^2 explanatory power
-               #              
-               #              fluidRow(
-               #                
-               #                column(6,
-               #                       numericInput("power_mdes", "Power Value", min = 0.001, max = 1.0, value = 0.75, step = 0.001)
-               #                ), # Power value
-               #                
-               #                column(6,
-               #                       uiOutput("power") #Dynamic Selector User Interface for power
-               #                ) # Choice of Power and Power Definition
-               #              ), # Fluid Row for Proportion of treatment assignment
-               #              
-               #              fluidRow(
-               #                
-               #                column(12,
-               #                       numericInput("p_mdes", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
-               #                ) # Proportion of treatment assignment
-               #              ), # fluid row for Proportion of Treatment assignment
-               #              
-               #              fluidRow(
-               #                
-               #                column(12,
-               #                       actionButton("goButton_mdes", "Go!") # Action Button to trigger other reactive values
-               #                ) # Column for action button
-               #                
-               #              ) # fluid row for Action Button
-               #              
-               #            ), # Side Bar Panel
-               #            
-               #            mainPanel(
-               #              
-               #              fluidRow(
-               #                
-               #                column(12,
-               #                       tableOutput("mdes") # MDES part of a spinner
-               #                ) # Full column
-               #                
-               #              ) #fluidRow for first half of the page
-               #            ) # Main Panel Layout
-               #          ) # Sidebar Panel       
-               # ), # Tabpanel MDES calculation
-               # tabPanel("Sample Size Calculation",
-               #          sidebarLayout(
-               #            sidebarPanel(
-               #              
-               #              # css to center the progress bar
-               #              tags$head(
-               #                tags$style(
-               #                  HTML(".shiny-notification {
-               #             height: 50px;
-               #             width: 600px;
-               #             position:fixed;
-               #             top: calc(50% - 50px);
-               #             left: calc(45%);
-               #             right: calc(15%);
-               #             font-size: 100%;
-               #             text-align: center;
-               #             
-               #             }
-               #             .progress-message {
-               #             
-               #             padding-top: 0px;
-               #             padding-right: 3px;
-               #             padding-bottom: 3px;
-               #             padding-left: 10px;
-               #             font-weight: normal !important;
-               #             font-style: italic !important;
-               #             font-size: 15px;
-               #             }
-               #             
-               #             .progress-detail {
-               #             
-               #             padding-top: 0px;
-               #             padding-right: 3px;
-               #             padding-bottom: 3px;
-               #             padding-left: 3px;
-               #             font-weight: normal;
-               #             font-style: italic !important;
-               #             font-size: 15px;
-               #             }
-               #             
-               #             "
-               #                  ) # html bracket
-               #                ) # css styling tag
-               #              ), # The header tag
-               #              
-               #              fluidRow(
-               #                column(6,
-               #                       div(style = "display: inline-block, vertical-align:top;", 
-               #                           selectInput("MTP_sample", "MTP", 
-               #                                       choices = list("Bonferroni" = "BF", 
-               #                                                      "Benjamini-Hocheberg" = "BH", 
-               #                                                      "Holms" = "HO", 
-               #                                                      "Westfall-Young-SS" = "WY-SS", 
-               #                                                      "Westfall-Young-SD" = "WY-SD"),
-               #                                       selected = "BF")) # select input buttons div
-               #                       
-               #                ), # MTP, the Mutliple Testing Procedure in Use
-               #                
-               #                column(6,
-               #                       numericInput("M_sample", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
-               #                ) # M, the number of outcomes in use
-               #              ), # Fluid Row for MTP and M outcomes
-               #              
-               #              fluidRow(
-               #                
-               #                column(10,
-               #                       numericInput("numFalse_sample", "Number of False Nulls", value = 3, min = 0, max = 10, step = 1)
-               #                ), # column for outcomes with actual effect size
-               #                
-               #                column(2,
-               #                       div(style ="display: inline-block, vertical-align:top;",actionButton("question_sample_sample",label = "", icon = icon("question"))) #div for button ends                            
-               #                ) # column for action button
-               #                
-               #              ), # MDES and number of outcomes with expected actual effect
-               #              
-               #              fluidRow(
-               #                
-               #                column(12,
-               #                       div(style = "display: inline-block, vertical-align:top;", 
-               #                           selectInput("typesample", "Which type of sample would you like to estimate ?", 
-               #                                       choices = list("Number of Blocks" = "J", "Number of Samples within block" = "n.j"))) # select input buttons div
-               #                ) # Choice of type of Sample we want to estimate 
-               #                
-               #              ), #fluidRow for radio button choice
-               #              
-               #              fluidRow(
-               #                column(6,
-               #                       numericInput("J_sample", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
-               #                ), # Number of Blocks
-               #                
-               #                column(6,
-               #                       numericInput("nbar_sample","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
-               #                       
-               #                ) # Fluid Row for Number of units per block and Number of units
-               #                
-               #              ), # Number of Block and Sample Size
-               #              
-               #              fluidRow(
-               #                column(6,
-               #                       numericInput("alpha_sample", "Alpha value", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
-               #                ), # alpha value
-               #                
-               #                column(6,
-               #                       numericInput("me_sample", "Margin of error", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
-               #                ) # Margins of error, #me = margin of error
-               #              ), # For Alpha and Margin of Error
-               #              
-               #              fluidRow(
-               #                
-               #                column(6,
-               #                       numericInput("numCovar.1_sample", "Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
-               #                ), # number of covariates at level 1
-               #                
-               #                column(6,
-               #                       numericInput("R2.1_sample", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
-               #                ) # R2 (explanatory power at level 1)
-               #              ), # Number of Level 1 covariates and R^2 explanatory power
-               #              
-               #              fluidRow(
-               #                
-               #                column(6,
-               #                       numericInput("power_samples", "Power Value", min = 0.001, max = 1.0, value = 0.75, step = 0.001)
-               #                ), # Power value
-               #                
-               #                column(6,
-               #                       uiOutput("power_sample") #Dynamic Selector User Interface for power
-               #                ) # Choice of Power and Power Definition
-               #              ), # Fluid Row for Proportion of treatment assignment
-               #              
-               #              fluidRow(
-               #                
-               #                column(6,
-               #                       numericInput("p_sample", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
-               #                ), # Proportion of treatment assignment
-               #                
-               #                column(6,
-               #                       numericInput("MDES_sample", "Minimum effect size", value = 0.125, min = 0, max = 5, step = 0.001)
-               #                ) # column for Minimum detectable effect size
-               #                
-               #              ), # fluid row for Proportion of Treatment assignment
-               #              
-               #              fluidRow(
-               #                
-               #                column(12,
-               #                       actionButton("goButton_sample", "Go!") # Action Button to trigger other reactive values
-               #                ) # Column for action button
-               #                
-               #              ) # fluid row for Action Button
-               #              
-               #            ), # Side Bar Panel
-               #            
-               #            mainPanel(
-               #              
-               #              fluidRow(
-               #                
-               #                column(12,
-               #                       tableOutput("sample") # Sample Table
-               #                ) # Full column
-               #                
-               #              )
-               #              
-               #            ) # Main Panel Layout
-               #          ) # Sidebar Panel       
-               # )  # Tabpanel Sample calculation 
-               ) # Inner Tabset Panel
-               
-               # ), # 2 Level Block RCT Design Tab set
-               # 
-               # tabPanel("2-Level-Cluster", tabsetPanel(
-               #   tabPanel("Cluster Power Calculation",
-               #            sidebarLayout(
-               #              sidebarPanel(
-               #                # css to center the progress bar
-               #                tags$head(
-               #                  tags$style(
-               #                    HTML(".shiny-notification {
-               #                 height: 50px;
-               #                 width: 600px;
-               #                 position:fixed;
-               #                 top: calc(50% - 50px);
-               #                 left: calc(45%);
-               #                 right: calc(15%);
-               #                 font-size: 100%;
-               #                 text-align: center;
-               #                 
-               #                 }
-               #                 .progress-message {
-               #                 
-               #                 padding-top: 0px;
-               #                 padding-right: 3px;
-               #                 padding-bottom: 3px;
-               #                 padding-left: 10px;
-               #                 font-weight: normal !important;
-               #                 font-style: italic !important;
-               #                 font-size: 15px;
-               #                 }
-               #                 
-               #                 .progress-detail {
-               #                 
-               #                 padding-top: 0px;
-               #                 padding-right: 3px;
-               #                 padding-bottom: 3px;
-               #                 padding-left: 3px;
-               #                 font-weight: normal;
-               #                 font-style: italic !important;
-               #                 font-size: 15px;
-               #                 }
-               #                 
-               #                 "
-               #                    ) # html bracket
-               #                  ) # css styling tag
-               #                ), # The header tag
-               #                
-               #                fluidRow(
-               #                  column(10,
-               #                         div(style = "display: inline-block, vertical-align:top;", selectInput("designCluster", "What Research Design is this for?", 
-               #                                                                                               choices = list("simpleRandomEffects" = "simple_c2_2r")) # select input buttons div
-               #                  ), # column for inputs
-               #                  
-               #                  column(2, 
-               #                         div(style ="display: inline-block, vertical-align:top;",actionButton("question_designCluster",label = "", icon = icon("question"),
-               #                                                                                              style = "font-size: 10px;
-               #                                                                                               margin-top: 28px;")) #div for button ends
-               #                  ) # column for buttons
-               #                  
-               #                ), # fluid Row to contain the question mark issue 
-               #                
-               #                bsPopover(id = "question_designCluster", title = NULL,
-               #                          content = paste0("For more information on different designs, please click!"),
-               #                          placement = "right", 
-               #                          trigger = "hover", 
-               #                          options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-               #                
-               #                fluidRow(
-               #                  column(10,
-               #                         div(style = "display: inline-block, vertical-align:top;", selectInput("MTPCluster", "Which MTP do you plan to use?", 
-               #                                                                                               choices = list("Bonferroni" = "Bonferroni", 
-               #                                                                                                              "Holm" = "Holm", 
-               #                                                                                                              "Benjamini-Hochberg" = "BH", 
-               #                                                                                                              "Westfall-Young-Single-Step" = "WY-SS", 
-               #                                                                                                              "Westfall-Young-Step-Down" = "WY-SD"))) # select input buttons div
-               #                  ), # column for inputs
-               #                  
-               #                  column(2, 
-               #                         div(style ="display: inline-block, vertical-align:top;",actionButton("question_mtpCluster",label = "", icon = icon("question"))) #div for button ends
-               #                  ) # column for buttons
-               #                  
-               #                ), # fluid Row to contain the question mark issue 
-               #                
-               #                bsPopover(id = "question_mtpCluster", title = NULL,
-               #                          content = paste0("For more information on MTP, please click!"),
-               #                          placement = "right", 
-               #                          trigger = "hover", 
-               #                          options = list(container = "body")), # the bsPopover for the more information section of the Shiny App
-               #                
-               #                fluidRow(
-               #                  
-               #                  column(12,
-               #                         numericInput("MCluster", "Number of Outcomes", min = 1, max = 10, value = 5, step = 1)
-               #                  ) # column for number of outcomes
-               #                  
-               #                ), # number of outcomes and mdes
-               #                
-               #                fluidRow(
-               #                  
-               #                  column(12,
-               #                         textInput("MDESCluster", "Enter a vector (comma delimited)", value = "0.125,0.125,0.125, 0,0"))
-               #                ), # column for Minimum detectable effect size
-               #                
-               #                
-               #                fluidRow(
-               #                  
-               #                  column(12,
-               #                         
-               #                         numericInput("KCluster", "Number of Districts", min = 1, max = 100, value = 1, step = 1))
-               #                ), # number of districts
-               #                
-               #                fluidRow(
-               #                  
-               #                  column(6,
-               #                         
-               #                         numericInput("JCluster", "Number of blocks", min = 1, max = 100, value = 50, step = 1)
-               #                         
-               #                  ), # number of blocks
-               #                  
-               #                  column(6,
-               #                         
-               #                         numericInput("nbarCluster","Number of units per block", min = 2, max = 100, value = 20, step = 1)     
-               #                         
-               #                  ) # number of units per blocks
-               #                  
-               #                ), # Nmber of blocks and number of units per block
-               #                
-               #                fluidRow(
-               #                  
-               #                  column(6,
-               #                         
-               #                         numericInput("R2.1Cluster", "Level 1 R2", value = 0.2, min = 0, max = 1.0, step = 0.01)
-               #                         
-               #                  ), # R square for level 1
-               #                  
-               #                  column(6,
-               #                         
-               #                         numericInput("numCovar.1Cluster", "Number of Level 1 Covariates", min = 0, max = 10, value = 1, step = 1 )
-               #                         
-               #                  )# Number of Level 1 Covariates
-               #                  
-               #                ), # column correlation btw tests & intraclass correlation!
-               #                
-               #                fluidRow(
-               #                  
-               #                  column(12,
-               #                         
-               #                         numericInput("tbarCluster", "Proportion of Treatment assignment", min = 0.001, max = 1.0, value = 0.5, step = 0.001)
-               #                         
-               #                  ) # proportion of treatment assignment
-               #                ), # proprtion of treatement as assignment
-               #                
-               #                fluidRow(  
-               #                  
-               #                  column(12,
-               #                         
-               #                         numericInput("alphaCluster", "Significance Level of Tests (alpha)", min = 0.001, max = 0.9, value = 0.05, step = 0.001)
-               #                         
-               #                  ) #Significance Level of Tests
-               #                  
-               #                ), # proportion of treatment assignment and significance level of tests
-               #                
-               #                fluidRow(
-               #                  column(12,
-               #                         
-               #                         numericInput("rhoCluster", "Correlation between outcomes", min = 0, max = 1, value = 0.5, step = 0.1 )
-               #                         
-               #                  ) # Number of Level 1 covariates
-               #                  
-               #                ), #fluid row for block level covariate inputs
-               #                
-               #                fluidRow(
-               #                  
-               #                  column(12,
-               #                         actionButton("goButton_powerCluster", "Go!") # Action Button to trigger other reactive values
-               #                  ) # Column for action button
-               #                  
-               #                )
-               #                
-               #              ), #sidebar Panel
-               #              mainPanel (
-               #                tableOutput("powercalcCluster") #The power calculation table output
-               #              ) #main panel
-               #              
-               #            ) #sidebar Layout
-               #            
-               #   )  
-               # ) # Tabset for Power for Cluster
-               
-  )# 2 Level Cluster RCT
-  
-)      
-# Fluid Page
-# set counter outside of the server call
+               mainPanel(
+                 # Put some text here #
+                 fluidRow(
+                   
+                   column(12, align = "center",
+                          offset = 2,
+                          #STh here for text
+                   )
+                 ),
+                 
+                 br(),    
+                 br(),
+                 
+                 fluidRow(
+
+                   column(8, align = "center",
+                          offset = 2,
+                          plotlyOutput("powercalcGraphP2LBIEX"))
+
+                 ), # end of Fluid Row
+                 
+                 br(), # To create spaces between Table and Plots
+                 br(), # To create spaces between Table and Plots
+                 br(), # To create spaces between Table and Plots
+                 br(), # To create spaces between Table and Plots
+                 br(), # To create spaces between Table and Plots
+                 br(), # To create spaces between Table and Plots
+                 
+                 fluidRow(
+                   
+                   column(12, align = "center",
+                          DT::dataTableOutput("powercalcTableP2LBIEX")) #The power calculation table output
+                   
+                 ) #fluidRow for first half of the page
+                 
+               ) # Power calculation Main Panel
+             ) # Power Calculation sidebar Layout
+             
+    ) # Explorer tab
+             
+  ) # End of main tabset Panel
+) # end of Fluid Page
 
 
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session = FALSE) {
   
-  output$design <- reactive({
-    if (input$designP2LBISS == "d2.1_m2ff"){
-      return (c("d2.1_m2ff"))
-      } else if (input$designP2LBISS == "d2.1_m2fr"){
-      return(c("d2.1_m2fr"))
+  # observeEvent(input$numOutcomesSs,{
+  #   if(is.na(as.numeric(numOutcomesSs))){
+  #     showFeedbackDanger(
+  #       inputId = 'numOutcomesEx',
+  #       text = 'Please input a number'
+  #     )
+  #   }else{
+  #     hideFeedback('numOutcomesEx')
+  #   }
+  # })
+  # 
+  ##########################################################
+  # Get reactive expression for tab
+  ##########################################################
+
+  # As it is a tab, I have to use observeEvent to see whose has actually clicked the Tab.
+  
+  whichTab <- reactiveValues()
+  
+  observeEvent(input$tabset, {
+    
+    if(input$tabset == "explorer_tab"){
+      
+      print("We are outputting explorer tab")
+      whichTab$scenario<- "explorer_tab"
+    } # Grabbing the home tab
+     
+    if(input$tabset == "single_scenario_tab"){
+
+      print("We are outputting single scenario tab")
+      whichTab$scenario <- "single_scenario_tab"
+    } # Grabbing the Single Explorer tab identity to be passed into function
+
+})
+  
+  ##########################################################
+  # Get reactive expression for single       #
+  ##########################################################
+  
+  getNumOutcomes <- reactive({
+    
+    if(input$tabset == "single_scenario_tab"){
+      input$numOutcomesSs 
+    }  
+    
+    if(input$tabset == "explorer_tab"){
+      input$mEx
+    }
+    
+  })
+  
+  
+  ######################################################################
+  # Get reactive expression for what type of estimation we are running #
+  ######################################################################
+  
+  getEstimationSs <- reactive({
+    
+    if(input$estimationSs == "power"){
+      
+      print("power")
+      return(c("power"))
+    }
+  
+    if(input$estimationSs == "mdes"){
+      
+      print("mdes")
+      return(c("mdes"))
+      
+    }  
+    
+    if(input$estimationSs == "sample"){
+      
+      print("sample")
+      return(c("sample"))
+      
+    }
+    
+  })
+  
+  getEstimationEx <- reactive({
+
+    if(input$estimationEx == "power"){
+      
+      print("power")
+      return(c("power"))
+    }
+    
+    if(input$estimationEx == "mdes"){
+      
+      print("mdes")
+      return(c("mdes"))
+      
+    }  
+    
+    if(input$estimationEx == "sample"){
+      
+      print("sample")
+      return(c("sample"))
+      
+    }
+    
+  })
+  
+  ##########################################################
+  # Get reactive expression for experimental chosen design #
+  ##########################################################
+  
+  getDesignSs <- reactive({
+    
+    if(input$designSs == "d1.1_m1c"){
+     
+      print("d1.1_m1c")
+      return(c("d1.1_m1c"))
+    }
+    
+    if(input$designSs == "d2.1_m2fc"){
+      
+      print("d2.1_m2fc")
+      return(c("d2.1m2cc"))
+    }
+    
+    if(input$designSs == "d2.1_m2ff") {
+      
+      print("d2.1_m2ff")
+      return(c("d2.1_m2ff"))}
+      
+    if(input$designSs == "d2.1_m2fr"){
+      
+      print("d2.1_m2fr")
+      return(c("d2.1_m2fr"))}
+    
+    if(input$designSs == "d3.1_m3rr2rr"){
+      
+      print("d3.1_m3rr2rr")
+      return(c("d3.1_m3rr2rr"))}
+    
+    if(input$designSs == "d2.2_m2rc"){
+      
+      print("d2.2_m2rc")
+      return(c("d2.2_m2rc"))}
+    
+    if(input$designSs == "d3.3_m3rc2rc"){
+      
+      print("d3.3_m3rc2rc")
+      return(c("d3.3_m3rc2rc"))}
+    
+    if(input$designSs == "d3.2_m3ff2rc"){
+      
+      print("d3.2_m3ff2rc")
+      return(c("d3.2_m3ff2rc"))}
+    
+    if(input$designSs == "d3.2_m3rr2rc"){
+      
+      print("d3.2_m3rr2rc")
+      return(c("d3.2_m3rr2rc"))}
+    
+  }) # getDesignSs
+
+  getDesignEx <- reactive({
+    
+    if(input$designEx == "d1.1_m1c"){
+      
+      print("d1.1_m1c")
+      return(c("d1.1_m1c"))
+    }
+    
+    if(input$designEx == "d2.1_m2fc"){
+      
+      print("d2.1_m2fc")
+      return(c("d2.1_m2fc"))
+    }
+    
+    if(input$designEx == "d2.1_m2ff") {
+      
+      print("d2.1_m2ff")
+      return(c("d2.1_m2ff"))}
+    
+    if(input$designEx == "d2.1_m2fr"){
+      
+      print("d2.1_m2fr")
+      return(c("d2.1_m2fr"))}
+    
+    if(input$designEx == "d3.1_m3rr2rr"){
+      
+      print("d3.1_m3rr2rr")
+      return(c("d3.1_m3rr2rr"))}
+    
+    if(input$designEx == "d2.2_m2rc"){
+      
+      print("d2.2_m2rc")
+      return(c("d2.2_m2rc"))}
+    
+    if(input$designEx == "d3.3_m3rc2rc"){
+      
+      print("d3.3_m3rc2rc")
+      return(c("d3.3_m3rc2rc"))}
+    
+    if(input$designEx == "d3.2_m3ff2rc"){
+      
+      print("d3.2_m3ff2rc")
+      return(c("d3.2_m3ff2rc"))}
+    
+    if(input$designEx == "d3.2_m3rr2rc"){
+      
+      print("d3.2_m3rr2rc")
+      return(c("d3.2_m3rr2rc"))}
+    
+  }) # getDesignSs
+  
+  ###########################################################
+  # Get which variables to vary
+  ###########################################################
+  
+  getVarVaryEx <- reactive({
+
+    theEstimation = as.character(getEstimationEx())
+
+    theDesign = as.character(getDesignEx())
+
+    theScenario = as.character(whichTab$scenario)
+    
+    theSampleType = as.character(getTypeOfSampleEx())
+    
+    id <- paste0(theEstimation, "_", "varVary", "_", theDesign, "_" , theScenario, "_", theSampleType)
+  
+    if(!is.null(input[[id]])){
+      
+      if(input[[id]] == "m"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("m"))
+        
+      }      
+      
+      if(input[[id]] == "nbar"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("nbar"))
+        
       }
+      
+      if(input[[id]] == "j"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("j"))
+  
+      }
+      
+      if(input[[id]] == "numZero"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("numZero"))
+        
+      }
+      
+      if(input[[id]] == "k"){
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("k"))
+        
+      }
+
+      if(input[[id]] == "mtp"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("mtp"))    
+      }
+      
+      if(input[[id]] == "mdes"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("mdes"))    
+      }
+      
+      if(input[[id]] == "targetPower"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("targetPower"))    
+      }
+      
+      if(input[[id]] == "rho"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("rho"))    
+      }
+      
+      if(input[[id]] == "numCovar.1"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("numCovar.1"))    
+      }
+      
+      if(input[[id]] == "tbar"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("tbar"))    
+      }
+      
+      if(input[[id]] == "alpha"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("alpha"))    
+      }
+      
+      if(input[[id]] == "r2.1"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("r2.1"))    
+      }
+      
+      if(input[[id]] == "icc.2"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("icc.2"))    
+      }
+      
+      if(input[[id]] == "r2.2"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("r2.2"))    
+      }
+      
+      if(input[[id]] == "omega.2"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("omega.2"))    
+      }
+      
+      if(input[[id]] == "r2.3"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("r2.3"))    
+      }
+      
+      if(input[[id]] == "icc.3"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("icc.3"))    
+      }
+      
+      if(input[[id]] == "k"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("k"))    
+      }
+      
+      if(input[[id]] == "omega.3"){
+        
+        print(paste0("variable to vary is ", input[[id]]))  
+        return(c("omega.3"))    
+      }
+      
+      
+      
+    } else {
+      
+      print("Setting a default rho variable to vary.")
+      return(c("rho"))
+      
+    }
     
-  outputOptions(output, 'design', suspendWhenHidden = FALSE)
+  }) # which variable to vary
+  
+  ###########################################################
+  # Get which sample type we are selecting
+  ###########################################################
+  
+  getTypeOfSampleEx <- reactive({
+
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+
+    id <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_" , theScenario)
+
+    if(theEstimation == "sample" && !is.null(input[[id]])){
+      
+      #req(input[[id]])
     
+      if (input[[id]] == "nbar"){
+
+        return(c("nbar"))
+        
+      } else if (input[[id]] == "j"){
+        
+        return(c("j"))
+        
+      } else if (input[[id]] == "k"){
+        
+        return(c("k"))
+        
+      } 
+      
+    } else if (theEstimation == "sample" && is.null(input[[id]])) {
+      
+        return(c("nbar"))  
+      
+    } else {
+      
+        return(c("none"))
+      
+    }
+    
+  })
+  
+  ############################################################
+  # Get power definition reactive values out
+  ############################################################
+  
+  function_m <- function(m, numZero){
+    if(m == 1){
+      
+      res <- c('indiv.mean', 'complete')
+      names(res) <- c('Individual', 'Complete')
+      return(res)
+      
+    }
+    
+    if(numZero > 0){
+      
+      res <- c('indiv.mean', paste('min', 1:(m-1), sep = ''))
+      names(res) <- c('Individual', paste(1:(m-1),'minimal', sep = '-'))
+      return(res)
+      
+    }
+    
+      res <- c('indiv.mean', 'complete', paste('min', 1:(m-1), sep = ''))
+      names(res) <- c('Individual', 'Complete',  paste(1:(m-1),'minimal', sep = '-'))
+      
+    return(res)
+  }
+  
+  getPowerDefinition <- reactive({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+
+    mid <- paste0(theEstimation, "_" ,"m", "_", theDesign, "_" , theScenario, "_", theVarVary)
+    numZeroid <- paste0(theEstimation, "_", "numZero", "_", theDesign, "_" , theScenario, "_", theVarVary)
+    
+  
+    if(!is.null(input[[mid]]) & !is.null(input[[numZeroid]])){
+        M <- input[[mid]] %>% as.numeric()
+        numZero <- input[[numZeroid]] %>% as.numeric()
+        M <- abs(M - numZero)
+    }else if(!is.null(input[[mid]])){
+      M <- input[[mid]] %>% as.numeric()
+      numZero <- 0
+    }else{
+      M <- 1
+      numZero <- 0
+    }
+    print(M)
+ 
+  
+    if (is.null(M) | is.na(M) | M == 0){
+     return("")
+    }else{
+      print('-----computing function m----')
+      print(function_m(M, numZero = numZero))
+      print('---------')
+      return(function_m(M, numZero = numZero))
+    }
+
   }) # end of Power Reactive reactive expression
+  
 
   
-  browser()
+  ######################################################
+  # Rendering Variable Objects to UI for chosen design #
+  ######################################################
   
-  ############################################
-  # Power Calculation Server Side Begins
-  ############################################
-  
-  #Observing the action button click and switching to a different Tab. Passing the session to keep the info from previous tab.
-  observeEvent(input$question_designP2LBI,{
-    updateTabsetPanel(session, "mainMenu", selected = "Educational Resources" )
-  }) # Action button that switch tabs
-  
-  # power <- reactive({
-  #   
-  #   power_blocked_i1_2c(M = input$M, MDES = input$MDES, numFalse = input$numFalse, J = input$J, n.j = input$n.j, R2.1 = input$R2.1, p = input$p, alpha = input$alpha, 
-  #                       numCovar.1 = input$numCovar.1, numCovar.2 = NULL, ICC = NULL, tnum = 10000, snum = 10)
-  #   
-  # }) # reactive expression for power
-  
-  # observe Event for power calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
-  # observe Event for Single Scenario
-  
-  #################################################################################
-  # Power Calculation Single Scenario Begins - Design: 2 Level Blocked Individual #
-  #################################################################################
-  
-  observeEvent(input$goButtonP2LBISS,{
+  output$varVaryEx <- renderUI({
     
-      # set a Reactive Value for Power Table
-      reactPowerTable <- reactiveVal()
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theSampleType = as.character(getTypeOfSampleEx())
+    
+    print(paste0("The current sample type is: ", theSampleType))
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        varVaryInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, sampleType = theSampleType))    
+    
+  }) # variable to vary by
+  
+  output$powerDefinitionEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    theSampleType = as.character(getTypeOfSampleEx())
+    
+    if(!is.null(getPowerDefinition())){
+      thePowerDefOptions = as.list(getPowerDefinition())
+      div(style = "display: inline-block, vertical-align:top;", 
+          powerDefinitionInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary,
+                                  selection = thePowerDefOptions))
+    } else {
       
-      #########################
-      # Creating Progress bar #
-      #########################
+      thePowerDefOptions = as.list(c("Individual" = "indiv.mean","Complete" = "complete"))
+      div(style = "display: inline-block, vertical-align:top;", 
+          powerDefinitionInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary,
+                                 selection = thePowerDefOptions))
+    }
+  
+  }) # numOutcomeEx
+  
+  output$mEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        mInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary))    
+    
+  }) # numOutcomeEx
+  
+  output$nbar <- renderUI({
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top;", 
+        nbarInput(estimation = theEstimation, design = theDesign , scenario = theScenario))    
+    
+  }) # number of units per block
+
+  output$nbarEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    theTypeOfSample = as.character(getTypeOfSampleEx())
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        nbarInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary, typeOfSample = theTypeOfSample))    
+    
+  }) # number of units per block
+  
+  output$j <- renderUI({
+    
+    req(input$designSs) # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designSs != 'd1.1_m1c'){
+      print('Design j Trigger')
+      check = TRUE
+    }  
+    
+    if(check){
+      theEstimation = as.character(getEstimationSs())
+      theDesign = as.character(getDesignSs())
+      theScenario = as.character(whichTab$scenario)
       
-      progress <- shiny::Progress$new()
-      progress$set(message = "Calculating Power", value = 0)
-      # Close the progress bar when this reactive expression is done (even if there is an error)
-      on.exit(progress$close())
+      div(style = "display: inline-block, vertical-align:top;", 
+          jInput(estimation = theEstimation, design = theDesign , scenario = theScenario))    
       
-      # Update Progress Bar Callback function
-      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+    } else {
+      
+      
+    }
+    
+  }) # number of units per block
+  
+  output$jEx <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx != 'd1.1_m1c'){
+      print('Design j Trigger')
+      check = TRUE
+    }
+    
+    if(check){
+      
+      theEstimation = as.character(getEstimationEx())
+      theDesign = as.character(getDesignEx())
+      theScenario = as.character(whichTab$scenario)
+      theVarVary = as.character(getVarVaryEx())
+      theTypeOfSample = as.character(getTypeOfSampleEx())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          jInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary, typeOfSample = theTypeOfSample))
+      
+    } else {
+      
+      
+    }
+      
+      
+  }) # number of units per block
+  
+  output$typeOfSampleEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    
+    print(theVarVary)
+    
+    if(theEstimation == "sample" && length(theVarVary ) > 0){
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          typeOfSampleInputEx(estimation = theEstimation, design = theDesign ,
+                              scenario = theScenario, input = input))
+      
+    } else {
+      
+    }
+  
+  
+  })
+
+  
+  output$mtp <- renderUI({
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top;", 
+        mtpInput(estimation = theEstimation, design = theDesign , scenario = theScenario))
+    
+  }) # MTP for chosen design
+  
+  output$mtpEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    div(style = "display: inline-block, vertical-align:top;", 
+        mtpInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary))
+    
+  }) # MTP for chosen design
+  
+  output$m <- renderUI({
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top;", 
+        mInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+  }) # Number of Outcomes 
+  
+  output$mEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    div(style = "display: inline-block, vertical-align:top;", 
+        mInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
+  }) # Number of Outcomes 
+
+  output$numZero <- renderUI({
+    
+    theEstimation =  as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        numZeroInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    
+  })
+  
+  output$numZeroEx <- renderUI({
+    
+    theEstimation =  as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    
+    if(theEstimation == "power"){
+      div(style = "display: inline-block, vertical-align:top;", 
+          numZeroInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
+    } else {
+      
+      
+    }
+      
+  }) # Number of outcomes with zero effects
+  
+  output$mdes <- renderUI({
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
+    if(theEstimation == "power"){
+      div(style = "display: inline-block, vertical-align:top:",
+          mdesInput(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    } else {
+      
+      
+    }
+    
+  }) # Minimum detectable effect size
+  
+  output$mdesEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    theVarVary = as.character(getVarVaryEx())
+    
+    if(theEstimation == "power" | theEstimation == "sample"){
+      div(style = "display: inline-block, vertical-align:top:",
+          mdesInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
+      
+    } else {
+      
+      
+    }
+    
+  }) # Minimum detectable effect size
+  
+  output$powerValues <- renderUI({
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
+    if(theEstimation == "mdes"){
+      div(style = "display: inline-block, vertical-align:top:",
+          powerValuesInput(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    } else {
+      
+      
+    }
+      
+  }) # power values
+
+  output$targetPowerEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    theVarVary = as.character(getVarVaryEx())
+    
+    
+    if(theEstimation == "mdes" | theEstimation == "sample"){
+      div(style = "display: inline-block, vertical-align:top:",
+          targetPowerInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
+    } else {
+      
+      
+    }
+    
+  }) # power explorer
+    
+  output$rho <- renderUI({
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top:",
+        rhoInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
         
-        if (is.null(value)){
-          
-          value <- progress$getValue()
-          value <- value + (progress$getMax() - value)/5
-          
-        } # Progess bar in terms of values' increments
-        
-        progress$set(value = value, detail = detail, message = message)
-        
-      } # End of Callback Progress Function
+  }) # correlation between test statistics
+  
+  output$rhoEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    div(style = "display: inline-block, vertical-align:top:",
+        rhoInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
+    
+  }) # correlation between test statistics
+  
+  output$numCovar.1 <- renderUI({
+  
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top:",
+        numCovar.1Input(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    
+  }) # number of level 1 covariates
+  
+  output$numCovar.1Ex <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    div(style = "display: inline-block, vertical-align:top:",
+        numCovar.1InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
+    
+  }) # number of level 1 covariates
+  
+  output$tbar <- renderUI({
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top:",
+        tbarInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    
+  }) # Proportion of treatment assignment
+  
+  output$tbarEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    div(style = "display: inline-block, vertical-align:top:",
+        tbarInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
+    
+  }) # Proportion of treatment assignment
+  
+  output$alpha <- renderUI({
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    div(style = "display: inline-block, vertical-align:top:",
+        alphaInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    
+  }) # Significance level (alpha)
+  
+  output$alphaEx <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    div(style = "display: inline-block, vertical-align:top:",
+        alphaInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
+    
+  }) # Significance level (alpha)
+
+  output$r2.1 <- renderUI({
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    
+    
+    div(style = "display: inline-block, vertical-align:top;", 
+        r2.1Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+  
+  }) # R2.1 element for chosen and required designs
+  
+  output$r2.1Ex <- renderUI({
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theNumOutcomes = as.numeric(getNumOutcomes())
+    theVarVary = as.character(getVarVaryEx())
+    
+    #browser()
+    div(style = "display: inline-block, vertical-align:top;", 
+        r2.1InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
+    
+  }) # R2.1 element for chosen and required designs
+  
+  output$r2.2 <- renderUI({
+    
+    req(input$designSs)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designSs == 'd2.2_m2rc' || input$designSs == 'd3.3_m3rc2rc'||
+       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
+      print('Design r2-2 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
       
-      ############################
-      # Generating Power Results #
-      ############################
+      theEstimation = as.character(getEstimationSs())
+      theDesign = as.character(getDesignSs())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
       
+      div(style = "display: inline-block, vertical-align:top;", 
+          r2.2Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # R2.2 element for chosen and required designs
+  
+  output$r2.2Ex <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd2.2_m2rc' || input$designEx == 'd3.3_m3rc2rc'||
+       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+      print('Design r2-2 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationEx())
+      theDesign = as.character(getDesignEx())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          r2.2InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # R2.2 element for chosen and required designs
+  
+  
+  output$icc.2 <- renderUI({
+    
+    req(input$designSs)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designSs == 'd2.1_m2fc' || input$designSs == 'd2.1_m2ff' || input$designSs == 'd2.1_m2fr' ||
+       input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd2.2_m2rc' || input$designSs == 'd3.3_m3rc2rc' ||
+       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
+      print('Design ICC2 Trigger')
+      check = TRUE
+    }
+    
+
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationSs())
+      theDesign = as.character(getDesignSs())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          icc.2Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+
+  }) # icc.2 element for chosen and required designs
+  
+  output$icc.2Ex <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd2.1_m2fc' || input$designEx == 'd2.1_m2ff' || input$designEx == 'd2.1_m2fr' ||
+       input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd2.2_m2rc' || input$designEx == 'd3.3_m3rc2rc' ||
+       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+      print('Design icc.2 Trigger')
+      check = TRUE
+    }
+    
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationEx())
+      theDesign = as.character(getDesignEx())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          icc.2InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # icc.2 element for chosen and required designs
+  
+  output$omega.2 <- renderUI({
+  
+    req(input$designSs)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designSs == 'd2.1_m2fr' || input$designSs == 'd3.1_m3rr2rr'){
+      print('Design omega 2 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationSs())
+      theDesign = as.character(getDesignSs())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          omega.2Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # omega.2 element for chosen and required designs
+  
+  output$omega.2Ex <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd2.1_m2fr' || input$designEx == 'd3.1_m3rr2rr'){
+      print('Design omega 2 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationEx())
+      theDesign = as.character(getDesignEx())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          omega.2InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # omega.2 element for chosen and required designs
+  
+  output$r2.3 <- renderUI({
+    
+    #   conditionalPanel(condition = c("input.design == 'd3.3_m3rc2rc'"),
+    
+    req(input$designSs)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designSs == 'd3.3_m3rc2rc'){
+      print('Design r2-3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationSs())
+      theDesign = as.character(getDesignSs())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          r2.3Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+
+  }) # R2.3 element for chosen and required designs
+  
+  output$r2.3Ex <- renderUI({
+    
+    #   conditionalPanel(condition = c("input.design == 'd3.3_m3rc2rc'"),
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd3.3_m3rc2rc'){
+      print('Design r2-3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationEx())
+      theDesign = as.character(getDesignEx())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          r2.3InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # R2.3 element for chosen and required designs
+  
+  output$icc.3 <- renderUI({
+  
+    req(input$designSs)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.3_m3rc2rc'||
+       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
+      print('Design icc.3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationSs())
+      theDesign = as.character(getDesignSs())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          icc.3Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }    
+    
+  }) # icc.3 element for chosen and required designs
+
+  output$icc.3Ex <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd3.3_m3rc2rc'||
+       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+      print('Design icc.3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationEx())
+      theDesign = as.character(getDesignEx())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          icc.3InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
+    }else{
+      # leave blank otherwise
+    }    
+    
+  }) # icc.3 element for chosen and required designs
+  
+  output$omega.3 <- renderUI({
+    
+    # conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.2_m3rr2rc'"),
+    req(input$designSs)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.2_m3rr2rc'){
+      print('Design omega.3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationSs())
+      theDesign = as.character(getDesignSs())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          omega.3Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # omega.3 element for chosen and required designs
+  
+  output$omega.3Ex <- renderUI({
+    
+    # conditionalPanel(condition = c("input.design == 'd3.1_m3rr2rr' || input.design == 'd3.2_m3rr2rc'"),
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd3.2_m3rr2rc'){
+      print('Design omega.3 Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationEx())
+      theDesign = as.character(getDesignEx())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          omega.3InputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes, varVary = theVarVary))
+    }else{
+      # leave blank otherwise
+    }
+    
+  }) # omega.3 element for chosen and required designs
+  
+  output$k <- renderUI({
+    
+    req(input$designSs)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.3_m3rc2rc'||
+       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
+      print('Design k Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationSs())
+      theDesign = as.character(getDesignSs())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          kInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
+    }else{
+      # leave blank otherwise
+    }    
+  }) # number of level-3 groups
+  
+
+  output$kEx <- renderUI({
+    
+    req(input$designEx)    # requiring design input
+    check = FALSE # checking default condition as fault
+    
+    # conditions when check becomes true
+    if(input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd3.3_m3rc2rc'||
+       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+      print('Design k Trigger')
+      check = TRUE
+    }
+    
+    # output ui when check is true
+    if(check){
+      
+      theEstimation = as.character(getEstimationEx())
+      theDesign = as.character(getDesignEx())
+      theScenario = as.character(whichTab$scenario)
+      theNumOutcomes = as.numeric(getNumOutcomes())
+      theVarVary = as.character(getVarVaryEx())
+      theTypeOfSample = as.character(getTypeOfSampleEx())
+      
+      div(style = "display: inline-block, vertical-align:top;", 
+          kInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary, typeOfSample = theTypeOfSample))
+    }else{
+      # leave blank otherwise
+    }    
+  }) # number of level-3 groups
+
+  observeEvent(input$goButtonSs,{
+    
+    # set a Reactive Value for Power Table
+    reactPowerTable <- reactiveVal()
+    
+    #########################
+    # Creating Progress bar #
+    #########################
+    
+    progress <- shiny::Progress$new()
+    progress$set(message = "Calculating Power", value = 0)
+    # Close the progress bar when this reactive expression is done (even if there is an error)
+    on.exit(progress$close())
+    
+    # Update Progress Bar Callback function
+    updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+      
+      if (is.null(value)){
+        
+        value <- progress$getValue()
+        value <- value + (progress$getMax() - value)/5
+        
+      } # Progess bar in terms of values' increments
+      
+      progress$set(value = value, detail = detail, message = message)
+      
+    } # End of Callback Progress Function
+    
+    ############################################################################
+    # Generating Power Results for diffferent designs & mode of exploration    #
+    ############################################################################
+    
+
+    # Getting the research design that we have to estimate the statistical results for
+    
+    theEstimation = as.character(getEstimationSs())
+    theDesign = as.character(getDesignSs())
+    theScenario = as.character(whichTab$scenario)
+    
+    # set up to receive all the input parameters
+    
+    # Get string for input subsetting
+    design_subset <- "designSs"
+    m_subset <- "numOutcomesSs"
+    nbar_subset <- paste0(theEstimation, "_", "nbar", "_", theDesign, "_", theScenario)
+    j_subset <- paste0(theEstimation, "_", "j", "_", theDesign, "_", theScenario)
+    #numZero_subset <- paste0(theEstimation, "_", "numZero", "_", theDesign, "_", theScenario)
+    mdes_subset <- paste0(theEstimation, "_", "mdes", "_", theDesign, "_", theScenario)
+    mtp_subset <- paste0(theEstimation, "_", "mtp", "_", theDesign,"_", theScenario)
+    rho_subset <- paste0(theEstimation, "_", "rho", "_", theDesign, "_", theScenario)
+    numCovar.1_subset <- paste0(theEstimation, "_", "numCovar.1","_", theDesign, "_", theScenario)
+    tbar_subset <- paste0(theEstimation, "_", "tbar","_", theDesign, "_", theScenario)
+    alpha_subset <- paste0(theEstimation, "_", "alpha", "_", theDesign, "_", theScenario)
+    r2.1_subset <- paste0(theEstimation, "_", "r2.1", "_", theDesign, "_", theScenario)
+    r2.2_subset <- paste0(theEstimation, "_", "r2.2", "_", theDesign, "_", theScenario)
+    icc.2_subset <- paste0(theEstimation, "_", "icc.2", "_", theDesign, "_", theScenario)
+    omega.2_subset <- paste0(theEstimation, "_", "omega.2", "_", theDesign, "_", theScenario)
+    r2.3_subset <- paste0(theEstimation, "_", "r2.3", "_", theDesign, "_", theScenario)
+    icc.3_subset <- paste0(theEstimation, "_", "icc.3", "_", theDesign, "_", theScenario)
+    k_subset <- paste0(theEstimation, "_", "k","_", theDesign, "_", theScenario)
+    omega.3_subset <- paste0(theEstimation, "_", "omega.3", "_", theDesign, "_", theScenario)
+
+    # Pulling in values for all the designs
+    design <- input[[design_subset]]
+    nbar <- input[[nbar_subset]]
+    j <- input[[j_subset]]
+    #numZero <- input[[numZero_subset]]
+    mtp <- input[[mtp_subset]]
+    mdes <- input[[mdes_subset]]
+    m <- input[[m_subset]]
+    rho <- input[[rho_subset]]
+    numCovar.1 <- input[[numCovar.1_subset]]
+    tbar <- input[[tbar_subset]]
+    alpha <- input[[alpha_subset]]
+    r2.1 <- input[[r2.1_subset]]
+    icc.2 <- "0"
+    r2.2 <- "0"
+    omega.2 <- "0"
+    r2.3 <- "0"
+    icc.3 <- "0"
+    k <- 1
+    omega.3 <- "0"
+    
+    
+    if(design %in% c("d1.1_m1c")){
+      
+      j <- 1
+      
+    }
+    
+    if(design %in% c("d2.2_m2rc", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2m3rr2rc")){
+      
+      r2.2 <- input[[r2.2_subset]]
+      
+    } # r2.2
+    
+    if(design %in% c("d2.1_m2fc" , "d2.1_m2ff" , "d2.1_m2fr" , "d2.2_m2rc" , "d3.1_m3rr2rr" , "d3.3_m3rc2rc" , "d3.2_m3ff2rc" , "d3.2_m3rr2rc")){
+    
+      icc.2 <- input[[icc.2_subset]]
+      
+    } 
+    
+    if (design %in% c("d2.1_m2fr", 'd3.1_m3rr2rr')){
+      
+      omega.2 <- input[[omega.2_subset]]
+      
+    } 
+    
+    if (design %in% c("d3.3_m3rc2rc")){
+      
+      r2.3 <- input[[r2.3_subset]]
+      
+    }
+    
+    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")) {
+      
+      icc.3 <- input[[icc.3_subset]]
+      
+    }
+    
+    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")){
+      
+      k <- input[[k_subset]]
+      
+    }
+    
+    if (design %in% c("d3.1_m3rr2rr", "d3.2_m3rr2rc")) {
+      
+      omega.3 <- input[[omega.3_subset]]
+      
+    }
+    
       dat <- as.data.frame(
-        isolate(pum::pump_power(design = input$designP2LBISS,
-                                MTP = as.character(unlist(strsplit(input$MTPP2LBISS," "))),
-                                MDES = as.numeric(unlist(strsplit(input$MDESP2LBISS, ","))),
-                                M = input$MP2LBISS, # The number of hypotheses/outcomes
-                                J = input$JP2LBISS, # The number of schools
-                                K = input$KP2LBISS, # The number of districts
-                                nbar = input$nbarP2LBISS, # The number of units per block
-                                Tbar = input$tbarP2LBISS, # The proportion of samples that are assigned to the treatment
-                                alpha = input$alphaP2LBISS,
-                                numCovar.1 = input$numCovar.1P2LBISS,
-                                numCovar.2 = 0,
-                                numCovar.3 = 0,
-                                R2.1 = rep(input$R2.1P2LBISS,
-                                           input$MP2LBISS),
-                                R2.2 = rep(0.1, input$MP2LBISS),
-                                R2.3 = rep(0.1, input$MP2LBISS),
-                                ICC.2 = rep(0, input$MP2LBISS),
-                                ICC.3 = rep(0.2, input$MP2LBISS) ,
-                                rho = input$rhoP2LBISS,
-                                omega.2 = 0,
-                                omega.3 = 0.1,
-                                tnum = 10000, 
-                                B = 100, 
-                                cl = NULL,
-                                updateProgress = updateProgress)
-        ))
-      
-      # Save the reactive Power Table
-      reactPowerTable(dat)
-      {reactPowerTable()}
+          isolate(pum::pump_power(design = design,
+                                  nbar = nbar, # The number of units per block
+                                  J = j, # The number of schools
+                                  #numZero = numZero,
+                                  K = k, # 3 level grouping variable count
+                                  MTP = as.character(unlist(strsplit(mtp, ","))),
+                                  M = m, # The number of hypotheses/outcomes
+                                  MDES = as.numeric(unlist(strsplit(mdes, ","))),
+                                  rho = rho,
+                                  numCovar.1 = numCovar.1,
+                                  Tbar = tbar, # The proportion of samples that are assigned to the treatment
+                                  alpha = alpha,
+                                  R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+                                  R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+                                  R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+                                  ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+                                  ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+                                  omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+                                  omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+                                  tnum = 10000,
+                                  B = 100,
+                                  cl = NULL,
+                                  updateProgress = updateProgress)
+                  
+         )) #Power generation table
     
-      #################################################
-      # Rendering Single Scenario Power Table Results #
-      #################################################
+    # Save the reactive Power Table
+    reactPowerTable(dat)
+    {reactPowerTable()}
     
-      # Rendering a reactive object table from the power function
-      output$powercalcTableP2LBISS <- renderDataTable({
-        
-          DT::datatable(dat,
-                        extensions = 'Buttons',
-                        options = list(
-                          paging = TRUE,
-                          pageLength = 5,
-                          scrollY = TRUE,
-                          dom = 'Bfrtip',
-                          buttons = c('csv', 'excel')
-                        ))
-            })# Wrapping a reactive expression to a reactive table object for output view
+    #################################################
+    # Rendering Single Scenario Power Table Results #
+    #################################################
     
-      ############################
-      # Data prepartion for plot #
-      ############################
-      dat <- reactPowerTable()
+    # Rendering a reactive object table from the power function
+    output$powercalcTableP2LBISS <- renderDataTable({
       
-      singleScenario2LevelBlockedDatLong <- 
-        dat %>%
-        dplyr::select_all() %>%
-        dplyr::select(-indiv.mean) %>%
-        tidyr::pivot_longer(!MTP, names_to = "powerType", values_to = "power")
+      DT::datatable(dat,
+                    extensions = 'Buttons',
+                    options = list(
+                      paging = TRUE,
+                      pageLength = 5,
+                      scrollY = TRUE,
+                      dom = 'Bfrtip',
+                      buttons = c('csv', 'excel')
+                    ))
+    })# Wrapping a reactive expression to a reactive table object for output view
+    
+    ############################
+    # Data preparation for plot #
+    ############################
+    dat <- reactPowerTable()
+    
+    singleScenario2LevelBlockedDatLong <- 
+      dat %>%
+      dplyr::select_all() %>%
+      dplyr::select(-indiv.mean) %>%
+      tidyr::pivot_longer(!MTP, names_to = "powerType", values_to = "power")
+    
+    ################################################
+    # Rendering Single Scenario Power Table Graphs #
+    ################################################
+    
+    output$powercalcGraphP2LBISS <- renderPlotly({
       
-      ################################################
-      # Rendering Single Scenario Power Table Graphs #
-      ################################################
-      
-      output$powercalcGraphP2LBISS <- renderPlotly({
-          
-        pg <- plotly::ggplotly(
-          ggplot(
-            data = singleScenario2LevelBlockedDatLong,
-            aes(x = powerType, 
-                     y = power, 
-                     shape = MTP,
-                     colour = MTP)) + 
+      pg <- plotly::ggplotly(
+        ggplot(
+          data = singleScenario2LevelBlockedDatLong,
+          aes(x = powerType, 
+              y = power, 
+              shape = MTP,
+              colour = MTP)) + 
           geom_point(size = 2) +
           scale_y_continuous(limits = c(0,1)) +
           ggtitle("Adjusted Power values across different Power Definitions") +
@@ -1590,21 +2061,948 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                           face = "bold",
                                           vjust = 1,
                                           hjust = 0.5),
-                axis.text = element_text(size = 14),
+                axis.text = element_text(size = 14, angle = 45),
                 axis.title = element_text(size = 14)
-                )
-          + labs(colour = "",
-                 shape = "")
-          ) # End of ggplot
+          )
+        + labs(colour = "",
+               shape = "")
+      ) # End of ggplot
+      
+      pg <- layout(pg, 
+                   #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
+                   margin=list(t = 75),
+                   legend = list(x = 100,
+                                 orientation = "v",
+                                 xanchor = "center",
+                                 y = 0.5,
+                                 title = list(text = '<b> MTP Type </b>')))
+      
+      pg %>%
+        config(displaylogo = FALSE,
+               collaborate = FALSE,
+               displayModeBar = TRUE,
+               modeBarButtonsToRemove = list(
+                 'sendDataToCloud',
+                 'autoScale2d',
+                 'resetScale2d',
+                 'hoverClosestCartesian',
+                 'hoverCompareCartesian',
+                 'zoom2d',
+                 'pan2d',
+                 'select2d',
+                 'lasso2d',
+                 'zoomIn2d',
+                 'zoomOut2d',
+                 'toggleSpikelines'
+               ))
+      
+    }) # plotly graph
+    
+  }) # observe Event go Button for power for Single Scenario
+  
+
+  observeEvent(input$goButtonEx,{
+    
+    # set a Reactive Value for Power Table
+    reactPowerTable <- reactiveVal()
+    
+    #########################
+    # Creating Progress bar #
+    #########################
+    
+    progress <- shiny::Progress$new()
+    progress$set(message = "Calculating Power", value = 0)
+    # Close the progress bar when this reactive expression is done (even if there is an error)
+    on.exit(progress$close())
+    
+    # Update Progress Bar Callback function
+    updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+      
+      if (is.null(value)){
         
-        pg <- layout(pg, 
+        value <- progress$getValue()
+        value <- value + (progress$getMax() - value)/5
+        
+      } # Progess bar in terms of values' increments
+      
+      progress$set(value = value, detail = detail, message = message)
+      
+    } # End of Callback Progress Function
+    
+    ############################################################################
+    # Generating Power Results for diffferent designs & mode of exploration    #
+    ############################################################################
+    
+    # Getting the research design that we have to estimate the statistical results for
+    
+    theEstimation = as.character(getEstimationEx())
+    theDesign = as.character(getDesignEx())
+    theScenario = as.character(whichTab$scenario)
+    theVarVary = as.character(getVarVaryEx())
+    theTypeOfSample = as.character(getTypeOfSampleEx())
+
+    
+    # set up to receive all the input parameters
+  
+    # Get string for input subsetting
+    design_subset <- "designEx"
+    m_subset <- paste0(theEstimation, "_", "m", "_", theDesign, "_", theScenario, "_", theVarVary)
+    nbar_subset <- paste0(theEstimation, "_", "nbar", "_", theDesign, "_", theScenario, "_", theVarVary)
+    j_subset <- paste0(theEstimation, "_", "j", "_", theDesign, "_", theScenario, "_", theVarVary)
+    numZero_subset <- paste0(theEstimation, "_", "numZero", "_", theDesign, "_", theScenario, "_", theVarVary)
+    mtp_subset <- paste0(theEstimation, "_", "mtp", "_", theDesign,"_", theScenario, "_", theVarVary)
+    rho_subset <- paste0(theEstimation, "_", "rho", "_", theDesign, "_", theScenario, "_", theVarVary)
+    numCovar.1_subset <- paste0(theEstimation, "_", "numCovar.1","_", theDesign, "_", theScenario, "_", theVarVary)
+    tbar_subset <- paste0(theEstimation, "_", "tbar","_", theDesign, "_", theScenario, "_", theVarVary)
+    alpha_subset <- paste0(theEstimation, "_", "alpha", "_", theDesign, "_", theScenario, "_", theVarVary)
+    r2.1_subset <- paste0(theEstimation, "_", "r2.1", "_", theDesign, "_", theScenario, "_", theVarVary)
+    r2.2_subset <- paste0(theEstimation, "_", "r2.2", "_", theDesign, "_", theScenario, "_", theVarVary)
+    icc.2_subset <- paste0(theEstimation, "_", "icc.2", "_", theDesign, "_", theScenario, "_", theVarVary)
+    omega.2_subset <- paste0(theEstimation, "_", "omega.2", "_", theDesign, "_", theScenario, "_", theVarVary)
+    r2.3_subset <- paste0(theEstimation, "_", "r2.3", "_", theDesign, "_", theScenario, "_", theVarVary)
+    icc.3_subset <- paste0(theEstimation, "_", "icc.3", "_", theDesign, "_", theScenario, "_", theVarVary)
+    k_subset <- paste0(theEstimation, "_", "k","_", theDesign, "_", theScenario, "_", theVarVary)
+    omega.3_subset <- paste0(theEstimation, "_", "omega.3", "_", theDesign, "_", theScenario, "_", theVarVary)
+    typeOfSample_subset <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_", theScenario)
+    powerDefinition_subset <- paste0(theEstimation, "_", "powerDefinition", "_", theDesign, "_" , theScenario, "_", theVarVary)
+    
+
+    # Pulling in values for all the designs
+    design <- input[[design_subset]]
+    numZero <- input[[numZero_subset]]
+    mtp <- input[[mtp_subset]]
+    m <- input[[m_subset]]
+    nbar <- input[[nbar_subset]]
+    j <- input[[j_subset]]
+    rho <- input[[rho_subset]]
+    numCovar.1 <- input[[numCovar.1_subset]]
+    tbar <- input[[tbar_subset]]
+    alpha <- input[[alpha_subset]]
+    r2.1 <- input[[r2.1_subset]]
+    powerDefinition <- input[[powerDefinition_subset]]
+    icc.2 <- "0"
+    r2.2 <- "0"
+    omega.2 <- "0"
+    r2.3 <- "0"
+    icc.3 <- "0"
+    k <- "1"
+    omega.3 <- "0"
+
+    # parameters specific to each estimation
+    if (theEstimation == "power"){
+      
+      mdes_subset <- paste0(theEstimation, "_", "mdes", "_", theDesign, "_", theScenario, "_", theVarVary)
+      mdes <- input[[mdes_subset]]
+      
+    }
+    
+    if (theEstimation == "mdes"){
+      
+      targetPower_subset <- paste0(theEstimation, "_", "targetPower", "_", theDesign, "_", theScenario, "_", theVarVary)
+      targetPower <- input[[targetPower_subset]]
+      
+    }
+    
+    if (theEstimation == "sample"){
+      
+      mdes_subset <- paste0(theEstimation, "_", "mdes", "_", theDesign, "_", theScenario, "_", theVarVary)
+      mdes <- input[[mdes_subset]]
+      
+      targetPower_subset <- paste0(theEstimation, "_", "targetPower", "_", theDesign, "_", theScenario, "_", theVarVary)
+      targetPower <- input[[targetPower_subset]]
+      
+      typeOfSample_subset <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_", theScenario)
+      typeOfSample <- input[[typeOfSample_subset]]
+      
+    }
+    
+    
+    if(design %in% c("d1.1_m1c")){
+      
+      j <- c("1")
+      
+    }
+  
+    if(design %in% c("d2.2_m2rc", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2m3rr2rc")){
+      
+      r2.2 <- input[[r2.2_subset]]
+      
+    } # r2.2
+    
+    if(design %in% c("d2.1_m2fc" , "d2.1_m2ff" , "d2.1_m2fr" , "d2.2_m2rc" , "d3.1_m3rr2rr" , "d3.3_m3rc2rc" , "d3.2_m3ff2rc" , "d3.2_m3rr2rc")){
+      
+      icc.2 <- input[[icc.2_subset]]
+      
+    } 
+    
+    if (design %in% c("d2.1_m2fr", 'd3.1_m3rr2rr')){
+      
+      omega.2 <- input[[omega.2_subset]]
+      
+    } 
+    
+    if (design %in% c("d3.3_m3rc2rc")){
+      
+      r2.3 <- input[[r2.3_subset]]
+      
+    }
+    
+    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")) {
+      
+      icc.3 <- input[[icc.3_subset]]
+      
+    }
+    
+    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")){
+      
+      k <- input[[k_subset]]
+      
+    }
+    
+    if (design %in% c("d3.1_m3rr2rr", "d3.2_m3rr2rc")) {
+      
+      omega.3 <- input[[omega.3_subset]]
+      
+    }
+    
+    
+    
+    
+    if (theEstimation == "power") {
+  
+          dat <- as.data.frame(
+          isolate(pum::pump_power_grid(design = design,
+                                  nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
+                                  J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
+                                  numZero = as.numeric(unlist(strsplit(numZero, ","))), # number of outcomes with zero effects
+                                  K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
+                                  MTP = as.character(unlist(strsplit(mtp, ","))),
+                                  M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
+                                  MDES = as.numeric(unlist(strsplit(mdes, ","))),
+                                  rho = as.numeric(unlist(strsplit(rho, ","))),
+                                  numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+                                  Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
+                                  alpha = as.numeric(unlist(strsplit(alpha, ","))),
+                                  R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+                                  R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+                                  R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+                                  ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+                                  ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+                                  omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+                                  omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+                                  long.table = TRUE,
+                                  tnum = 10000,
+                                  B = 100,
+                                  cl = NULL,
+                                  updateProgress = updateProgress)
+                  
+          )) #Power generation table
+          
+    # clean the data table names
+    dat <- janitor::clean_names(dat)
+
+    # Power definition key and value table
+    M <- as.numeric(m)
+    res <- c('mean individual', 'complete',  paste(1:(M-1),'minimum', sep = '-'))    
+    names(res) <- c('indiv.mean', 'complete', paste('min', 1:(M-1), sep = ''))
+    
+    # Pulling out the power definition of interest
+    def_power_subset <- input[[powerDefinition_subset]]
+    
+    # Pulling out the power definition of interest matched with what's in the output table
+    def_power_filter <- res[[def_power_subset]]
+    
+    # Pulling out only that power definition
+    dat <- 
+      dat %>% 
+        dplyr::filter(power %in% def_power_filter) %>%
+        dplyr::mutate(power = ifelse(power == "mean individual", "individual power", power))
+  
+  } # the estimation is power
+    
+    if (theEstimation == "mdes") {
+      
+      dat <- as.data.frame(
+        isolate(pum::pump_mdes_grid(design = design,
+                                     nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
+                                     J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
+                                     K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
+                                     MTP = as.character(unlist(strsplit(mtp, ","))),
+                                     M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
+                                     target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+                                     power.definition = powerDefinition,
+                                     rho = as.numeric(unlist(strsplit(rho, ","))),
+                                     numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+                                     Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
+                                     alpha = as.numeric(unlist(strsplit(alpha, ","))),
+                                     R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+                                     R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+                                     R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+                                     ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+                                     ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+                                     omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+                                     omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+                                     #long.table = TRUE,
+                                     tol = 0.01,
+                                     #tnum = 10000,
+                                     B = 100,
+                                     cl = NULL,
+                                     updateProgress = updateProgress)
+                
+        )) #Power generation table
+      
+      # clean the data table names
+      dat <- janitor::clean_names(dat)
+      powerColName <- names(dat)[ncol(dat)]
+      
+      # change individual.mean power to individual power
+      dat <- dat %>%
+        dplyr::mutate(power_definition = 
+                        ifelse(power_definition == "indiv.mean", "individual power", power_definition))
+
+      
+      # dat2 <- as.data.frame(
+      #   isolate(pum::pump_mdes_grid(design = design,
+      #                               nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
+      #                               J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
+      #                               K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
+      #                               MTP = as.character(unlist(strsplit(mtp, ","))),
+      #                               M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
+      #                               target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+      #                               power.definition = "none",
+      #                               rho = as.numeric(unlist(strsplit(rho, ","))),
+      #                               numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+      #                               Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
+      #                               alpha = as.numeric(unlist(strsplit(alpha, ","))),
+      #                               R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+      #                               R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+      #                               R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+      #                               ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+      #                               ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+      #                               omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+      #                               omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+      #                               long.table = TRUE,
+      #                               tol = 0.01,
+      #                               tnum = 10000,
+      #                               B = 100,
+      #                               cl = NULL,
+      #                               updateProgress = updateProgress)
+      #           
+      #   )) #Power generation table
+      
+      
+    } # the estimation is mdes
+    
+    if (theEstimation == "sample"){
+      
+      if(design %in% c("d1.1_m1c")) {
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            J = 1,
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = powerDefinition,
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+          ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+        # power definition change in data
+        dat <- dat %>%
+          dplyr::mutate(power_definition = ifelse(power_definition == "indiv.mean", "individual power", power_definition),
+                        sample_size = round(sample_size))
+        
+        
+        
+      } else if (design %in% c("d2.1_m2fc", "d2.1_m2ff", "d2.1_m2fr", "d2.2_m2rc") && typeOfSample == "nbar"){
+  
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            J = as.numeric(unlist(strsplit(j, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = powerDefinition,
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+        # power definition change in data
+        dat <- dat %>%
+          dplyr::mutate(power_definition = ifelse(power_definition == "indiv.mean", "individual power", power_definition),
+                        sample_size = round(sample_size))
+    
+      } else if (design %in% c("d2.1_m2fc", "d2.1_m2ff", "d2.1_m2fr", "d2.2_m2rc") && typeOfSample == "j") {
+        
+        if(typeOfSample == "j"){
+          
+          typeOfSample <- "J"
+          
+        }
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            nbar = as.numeric(unlist(strsplit(nbar, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = powerDefinition,
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+        # power definition change in data
+        dat <- dat %>%
+          dplyr::mutate(power_definition = ifelse(power_definition == "indiv.mean", "individual power", power_definition),
+                        sample_size = round(sample_size))
+        
+      } else if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc") && typeOfSample == "nbar") {
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            J = as.numeric(unlist(strsplit(j, ","))),
+            K = as.numeric(unlist(strsplit(k, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = powerDefinition,
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+        # power definition change in data
+        dat <- dat %>%
+          dplyr::mutate(power_definition = ifelse(power_definition == "indiv.mean", "individual power", power_definition),
+                        sample_size = round(sample_size))
+        
+      } else if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc") && typeOfSample == "j") {
+        
+        if(typeOfSample == "j"){
+          
+          typeOfSample <- "J"
+          
+        }
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            nbar = as.numeric(unlist(strsplit(nbar, ","))),
+            K = as.numeric(unlist(strsplit(k, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = powerDefinition,
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+        # power definition change in data
+        dat <- dat %>%
+          dplyr::mutate(power_definition = ifelse(power_definition == "indiv.mean", "individual power", power_definition),
+                        sample_size = round(sample_size))
+        
+        
+      } else if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc") && typeOfSample == "k") {
+        
+        if(typeOfSample == "k"){
+          
+          typeOfSample <- "K"
+          
+        }
+        
+        dat <- as.data.frame(isolate(
+          pump_sample_grid(
+            design = design,
+            typesample = as.character(unlist(strsplit(typeOfSample, ","))),
+            nbar = as.numeric(unlist(strsplit(nbar, ","))),
+            J = as.numeric(unlist(strsplit(j, ","))),
+            MTP = as.character(unlist(strsplit(mtp, ","))),
+            MDES = as.numeric(unlist(strsplit(mdes, ","))),
+            M = as.numeric(unlist(strsplit(m, ","))),
+            target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+            power.definition = powerDefinition,
+            rho = as.numeric(unlist(strsplit(rho, ","))),
+            numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+            Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment,
+            alpha = as.numeric(unlist(strsplit(alpha, ","))),
+            R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+            R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+            R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+            ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+            ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+            omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+            omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+            tol = 0.01,
+            updateProgress = updateProgress)
+          
+        ))
+        
+        # clean the data table names
+        dat <- janitor::clean_names(dat)
+        powerColNames <- names(dat)[8]
+        mtpColNames <- names(dat)[1]
+        
+        # power definition change in data
+        dat <- dat %>%
+          dplyr::mutate(power_definition = ifelse(power_definition == "indiv.mean", "individual power", power_definition),
+                        sample_size = round(sample_size))
+        
+      }
+        
+        
+    }
+    
+    # matching the var vary names
+    
+    if (theVarVary == "numZero") {
+      
+      theVarVary <- "num_zero"
+      
+    } else if (theVarVary == "numCovar.1") {
+      
+      theVarVary <- "num_covar_1"
+      
+    } else if (theVarVary == "r2.1") {
+      
+      theVarVary <- "r2_1"
+      
+    } else if (theVarVary == "icc.2") {
+      
+      theVarVary <- "icc_2"
+      
+    } else if (theVarVary == "r2.2") {
+      
+      theVarVary <- "r2_2"
+      
+    } else if (theVarVary == "icc.3") {
+      
+      theVarVary <- "icc_3"
+      
+    } else if (theVarVary == "omega.2") {
+      
+      theVarVary <- "omega_2"
+      
+    } else if (theVarVary == "omega.3") {
+      
+      theVarVary <- "omega_3"
+      
+    } else if (theVarVary == "targetPower") {
+      
+      theVarVary <- "target_power"
+      
+    }
+    
+    #######################################################################
+    
+    if(theVarVary == "mdes" & theEstimation == "power") {
+      
+      dat <- dat %>%
+        dplyr::relocate(design)
+      
+    } else if (theEstimation == "power"){
+      
+      dat <- dat %>%
+        dplyr::select(-mdes) %>%
+        dplyr::relocate(design)
+      
+    } else if (theEstimation == "mdes"){
+      
+      dat <- dat[, c("design", "power_definition",theVarVary, "adjusted_mdes",powerColName, "mtp")]
+      
+    } else if (theEstimation == "sample" & theVarVary != "mdes"){
+      
+      dat <- dat %>%
+        dplyr::select(-mdes)
+    
+      dat <- dat[, c("design",theVarVary,"sample_type",
+                     "sample_size","power_definition",powerColNames,mtpColNames)]
+
+      
+    } else if (theEstimation == "sample" & theVarVary == "mdes"){
+      
+      dat <- dat %>%
+        dplyr::relocate(design)
+      
+      dat <- dat[, c("design",theVarVary,"sample_type",
+                     "sample_size","power_definition",mtpColNames)]
+      
+    }
+    
+    
+    # Save the reactive Power Table
+    reactPowerTable(dat)
+    {reactPowerTable()}
+    
+    #################################################
+    # Rendering Single Scenario Power Table Results #
+    #################################################
+    
+    # Rendering a reactive object table from the power function
+    
+    #browser()
+    output$powercalcTableP2LBIEX <- renderDataTable({
+      
+      if(theEstimation == "power"){
+        
+        curatedDat <- 
+          dat %>% dplyr::filter(
+            !stringr::str_detect(power, "individual outcome (\\d+)")
+          )
+        
+        DT::datatable(curatedDat,
+                      extensions = 'Buttons',
+                      options = list(
+                        paging = TRUE,
+                        pageLength = 10,
+                        scrollY = TRUE,
+                        dom = 'Bfrtip',
+                        buttons = c('csv', 'excel')
+                      ))
+        
+      } else {
+      
+      DT::datatable(dat,
+                    extensions = 'Buttons',
+                    options = list(
+                      paging = TRUE,
+                      pageLength = 10,
+                      scrollY = TRUE,
+                      dom = 'Bfrtip',
+                      buttons = c('csv', 'excel')
+                    ))
+      }
+        
+    })# Wrapping a reactive expression to a reactive table object for output view
+    
+    ############################
+    # Data preparation for plot 
+    ############################
+    
+    dat <- reactPowerTable()
+
+    # singleScenario2LevelBlockedDatLong <-
+    #   dat %>%
+    #   dplyr::select_all() %>%
+    #   dplyr::select(-indiv.mean) %>%
+    #   tidyr::pivot_longer(!MTP, names_to = "powerType", values_to = "power")
+    
+    #####################################
+    # Preparing the data frame for Plot #
+    #####################################
+
+    ## Setting up outcomes for Color gradient
+
+    ## Setting up outcomes for Color gradient
+
+    if(theEstimation == "power"){
+      
+      # # Grab the number of outcomes
+      # M <- as.numeric(input[[m_subset]])
+      # 
+      # # End of Minimum Power
+      # minEnd <- M - 1
+      # minPower <- paste0(1:minEnd, "-minimum")
+      # 
+      # # Create color gradient for minimum power
+      # mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
+      # mincolours <- sort(mincolours)
+      # 
+      # # Add complete, individual, minimum and raw power colors
+      # allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
+  
+      # Pulling the generated data table
+      dat <- reactPowerTable()
+      dat <- as.data.frame(dat)
+      
+      # Pulling out the variable that we are varying
+      varVaryItem <- theVarVary 
+      
+        # Adjusting the data table for graphing
+        withoutIndivPower <-
+          dat %>%
+          dplyr::select_all() %>%
+          dplyr::select(-design, -num_zero) %>%
+          dplyr::arrange(desc(power)) %>%
+          dplyr::rename(powerType = power) %>%
+          tidyr::pivot_longer(!c(varVaryItem,powerType), names_to = "mtp", values_to = "power") %>%
+          dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
+          dplyr::mutate(powerType = ifelse(mtp == "None",
+                                           "raw mean individual",
+                                           powerType))
+  
+        # converting Power Type to a factor for coloring
+        withoutIndivPower$powerType <- factor(withoutIndivPower$powerType)
+  
+        # converting data type for graphing purposes
+        withoutIndivPower <- withoutIndivPower %>%
+          dplyr::mutate(power = as.numeric(power),
+                        MTP = as.factor(mtp))
+        
+        # Converting to factor the variable that we are varying
+        withoutIndivPower[[1]] <- as.factor(withoutIndivPower[[1]])
+        
+        
+        # # pulling out Power Type Levels to match with all colors
+        # powerTypeLevels <- levels(withoutIndivPower$powerType)
+        # 
+        # # create value for scale color manual by matching color and Power Type
+        # allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+  
+        # name of MTP
+        mtpname <- levels(withoutIndivPower$mtp)[1]
+  
+        ######################
+        # Plotting the graph #
+        ######################
+  
+        output$powercalcGraphP2LBIEX <- renderPlotly({
+  
+          # Wrapping the ggplot with plotly
+  
+          pg <-
+            plotly::ggplotly(ggplot2::ggplot(
+              data = withoutIndivPower,
+              aes_string(x = varVaryItem,
+                  y = "power",
+                  colour = "powerType")) +
+                geom_point(size = 2) +
+                scale_y_continuous(limits = c(0,1)) +
+                ggtitle(paste0(mtpname, " adjusted power values across different \n power Definitions & ", varVaryItem, " values")) +
+                labs(x = paste0("Different ", varVaryItem, " scenarios"),
+                     y = "Power values",
+                     colour = "") +
+                theme_linedraw() +
+                theme(plot.title = element_text(size = 16,
+                                                face = "bold",
+                                                vjust = 1,
+                                                hjust = 0.5))
+            )
+  
+          # plotly adjustments for margin, centering and axis titles
+  
+          pg <- layout(pg,
+                       #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
+                       margin=list(t = 75),
+                       legend = list(x = 100,
+                                     orientation = "v",
+                                     xanchor = "center",
+                                     y = 0.5,
+                                     title = list(text = '<b> Power Type </b>')))
+  
+          # plotly configurations to suit ourpuposes
+  
+          pg %>%
+            config(displaylogo = FALSE,
+                   collaborate = FALSE,
+                   displayModeBar = TRUE,
+                   modeBarButtonsToRemove = list(
+                     'sendDataToCloud',
+                     'autoScale2d',
+                     'resetScale2d',
+                     'hoverClosestCartesian',
+                     'hoverCompareCartesian',
+                     'zoom2d',
+                     'pan2d',
+                     'select2d',
+                     'lasso2d',
+                     'zoomIn2d',
+                     'zoomOut2d',
+                     'toggleSpikelines'
+                   ))
+  
+        }) # ggplot for power graph
+        
+    } else if (theEstimation == "mdes") {
+      
+      
+      # # Grab the number of outcomes
+      # M <- as.numeric(input[[m_subset]])
+      # 
+      # # End of Minimum Power
+      # minEnd <- M - 1
+      # minPower <- paste0(1:minEnd, "-minimum")
+      # 
+      # # Create color gradient for minimum power
+      # mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
+      # mincolours <- sort(mincolours)
+      # 
+      # # Add complete, individual, minimum and raw power colors
+      # allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
+      
+      # Pulling the generated data table
+      
+      dat <- reactPowerTable()
+      dat <- as.data.frame(dat)
+  
+      # Pulling out the variable that we are varying
+      varVaryItem <- theVarVary
+      mtpname <- dat[["mtp"]][1]
+
+      # Adjusting the data table for graphing
+      withoutIndivPower <-
+        dat %>%
+        dplyr::select_all() %>%
+        #dplyr::select(-design, -mtp) %>%
+        dplyr::arrange(desc(adjusted_mdes))
+      
+      # converting data type for graphing purposes
+      withoutIndivPower <- withoutIndivPower %>%
+        dplyr::mutate(adjusted_mdes = as.numeric(adjusted_mdes),
+                      power_definition = as.factor(power_definition))
+
+      # Converting to factor the variable that we are varying
+      withoutIndivPower[[varVaryItem]] <- as.factor(withoutIndivPower[[varVaryItem]])
+      
+      # Adding that MTP name
+      withoutIndivPower$mtpname <- mtpname
+      
+      # # pulling out Power Type Levels to match with all colors
+      # powerTypeLevels <- levels(withoutIndivPower$power_type)
+      # 
+      # # create value for scale color manual by matching color and Power Type
+      # allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+      
+      ######################
+      # Plotting the graph #
+      ######################
+      
+      
+      output$powercalcGraphP2LBIEX <- renderPlotly({
+        
+        # Wrapping the ggplot with plotly
+        
+        pg <-
+          plotly::ggplotly(ggplot2::ggplot(
+            data = withoutIndivPower,
+            aes_string(x = varVaryItem,
+                       y = "adjusted_mdes",
+                       colour = "power_definition")) +
+              geom_point(size = 2) +
+              scale_y_continuous(limits = c(0,1)) +
+              ggtitle(paste0(mtpname, " adjusted mdes values across different \n power Definitions & ", varVaryItem, " values")) +
+              #scale_colour_manual(values = allcolorsvalues) +
+              labs(x = paste0("Different ", varVaryItem, " scenarios"),
+                   y = "Adjusted mdes values",
+                   colour = "") +
+              theme_linedraw() +
+              theme(plot.title = element_text(size = 16,
+                                              face = "bold",
+                                              vjust = 1,
+                                              hjust = 0.5))
+          )
+        
+        # plotly adjustments for margin, centering and axis titles
+        
+        pg <- layout(pg,
                      #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
                      margin=list(t = 75),
                      legend = list(x = 100,
                                    orientation = "v",
                                    xanchor = "center",
                                    y = 0.5,
-                                   title = list(text = '<b> MTP Type </b>')))
+                                   title = list(text = '<b> Power Type </b>')))
+        
+        # plotly configurations to suit ourpuposes
         
         pg %>%
           config(displaylogo = FALSE,
@@ -1625,800 +3023,125 @@ server <- shinyServer(function(input, output, session = FALSE) {
                    'toggleSpikelines'
                  ))
         
-    }) # plotly graph
-  
-}) # observe Event go Button for power for Single Scenario
-  
-  #########################################################################################
-  # Power Calculation Explorer - Varying MDES Begins - Design: 2 Level Blocked Individual #
-  #########################################################################################
+      }) # ggplot for power graph
+      
+      
+    } else if (theEstimation == "sample"){
+      
+      # Grab the number of outcomes
+      M <- as.numeric(input[[m_subset]])
+      
+      # End of Minimum Power
+      minEnd <- M - 1
+      minPower <- paste0(1:minEnd, "-minimum")
+      
+      # Create color gradient for minimum power
+      mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
+      mincolours <- sort(mincolours)
+      
+      # Add complete, individual, minimum and raw power colors
+      allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
+      
+      # Pulling the generated data table
+      dat <- reactPowerTable()
+      dat <- as.data.frame(dat)
+      
+      # Pulling out the variable that we are varying
+      varVaryItem <- theVarVary
+      MTPname <- dat[["mtp"]][1]
+      
+      # Adjusting the data table for graphing
+      withoutIndivPower <-
+        dat %>%
+        dplyr::select_all() %>%
+        dplyr::arrange(desc(sample_size))
 
-  # observe Event (Go Button) for Explorer
-  observeEvent(input$goButtonP2LBIE,{
-    
-    # set a Reactive Value for Power Table
-    reactPowerTable <- reactiveVal()
-    
-    ##############################
-    # Updating the Progress Bar  # 
-    ##############################
-    
-    # Creating a progress bar
-    progress <- shiny::Progress$new()
-    progress$set(message = "Calculating Power", value = 0)
-
-    # Close the progress bar when this reactive expression is done (even if there is an error)
-    on.exit(progress$close())
-    
-    # Update Progress Bar Callback function
-    updateProgress <- function(value = NULL, detail = NULL, message = NULL){
+      # converting data type for graphing purposes
+      withoutIndivPower <- withoutIndivPower %>%
+        dplyr::mutate(sample_size = as.numeric(sample_size),
+                      power_definition = as.factor(power_definition))
       
-      if (is.null(value)){
+      # Converting to factor the variable that we are varying
+      withoutIndivPower[[varVaryItem]] <- as.factor(withoutIndivPower[[varVaryItem]])
+      
+      # Adding that MTP name
+      withoutIndivPower$MTPname <- MTPname
+      
+      # # pulling out Power Type Levels to match with all colors
+      # powerTypeLevels <- levels(withoutIndivPower$powerType)
+      # 
+      # # create value for scale color manual by matching color and Power Type
+      # allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+      
+      ######################
+      # Plotting the graph #
+      ######################
+      
+      output$powercalcGraphP2LBIEX <- renderPlotly({
         
-        value <- progress$getValue()
-        value <- value + (progress$getMax() - value)/5
+        # Wrapping the ggplot with plotly
         
-      } # Progess bar in terms of values' increments
+        pg <-
+          plotly::ggplotly(ggplot2::ggplot(
+            data = withoutIndivPower,
+            aes_string(x = varVaryItem,
+                       y = "sample_size",
+                       colour = "power_definition")) +
+              geom_point(size = 2) +
+              scale_y_continuous(breaks = scales::pretty_breaks()) + 
+              ggtitle(paste0(MTPname, " adjusted sample sizes across different \n power Definitions & ", varVaryItem, " values")) +
+              #scale_colour_manual(values = allcolorsvalues) +
+              labs(x = paste0("Different ", varVaryItem, " scenarios"),
+                   y = "Sample size",
+                   colour = "") +
+              theme_linedraw() +
+              theme(plot.title = element_text(size = 16,
+                                              face = "bold",
+                                              vjust = 1,
+                                              hjust = 0.5))
+          )
+        
+        # plotly adjustments for margin, centering and axis titles
+        
+        pg <- layout(pg,
+                     #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
+                     margin=list(t = 75),
+                     legend = list(x = 100,
+                                   orientation = "v",
+                                   xanchor = "center",
+                                   y = 0.5,
+                                   title = list(text = '<b> Power Type </b>')))
+        
+        # plotly configurations to suit ourpuposes
+        
+        pg %>%
+          config(displaylogo = FALSE,
+                 collaborate = FALSE,
+                 displayModeBar = TRUE,
+                 modeBarButtonsToRemove = list(
+                   'sendDataToCloud',
+                   'autoScale2d',
+                   'resetScale2d',
+                   'hoverClosestCartesian',
+                   'hoverCompareCartesian',
+                   'zoom2d',
+                   'pan2d',
+                   'select2d',
+                   'lasso2d',
+                   'zoomIn2d',
+                   'zoomOut2d',
+                   'toggleSpikelines'
+                 ))
+        
+      }) # ggplot for power graph
       
-      progress$set(value = value, detail = detail, message = message)
       
-    } # End of Callback Progress Function
-    
-    ##############################
-    # Generating the Power Table # 
-    ##############################
-  
-    # Adjusting Parameter values based on condition
-    if(input$explorerP2LBIE == 'MDES') {
-      
-      # MDES vary
-      MDES = as.numeric(unlist(strsplit(input$MDESP2LBIEMDES, ",")))
-      R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIEMDES, ",")))
-      
-    } else if (input$exlorerP2LBIE == 'R2'){
-      
-      # R2 vary
-      R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIER2, ",")))
-      MDES = as.numeric(unlist(strsplit(input$MDESP2LBIER2, ",")))
       
     }
-    
-    #browser()
-    
-    dat <- as.data.frame(
-      isolate(pum::pump_power_grid(design = input$designP2LBIE,
-                                   MTP = as.character(unlist(strsplit(input$MTPP2LBIE," "))),
-                                   MDES = MDES,
-                                   M = input$MP2LBIE, # The number of hypotheses/outcomes
-                                   J = input$JP2LBIE, # The number of schools
-                                   K = input$KP2LBIE, # The number of districts
-                                   nbar = input$nbarP2LBIE, # The number of units per block
-                                   Tbar = input$tbarP2LBIE, # The proportion of samples that are assigned to the treatment
-                                   alpha = input$alphaP2LBIE,
-                                   numCovar.1 = input$numCovar.1P2LBIE,
-                                   numCovar.2 = 0,
-                                   numCovar.3 = 0,
-                                   R2.1 = R2.1,
-                                   R2.2 = NULL,
-                                   R2.3 = NULL,
-                                   ICC.2 = 0,
-                                   ICC.3 = NULL,
-                                   rho = input$rhoP2LBIE,
-                                   omega.2 = NULL,
-                                   omega.3 = NULL,
-                                   long.table = TRUE,
-                                   updateProgress = updateProgress)
-      ))
-    
-    # pruning the data table
-    dat <- dat %>%
-      dplyr::select(-adjustment) %>%
-      dplyr::arrange(power)
-    
-    # saving the reactive power table
-    reactPowerTable(dat)
-    {reactPowerTable()}
-    
-    ###############################################################
-    # Rendering a Reactive Data Table Object for the UI side      #
-    ###############################################################
-    
-    output$powercalcTableP2LBIE <- DT::renderDataTable({
-    
-      DT::datatable(dat, 
-                    extensions = 'Buttons',
-                    options = list(
-                      paging = TRUE,
-                      pageLength = 5,
-                      scrollY = TRUE,
-                      dom = 'Bfrtip',
-                      buttons = c('csv', 'excel')
-                    ))
-    }, server = FALSE)# Wrapping a reactive expression to a reactive table object for output view
-    
-    #####################################
-    # Preparing the data frame for Plot #
-    #####################################
-  
-    ## Setting up outcomes for Color gradient
-    
-    # Grab the number of outcomes
-    M <- input$MP2LBIE
-    
-    # End of Minimum Power 
-    minEnd <- M - 1
-    minPower <- paste0(1:minEnd, "-minimum")
-    
-    # Create color gradient for minimum power
-    mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
-    mincolours <- sort(mincolours)
-    
-    # Add complete, individual, minimum and raw power colors
-    allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
-    
-    # Pulling the generated data table
-    dat <- reactPowerTable()
-    dat <- as.data.frame(dat)
-    
-    # Adjusting the data table for graphing
-    withoutIndivPower <- 
-      dat %>%
-      dplyr::select_all() %>%
-      dplyr::select(-design) %>%
-      dplyr::arrange(desc(power)) %>%
-      dplyr::rename(powerType = power) %>%
-      tidyr::pivot_longer(!c(MDES, powerType), names_to = "MTP", values_to = "power") %>%
-      dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
-      dplyr::mutate(powerType = ifelse(MTP == "None",
-                                       "raw mean individual",
-                                       powerType)) 
-    
-    # converting Power Type to a factor for coloring
-    withoutIndivPower$powerType <- factor(withoutIndivPower$powerType,
-                                          levels = c("complete", "mean individual", minPower, "raw mean individual"),
-                                          ordered = TRUE)
-    
-    # converting data type for graphing purposes
-    withoutIndivPower <- withoutIndivPower %>%
-      dplyr::mutate(MDES = as.factor(MDES),
-                    power = as.numeric(power),
-                    MTP = as.factor(MTP))
-    
-    # pulling out Power Type Levels to match with all colors
-    powerTypeLevels <- levels(withoutIndivPower$powerType)
-    
-    # create value for scale color manual by matching color and Power Type
-    allcolorsvalues <- setNames(allcolors, powerTypeLevels)
-    
-    # name of MTP
-    MTPname <- levels(withoutIndivPower$MTP)[1]
-    
-    ######################
-    # Plotting the graph #
-    ######################
 
-    output$powercalcGraphP2LBIEMDES <- renderPlotly({
-    
-      # Wrapping the ggplot with plotly
-      
-      pg <- 
-      plotly::ggplotly(ggplot2::ggplot(
-          data = withoutIndivPower,
-          aes(x = MDES,
-              y = power,
-              colour = powerType)) +
-        geom_point(size = 2, 
-                   position = position_jitter(width = 0.2)) +
-        scale_y_continuous(limits = c(0,1)) +
-        ggtitle(paste0(MTPname, " adjusted Power values across different \n Power Definitions & MDES values")) +
-        scale_colour_manual(values = allcolorsvalues) +
-          labs(x = "Different MDES Scenarios",
-               y = "Power Values",
-               colour = "") +
-        theme_linedraw() +
-        theme(plot.title = element_text(size = 16,
-                                        face = "bold",
-                                        vjust = 1,
-                                        hjust = 0.5)) 
-        )
-        
-      # plotly adjustments for margin, centering and axis titles
-      
-      pg <- layout(pg, 
-                   #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
-                   margin=list(t = 75),
-                   legend = list(x = 100,
-                                 orientation = "v",
-                                 xanchor = "center",
-                                 y = 0.5,
-                                 title = list(text = '<b> Power Type </b>')))
-      
-      # plotly configurations to suit ourpuposes
-      
-      pg %>%
-        config(displaylogo = FALSE,
-               collaborate = FALSE,
-               displayModeBar = TRUE,
-               modeBarButtonsToRemove = list(
-                 'sendDataToCloud',
-                 'autoScale2d',
-                 'resetScale2d',
-                 'hoverClosestCartesian',
-                 'hoverCompareCartesian',
-                 'zoom2d', 
-                 'pan2d',
-                 'select2d',
-                 'lasso2d',
-                 'zoomIn2d', 
-                 'zoomOut2d',
-                 'toggleSpikelines'
-               ))
-
-    }) # ggplot for power graph
-    
-
-  }) # Observe Event for Explorer MDES
+}) # server side call end
   
-  # observe Event for Explorer R2
-  observeEvent(input$goButtonP2LBIER2,{
-    
-    # set a Reactive Value for Power Table
-    reactPowerTable <- reactiveVal()
-    
-    ##############################
-    # Updating the Progress Bar  # 
-    ##############################
-    
-    # Creating a progress bar
-    progress <- shiny::Progress$new()
-    progress$set(message = "Calculating Power", value = 0)
-    
-    # Close the progress bar when this reactive expression is done (even if there is an error)
-    on.exit(progress$close())
-    
-    # Update Progress Bar Callback function
-    updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-      
-      if (is.null(value)){
-        
-        value <- progress$getValue()
-        value <- value + (progress$getMax() - value)/5
-        
-      } # Progess bar in terms of values' increments
-      
-      progress$set(value = value, detail = detail, message = message)
-      
-    } # End of Callback Progress Function
-    
-    ##############################
-    # Generating the Power Table # 
-    ##############################
-    
-    
-    # pum::pump_power_grid(design = c("d2.1_m2fr"),
-    #                      MTP = c("Holm") ,
-    #                      MDES = c(0.125),
-    #                      M = 5 ,
-    #                      J = 20,
-    #                      K = 1,
-    #                      nbar = 100,
-    #                      Tbar = 0.5 ,
-    #                      alpha = 0.05,
-    #                      numCovar.1 = 0,
-    #                      numCovar.2 = 0,
-    #                      numCovar.3 = 0,
-    #                      R2.1 = c(0.2, 0.3),
-    #                      R2.2 = NULL,
-    #                      R2.3 = NULL,
-    #                      ICC.2 =0,
-    #                      ICC.3 = NULL,
-    #                      rho = 0.5,
-    #                      omega.2 = NULL,
-    #                      omega.3 = NULL,
-    #                      long.table = TRUE)
-    
-    dat <- as.data.frame(
-      isolate(pum::pump_power_grid(design = input$designP2LBIER2,
-                                   MTP = as.character(unlist(strsplit(input$MTPP2LBIER2,","))),
-                                   MDES = as.numeric(unlist(strsplit(input$MDESP2LBIER2, ","))),
-                                   M = input$MP2LBIER2, # The number of hypotheses/outcomes
-                                   J = input$JP2LBIER2, # The number of schools
-                                   K = input$KP2LBIER2, # The number of districts
-                                   nbar = input$nbarP2LBIER2, # The number of units per block
-                                   Tbar = input$tbarP2LBIER2, # The proportion of samples that are assigned to the treatment
-                                   alpha = input$alphaP2LBIER2,
-                                   numCovar.1 = input$numCovar.1P2LBIER2,
-                                   numCovar.2 = 0,
-                                   numCovar.3 = 0,
-                                   R2.1 = as.numeric(unlist(strsplit(input$R2.1P2LBIER2,","))),
-                                   R2.2 = NULL,
-                                   R2.3 = NULL,
-                                   ICC.2 = 0,
-                                   ICC.3 = NULL,
-                                   rho = input$rhoP2LBIER2,
-                                   omega.2 = NULL,
-                                   omega.3 = NULL,
-                                   long.table = TRUE,
-                                   updateProgress = updateProgress)
-      ))
-    
-  
-    # pruning the data table
-    dat <- dat %>%
-      dplyr::select(-adjustment) %>%
-      dplyr::arrange(power)
-    
-    # saving the reactive power table
-    reactPowerTable(dat)
-    {reactPowerTable()}
-    
-    ###############################################################
-    # Rendering a Reactive Data Table Object for the UI side      #
-    ###############################################################
-    
-    output$powercalcTableP2LBIER2 <- DT::renderDataTable({
-      
-      DT::datatable(dat, 
-                    extensions = 'Buttons',
-                    options = list(
-                      paging = TRUE,
-                      pageLength = 5,
-                      scrollY = TRUE,
-                      dom = 'Bfrtip',
-                      buttons = c('csv', 'excel')
-                    ))
-    }, server = FALSE)# Wrapping a reactive expression to a reactive table object for output view
-    
-    #####################################
-    # Preparing the data frame for Plot #
-    #####################################
-    
-    ## Setting up outcomes for Color gradient
-    
-    # Grab the number of outcomes
-    M <- input$MP2LBIER2
-    
-    # End of Minimum Power 
-    minEnd <- M - 1
-    minPower <- paste0(1:minEnd, "-minimum")
-    
-    # Create color gradient for minimum power
-    mincolours <- scales::seq_gradient_pal(low = "gray80", high = "gray30", space = "Lab")(1:minEnd/minEnd)
-    mincolours <- sort(mincolours)
-    
-    # Add complete, individual, minimum and raw power colors
-    allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
-    
-    # Pulling the generated data table
-    dat <- reactPowerTable()
-    dat <- as.data.frame(dat)
-
-    # Adjusting the data table for graphing
-    withoutIndivPower <- 
-      dat %>%
-      dplyr::select_all() %>%
-      dplyr::select(-design, -MDES) %>%
-      dplyr::arrange(desc(power)) %>%
-      dplyr::rename(powerType = power) %>%
-      tidyr::pivot_longer(!c(R2.1, powerType), names_to = "MTP", values_to = "power") %>%
-      dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
-      dplyr::mutate(powerType = ifelse(MTP == "None",
-                                       "raw mean individual",
-                                       powerType)) 
-    
-    # converting Power Type to a factor for coloring
-    withoutIndivPower$powerType <- factor(withoutIndivPower$powerType,
-                                          levels = c("complete", "mean individual", minPower, "raw mean individual"),
-                                          ordered = TRUE)
-    
-    # converting data type for graphing purposes
-    withoutIndivPower <- withoutIndivPower %>%
-      dplyr::mutate(R2.1 = as.factor(R2.1),
-                    power = as.numeric(power),
-                    MTP = as.factor(MTP))
-    
-    # pulling out Power Type Levels to match with all colors
-    powerTypeLevels <- levels(withoutIndivPower$powerType)
-    
-    # create value for scale color manual by matching color and Power Type
-    allcolorsvalues <- setNames(allcolors, powerTypeLevels)
-    
-    # name of MTP
-    MTPname <- levels(withoutIndivPower$MTP)[1]
-    
-    ######################
-    # Plotting the graph #
-    ######################
-    
-    output$powercalcGraphP2LBIER2 <- renderPlotly({
-      
-      # Wrapping the ggplot with plotly
-      
-      pg <- 
-        plotly::ggplotly(ggplot2::ggplot(
-          data = withoutIndivPower,
-          aes(x = R2.1,
-              y = power,
-              colour = powerType)) +
-            geom_point(size = 2, 
-                       position = position_jitter(width = 0.2)) +
-            scale_y_continuous(limits = c(0,1)) +
-            ggtitle(paste0(MTPname, " adjusted Power values across different \n Power Definitions & R2.1 values")) +
-            scale_colour_manual(values = allcolorsvalues) +
-            labs(x = "Different R2.1 Scenarios",
-                 y = "Power Values",
-                 colour = "") +
-            theme_linedraw() +
-            theme(plot.title = element_text(size = 16,
-                                            face = "bold",
-                                            vjust = 1,
-                                            hjust = 0.5)) 
-        )
-      
-      # plotly adjustments for margin, centering and axis titles
-      
-      pg <- layout(pg, 
-                   #title = "<b>Adjusted Power values across different \n Power Definitions & R2.1 values </b>",
-                   margin=list(t = 75),
-                   legend = list(x = 100,
-                                 orientation = "v",
-                                 xanchor = "center",
-                                 y = 0.5,
-                                 title = list(text = '<b> Power Type </b>')))
-      
-      # plotly configurations to suit ourpuposes
-      
-      pg %>%
-        config(displaylogo = FALSE,
-               collaborate = FALSE,
-               displayModeBar = TRUE,
-               modeBarButtonsToRemove = list(
-                 'sendDataToCloud',
-                 'autoScale2d',
-                 'resetScale2d',
-                 'hoverClosestCartesian',
-                 'hoverCompareCartesian',
-                 'zoom2d', 
-                 'pan2d',
-                 'select2d',
-                 'lasso2d',
-                 'zoomIn2d', 
-                 'zoomOut2d',
-                 'toggleSpikelines'
-               ))
-      
-    }) # ggplot for power graph
-    
-  }) # Observe Event for Explorer R2
-  
-  
-  ############################################
-  # MDES Server Side Calculation Begins
-  ############################################
-  
-  #power selection, reactive choices. This is different from the mdes reactive values which are being isolated out.
-  
-  getPower <- reactive({
-    
-    if (input$M_mdes == "1"){
-      return(c( "Individual" = "indiv",
-                "Complete" = "complete"
-      ))
-    } # end of if statement
-    else if (input$M_mdes == "2"){
-      return(c( "Individual" = "indiv",
-                "Complete" = "complete",
-                "1-minimal" = "min1"
-      ))
-    }# first else if
-    else if (input$M_mdes == "3"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2"
-      ))
-    }# second else if
-    else if (input$M_mdes == "4"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3"
-      ))
-    }# third else if
-    else if (input$M_mdes == "5"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4"
-      ))
-    }# fourth else if
-    else if (input$M_mdes == "6"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5"
-      ))
-    }# fifth else if
-    else if (input$M_mdes == "7"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6" 
-      ))
-    }# sixth else if
-    else if (input$M_mdes == "8"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6",
-               "7-minmal"  = "min7"
-      ))
-    }# seventh else if
-    else if (input$M_mdes == "9"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6",
-               "7-minmal"  = "min7",
-               "8-minmal"  = "min8"
-      ))
-    }# eight else if
-    else if (input$M_mdes == "10"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6",
-               "7-minmal"  = "min7",
-               "8-minmal"  = "min8",
-               "9-minmal" = "min9"
-      ))
-    }# tenth else if
-  }) # end of Power Reactive reactive expression
-  
-  #RenderUI for the selector input for different power definitions
-  output$power <- renderUI({
-    
-    powerlist = as.list(getPower())
-    # browser()
-    div(style = "display: inline-block, vertical-align:top;", 
-        selectInput("pdefn_mdes", "Power Defn", 
-                    choices = powerlist,
-                    selected = powerlist[[1]]))
-    
-  }) #power select input options
-  
-  #mdes calculation reactive expression
-  mdes <- reactive({
-    
-    mdes_blocked_i1_2c(M = input$M_mdes, numFalse = input$numFalse_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
-                       mod.type="constant", omega=NULL,
-                       tnum = 10000, snum=2, ncl=2, updateProgress)
-    
-  }) # reactive expression for mdes, Note: Need to manage the sigma. Current: Decomissioned temporarily
-  
-  
-  #observe Event for mdes calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
-  observeEvent(input$goButton_mdes,{
-    output$mdes <- renderTable({
-      
-      #Creating a progress bar
-      progress <- shiny::Progress$new()
-      progress$set(message = "Calculating MDES", value = 0)
-      # Close the progress bar when this reactive expression is done (even if there is an error)
-      on.exit(progress$close())
-      
-      #Update Progress Bar Callback function
-      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-        
-        if (is.null(value)){
-          
-          value <- progress$getValue()
-          value <- value + (progress$getMax() - value)/20
-          
-        } # Progess bar in terms of values' increments
-        
-        progress$set(value = value, detail = detail, message = message)
-        
-      } # End of Callback Progress Function
-      
-      #The MDES calculation function
-      isolate(mdes_blocked_i1_2c(M = input$M_mdes, numFalse = input$numFalse_mdes, J = input$J_mdes, n.j = input$n.j_mdes, power=input$power_mdes, power.definition = input$pdefn_mdes, MTP=input$MTP_mdes, marginError = input$me_mdes, p = input$p_mdes, alpha = input$alpha_mdes, numCovar.1=input$numCovar.1_mdes, numCovar.2=NULL, R2.1=input$R2.1_mdes, R2.2=0, ICC=0,
-                                 mod.type="constant", omega=NULL,
-                                 tnum = 10000, snum=2, ncl=2, updateProgress = updateProgress)) #data table that is isolated
-      
-    }) # end of isolate. We do not want 
-  }) # ObserveEvent for the Go Button ends here
-  
-  ############################################
-  # Sample  Server Side Calculation Begins
-  ############################################
-  
-  #power definition selection, reactive choices. This is different from the mdes reactive values which are being isolated out.
-  
-  getPower_sample <- reactive({
-    
-    if (input$M_sample == "1"){
-      return(c( "Individual" = "indiv",
-                "Complete" = "complete"
-      ))
-    } # end of if statement
-    else if (input$M_sample == "2"){
-      return(c( "Individual" = "indiv",
-                "Complete" = "complete",
-                "1-minimal" = "min1"
-      ))
-    }# first else if
-    else if (input$M_sample == "3"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2"
-      ))
-    }# second else if
-    else if (input$M_sample == "4"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3"
-      ))
-    }# third else if
-    else if (input$M_sample == "5"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4"
-      ))
-    }# fourth else if
-    else if (input$M_sample == "6"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5"
-      ))
-    }# fifth else if
-    else if (input$M_sample == "7"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6" 
-      ))
-    }# sixth else if
-    else if (input$M_sample == "8"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6",
-               "7-minmal"  = "min7"
-      ))
-    }# seventh else if
-    else if (input$M_sample == "9"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6",
-               "7-minmal"  = "min7",
-               "8-minmal"  = "min8"
-      ))
-    }# eight else if
-    else if (input$M_sample == "10"){
-      return(c("Individual" = "indiv",
-               "Complete" = "complete",
-               "1-minimal" = "min1",
-               "2-minimal" = "min2",
-               "3-minimal" = "min3",
-               "4-minimal" = "min4",
-               "5-minimal" = "min5",
-               "6-minimal" = "min6",
-               "7-minmal"  = "min7",
-               "8-minmal"  = "min8",
-               "9-minmal" = "min9"
-      ))
-    }# tenth else if
-  }) # end of Power Reactive reactive expression
-  
-  #RenderUI for the selector input for different power definitions
-  output$power_sample <- renderUI({
-    
-    powerlist_sample = as.list(getPower_sample())
-    # browser()
-    div(style = "display: inline-block, vertical-align:top;", 
-        selectInput("pdefn_sample", "Power Defn", 
-                    choices = powerlist_sample,
-                    selected = powerlist_sample[[1]]))
-    
-  }) #power select input options
-  
-  #observe Event for mdes calculation: Using observeEvent instead of eventReactive as we want to see the immediate side effect
-  observeEvent(input$goButton_sample,{
-    output$sample <- renderTable({
-      
-      #Creating a progress bar
-      progress <- shiny::Progress$new()
-      progress$set(message = "Calculating Sample Size", value = 0)
-      # Close the progress bar when this reactive expression is done (even if there is an error)
-      on.exit(progress$close())
-      
-      #Update Progress Bar Callback function
-      updateProgress <- function(value = NULL, detail = NULL, message = NULL){
-        
-        if (is.null(value)){
-          
-          value <- progress$getValue()
-          value <- value + (progress$getMax() - value)/40
-          
-        } # Progess bar in terms of values' increments
-        
-        progress$set(value = value, detail = detail, message = message)
-        
-      } # End of Callback Progress Function
-      
-      #The Sample calculation function
-      isolate(sample_blocked_i1_2c(M = input$M_sample, numFalse = input$numFalse_sample, typesample = input$typesample, J = input$J_sample, 
-                                   n.j = input$n.j_sample,J0 = 10, n.j0 = 10,MDES = input$MDES_sample, power=input$power_samples, 
-                                   power.definition = input$pdefn_sample, MTP=input$MTP_sample, 
-                                   marginError = input$me_sample, p = input$p_sample, alpha = input$alpha_sample, 
-                                   numCovar.1 = input$numCovar.1_sample, numCovar.2 = NULL, R2.1 = input$R2.1_sample, R2.2 = 0, ICC = 0,
-                                   mod.type = "constant", omega = NULL,
-                                   tnum = 10000, snum = 2000, ncl = 8, updateProgress = updateProgress)) #data table that is isolated
-      
-    }) # end of isolate. We do not want 
-  }) # Sample calculation
-  
-}) #Server side actions
+}) # end of server side
 
 # Run the application 
-#shinyApp(ui = ui, server = server)
-
-# sample_BH_indiv_nj_50 <- sample_blocked_i1_2c(M = 3, numFalse = 3, MTP = "BH", typesample = "n.j", J = 20, n.j = NULL, 
-#                                              J0 = NULL, n.j0 = 50, MDES = 0.125, power = power_M3_BH_MDES0125["BH", "indiv"] ,
-#                                              power.definition = "indiv", marginError = 0.05,
-#                                              p = 0.5,alpha = 0.05,numCovar.1 = 5,numCovar.2 = 1,
-#                                              R2.1 = 0.5,tnum = 10000, snum = 2000, ncl = 8)
-# print(sample_BH_indiv_nj_50)
-
-
-
-
-
-
-
+shinyApp(ui = ui, server = server)
