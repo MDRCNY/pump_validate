@@ -23,7 +23,8 @@ ui <- fluidPage(
   titlePanel(title = "Power Under Multiplicity", windowTitle = "Power Under Multiplicity"), 
   tabsetPanel(id = "tabset", type = "tabs",
               tabPanel(title = "Home", value = "home_tab"),
-              tabPanel(title = "Educational Resources", value = "edu_tab"),
+              tabPanel(title = "Educational Resources", value = "edu_tab",
+                      "Testing test"),
               tabPanel(title = "Single Scenario", value = "single_scenario_tab", 
                     sidebarLayout(
                       sidebarPanel(
