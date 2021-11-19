@@ -2058,7 +2058,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       pg <- plotly::ggplotly(
         ggplot(
           data = singleScenario2LevelBlockedDatLong,
-          aes(x = powerType, 
+          aes(x = powerType, # LM & KH: The ordering is messed up here. individual power should come first. the 1-min to (M-1)-min then complete power
               y = power, 
               shape = MTP,
               colour = MTP)) + 
@@ -2844,7 +2844,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         # converting data type for graphing purposes
         withoutIndivPower <- withoutIndivPower %>%
           dplyr::mutate(power = as.numeric(power),
-                        MTP = as.factor(mtp))
+                        MTP = as.factor(mtp)) 
         
         # Converting to factor the variable that we are varying
         withoutIndivPower[[1]] <- as.factor(withoutIndivPower[[1]])
@@ -2857,8 +2857,18 @@ server <- shinyServer(function(input, output, session = FALSE) {
         # allcolorsvalues <- setNames(allcolors, powerTypeLevels)
   
         # name of MTP
-        mtpname <- levels(withoutIndivPower$mtp)[1]
-  
+        mtpname <- levels(as.factor(withoutIndivPower$mtp))[1]
+        powerType <- levels(as.factor(withoutIndivPower$powerType))[1]
+        
+
+        if(powerType == "individual power"){
+          powerType <- "individual"
+        }
+        
+        # removing unadjusted power estimations
+        withoutIndivPower <- withoutIndivPower %>%
+          dplyr::filter(mtp != "none")
+        
         ######################
         # Plotting the graph #
         ######################
@@ -2866,19 +2876,22 @@ server <- shinyServer(function(input, output, session = FALSE) {
         output$powercalcGraphP2LBIEX <- renderPlotly({
   
           # Wrapping the ggplot with plotly
-  
+          
+          ##########
+          # Plotly + ggplot subtitle issue: https://stackoverflow.com/questions/55923256/how-do-i-keep-my-subtitles-when-i-use-ggplotly
+          ##########
+          
           pg <-
             plotly::ggplotly(ggplot2::ggplot(
               data = withoutIndivPower,
               aes_string(x = varVaryItem,
-                  y = "power",
-                  colour = "powerType",
-                  shape = "MTP")) +
+                  y = "power")) +
                 geom_point(size = 2) +
                 scale_y_continuous(limits = c(0,1)) +
-                ggtitle(paste0(mtpname, " adjusted power values across different \n power Definitions & ", varVaryItem, " values")) +
-                labs(x = paste0("Different ", varVaryItem, " scenarios"),
-                     y = "Power values",
+                ggtitle(paste0(mtpname, " adjusted ", powerType , " power"),
+                        subtitle = paste0("varying ", varVaryItem, " across all outcomes")) + # LM & KH: Subtitle is not showing up.
+                labs(x = paste0(varVaryItem, "(same across all outcomes)"),
+                     y = paste0(powerType, " power"),
                      colour = "") +
                 theme_linedraw() +
                 theme(plot.title = element_text(size = 16,
