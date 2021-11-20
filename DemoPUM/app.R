@@ -31,7 +31,9 @@ ui <- fluidPage(
   titlePanel(title = "Power Under Multiplicity", windowTitle = "Power Under Multiplicity"), 
   tabsetPanel(id = "tabset", type = "tabs",
               tabPanel(title = "Home", value = "home_tab"),
-              tabPanel(title = "Educational Resources", value = "edu_tab"),
+              tabPanel(title = "Educational Resources", value = "edu_tab",
+"Kristin and Zarni"                       
+                       ),
               tabPanel(title = "Single Scenario", value = "single_scenario_tab", 
                     sidebarLayout(
                       sidebarPanel(
@@ -2273,9 +2275,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     }
     
-    
-    
-    
     if (theEstimation == "power") {
   
           dat <- as.data.frame(
@@ -2964,7 +2963,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
       withoutIndivPower <-
         dat %>%
         dplyr::select_all() %>%
-        #dplyr::select(-design, -mtp) %>%
         dplyr::arrange(desc(adjusted_mdes))
       
       # converting data type for graphing purposes
@@ -2977,7 +2975,15 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       # Adding that MTP name
       withoutIndivPower$mtpname <- mtpname
+      # Power definition
+      powerType <- withoutIndivPower$power_definition[1]
       
+      if(powerType == "individual power"){
+        
+        powerType <- "individual"
+        
+      }
+
       # # pulling out Power Type Levels to match with all colors
       # powerTypeLevels <- levels(withoutIndivPower$power_type)
       # 
@@ -2988,7 +2994,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
       # Plotting the graph #
       ######################
       
-      
       output$powercalcGraphP2LBIEX <- renderPlotly({
         
         # Wrapping the ggplot with plotly
@@ -2997,11 +3002,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
           plotly::ggplotly(ggplot2::ggplot(
             data = withoutIndivPower,
             aes_string(x = varVaryItem,
-                       y = "adjusted_mdes",
-                       colour = "power_definition")) +
+                       y = "adjusted_mdes")) +
               geom_point(size = 2) +
               scale_y_continuous(limits = c(0,1)) +
-              ggtitle(paste0(mtpname, " adjusted mdes values across different \n power Definitions & ", varVaryItem, " values")) +
+              ggtitle(paste0(mtpname, " adjusted mdes for ", powerType, " power"),
+                      subtitle = paste0("varying ", varVaryItem, " across all outcomes")) + # LM & KH: Subtitle is not showing up.
               #scale_colour_manual(values = allcolorsvalues) +
               labs(x = paste0("Different ", varVaryItem, " scenarios"),
                    y = "Adjusted mdes values",
