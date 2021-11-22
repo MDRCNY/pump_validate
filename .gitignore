@@ -14,6 +14,7 @@ Validation/wy_test/*
 # out and error files
 *.out
 *.err
+log/*
 
 ## Added in another repo. Don't remember for which use.
 inst/doc
