@@ -2048,6 +2048,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       dplyr::select(-indiv.mean) %>%
       tidyr::pivot_longer(!MTP, names_to = "powerType", values_to = "power")
     
+    mtpname <- levels(as.factor(singleScenario2LevelBlockedDatLong$MTP))[1]
+    
     ################################################
     # Rendering Single Scenario Power Table Graphs #
     ################################################
@@ -2063,7 +2065,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
               colour = MTP)) + 
           geom_point(size = 2) +
           scale_y_continuous(limits = c(0,1)) +
-          ggtitle("Adjusted Power values across different Power Definitions") +
+          ggtitle(paste0(mtpname, " adjusted power across different definitions of power")) +
           theme(plot.title = element_text(size = 16,
                                           face = "bold",
                                           vjust = 1,
