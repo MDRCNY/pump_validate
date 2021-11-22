@@ -6,7 +6,7 @@
 # Number of Units per block
 ############################
 
-nbarInput <- function(estimation, design, scenario){
+nbarInput <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "nbar", "_", design, "_" , scenario)
   
@@ -22,7 +22,7 @@ nbarInput <- function(estimation, design, scenario){
 # Number of Blocks
 ############################
 
-jInput <- function(estimation, design, scenario){
+jInput <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "j", "_", design, "_" , scenario)
   
@@ -38,7 +38,7 @@ jInput <- function(estimation, design, scenario){
 # Number of Outcomes (M)
 #########################
 
-mInput <- function(estimation, design, scenario){
+mInput <- function(estimation = "power", design, scenario){
   
     id <- paste0(estimation, "_" ,"m", "_", design, "_" , scenario)
     numericInput(id, 
@@ -54,7 +54,7 @@ mInput <- function(estimation, design, scenario){
 # Number of Outcomes with no effects
 ##################################################
 
-numZeroInput <- function(estimation, design, scenario){
+numZeroInput <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_" ,"numZero", "_", design, "_" , scenario)
   numericInput(id, 
@@ -70,7 +70,7 @@ numZeroInput <- function(estimation, design, scenario){
 # MTP element
 #########################
 
-mtpInput <- function(estimation, design, scenario){
+mtpInput <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "mtp", "_", design, "_" , scenario)
   
@@ -84,7 +84,7 @@ mtpInput <- function(estimation, design, scenario){
               multiple = TRUE) # select input buttons div
 } # mtp input
 
-mtpActionButton <- function(estimation, design, scenario){
+mtpActionButton <- function(estimation = "power", design, scenario){
   
   question <- paste0(estimation, "question", "mtp", design, scenario, sep = "_")
   actionButton(question,
@@ -95,7 +95,7 @@ mtpActionButton <- function(estimation, design, scenario){
   
 } # mtpAction Button
 
-mtpPopOver <- function(estimation, design, scenario){
+mtpPopOver <- function(estimation = "power", design, scenario){
   
   question <- paste0(estimation, "question", "mtp", design, scenario, sep = "_")
   
@@ -113,7 +113,7 @@ mtpPopOver <- function(estimation, design, scenario){
 # Minimum Detectable Effect Size
 #########################
 
-mdesInput <- function(estimation, design, scenario, numOutcome){
+mdesInput <- function(estimation = "power", design, scenario, numOutcome){
 
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -135,7 +135,7 @@ mdesInput <- function(estimation, design, scenario, numOutcome){
 # Power value
 #########################
 
-powerValuesInput <- function(estimation, design, scenario, numOutcome){
+powerValuesInput <- function(estimation = "power", design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -160,7 +160,7 @@ powerValuesInput <- function(estimation, design, scenario, numOutcome){
 # Correlation between test statistics (assumed to be the same between all pairs)
 ##################################################################################
 
-rhoInput <- function(estimation, design, scenario){
+rhoInput <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "rho", "_", design, "_" , scenario)
   numericInput(id, 
@@ -175,7 +175,7 @@ rhoInput <- function(estimation, design, scenario){
 # Number of level 1 covariates
 ##################################################################################
 
-numCovar.1Input <- function(estimation, design, scenario){
+numCovar.1Input <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario)
   numericInput(id, 
@@ -190,7 +190,7 @@ numCovar.1Input <- function(estimation, design, scenario){
 # Proportion of treatment assignment
 ##################################################################################
 
-tbarInput <- function(estimation, design, scenario){
+tbarInput <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario)
   numericInput(id, 
@@ -205,7 +205,7 @@ tbarInput <- function(estimation, design, scenario){
 # Significance level (alpha)
 ##################################################################################
 
-alphaInput <- function(estimation, design, scenario) {
+alphaInput <- function(estimation = "power", design, scenario) {
 
   id <- paste0(estimation, "_", "alpha", "_", design, "_", scenario)
   numericInput(id, 
@@ -220,7 +220,7 @@ alphaInput <- function(estimation, design, scenario) {
 # R2.1 element
 #########################
 
-r2.1Input <- function(estimation, design, scenario, numOutcome){
+r2.1Input <- function(estimation = "power", design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -244,7 +244,7 @@ r2.1Input <- function(estimation, design, scenario, numOutcome){
 # R2.2 element
 #########################
 
-r2.2Input <- function(estimation, design, scenario, numOutcome){
+r2.2Input <- function(estimation = "power", design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -268,7 +268,7 @@ r2.2Input <- function(estimation, design, scenario, numOutcome){
 # ICC.2 element
 #########################
 
-icc.2Input <- function(estimation, design, scenario, numOutcome){
+icc.2Input <- function(estimation = "power", design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -290,7 +290,7 @@ icc.2Input <- function(estimation, design, scenario, numOutcome){
 # omega.2 element
 #########################
 
-omega.2Input <- function(estimation, design, scenario, numOutcome){
+omega.2Input <- function(estimation = "power", design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -313,7 +313,7 @@ omega.2Input <- function(estimation, design, scenario, numOutcome){
 # R2.3 element
 #########################
 
-r2.3Input <- function(estimation, design, scenario, numOutcome){
+r2.3Input <- function(estimation = "power", design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -337,7 +337,7 @@ r2.3Input <- function(estimation, design, scenario, numOutcome){
 # ICC.3 element
 #########################
 
-icc.3Input <- function(estimation, design, scenario, numOutcome){
+icc.3Input <- function(estimation = "power", design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -359,7 +359,7 @@ icc.3Input <- function(estimation, design, scenario, numOutcome){
 # omega.3 element
 #########################
 
-omega.3Input <- function(estimation, design, scenario, numOutcome){
+omega.3Input <- function(estimation = "power", design, scenario, numOutcome){
   
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
@@ -381,7 +381,7 @@ omega.3Input <- function(estimation, design, scenario, numOutcome){
 # Number of 3-level Grouping
 ############################
 
-kInput <- function(estimation, design, scenario){
+kInput <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "k", "_", design, "_" , scenario)
   

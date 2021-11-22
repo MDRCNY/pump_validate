@@ -352,20 +352,6 @@ ui <- fluidPage(
                             
                             div(style = "display: inline-block, vertical-align:top;", 
                             column(12,
-                              selectInput("estimationSs", "What would you like to estimate?",
-                                          choices = list("Power" = "power",
-                                                         "Minimum detectable effect size" = "mdes",
-                                                         "Sample size" = "sample"),
-                                          selected = "power")
-                              
-                            )) # User Mode of Exploration
-
-                          ), # picking the type of exploration you would like to run
-                          
-                          fluidRow(
-                            
-                            div(style = "display: inline-block, vertical-align:top;", 
-                            column(12,
                              selectInput("designSs", "What research design is this for?", 
                                         choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
                                                        "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
@@ -1101,7 +1087,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$nbar <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
@@ -1134,7 +1120,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }  
     
     if(check){
-      theEstimation = as.character(getEstimationSs())
+      
+      theEstimation = "power"
       theDesign = as.character(getDesignSs())
       theScenario = as.character(whichTab$scenario)
       
@@ -1203,7 +1190,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$mtp <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"    
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
@@ -1224,7 +1211,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$m <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top;", 
@@ -1243,7 +1230,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
   output$numZero <- renderUI({
     
-    theEstimation =  as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     
@@ -1271,7 +1258,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$mdes <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1307,7 +1294,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$powerValues <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1343,7 +1330,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   output$rho <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
@@ -1364,7 +1351,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$numCovar.1 <- renderUI({
   
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
@@ -1385,7 +1372,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$tbar <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
@@ -1406,7 +1393,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   output$alpha <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
@@ -1427,7 +1414,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
   output$r2.1 <- renderUI({
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1467,7 +1454,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # output ui when check is true
     if(check){
       
-      theEstimation = as.character(getEstimationSs())
+      theEstimation = "power"
       theDesign = as.character(getDesignSs())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1527,7 +1514,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # output ui when check is true
     if(check){
       
-      theEstimation = as.character(getEstimationSs())
+      theEstimation = "power"
       theDesign = as.character(getDesignSs())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1585,7 +1572,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # output ui when check is true
     if(check){
       
-      theEstimation = as.character(getEstimationSs())
+      theEstimation = "power"
       theDesign = as.character(getDesignSs())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1642,7 +1629,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # output ui when check is true
     if(check){
       
-      theEstimation = as.character(getEstimationSs())
+      theEstimation = "power"
       theDesign = as.character(getDesignSs())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1700,7 +1687,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # output ui when check is true
     if(check){
       
-      theEstimation = as.character(getEstimationSs())
+      theEstimation = "power"
       theDesign = as.character(getDesignSs())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1757,7 +1744,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # output ui when check is true
     if(check){
       
-      theEstimation = as.character(getEstimationSs())
+      theEstimation = "power"
       theDesign = as.character(getDesignSs())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1814,7 +1801,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # output ui when check is true
     if(check){
       
-      theEstimation = as.character(getEstimationSs())
+      theEstimation = "power"
       theDesign = as.character(getDesignSs())
       theScenario = as.character(whichTab$scenario)
       theNumOutcomes = as.numeric(getNumOutcomes())
@@ -1891,7 +1878,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
 
     # Getting the research design that we have to estimate the statistical results for
     
-    theEstimation = as.character(getEstimationSs())
+    theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
     
