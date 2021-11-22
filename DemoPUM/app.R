@@ -152,6 +152,13 @@ ui <- fluidPage(
                            fluidRow(
                              
                              column(12,
+                                    uiOutput("kEx"))
+                             
+                           ), # Adding k
+                           
+                           fluidRow(
+                             
+                             column(12,
                                     uiOutput("mtpEx"))
                              
                            ), # MTP shared by all designs
@@ -215,23 +222,9 @@ ui <- fluidPage(
                            fluidRow(
                              
                              column(12,
-                                    uiOutput("icc.2Ex"))
-                             
-                           ), # Adding icc.2
-                           
-                           fluidRow(
-                             
-                             column(12,
                                     uiOutput("r2.2Ex"))
                              
                            ), # Adding R2.2
-                           
-                           fluidRow(
-                             
-                             column(12,
-                                    uiOutput("omega.2Ex"))
-                             
-                           ), # Adding omega.2
                            
                            fluidRow(
                              
@@ -243,16 +236,23 @@ ui <- fluidPage(
                            fluidRow(
                              
                              column(12,
-                                    uiOutput("icc.3Ex"))
+                                    uiOutput("icc.2Ex"))
                              
-                           ), # Adding icc.3
+                           ), # Adding icc.2
                            
                            fluidRow(
                              
                              column(12,
-                                    uiOutput("kEx"))
+                                    uiOutput("icc.3Ex"))
                              
-                           ), # Adding k
+                           ), # Adding icc.3
+    
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("omega.2Ex"))
+                             
+                           ), # Adding omega.2
                            
                            fluidRow(
                              
@@ -399,13 +399,17 @@ ui <- fluidPage(
                         
                            fluidRow(
                              
-                            column(6,
-                            uiOutput("nbar")),
-                             
-                            column(6,
+                            column(12,
+                            uiOutput("nbar"))
+                            
+                           ), # Units per block and number of blocks
+                        
+                          fluidRow(
+                           
+                            column(12,
                             uiOutput("j"))
                              
-                           ), # Units per block and number of blocks
+                          ), # number of blocks                          
                         
                            # fluidRow(
                            #   
@@ -469,7 +473,21 @@ ui <- fluidPage(
                              uiOutput("r2.1"))
                              
                            ), # Adding R2.1
-
+                        
+                           fluidRow(
+                          
+                              column(12,
+                                 uiOutput("r2.2"))
+                          
+                            ), # Adding R2.2
+                        
+                           fluidRow(
+                          
+                              column(12,
+                                 uiOutput("r2.3"))
+                              
+                           ), # Adding r2.3
+                        
                            fluidRow(
                               
                               column(12,
@@ -477,40 +495,19 @@ ui <- fluidPage(
                               
                            ), # Adding icc.2
                           
-                           fluidRow(
-                             
-                             column(12,
-                             uiOutput("r2.2"))
-
-                           ), # Adding R2.2
-                           
+                          fluidRow(
+                          
+                              column(12,
+                              uiOutput("icc.3"))
+                          
+                          ), # Adding icc.3
+                        
                            fluidRow(
                              
                              column(12,
                              uiOutput("omega.2"))
                              
                            ), # Adding omega.2
-                        
-                           fluidRow(
-                             
-                             column(12,
-                             uiOutput("r2.3")      
-                                )
-                           ), # Adding r2.3
-                        
-                           fluidRow(
-                             
-                             column(12,
-                             uiOutput("icc.3"))
-                             
-                           ), # Adding icc.3
-                        
-                           fluidRow(
-                             
-                             column(12,
-                             uiOutput("k"))
-                             
-                           ), # Adding k
                         
                            fluidRow(
                              
