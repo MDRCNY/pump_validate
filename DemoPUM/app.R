@@ -17,7 +17,6 @@ library(scales) # for breaks on ggplot2
 source("singlescenario_uielements.R")
 source("explorer_uielements.R")
 
-
 #devtools::install_bioc('multtest')
 #devtools::install_bioc('blkvar')
 # devtools::install_github("ZarniHtet13/pum-p",
@@ -617,11 +616,15 @@ server <- shinyServer(function(input, output, session = FALSE) {
   getNumOutcomes <- reactive({
     
     if(input$tabset == "single_scenario_tab"){
-      input$numOutcomesSs 
+      
+      return(as.numeric(input$numOutcomesSs)) 
+      
     }  
     
     if(input$tabset == "explorer_tab"){
-      input$mEx
+      
+      return(as.numeric(input$mEx))
+      
     }
     
   })

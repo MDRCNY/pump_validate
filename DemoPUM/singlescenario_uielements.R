@@ -8,7 +8,6 @@
 
 nbarInput <- function(estimation, design, scenario){
   
-
   id <- paste0(estimation, "_", "nbar", "_", design, "_" , scenario)
   
   numericInput(id,
