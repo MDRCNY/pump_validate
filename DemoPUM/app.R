@@ -23,8 +23,6 @@ source("explorer_uielements.R")
 # devtools::install_github("ZarniHtet13/pum-p",
 #                          auth_token = "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", force = T, dep = T)
 
-
-
 ui <- fluidPage(
   
   useShinyFeedback(),
@@ -32,8 +30,286 @@ ui <- fluidPage(
   tabsetPanel(id = "tabset", type = "tabs",
               tabPanel(title = "Home", value = "home_tab"),
               tabPanel(title = "Educational Resources", value = "edu_tab",
-"Kristin and Zarni"                       
-                       ),
+                      "Testing test"),
+              tabPanel(title = "Explorer", value = "explorer_tab",
+                       
+                       sidebarLayout(
+                         sidebarPanel(
+                           # css to center the progress bar
+                           tags$head(
+                             tags$style(
+                               HTML(".shiny-notification {
+                              height: 50px;
+                              width: 600px;
+                              position:fixed;
+                              top: calc(50% - 50px);
+                              left: calc(45%);
+                              right: calc(15%);
+                              font-size: 100%;
+                              text-align: center;
+                              }
+                              .progress-message {
+                              padding-top: 0px;
+                              padding-right: 3px;
+                              padding-bottom: 3px;
+                              padding-left: 10px;
+                              font-weight: normal !important;
+                              font-style: italic !important;
+                              font-size: 15px;
+                              }
+                              .progress-detail {
+                              padding-top: 0px;
+                              padding-right: 3px;
+                              padding-bottom: 3px;
+                              padding-left: 3px;
+                              font-weight: normal;
+                              font-style: italic !important;
+                              font-size: 15px;
+                              }
+                              "
+                               ) # html bracket
+                             ) # css styling tag
+                           ), # The header tag
+                           
+                           fluidRow(
+                             
+                             div(style = "display: inline-block, vertical-align:top;", 
+                                 column(12,
+                                        selectInput("estimationEx", "What would you like to estimate?",
+                                                    choices = list("Power" = "power",
+                                                                   "Minimum detectable effect size" = "mdes",
+                                                                   "Sample size" = "sample"),
+                                                    selected = "power")
+                                        
+                                 )) # User Mode of Exploration
+                             
+                           ), # picking the type of exploration you would like to run
+                           
+                           fluidRow(
+                             
+                             div(style = "display: inline-block, vertical-align:top;", 
+                                 column(12,
+                                        selectInput("designEx", "What research design is this for?", 
+                                                    choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
+                                                                   "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
+                                                                   "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
+                                                                   "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
+                                                                   "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
+                                                                   "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
+                                                                   "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
+                                                                   "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
+                                                                   "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
+                                                    ),
+                                                    selected = "d2.1_m2ff")     
+                                        
+                                 )) # selecting designs
+                             
+                           ), # picking the research design
+                           
+                           # UI/UX input for variables to vary
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("typeOfSampleEx"))
+                             
+                           ), # type of sample to estimate
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("varVaryEx"))
+                             
+                           ), # drop down for variable to vary by
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("mEx"))
+                             
+                           ), # number of outcomes selection 
+                           
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("numZeroEx"))   
+                           ),
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("nbarEx"))
+                             
+                           ), # Units per block  
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("jEx"))
+                             
+                           ), # number of blocks
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("mtpEx"))
+                             
+                           ), # MTP shared by all designs
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("mdesEx"))
+                             
+                           ), # Minimum Detectable Effect Size
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("powerDefinitionEx"))
+                             
+                           ), # Power definition options
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("targetPowerEx"))
+                             
+                           ), # Target power values
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("rhoEx"))
+                             
+                           ), # correlation between outcomes
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("numCovar.1Ex"))
+                             
+                           ), # number of covariates in level 1
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("tbarEx"))
+                             
+                           ), # proportion of treatment assignment
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("alphaEx"))
+                             
+                           ), # alpha
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("r2.1Ex"))
+                             
+                           ), # Adding R2.1
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("icc.2Ex"))
+                             
+                           ), # Adding icc.2
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("r2.2Ex"))
+                             
+                           ), # Adding R2.2
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("omega.2Ex"))
+                             
+                           ), # Adding omega.2
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("r2.3Ex")      
+                             )
+                           ), # Adding r2.3
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("icc.3Ex"))
+                             
+                           ), # Adding icc.3
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("kEx"))
+                             
+                           ), # Adding k
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("omega.3Ex"))
+                             
+                           ), # Adding omega.3
+                           
+                           fluidRow(
+                             
+                             column(6,
+                                    actionButton("goButtonEx", "Go!")) 
+                             
+                           ) # Action Button to trigger other reactive values
+                         ), # Power calculation sidebarPanel
+                         
+                         mainPanel(
+                           # Put some text here #
+                           fluidRow(
+                             
+                             column(12, align = "center",
+                                    offset = 2,
+                                    #STh here for text
+                             )
+                           ),
+                           
+                           br(),    
+                           br(),
+                           
+                           fluidRow(
+                             
+                             column(8, align = "center",
+                                    offset = 2,
+                                    plotlyOutput("powercalcGraphP2LBIEX"))
+                             
+                           ), # end of Fluid Row
+                           
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           
+                           fluidRow(
+                             
+                             column(12, align = "center",
+                                    DT::dataTableOutput("powercalcTableP2LBIEX")) #The power calculation table output
+                             
+                           ) #fluidRow for first half of the page
+                           
+                         ) # Power calculation Main Panel
+                       ) # Power Calculation sidebar Layout
+                       
+              ), # Explorer tab
+              
               tabPanel(title = "Single Scenario", value = "single_scenario_tab", 
                     sidebarLayout(
                       sidebarPanel(
@@ -290,287 +566,8 @@ ui <- fluidPage(
             ) # Power calculation Main Panel
           ) # Power Calculation sidebar Layout
           
-    ), # Single Scenario Tab
-    
-    tabPanel(title = "Explorer", value = "explorer_tab",
+    ) # Single Scenario Tab
   
-             sidebarLayout(
-               sidebarPanel(
-                 # css to center the progress bar
-                 tags$head(
-                   tags$style(
-                     HTML(".shiny-notification {
-                              height: 50px;
-                              width: 600px;
-                              position:fixed;
-                              top: calc(50% - 50px);
-                              left: calc(45%);
-                              right: calc(15%);
-                              font-size: 100%;
-                              text-align: center;
-                              }
-                              .progress-message {
-                              padding-top: 0px;
-                              padding-right: 3px;
-                              padding-bottom: 3px;
-                              padding-left: 10px;
-                              font-weight: normal !important;
-                              font-style: italic !important;
-                              font-size: 15px;
-                              }
-                              .progress-detail {
-                              padding-top: 0px;
-                              padding-right: 3px;
-                              padding-bottom: 3px;
-                              padding-left: 3px;
-                              font-weight: normal;
-                              font-style: italic !important;
-                              font-size: 15px;
-                              }
-                              "
-                     ) # html bracket
-                   ) # css styling tag
-                 ), # The header tag
-                 
-                 fluidRow(
-                   
-                   div(style = "display: inline-block, vertical-align:top;", 
-                       column(12,
-                              selectInput("estimationEx", "What would you like to estimate?",
-                                          choices = list("Power" = "power",
-                                                         "Minimum detectable effect size" = "mdes",
-                                                         "Sample size" = "sample"),
-                                          selected = "power")
-                              
-                       )) # User Mode of Exploration
-                   
-                 ), # picking the type of exploration you would like to run
-                 
-                 fluidRow(
-                   
-                   div(style = "display: inline-block, vertical-align:top;", 
-                       column(12,
-                              selectInput("designEx", "What research design is this for?", 
-                                          choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
-                                                         "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
-                                                         "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
-                                                         "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
-                                                         "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
-                                                         "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
-                                                         "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
-                                                         "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
-                                                         "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
-                                          ),
-                                          selected = "d2.1_m2ff")     
-                              
-                       )) # selecting designs
-                   
-                 ), # picking the research design
-                 
-                 # UI/UX input for variables to vary
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("typeOfSampleEx"))
-                   
-                 ), # type of sample to estimate
-            
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("varVaryEx"))
-                   
-                 ), # drop down for variable to vary by
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("mEx"))
-                   
-                 ), # number of outcomes selection 
-                 
-                 
-                 fluidRow(
-                  
-                   column(12,
-                          uiOutput("numZeroEx"))   
-                 ),
-                   
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("nbarEx"))
-                   
-                 ), # Units per block  
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("jEx"))
-                   
-                 ), # number of blocks
-
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("mtpEx"))
-                   
-                 ), # MTP shared by all designs
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("mdesEx"))
-                   
-                 ), # Minimum Detectable Effect Size
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("powerDefinitionEx"))
-                   
-                 ), # Power definition options
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("targetPowerEx"))
-                   
-                 ), # Target power values
-
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("rhoEx"))
-                   
-                 ), # correlation between outcomes
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("numCovar.1Ex"))
-                   
-                 ), # number of covariates in level 1
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("tbarEx"))
-                   
-                 ), # proportion of treatment assignment
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("alphaEx"))
-                   
-                 ), # alpha
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("r2.1Ex"))
-                   
-                 ), # Adding R2.1
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("icc.2Ex"))
-                   
-                 ), # Adding icc.2
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("r2.2Ex"))
-                   
-                 ), # Adding R2.2
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("omega.2Ex"))
-                   
-                 ), # Adding omega.2
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("r2.3Ex")      
-                   )
-                 ), # Adding r2.3
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("icc.3Ex"))
-                   
-                 ), # Adding icc.3
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("kEx"))
-                   
-                 ), # Adding k
-                 
-                 fluidRow(
-                   
-                   column(12,
-                          uiOutput("omega.3Ex"))
-                   
-                 ), # Adding omega.3
-                 
-                 fluidRow(
-                   
-                   column(6,
-                          actionButton("goButtonEx", "Go!")) 
-                   
-                 ) # Action Button to trigger other reactive values
-               ), # Power calculation sidebarPanel
-               
-               mainPanel(
-                 # Put some text here #
-                 fluidRow(
-                   
-                   column(12, align = "center",
-                          offset = 2,
-                          #STh here for text
-                   )
-                 ),
-                 
-                 br(),    
-                 br(),
-                 
-                 fluidRow(
-
-                   column(8, align = "center",
-                          offset = 2,
-                          plotlyOutput("powercalcGraphP2LBIEX"))
-
-                 ), # end of Fluid Row
-                 
-                 br(), # To create spaces between Table and Plots
-                 br(), # To create spaces between Table and Plots
-                 br(), # To create spaces between Table and Plots
-                 br(), # To create spaces between Table and Plots
-                 br(), # To create spaces between Table and Plots
-                 br(), # To create spaces between Table and Plots
-                 
-                 fluidRow(
-                   
-                   column(12, align = "center",
-                          DT::dataTableOutput("powercalcTableP2LBIEX")) #The power calculation table output
-                   
-                 ) #fluidRow for first half of the page
-                 
-               ) # Power calculation Main Panel
-             ) # Power Calculation sidebar Layout
-             
-    ) # Explorer tab
-             
   ) # End of main tabset Panel
 ) # end of Fluid Page
 
@@ -3075,7 +3072,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       # Pulling out the variable that we are varying
       varVaryItem <- theVarVary
-      MTPname <- dat[["mtp"]][1]
+      mtpname <- dat[["mtp"]][1]
+      sampleType <- dat[["sample_type"]][1]
       
       # Adjusting the data table for graphing
       withoutIndivPower <-
@@ -3092,11 +3090,17 @@ server <- shinyServer(function(input, output, session = FALSE) {
       withoutIndivPower[[varVaryItem]] <- as.factor(withoutIndivPower[[varVaryItem]])
       
       # Adding that MTP name
-      withoutIndivPower$MTPname <- MTPname
+      withoutIndivPower$mtpname <- mtpname
       
       # # pulling out Power Type Levels to match with all colors
-      # powerTypeLevels <- levels(withoutIndivPower$powerType)
-      # 
+      powerType <- levels(withoutIndivPower$power_definition)[1]
+      
+      if(powerType == "individual power"){
+        
+        powerType <- "individual"
+        
+      }
+      
       # # create value for scale color manual by matching color and Power Type
       # allcolorsvalues <- setNames(allcolors, powerTypeLevels)
       
@@ -3107,16 +3111,15 @@ server <- shinyServer(function(input, output, session = FALSE) {
       output$powercalcGraphP2LBIEX <- renderPlotly({
         
         # Wrapping the ggplot with plotly
-        
         pg <-
           plotly::ggplotly(ggplot2::ggplot(
             data = withoutIndivPower,
             aes_string(x = varVaryItem,
-                       y = "sample_size",
-                       colour = "power_definition")) +
+                       y = "sample_size")) +
               geom_point(size = 2) +
               scale_y_continuous(breaks = scales::pretty_breaks()) + 
-              ggtitle(paste0(MTPname, " adjusted sample sizes across different \n power Definitions & ", varVaryItem, " values")) +
+              ggtitle(paste0(mtpname, " adjusted ", sampleType, " for ", powerType, " power"),
+                      subtitle = paste0("varying ", varVaryItem, " across all outcomes")) + # LM & KH: Subtitle is not showing up.
               #scale_colour_manual(values = allcolorsvalues) +
               labs(x = paste0("Different ", varVaryItem, " scenarios"),
                    y = "Sample size",
