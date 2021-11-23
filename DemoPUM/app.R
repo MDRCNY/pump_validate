@@ -30,7 +30,7 @@ ui <- fluidPage(
               tabPanel(title = "Home", value = "home_tab"),
               tabPanel(title = "Educational Resources", value = "edu_tab",
                        "Testing test"),
-              tabPanel(title = "Explorer", value = "explorer_tab",
+              tabPanel(title = "Power, MDES & SS Explorer", value = "explorer_tab",
                        
                        sidebarLayout(
                          sidebarPanel(
@@ -309,7 +309,7 @@ ui <- fluidPage(
                        
               ), # Explorer tab
               
-              tabPanel(title = "Single Scenario", value = "single_scenario_tab", 
+              tabPanel(title = "Power Single Scenario", value = "single_scenario_tab", 
                        sidebarLayout(
                          sidebarPanel(
                            # css to center the progress bar
