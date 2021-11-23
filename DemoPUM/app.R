@@ -29,7 +29,7 @@ ui <- fluidPage(
   tabsetPanel(id = "tabset", type = "tabs",
               tabPanel(title = "Home", value = "home_tab"),
               tabPanel(title = "Educational Resources", value = "edu_tab",
-                      "Testing test"),
+                       "Testing test"),
               tabPanel(title = "Explorer", value = "explorer_tab",
                        
                        sidebarLayout(
@@ -88,7 +88,7 @@ ui <- fluidPage(
                              
                              div(style = "display: inline-block, vertical-align:top;", 
                                  column(12,
-                                        selectInput("designEx", "What research design is this for?", 
+                                        selectInput("designEx", "Research design & model", 
                                                     choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
                                                                    "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
                                                                    "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
@@ -246,7 +246,7 @@ ui <- fluidPage(
                                     uiOutput("icc.3Ex"))
                              
                            ), # Adding icc.3
-    
+                           
                            fluidRow(
                              
                              column(12,
@@ -310,12 +310,12 @@ ui <- fluidPage(
               ), # Explorer tab
               
               tabPanel(title = "Single Scenario", value = "single_scenario_tab", 
-                    sidebarLayout(
-                      sidebarPanel(
-                        # css to center the progress bar
-                        tags$head(
-                        tags$style(
-                          HTML(".shiny-notification {
+                       sidebarLayout(
+                         sidebarPanel(
+                           # css to center the progress bar
+                           tags$head(
+                             tags$style(
+                               HTML(".shiny-notification {
                               height: 50px;
                               width: 600px;
                               position:fixed;
@@ -344,212 +344,220 @@ ui <- fluidPage(
                               font-size: 15px;
                               }
                               "
-                            ) # html bracket
-                          ) # css styling tag
-                        ), # The header tag
-                          
-                          fluidRow(
-                            
-                            div(style = "display: inline-block, vertical-align:top;", 
-                            column(12,
-                             selectInput("designSs", "What research design is this for?", 
-                                        choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
-                                                       "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
-                                                       "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
-                                                       "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
-                                                       "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
-                                                       "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
-                                                       "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
-                                                       "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
-                                                       "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
-                                                       ),
-                                        selected = "d2.1_m2ff")     
-
-                            )) # selecting designs
-                            
-                          ), # picking the research design
-                        
-                          fluidRow(
-                            
-                            div(style = "display: inline-block, vertical-align:top;",
-                            column(12,
-                              numericInput("numOutcomesSs", "Number of outcomes", 
-                                           min = 1, 
-                                           max = 10, 
-                                           value = 5, 
-                                           step = 1)
-                              ) # number of Outcomes    
-                            ) # div
-                            
-                          ), # number of outcomes selection 
-                        
+                               ) # html bracket
+                             ) # css styling tag
+                           ), # The header tag
+                           
                            fluidRow(
                              
-                            column(12,
-                            uiOutput("nbar"))
-                            
-                           ), # Units per block and number of blocks
-                        
-                          fluidRow(
-                           
-                            column(12,
-                            uiOutput("j"))
+                             div(style = "display: inline-block, vertical-align:top;", 
+                                 column(12,
+                                        selectInput("designSs", "Research design & model", 
+                                                    choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
+                                                                   "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
+                                                                   "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
+                                                                   "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
+                                                                   "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
+                                                                   "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
+                                                                   "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
+                                                                   "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
+                                                                   "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
+                                                    ),
+                                                    selected = "d2.1_m2ff")     
+                                        
+                                 )) # selecting designs
                              
-                          ), # number of blocks                          
-                        
+                           ), # picking the research design
+                           
+                           fluidRow(
+                             
+                             div(style = "display: inline-block, vertical-align:top;",
+                                 column(12,
+                                        numericInput("numOutcomesSs", "Number of outcomes (M)", 
+                                                     min = 1, 
+                                                     max = 10, 
+                                                     value = 5, 
+                                                     step = 1)
+                                 ) # number of Outcomes    
+                             ) # div
+                             
+                           ), # number of outcomes selection 
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("nbar"))
+                             
+                           ), # Units per block and number of blocks
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("j"))
+                             
+                           ), # number of blocks
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("k"))
+                             
+                           ), # number of 3-Level units
+                           
+                           
                            # fluidRow(
                            #   
                            #   column(12,
                            #   uiOutput("numZero"))
                            #   
                            # ), # number of outcomes with no effects
-                          
-                           fluidRow(
-                             
-                            column(12,
-                            uiOutput("mtp"))
-                            
-                            ), # MTP shared by all designs
-                      
-                           fluidRow(
-                             
-                            column(12,
-                            uiOutput("mdes"))
-                            
-                           ), # Minimum Detectable Effect Size
-                        
+                           
                            fluidRow(
                              
                              column(12,
-                             uiOutput("powerValues"))
+                                    uiOutput("mtp"))
                              
-                           ), # power values
-                        
+                           ), # MTP shared by all designs
+                           
                            fluidRow(
                              
-                            column(12,
-                            uiOutput("rho"))
-                            
+                             column(12,
+                                    uiOutput("mdes"))
+                             
+                           ), # Minimum Detectable Effect Size
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("powerValues"))
+                             
+                           ), # power values
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("rho"))
+                             
                            ), # correlation between outcomes
                            
                            fluidRow(
                              
                              column(12,
-                             uiOutput("numCovar.1"))
+                                    uiOutput("numCovar.1"))
                              
                            ), # number of covariates in level 1
-                        
+                           
                            fluidRow(
                              
                              column(12,
-                             uiOutput("tbar"))
+                                    uiOutput("tbar"))
                              
                            ), # proportion of treatment assignment
-                        
+                           
                            fluidRow(
                              
                              column(12,
-                             uiOutput("alpha"))
+                                    uiOutput("alpha"))
                              
                            ), # alpha
-                        
+                           
                            fluidRow(
                              
                              column(12,
-                             uiOutput("r2.1"))
+                                    uiOutput("r2.1"))
                              
                            ), # Adding R2.1
-                        
-                           fluidRow(
-                          
-                              column(12,
-                                 uiOutput("r2.2"))
-                          
-                            ), # Adding R2.2
-                        
-                           fluidRow(
-                          
-                              column(12,
-                                 uiOutput("r2.3"))
-                              
-                           ), # Adding r2.3
-                        
-                           fluidRow(
-                              
-                              column(12,
-                              uiOutput("icc.2"))
-                              
-                           ), # Adding icc.2
-                          
-                          fluidRow(
-                          
-                              column(12,
-                              uiOutput("icc.3"))
-                          
-                          ), # Adding icc.3
-                        
+                           
                            fluidRow(
                              
                              column(12,
-                             uiOutput("omega.2"))
+                                    uiOutput("r2.2"))
+                             
+                           ), # Adding R2.2
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("r2.3"))
+                             
+                           ), # Adding r2.3
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("icc.2"))
+                             
+                           ), # Adding icc.2
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("icc.3"))
+                             
+                           ), # Adding icc.3
+                           
+                           fluidRow(
+                             
+                             column(12,
+                                    uiOutput("omega.2"))
                              
                            ), # Adding omega.2
-                        
+                           
                            fluidRow(
                              
                              column(12,
-                             uiOutput("omega.3"))
+                                    uiOutput("omega.3"))
                              
                            ), # Adding omega.3
-     
-                           fluidRow(
-                              
-                              column(6,
-                              actionButton("goButtonSs", "Go!")) 
-                            
-                           ) # Action Button to trigger other reactive values
-              ), # Power calculation sidebarPanel
-                                       
-              mainPanel(
-                          # Put some text here #
-                          fluidRow(
-                            
-                            column(12, 
-                                   align = "center",
-                                   offset = 2)
-                            
-                          ),
-                
-                            br(),    
-                            br(),
-                                         
+                           
                            fluidRow(
                              
-                              column(8, align = "center",
-                                        offset = 2,
-                                        plotlyOutput("powercalcGraphP2LBISS"))
-                              
-                            ), # end of Fluid Row
-                                         
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                              br(), # To create spaces between Table and Plots
-                                         
-                            fluidRow(
-                              
-                              column(12, align = "center",
-                                     DT::dataTableOutput("powercalcTableP2LBISS")) #The power calculation table output
-                              
-                            ) #fluidRow for first half of the page
-                                         
-            ) # Power calculation Main Panel
-          ) # Power Calculation sidebar Layout
-          
-    ) # Single Scenario Tab
-  
+                             column(6,
+                                    actionButton("goButtonSs", "Go!")) 
+                             
+                           ) # Action Button to trigger other reactive values
+                         ), # Power calculation sidebarPanel
+                         
+                         mainPanel(
+                           # Put some text here #
+                           fluidRow(
+                             
+                             column(12, 
+                                    align = "center",
+                                    offset = 2)
+                             
+                           ),
+                           
+                           br(),    
+                           br(),
+                           
+                           fluidRow(
+                             
+                             column(8, align = "center",
+                                    offset = 2,
+                                    plotlyOutput("powercalcGraphP2LBISS"))
+                             
+                           ), # end of Fluid Row
+                           
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           br(), # To create spaces between Table and Plots
+                           
+                           fluidRow(
+                             
+                             column(12, align = "center",
+                                    DT::dataTableOutput("powercalcTableP2LBISS")) #The power calculation table output
+                             
+                           ) #fluidRow for first half of the page
+                           
+                         ) # Power calculation Main Panel
+                       ) # Power Calculation sidebar Layout
+                       
+              ) # Single Scenario Tab
+              
   ) # End of main tabset Panel
 ) # end of Fluid Page
 
@@ -571,7 +579,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   ##########################################################
   # Get reactive expression for tab
   ##########################################################
-
+  
   # As it is a tab, I have to use observeEvent to see whose has actually clicked the Tab.
   
   whichTab <- reactiveValues()
@@ -583,14 +591,14 @@ server <- shinyServer(function(input, output, session = FALSE) {
       print("We are outputting explorer tab")
       whichTab$scenario<- "explorer_tab"
     } # Grabbing the home tab
-     
+    
     if(input$tabset == "single_scenario_tab"){
-
+      
       print("We are outputting single scenario tab")
       whichTab$scenario <- "single_scenario_tab"
     } # Grabbing the Single Explorer tab identity to be passed into function
-
-})
+    
+  })
   
   ##########################################################
   # Get reactive expression for single       #
@@ -624,7 +632,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       print("power")
       return(c("power"))
     }
-  
+    
     if(input$estimationSs == "mdes"){
       
       print("mdes")
@@ -642,7 +650,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   })
   
   getEstimationEx <- reactive({
-
+    
     if(input$estimationEx == "power"){
       
       print("power")
@@ -672,7 +680,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   getDesignSs <- reactive({
     
     if(input$designSs == "d1.1_m1c"){
-     
+      
       print("d1.1_m1c")
       return(c("d1.1_m1c"))
     }
@@ -687,7 +695,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       print("d2.1_m2ff")
       return(c("d2.1_m2ff"))}
-      
+    
     if(input$designSs == "d2.1_m2fr"){
       
       print("d2.1_m2fr")
@@ -719,7 +727,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       return(c("d3.2_m3rr2rc"))}
     
   }) # getDesignSs
-
+  
   getDesignEx <- reactive({
     
     if(input$designEx == "d1.1_m1c"){
@@ -776,17 +784,17 @@ server <- shinyServer(function(input, output, session = FALSE) {
   ###########################################################
   
   getVarVaryEx <- reactive({
-
+    
     theEstimation = as.character(getEstimationEx())
-
+    
     theDesign = as.character(getDesignEx())
-
+    
     theScenario = as.character(whichTab$scenario)
     
     theSampleType = as.character(getTypeOfSampleEx())
     
     id <- paste0(theEstimation, "_", "varVary", "_", theDesign, "_" , theScenario, "_", theSampleType)
-  
+    
     if(!is.null(input[[id]])){
       
       if(input[[id]] == "m"){
@@ -807,7 +815,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
         print(paste0("variable to vary is ", input[[id]]))
         return(c("j"))
-  
+        
       }
       
       if(input[[id]] == "numZero"){
@@ -823,7 +831,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         return(c("k"))
         
       }
-
+      
       if(input[[id]] == "mtp"){
         
         print(paste0("variable to vary is ", input[[id]]))  
@@ -930,19 +938,19 @@ server <- shinyServer(function(input, output, session = FALSE) {
   ###########################################################
   
   getTypeOfSampleEx <- reactive({
-
+    
     theEstimation = as.character(getEstimationEx())
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
-
+    
     id <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_" , theScenario)
-
+    
     if(theEstimation == "sample" && !is.null(input[[id]])){
       
       #req(input[[id]])
-    
+      
       if (input[[id]] == "nbar"){
-
+        
         return(c("nbar"))
         
       } else if (input[[id]] == "j"){
@@ -957,11 +965,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     } else if (theEstimation == "sample" && is.null(input[[id]])) {
       
-        return(c("nbar"))  
+      return(c("nbar"))  
       
     } else {
       
-        return(c("none"))
+      return(c("none"))
       
     }
     
@@ -988,9 +996,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     }
     
-      res <- c('indiv.mean', 'complete', paste('min', 1:(m-1), sep = ''))
-      names(res) <- c('Individual', 'Complete',  paste(1:(m-1),'minimal', sep = '-'))
-      
+    res <- c('indiv.mean', 'complete', paste('min', 1:(m-1), sep = ''))
+    names(res) <- c('Individual', 'Complete',  paste(1:(m-1),'minimal', sep = '-'))
+    
     return(res)
   }
   
@@ -1000,15 +1008,15 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theDesign = as.character(getDesignEx())
     theScenario = as.character(whichTab$scenario)
     theVarVary = as.character(getVarVaryEx())
-
+    
     mid <- paste0(theEstimation, "_" ,"m", "_", theDesign, "_" , theScenario, "_", theVarVary)
     numZeroid <- paste0(theEstimation, "_", "numZero", "_", theDesign, "_" , theScenario, "_", theVarVary)
     
-  
+    
     if(!is.null(input[[mid]]) & !is.null(input[[numZeroid]])){
-        M <- input[[mid]] %>% as.numeric()
-        numZero <- input[[numZeroid]] %>% as.numeric()
-        M <- abs(M - numZero)
+      M <- input[[mid]] %>% as.numeric()
+      numZero <- input[[numZeroid]] %>% as.numeric()
+      M <- abs(M - numZero)
     }else if(!is.null(input[[mid]])){
       M <- input[[mid]] %>% as.numeric()
       numZero <- 0
@@ -1017,20 +1025,20 @@ server <- shinyServer(function(input, output, session = FALSE) {
       numZero <- 0
     }
     print(M)
- 
-  
+    
+    
     if (is.null(M) | is.na(M) | M == 0){
-     return("")
+      return("")
     }else{
       print('-----computing function m----')
       print(function_m(M, numZero = numZero))
       print('---------')
       return(function_m(M, numZero = numZero))
     }
-
+    
   }) # end of Power Reactive reactive expression
   
-
+  
   
   ######################################################
   # Rendering Variable Objects to UI for chosen design #
@@ -1062,7 +1070,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       thePowerDefOptions = as.list(getPowerDefinition())
       div(style = "display: inline-block, vertical-align:top;", 
           powerDefinitionInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary,
-                                  selection = thePowerDefOptions))
+                                 selection = thePowerDefOptions))
     } else {
       
       thePowerDefOptions = as.list(c("Individual" = "indiv.mean","Complete" = "complete"))
@@ -1070,7 +1078,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
           powerDefinitionInputEx(estimation = theEstimation, design = theDesign , scenario = theScenario, varVary = theVarVary,
                                  selection = thePowerDefOptions))
     }
-  
+    
   }) # numOutcomeEx
   
   output$mEx <- renderUI({
@@ -1094,7 +1102,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         nbarInput(estimation = theEstimation, design = theDesign , scenario = theScenario))    
     
   }) # number of units per block
-
+  
   output$nbarEx <- renderUI({
     
     theEstimation = as.character(getEstimationEx())
@@ -1161,8 +1169,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       
     }
-      
-      
+    
+    
   }) # number of units per block
   
   output$typeOfSampleEx <- renderUI({
@@ -1183,10 +1191,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
     } else {
       
     }
-  
-  
+    
+    
   })
-
+  
   
   output$mtp <- renderUI({
     
@@ -1227,7 +1235,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     div(style = "display: inline-block, vertical-align:top;", 
         mInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
   }) # Number of Outcomes 
-
+  
   output$numZero <- renderUI({
     
     theEstimation = "power"
@@ -1253,7 +1261,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       
     }
-      
+    
   }) # Number of outcomes with zero effects
   
   output$mdes <- renderUI({
@@ -1306,9 +1314,9 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       
     }
-      
+    
   }) # power values
-
+  
   output$targetPowerEx <- renderUI({
     
     theEstimation = as.character(getEstimationEx())
@@ -1327,7 +1335,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }
     
   }) # power explorer
-    
+  
   output$rho <- renderUI({
     
     theEstimation = "power"
@@ -1335,7 +1343,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theScenario = as.character(whichTab$scenario)
     div(style = "display: inline-block, vertical-align:top:",
         rhoInput(estimation = theEstimation, design = theDesign, scenario = theScenario))
-        
+    
   }) # correlation between test statistics
   
   output$rhoEx <- renderUI({
@@ -1350,7 +1358,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   }) # correlation between test statistics
   
   output$numCovar.1 <- renderUI({
-  
+    
     theEstimation = "power"
     theDesign = as.character(getDesignSs())
     theScenario = as.character(whichTab$scenario)
@@ -1411,7 +1419,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         alphaInputEx(estimation = theEstimation, design = theDesign, scenario = theScenario, varVary = theVarVary))
     
   }) # Significance level (alpha)
-
+  
   output$r2.1 <- renderUI({
     
     theEstimation = "power"
@@ -1422,7 +1430,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
     div(style = "display: inline-block, vertical-align:top;", 
         r2.1Input(estimation = theEstimation, design = theDesign, scenario = theScenario, numOutcome = theNumOutcomes))
-  
+    
   }) # R2.1 element for chosen and required designs
   
   output$r2.1Ex <- renderUI({
@@ -1510,7 +1518,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       check = TRUE
     }
     
-
+    
     # output ui when check is true
     if(check){
       
@@ -1524,7 +1532,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }else{
       # leave blank otherwise
     }
-
+    
   }) # icc.2 element for chosen and required designs
   
   output$icc.2Ex <- renderUI({
@@ -1559,7 +1567,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   }) # icc.2 element for chosen and required designs
   
   output$omega.2 <- renderUI({
-  
+    
     req(input$designSs)    # requiring design input
     check = FALSE # checking default condition as fault
     
@@ -1639,7 +1647,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }else{
       # leave blank otherwise
     }
-
+    
   }) # R2.3 element for chosen and required designs
   
   output$r2.3Ex <- renderUI({
@@ -1673,7 +1681,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   }) # R2.3 element for chosen and required designs
   
   output$icc.3 <- renderUI({
-  
+    
     req(input$designSs)    # requiring design input
     check = FALSE # checking default condition as fault
     
@@ -1699,7 +1707,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }    
     
   }) # icc.3 element for chosen and required designs
-
+  
   output$icc.3Ex <- renderUI({
     
     req(input$designEx)    # requiring design input
@@ -1813,7 +1821,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }    
   }) # number of level-3 groups
   
-
+  
   output$kEx <- renderUI({
     
     req(input$designEx)    # requiring design input
@@ -1842,7 +1850,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       # leave blank otherwise
     }    
   }) # number of level-3 groups
-
+  
   observeEvent(input$goButtonSs,{
     
     # set a Reactive Value for Power Table
@@ -1875,7 +1883,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     # Generating Power Results for diffferent designs & mode of exploration    #
     ############################################################################
     
-
+    
     # Getting the research design that we have to estimate the statistical results for
     
     theEstimation = "power"
@@ -1904,7 +1912,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     icc.3_subset <- paste0(theEstimation, "_", "icc.3", "_", theDesign, "_", theScenario)
     k_subset <- paste0(theEstimation, "_", "k","_", theDesign, "_", theScenario)
     omega.3_subset <- paste0(theEstimation, "_", "omega.3", "_", theDesign, "_", theScenario)
-
+    
     # Pulling in values for all the designs
     design <- input[[design_subset]]
     nbar <- input[[nbar_subset]]
@@ -1940,7 +1948,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     } # r2.2
     
     if(design %in% c("d2.1_m2fc" , "d2.1_m2ff" , "d2.1_m2fr" , "d2.2_m2rc" , "d3.1_m3rr2rr" , "d3.3_m3rc2rc" , "d3.2_m3ff2rc" , "d3.2_m3rr2rc")){
-    
+      
       icc.2 <- input[[icc.2_subset]]
       
     } 
@@ -1975,32 +1983,32 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     }
     
-      dat <- as.data.frame(
-          isolate(pum::pump_power(design = design,
-                                  nbar = nbar, # The number of units per block
-                                  J = j, # The number of schools
-                                  #numZero = numZero,
-                                  K = k, # 3 level grouping variable count
-                                  MTP = as.character(unlist(strsplit(mtp, ","))),
-                                  M = m, # The number of hypotheses/outcomes
-                                  MDES = as.numeric(unlist(strsplit(mdes, ","))),
-                                  rho = rho,
-                                  numCovar.1 = numCovar.1,
-                                  Tbar = tbar, # The proportion of samples that are assigned to the treatment
-                                  alpha = alpha,
-                                  R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
-                                  R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
-                                  R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
-                                  ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
-                                  ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
-                                  omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
-                                  omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
-                                  tnum = 10000,
-                                  B = 100,
-                                  cl = NULL,
-                                  updateProgress = updateProgress)
-                  
-         )) #Power generation table
+    dat <- as.data.frame(
+      isolate(pum::pump_power(design = design,
+                              nbar = nbar, # The number of units per block
+                              J = j, # The number of schools
+                              #numZero = numZero,
+                              K = k, # 3 level grouping variable count
+                              MTP = as.character(unlist(strsplit(mtp, ","))),
+                              M = m, # The number of hypotheses/outcomes
+                              MDES = as.numeric(unlist(strsplit(mdes, ","))),
+                              rho = rho,
+                              numCovar.1 = numCovar.1,
+                              Tbar = tbar, # The proportion of samples that are assigned to the treatment
+                              alpha = alpha,
+                              R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+                              R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+                              R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+                              ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+                              ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+                              omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+                              omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+                              tnum = 10000,
+                              B = 100,
+                              cl = NULL,
+                              updateProgress = updateProgress)
+              
+      )) #Power generation table
     
     # Save the reactive Power Table
     reactPowerTable(dat)
@@ -2096,7 +2104,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   }) # observe Event go Button for power for Single Scenario
   
-
+  
   observeEvent(input$goButtonEx,{
     
     # set a Reactive Value for Power Table
@@ -2136,10 +2144,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
     theScenario = as.character(whichTab$scenario)
     theVarVary = as.character(getVarVaryEx())
     theTypeOfSample = as.character(getTypeOfSampleEx())
-
+    
     
     # set up to receive all the input parameters
-  
+    
     # Get string for input subsetting
     design_subset <- "designEx"
     m_subset <- paste0(theEstimation, "_", "m", "_", theDesign, "_", theScenario, "_", theVarVary)
@@ -2162,7 +2170,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     typeOfSample_subset <- paste0(theEstimation, "_", "typeOfSample", "_", theDesign, "_", theScenario)
     powerDefinition_subset <- paste0(theEstimation, "_", "powerDefinition", "_", theDesign, "_" , theScenario, "_", theVarVary)
     
-
+    
     # Pulling in values for all the designs
     design <- input[[design_subset]]
     numZero <- input[[numZero_subset]]
@@ -2183,7 +2191,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     icc.3 <- "0"
     k <- "1"
     omega.3 <- "0"
-
+    
     # parameters specific to each estimation
     if (theEstimation == "power"){
       
@@ -2218,7 +2226,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       j <- c("1")
       
     }
-  
+    
     if(design %in% c("d2.2_m2rc", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2m3rr2rc")){
       
       r2.2 <- input[[r2.2_subset]]
@@ -2262,68 +2270,16 @@ server <- shinyServer(function(input, output, session = FALSE) {
     }
     
     if (theEstimation == "power") {
-  
-          dat <- as.data.frame(
-          isolate(pum::pump_power_grid(design = design,
-                                  nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
-                                  J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
-                                  numZero = as.numeric(unlist(strsplit(numZero, ","))), # number of outcomes with zero effects
-                                  K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
-                                  MTP = as.character(unlist(strsplit(mtp, ","))),
-                                  M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
-                                  MDES = as.numeric(unlist(strsplit(mdes, ","))),
-                                  rho = as.numeric(unlist(strsplit(rho, ","))),
-                                  numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
-                                  Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
-                                  alpha = as.numeric(unlist(strsplit(alpha, ","))),
-                                  R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
-                                  R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
-                                  R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
-                                  ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
-                                  ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
-                                  omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
-                                  omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
-                                  long.table = TRUE,
-                                  tnum = 10000,
-                                  B = 100,
-                                  cl = NULL,
-                                  updateProgress = updateProgress)
-                  
-          )) #Power generation table
-          
-    # clean the data table names
-    dat <- janitor::clean_names(dat)
-
-    # Power definition key and value table
-    M <- as.numeric(m)
-    res <- c('mean individual', 'complete',  paste(1:(M-1),'minimum', sep = '-'))    
-    names(res) <- c('indiv.mean', 'complete', paste('min', 1:(M-1), sep = ''))
-    
-    # Pulling out the power definition of interest
-    def_power_subset <- input[[powerDefinition_subset]]
-    
-    # Pulling out the power definition of interest matched with what's in the output table
-    def_power_filter <- res[[def_power_subset]]
-    
-    # Pulling out only that power definition
-    dat <- 
-      dat %>% 
-        dplyr::filter(power %in% def_power_filter) %>%
-        dplyr::mutate(power = ifelse(power == "mean individual", "individual power", power))
-  
-  } # the estimation is power
-    
-    if (theEstimation == "mdes") {
       
       dat <- as.data.frame(
-        isolate(pum::pump_mdes_grid(design = design,
+        isolate(pum::pump_power_grid(design = design,
                                      nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
                                      J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
+                                     numZero = as.numeric(unlist(strsplit(numZero, ","))), # number of outcomes with zero effects
                                      K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
                                      MTP = as.character(unlist(strsplit(mtp, ","))),
                                      M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
-                                     target.power = as.numeric(unlist(strsplit(targetPower, ","))),
-                                     power.definition = powerDefinition,
+                                     MDES = as.numeric(unlist(strsplit(mdes, ","))),
                                      rho = as.numeric(unlist(strsplit(rho, ","))),
                                      numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
                                      Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
@@ -2335,12 +2291,64 @@ server <- shinyServer(function(input, output, session = FALSE) {
                                      ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
                                      omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
                                      omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
-                                     #long.table = TRUE,
-                                     tol = 0.01,
-                                     #tnum = 10000,
+                                     long.table = TRUE,
+                                     tnum = 10000,
                                      B = 100,
                                      cl = NULL,
                                      updateProgress = updateProgress)
+                
+        )) #Power generation table
+      
+      # clean the data table names
+      dat <- janitor::clean_names(dat)
+      
+      # Power definition key and value table
+      M <- as.numeric(m)
+      res <- c('mean individual', 'complete',  paste(1:(M-1),'minimum', sep = '-'))    
+      names(res) <- c('indiv.mean', 'complete', paste('min', 1:(M-1), sep = ''))
+      
+      # Pulling out the power definition of interest
+      def_power_subset <- input[[powerDefinition_subset]]
+      
+      # Pulling out the power definition of interest matched with what's in the output table
+      def_power_filter <- res[[def_power_subset]]
+      
+      # Pulling out only that power definition
+      dat <- 
+        dat %>% 
+        dplyr::filter(power %in% def_power_filter) %>%
+        dplyr::mutate(power = ifelse(power == "mean individual", "individual power", power))
+      
+    } # the estimation is power
+    
+    if (theEstimation == "mdes") {
+      
+      dat <- as.data.frame(
+        isolate(pum::pump_mdes_grid(design = design,
+                                    nbar = as.numeric(unlist(strsplit(nbar, ","))), # The number of units per block
+                                    J = as.numeric(unlist(strsplit(j, ","))), # The number of schools
+                                    K = as.numeric(unlist(strsplit(k, ","))), # 3 level grouping variable count
+                                    MTP = as.character(unlist(strsplit(mtp, ","))),
+                                    M = as.numeric(unlist(strsplit(m, ","))), # The number of hypotheses/outcomes
+                                    target.power = as.numeric(unlist(strsplit(targetPower, ","))),
+                                    power.definition = powerDefinition,
+                                    rho = as.numeric(unlist(strsplit(rho, ","))),
+                                    numCovar.1 = as.numeric(unlist(strsplit(numCovar.1, ","))),
+                                    Tbar = as.numeric(unlist(strsplit(tbar, ","))), # The proportion of samples that are assigned to the treatment
+                                    alpha = as.numeric(unlist(strsplit(alpha, ","))),
+                                    R2.1 = as.numeric(unlist(strsplit(r2.1, ","))),
+                                    R2.2 = as.numeric(unlist(strsplit(r2.2, ","))),
+                                    R2.3 = as.numeric(unlist(strsplit(r2.3, ","))), 
+                                    ICC.2 = as.numeric(unlist(strsplit(icc.2, ","))),
+                                    ICC.3 = as.numeric(unlist(strsplit(icc.3, ","))),
+                                    omega.2 = as.numeric(unlist(strsplit(omega.2, ","))),
+                                    omega.3 = as.numeric(unlist(strsplit(omega.3, ","))),
+                                    #long.table = TRUE,
+                                    tol = 0.01,
+                                    #tnum = 10000,
+                                    B = 100,
+                                    cl = NULL,
+                                    updateProgress = updateProgress)
                 
         )) #Power generation table
       
@@ -2352,7 +2360,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       dat <- dat %>%
         dplyr::mutate(power_definition = 
                         ifelse(power_definition == "indiv.mean", "individual power", power_definition))
-
+      
       
       # dat2 <- as.data.frame(
       #   isolate(pum::pump_mdes_grid(design = design,
@@ -2414,7 +2422,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
             tol = 0.01,
             updateProgress = updateProgress)
           
-          ))
+        ))
         
         # clean the data table names
         dat <- janitor::clean_names(dat)
@@ -2429,7 +2437,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
         
       } else if (design %in% c("d2.1_m2fc", "d2.1_m2ff", "d2.1_m2fr", "d2.2_m2rc") && typeOfSample == "nbar"){
-  
+        
         dat <- as.data.frame(isolate(
           pump_sample_grid(
             design = design,
@@ -2465,7 +2473,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         dat <- dat %>%
           dplyr::mutate(power_definition = ifelse(power_definition == "indiv.mean", "individual power", power_definition),
                         sample_size = round(sample_size))
-    
+        
       } else if (design %in% c("d2.1_m2fc", "d2.1_m2ff", "d2.1_m2fr", "d2.2_m2rc") && typeOfSample == "j") {
         
         if(typeOfSample == "j"){
@@ -2641,8 +2649,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
                         sample_size = round(sample_size))
         
       }
-        
-        
+      
+      
     }
     
     # matching the var vary names
@@ -2706,10 +2714,10 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       dat <- dat %>%
         dplyr::select(-mdes)
-    
+      
       dat <- dat[, c("design",theVarVary,"sample_type",
                      "sample_size","power_definition",powerColNames,mtpColNames)]
-
+      
       
     } else if (theEstimation == "sample" & theVarVary == "mdes"){
       
@@ -2753,18 +2761,18 @@ server <- shinyServer(function(input, output, session = FALSE) {
                       ))
         
       } else {
-      
-      DT::datatable(dat,
-                    extensions = 'Buttons',
-                    options = list(
-                      paging = TRUE,
-                      pageLength = 10,
-                      scrollY = TRUE,
-                      dom = 'Bfrtip',
-                      buttons = c('csv', 'excel')
-                    ))
-      }
         
+        DT::datatable(dat,
+                      extensions = 'Buttons',
+                      options = list(
+                        paging = TRUE,
+                        pageLength = 10,
+                        scrollY = TRUE,
+                        dom = 'Bfrtip',
+                        buttons = c('csv', 'excel')
+                      ))
+      }
+      
     })# Wrapping a reactive expression to a reactive table object for output view
     
     ############################
@@ -2772,7 +2780,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     ############################
     
     dat <- reactPowerTable()
-
+    
     # singleScenario2LevelBlockedDatLong <-
     #   dat %>%
     #   dplyr::select_all() %>%
@@ -2782,11 +2790,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
     #####################################
     # Preparing the data frame for Plot #
     #####################################
-
+    
     ## Setting up outcomes for Color gradient
-
+    
     ## Setting up outcomes for Color gradient
-
+    
     if(theEstimation == "power"){
       
       # # Grab the number of outcomes
@@ -2802,7 +2810,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       # 
       # # Add complete, individual, minimum and raw power colors
       # allcolors <- c("#90ee90", "#ADD8E6", mincolours, "mediumpurple")
-  
+      
       # Pulling the generated data table
       dat <- reactPowerTable()
       dat <- as.data.frame(dat)
@@ -2810,115 +2818,115 @@ server <- shinyServer(function(input, output, session = FALSE) {
       # Pulling out the variable that we are varying
       varVaryItem <- theVarVary 
       
-        # Adjusting the data table for graphing
-        withoutIndivPower <-
-          dat %>%
-          dplyr::select_all() %>%
-          dplyr::select(-design, -num_zero) %>%
-          dplyr::arrange(desc(power)) %>%
-          dplyr::rename(powerType = power) %>%
-          tidyr::pivot_longer(!c(varVaryItem,powerType), names_to = "mtp", values_to = "power") %>%
-          dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
-          dplyr::mutate(powerType = ifelse(mtp == "None",
-                                           "raw mean individual",
-                                           powerType))
-  
-        # converting Power Type to a factor for coloring
-        withoutIndivPower$powerType <- factor(withoutIndivPower$powerType)
-  
-        # converting data type for graphing purposes
-        withoutIndivPower <- withoutIndivPower %>%
-          dplyr::mutate(power = as.numeric(power),
-                        MTP = as.factor(mtp)) 
+      # Adjusting the data table for graphing
+      withoutIndivPower <-
+        dat %>%
+        dplyr::select_all() %>%
+        dplyr::select(-design, -num_zero) %>%
+        dplyr::arrange(desc(power)) %>%
+        dplyr::rename(powerType = power) %>%
+        tidyr::pivot_longer(!c(varVaryItem,powerType), names_to = "mtp", values_to = "power") %>%
+        dplyr::filter(!stringr::str_detect(powerType,"individual outcome")) %>%
+        dplyr::mutate(powerType = ifelse(mtp == "None",
+                                         "raw mean individual",
+                                         powerType))
+      
+      # converting Power Type to a factor for coloring
+      withoutIndivPower$powerType <- factor(withoutIndivPower$powerType)
+      
+      # converting data type for graphing purposes
+      withoutIndivPower <- withoutIndivPower %>%
+        dplyr::mutate(power = as.numeric(power),
+                      MTP = as.factor(mtp)) 
+      
+      # Converting to factor the variable that we are varying
+      withoutIndivPower[[1]] <- as.factor(withoutIndivPower[[1]])
+      
+      
+      # # pulling out Power Type Levels to match with all colors
+      # powerTypeLevels <- levels(withoutIndivPower$powerType)
+      # 
+      # # create value for scale color manual by matching color and Power Type
+      # allcolorsvalues <- setNames(allcolors, powerTypeLevels)
+      
+      # name of MTP
+      mtpname <- levels(as.factor(withoutIndivPower$mtp))[1]
+      powerType <- levels(as.factor(withoutIndivPower$powerType))[1]
+      
+      
+      if(powerType == "individual power"){
+        powerType <- "individual"
+      }
+      
+      # removing unadjusted power estimations
+      withoutIndivPower <- withoutIndivPower %>%
+        dplyr::filter(mtp != "none")
+      
+      ######################
+      # Plotting the graph #
+      ######################
+      
+      output$powercalcGraphP2LBIEX <- renderPlotly({
         
-        # Converting to factor the variable that we are varying
-        withoutIndivPower[[1]] <- as.factor(withoutIndivPower[[1]])
+        # Wrapping the ggplot with plotly
         
+        ##########
+        # Plotly + ggplot subtitle issue: https://stackoverflow.com/questions/55923256/how-do-i-keep-my-subtitles-when-i-use-ggplotly
+        ##########
         
-        # # pulling out Power Type Levels to match with all colors
-        # powerTypeLevels <- levels(withoutIndivPower$powerType)
-        # 
-        # # create value for scale color manual by matching color and Power Type
-        # allcolorsvalues <- setNames(allcolors, powerTypeLevels)
-  
-        # name of MTP
-        mtpname <- levels(as.factor(withoutIndivPower$mtp))[1]
-        powerType <- levels(as.factor(withoutIndivPower$powerType))[1]
+        pg <-
+          plotly::ggplotly(ggplot2::ggplot(
+            data = withoutIndivPower,
+            aes_string(x = varVaryItem,
+                       y = "power")) +
+              geom_point(size = 2) +
+              scale_y_continuous(limits = c(0,1)) +
+              ggtitle(paste0(mtpname, " adjusted ", powerType , " power"),
+                      subtitle = paste0("varying ", varVaryItem, " across all outcomes")) + # LM & KH: Subtitle is not showing up.
+              labs(x = paste0(varVaryItem, "(same across all outcomes)"),
+                   y = paste0(powerType, " power"),
+                   colour = "") +
+              theme_linedraw() +
+              theme(plot.title = element_text(size = 16,
+                                              face = "bold",
+                                              vjust = 1,
+                                              hjust = 0.5))
+          )
         
-
-        if(powerType == "individual power"){
-          powerType <- "individual"
-        }
+        # plotly adjustments for margin, centering and axis titles
         
-        # removing unadjusted power estimations
-        withoutIndivPower <- withoutIndivPower %>%
-          dplyr::filter(mtp != "none")
+        pg <- layout(pg,
+                     #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
+                     margin=list(t = 75),
+                     legend = list(x = 100,
+                                   orientation = "v",
+                                   xanchor = "center",
+                                   y = 0.5,
+                                   title = list(text = '<b> Power Type </b>')))
         
-        ######################
-        # Plotting the graph #
-        ######################
-  
-        output$powercalcGraphP2LBIEX <- renderPlotly({
-  
-          # Wrapping the ggplot with plotly
-          
-          ##########
-          # Plotly + ggplot subtitle issue: https://stackoverflow.com/questions/55923256/how-do-i-keep-my-subtitles-when-i-use-ggplotly
-          ##########
-          
-          pg <-
-            plotly::ggplotly(ggplot2::ggplot(
-              data = withoutIndivPower,
-              aes_string(x = varVaryItem,
-                  y = "power")) +
-                geom_point(size = 2) +
-                scale_y_continuous(limits = c(0,1)) +
-                ggtitle(paste0(mtpname, " adjusted ", powerType , " power"),
-                        subtitle = paste0("varying ", varVaryItem, " across all outcomes")) + # LM & KH: Subtitle is not showing up.
-                labs(x = paste0(varVaryItem, "(same across all outcomes)"),
-                     y = paste0(powerType, " power"),
-                     colour = "") +
-                theme_linedraw() +
-                theme(plot.title = element_text(size = 16,
-                                                face = "bold",
-                                                vjust = 1,
-                                                hjust = 0.5))
-            )
-  
-          # plotly adjustments for margin, centering and axis titles
-  
-          pg <- layout(pg,
-                       #title = "<b>Adjusted Power values across different \n Power Definitions & MDES values </b>",
-                       margin=list(t = 75),
-                       legend = list(x = 100,
-                                     orientation = "v",
-                                     xanchor = "center",
-                                     y = 0.5,
-                                     title = list(text = '<b> Power Type </b>')))
-  
-          # plotly configurations to suit ourpuposes
-  
-          pg %>%
-            config(displaylogo = FALSE,
-                   collaborate = FALSE,
-                   displayModeBar = TRUE,
-                   modeBarButtonsToRemove = list(
-                     'sendDataToCloud',
-                     'autoScale2d',
-                     'resetScale2d',
-                     'hoverClosestCartesian',
-                     'hoverCompareCartesian',
-                     'zoom2d',
-                     'pan2d',
-                     'select2d',
-                     'lasso2d',
-                     'zoomIn2d',
-                     'zoomOut2d',
-                     'toggleSpikelines'
-                   ))
-  
-        }) # ggplot for power graph
+        # plotly configurations to suit ourpuposes
         
+        pg %>%
+          config(displaylogo = FALSE,
+                 collaborate = FALSE,
+                 displayModeBar = TRUE,
+                 modeBarButtonsToRemove = list(
+                   'sendDataToCloud',
+                   'autoScale2d',
+                   'resetScale2d',
+                   'hoverClosestCartesian',
+                   'hoverCompareCartesian',
+                   'zoom2d',
+                   'pan2d',
+                   'select2d',
+                   'lasso2d',
+                   'zoomIn2d',
+                   'zoomOut2d',
+                   'toggleSpikelines'
+                 ))
+        
+      }) # ggplot for power graph
+      
     } else if (theEstimation == "mdes") {
       
       
@@ -2940,11 +2948,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       dat <- reactPowerTable()
       dat <- as.data.frame(dat)
-  
+      
       # Pulling out the variable that we are varying
       varVaryItem <- theVarVary
       mtpname <- dat[["mtp"]][1]
-
+      
       # Adjusting the data table for graphing
       withoutIndivPower <-
         dat %>%
@@ -2955,7 +2963,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
       withoutIndivPower <- withoutIndivPower %>%
         dplyr::mutate(adjusted_mdes = as.numeric(adjusted_mdes),
                       power_definition = as.factor(power_definition))
-
+      
       # Converting to factor the variable that we are varying
       withoutIndivPower[[varVaryItem]] <- as.factor(withoutIndivPower[[varVaryItem]])
       
@@ -2969,7 +2977,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         powerType <- "individual"
         
       }
-
+      
       # # pulling out Power Type Levels to match with all colors
       # powerTypeLevels <- levels(withoutIndivPower$power_type)
       # 
@@ -3069,7 +3077,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
         dat %>%
         dplyr::select_all() %>%
         dplyr::arrange(desc(sample_size))
-
+      
       # converting data type for graphing purposes
       withoutIndivPower <- withoutIndivPower %>%
         dplyr::mutate(sample_size = as.numeric(sample_size),
@@ -3157,8 +3165,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       
     }
-
-}) # server side call end
+    
+  }) # server side call end
   
 }) # end of server side
 

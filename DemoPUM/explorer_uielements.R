@@ -17,76 +17,40 @@ varVaryInputEx <- function(estimation, design, scenario, sampleType){
   print(paste0("I am in variable Input bar", design))
   id <- paste0(estimation, "_", "varVary", "_", design, "_" , scenario, "_", sampleType)
   
-   if(design == "d1.1_m1c" & estimation == "power") {
-
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Multiple testing procedure" = "mtp",
-                                "Minimum detectable effect size" = "mdes",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1"),
-                 selected = "rho") # select input buttons div
-
-   } else if(design == "d1.1_m1c" & estimation == "mdes"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Multiple testing procedure" = "mtp",
-                                "Target Power" = "targetPower",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1"),
-                 selected = "rho") # select input buttons div
-
-   } else if(design == "d2.1_m2fc" & estimation == "power") {
-
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Multiple testing procedure" = "mtp",
-                                "Minimum detectable effect size" = "mdes",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2"),
-                 selected = "rho") # select input buttons div
-
-   } else if(design == "d2.1_m2fc" & estimation == "mdes") {
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Multiple testing procedure" = "mtp",
-                                "Target Power" = "targetPower",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d2.1_m2ff" & estimation == "power"){
-
+  if(design == "d1.1_m1c" & estimation == "power") {
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Multiple testing procedure" = "mtp",
+                               "Minimum detectable effect size" = "mdes",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d1.1_m1c" & estimation == "mdes"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Multiple testing procedure" = "mtp",
+                               "Target Power" = "targetPower",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d2.1_m2fc" & estimation == "power") {
+    
     print(paste0("I am in this", design))
     selectInput(id, "Which variable would you like to vary?",
                 choices = list("Number of outcomes" = "m",
@@ -101,688 +65,724 @@ varVaryInputEx <- function(estimation, design, scenario, sampleType){
                                "alpha" = "alpha",
                                "r2.1" = "r2.1",
                                "icc.2" = "icc.2"),
-                 selected = "rho") # select input buttons div
+                selected = "rho") # select input buttons div
     
-   } else if(design == "d2.1_m2ff" & estimation == "mdes"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Multiple testing procedure" = "mtp",
-                                "Target Power" = "targetPower",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d2.1_m2fr" & estimation == "power"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Multiple testing procedure" = "mtp",
-                                "Minimum detectable effect size" = "mdes",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "omega.2" = "omega.2"),
-                 selected = "rho") # select input buttons div
-     
-   }else if(design == "d2.1_m2fr" & estimation == "mdes"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Multiple testing procedure" = "mtp",
-                                "Target Power" = "targetPower",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "omega.2" = "omega.2"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d3.1_m3rr2rr" & estimation == "power"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Number of level-3 groupings" = "k",
-                                "Multiple testing procedure" = "mtp",
-                                "Minimum detectable effect size" = "mdes",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "omega.2" = "omega.2",
-                                "icc.3" = "icc.3",
-                                "omega.3" = "omega.3"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d3.1_m3rr2rr" & estimation == "mdes"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Number of level-3 groupings" = "k",
-                                "Multiple testing procedure" = "mtp",
-                                "Target Power" = "targetPower",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "omega.2" = "omega.2",
-                                "icc.3" = "icc.3",
-                                "omega.3" = "omega.3"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d2.2_m2rc" & estimation == "power"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Multiple testing procedure" = "mtp",
-                                "Minimum detectable effect size" = "mdes",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "r2.2" = "r2.2"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d2.2_m2rc" & estimation == "mdes"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Multiple testing procedure" = "mtp",
-                                "Target Power" = "targetPower",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "r2.2" = "r2.2"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d3.3_m3rc2rc" & estimation == "power"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Number of level-3 groupings" = "k",
-                                "Multiple testing procedure" = "mtp",
-                                "Minimum detectable effect size" = "mdes",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "r2.2" = "r2.2",
-                                "r2.3" = "r2.3",
-                                "icc.3" = "icc.3"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d3.3_m3rc2rc" & estimation == "mdes"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Number of level-3 groupings" = "k",
-                                "Multiple testing procedure" = "mtp",
-                                "Target Power" = "targetPower",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "r2.2" = "r2.2",
-                                "r2.3" = "r2.3",
-                                "icc.3" = "icc.3"),
-                 selected = "rho") # select input buttons divelse if(design == "d3.2_m3ff2rc"){
-
-   } else if(design == "d3.2_m3ff2rc" & estimation == "power"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Number of level-3 groupings" = "k",
-                                "Multiple testing procedure" = "mtp",
-                                "Minimum detectable effect size" = "mdes",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "r2.2" = "r2.2",
-                                "icc.3" = "icc.3"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d3.2_m3ff2rc" & estimation == "mdes"){
-     
-     print(paste0("I am in this", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Number of level-3 groupings" = "k",
-                                "Multiple testing procedure" = "mtp",
-                                "Target Power" = "targetPower",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "r2.2" = "r2.2",
-                                "icc.3" = "icc.3"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d3.2_m3rr2rc" & estimation == "power"){
+  } else if(design == "d2.1_m2fc" & estimation == "mdes") {
     
-     print(paste0("I am in this ", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Number of level-3 groupings" = "k",
-                                "Multiple testing procedure" = "mtp",
-                                "Minimum detectable effect size" = "mdes",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "r2.2" = "r2.2",
-                                "icc.3" = "icc.3",
-                                "omega.3" = "omega.3"),
-                 selected = "rho") # select input buttons div
-     
-   } else if(design == "d3.2_m3rr2rc" & estimation == "mdes"){
-     
-     print(paste0("I am in this ", design))
-     selectInput(id, "Which variable would you like to vary?",
-                 choices = list("Number of outcomes" = "m",
-                                "Units per block" = "nbar",
-                                "Number of blocks" = "j",
-                                "Number of outcomes with no effects" = "numZero",
-                                "Number of level-3 groupings" = "k",
-                                "Multiple testing procedure" = "mtp",
-                                "Target Power" = "targetPower",
-                                "rho" = "rho",
-                                "numCovar.1" = "numCovar.1",
-                                "tbar" = "tbar",
-                                "alpha" = "alpha",
-                                "r2.1" = "r2.1",
-                                "icc.2" = "icc.2",
-                                "r2.2" = "r2.2",
-                                "icc.3" = "icc.3",
-                                "omega.3" = "omega.3"),
-                 selected = "rho") # select input buttons div
-     
-   } else if (estimation == "sample") {
-     
-     print("I am in sample side now")
-     # sampleType - nbar, j, k
-     
-
-     if(design == "d1.1_m1c" & sampleType == "nbar") {
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d2.1_m2fc" & sampleType == "nbar") {
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Number of blocks" = "j",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d2.1_m2fc" & sampleType == "j") {
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d2.1_m2ff" & sampleType == "nbar"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Number of blocks" = "j",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d2.1_m2ff" & sampleType == "j"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d2.1_m2fr" & sampleType == "nbar"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Number of blocks" = "j",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "omega.2" = "omega.2"),
-                   selected = "rho") # select input buttons div
-       
-     }else if(design == "d2.1_m2fr" & sampleType == "j"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "omega.2" = "omega.2"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.1_m3rr2rr" & sampleType == "nbar"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Number of blocks" = "j",
-                                  "Number of level-3 groupings" = "k",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "omega.2" = "omega.2",
-                                  "icc.3" = "icc.3",
-                                  "omega.3" = "omega.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.1_m3rr2rr" & sampleType == "j"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Number of level-3 groupings" = "k",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "omega.2" = "omega.2",
-                                  "icc.3" = "icc.3",
-                                  "omega.3" = "omega.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.1_m3rr2rr" & sampleType == "k"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Number of blocks" = "j",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "omega.2" = "omega.2",
-                                  "icc.3" = "icc.3",
-                                  "omega.3" = "omega.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d2.2_m2rc" & sampleType == "nbar"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Number of blocks" = "j",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d2.2_m2rc" & sampleType == "j"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.3_m3rc2rc" & sampleType == "nbar"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Number of blocks" = "j",
-                                  "Number of level-3 groupings" = "k",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2",
-                                  "r2.3" = "r2.3",
-                                  "icc.3" = "icc.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.3_m3rc2rc" & sampleType == "j"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Number of level-3 groupings" = "k",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2",
-                                  "r2.3" = "r2.3",
-                                  "icc.3" = "icc.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.3_m3rc2rc" & sampleType == "k"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Number of blocks" = "j",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2",
-                                  "r2.3" = "r2.3",
-                                  "icc.3" = "icc.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.2_m3ff2rc" & sampleType == "nbar"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Number of blocks" = "j",
-                                  "Number of level-3 groupings" = "k",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2",
-                                  "icc.3" = "icc.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.2_m3ff2rc" & sampleType == "j"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Number of level-3 groupings" = "k",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2",
-                                  "icc.3" = "icc.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.2_m3ff2rc" & sampleType == "k"){
-       
-       print(paste0("I am in this", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Number of blocks" = "j",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2",
-                                  "icc.3" = "icc.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.2_m3rr2rc" & sampleType == "nbar"){
-       
-       print(paste0("I am in this ", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Number of blocks" = "j",
-                                  "Number of level-3 groupings" = "k",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2",
-                                  "icc.3" = "icc.3",
-                                  "omega.3" = "omega.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.2_m3rr2rc" & sampleType == "j"){
-       
-       print(paste0("I am in this ", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Number of level-3 groupings" = "k",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2",
-                                  "icc.3" = "icc.3",
-                                  "omega.3" = "omega.3"),
-                   selected = "rho") # select input buttons div
-       
-     } else if(design == "d3.2_m3rr2rc" & sampleType == "k"){
-       
-       print(paste0("I am in this ", design))
-       selectInput(id, "Which variable would you like to vary?",
-                   choices = list("Number of outcomes" = "m",
-                                  "Units per block" = "nbar",
-                                  "Number of blocks" = "j",
-                                  "Multiple testing procedure" = "mtp",
-                                  "Minimum detectable effect size" = "mdes",
-                                  "Target Power" = "targetPower",
-                                  "rho" = "rho",
-                                  "numCovar.1" = "numCovar.1",
-                                  "tbar" = "tbar",
-                                  "alpha" = "alpha",
-                                  "r2.1" = "r2.1",
-                                  "icc.2" = "icc.2",
-                                  "r2.2" = "r2.2",
-                                  "icc.3" = "icc.3",
-                                  "omega.3" = "omega.3"),
-                   selected = "rho") # select input buttons div
-       
-     }
-     
-   }
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Multiple testing procedure" = "mtp",
+                               "Target Power" = "targetPower",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d2.1_m2ff" & estimation == "power"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Multiple testing procedure" = "mtp",
+                               "Minimum detectable effect size" = "mdes",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d2.1_m2ff" & estimation == "mdes"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Multiple testing procedure" = "mtp",
+                               "Target Power" = "targetPower",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d2.1_m2fr" & estimation == "power"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Multiple testing procedure" = "mtp",
+                               "Minimum detectable effect size" = "mdes",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "omega.2" = "omega.2"),
+                selected = "rho") # select input buttons div
+    
+  }else if(design == "d2.1_m2fr" & estimation == "mdes"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Multiple testing procedure" = "mtp",
+                               "Target Power" = "targetPower",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "omega.2" = "omega.2"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d3.1_m3rr2rr" & estimation == "power"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Number of level-3 groupings" = "k",
+                               "Multiple testing procedure" = "mtp",
+                               "Minimum detectable effect size" = "mdes",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "omega.2" = "omega.2",
+                               "icc.3" = "icc.3",
+                               "omega.3" = "omega.3"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d3.1_m3rr2rr" & estimation == "mdes"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Number of level-3 groupings" = "k",
+                               "Multiple testing procedure" = "mtp",
+                               "Target Power" = "targetPower",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "omega.2" = "omega.2",
+                               "icc.3" = "icc.3",
+                               "omega.3" = "omega.3"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d2.2_m2rc" & estimation == "power"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Multiple testing procedure" = "mtp",
+                               "Minimum detectable effect size" = "mdes",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "r2.2" = "r2.2"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d2.2_m2rc" & estimation == "mdes"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Multiple testing procedure" = "mtp",
+                               "Target Power" = "targetPower",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "r2.2" = "r2.2"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d3.3_m3rc2rc" & estimation == "power"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Number of level-3 groupings" = "k",
+                               "Multiple testing procedure" = "mtp",
+                               "Minimum detectable effect size" = "mdes",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "r2.2" = "r2.2",
+                               "r2.3" = "r2.3",
+                               "icc.3" = "icc.3"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d3.3_m3rc2rc" & estimation == "mdes"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Number of level-3 groupings" = "k",
+                               "Multiple testing procedure" = "mtp",
+                               "Target Power" = "targetPower",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "r2.2" = "r2.2",
+                               "r2.3" = "r2.3",
+                               "icc.3" = "icc.3"),
+                selected = "rho") # select input buttons divelse if(design == "d3.2_m3ff2rc"){
+    
+  } else if(design == "d3.2_m3ff2rc" & estimation == "power"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Number of level-3 groupings" = "k",
+                               "Multiple testing procedure" = "mtp",
+                               "Minimum detectable effect size" = "mdes",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "r2.2" = "r2.2",
+                               "icc.3" = "icc.3"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d3.2_m3ff2rc" & estimation == "mdes"){
+    
+    print(paste0("I am in this", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Number of level-3 groupings" = "k",
+                               "Multiple testing procedure" = "mtp",
+                               "Target Power" = "targetPower",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "r2.2" = "r2.2",
+                               "icc.3" = "icc.3"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d3.2_m3rr2rc" & estimation == "power"){
+    
+    print(paste0("I am in this ", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Number of level-3 groupings" = "k",
+                               "Multiple testing procedure" = "mtp",
+                               "Minimum detectable effect size" = "mdes",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "r2.2" = "r2.2",
+                               "icc.3" = "icc.3",
+                               "omega.3" = "omega.3"),
+                selected = "rho") # select input buttons div
+    
+  } else if(design == "d3.2_m3rr2rc" & estimation == "mdes"){
+    
+    print(paste0("I am in this ", design))
+    selectInput(id, "Which variable would you like to vary?",
+                choices = list("Number of outcomes" = "m",
+                               "Units per block" = "nbar",
+                               "Number of blocks" = "j",
+                               "Number of outcomes with no effects" = "numZero",
+                               "Number of level-3 groupings" = "k",
+                               "Multiple testing procedure" = "mtp",
+                               "Target Power" = "targetPower",
+                               "rho" = "rho",
+                               "numCovar.1" = "numCovar.1",
+                               "tbar" = "tbar",
+                               "alpha" = "alpha",
+                               "r2.1" = "r2.1",
+                               "icc.2" = "icc.2",
+                               "r2.2" = "r2.2",
+                               "icc.3" = "icc.3",
+                               "omega.3" = "omega.3"),
+                selected = "rho") # select input buttons div
+    
+  } else if (estimation == "sample") {
+    
+    print("I am in sample side now")
+    # sampleType - nbar, j, k
+    
+    
+    if(design == "d1.1_m1c" & sampleType == "nbar") {
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d2.1_m2fc" & sampleType == "nbar") {
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Number of blocks" = "j",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d2.1_m2fc" & sampleType == "j") {
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d2.1_m2ff" & sampleType == "nbar"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Number of blocks" = "j",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d2.1_m2ff" & sampleType == "j"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d2.1_m2fr" & sampleType == "nbar"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Number of blocks" = "j",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "omega.2" = "omega.2"),
+                  selected = "rho") # select input buttons div
+      
+    }else if(design == "d2.1_m2fr" & sampleType == "j"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "omega.2" = "omega.2"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.1_m3rr2rr" & sampleType == "nbar"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Number of blocks" = "j",
+                                 "Number of level-3 groupings" = "k",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "omega.2" = "omega.2",
+                                 "icc.3" = "icc.3",
+                                 "omega.3" = "omega.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.1_m3rr2rr" & sampleType == "j"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Number of level-3 groupings" = "k",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "omega.2" = "omega.2",
+                                 "icc.3" = "icc.3",
+                                 "omega.3" = "omega.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.1_m3rr2rr" & sampleType == "k"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Number of blocks" = "j",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "omega.2" = "omega.2",
+                                 "icc.3" = "icc.3",
+                                 "omega.3" = "omega.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d2.2_m2rc" & sampleType == "nbar"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Number of blocks" = "j",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d2.2_m2rc" & sampleType == "j"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.3_m3rc2rc" & sampleType == "nbar"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Number of blocks" = "j",
+                                 "Number of level-3 groupings" = "k",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2",
+                                 "r2.3" = "r2.3",
+                                 "icc.3" = "icc.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.3_m3rc2rc" & sampleType == "j"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Number of level-3 groupings" = "k",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2",
+                                 "r2.3" = "r2.3",
+                                 "icc.3" = "icc.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.3_m3rc2rc" & sampleType == "k"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Number of blocks" = "j",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2",
+                                 "r2.3" = "r2.3",
+                                 "icc.3" = "icc.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.2_m3ff2rc" & sampleType == "nbar"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Number of blocks" = "j",
+                                 "Number of level-3 groupings" = "k",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2",
+                                 "icc.3" = "icc.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.2_m3ff2rc" & sampleType == "j"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Number of level-3 groupings" = "k",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2",
+                                 "icc.3" = "icc.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.2_m3ff2rc" & sampleType == "k"){
+      
+      print(paste0("I am in this", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Number of blocks" = "j",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2",
+                                 "icc.3" = "icc.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.2_m3rr2rc" & sampleType == "nbar"){
+      
+      print(paste0("I am in this ", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Number of blocks" = "j",
+                                 "Number of level-3 groupings" = "k",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2",
+                                 "icc.3" = "icc.3",
+                                 "omega.3" = "omega.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.2_m3rr2rc" & sampleType == "j"){
+      
+      print(paste0("I am in this ", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Number of level-3 groupings" = "k",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2",
+                                 "icc.3" = "icc.3",
+                                 "omega.3" = "omega.3"),
+                  selected = "rho") # select input buttons div
+      
+    } else if(design == "d3.2_m3rr2rc" & sampleType == "k"){
+      
+      print(paste0("I am in this ", design))
+      selectInput(id, "Which variable would you like to vary?",
+                  choices = list("Number of outcomes" = "m",
+                                 "Units per block" = "nbar",
+                                 "Number of blocks" = "j",
+                                 "Multiple testing procedure" = "mtp",
+                                 "Minimum detectable effect size" = "mdes",
+                                 "Target Power" = "targetPower",
+                                 "rho" = "rho",
+                                 "numCovar.1" = "numCovar.1",
+                                 "tbar" = "tbar",
+                                 "alpha" = "alpha",
+                                 "r2.1" = "r2.1",
+                                 "icc.2" = "icc.2",
+                                 "r2.2" = "r2.2",
+                                 "icc.3" = "icc.3",
+                                 "omega.3" = "omega.3"),
+                  selected = "rho") # select input buttons div
+      
+    }
+    
+  }
 } # number of unit per block
 
 ############################
@@ -796,7 +796,7 @@ powerDefinitionInputEx <- function(estimation, design, scenario, varVary, select
   selectInput(id, "Select definition of power",
               choices = selection,
               selected = selection[[1]])
-
+  
 } # definition of power
 
 ############################
@@ -804,7 +804,7 @@ powerDefinitionInputEx <- function(estimation, design, scenario, varVary, select
 ############################
 
 nbarInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
-
+  
   id <- paste0(estimation, "_", "nbar", "_", design, "_" , scenario, "_", varVary)
   
   if(estimation == "power" | estimation == "mdes"){
@@ -813,12 +813,12 @@ nbarInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
       
       if(TRUE){
         
-        text_val <- HTML(paste("Number of units per block",
+        text_val <- HTML(paste("Number of units at Level-1 (n bar)",
                                "<span style=\"color:red\"> (Input multiple values) </span>"))
         
       } else {
         
-        text_val <- HTML(paste("Number of units per block"))
+        text_val <- HTML(paste("Number of units at Level-1 (n bar)"))
         
       }
       
@@ -835,14 +835,14 @@ nbarInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
       defaultnbarvalues <- paste0(c(20))
       
       textInput(id,
-                "Number of units per block (Input a single value)", 
+                "Number of units at Level-1 (n bar) (Input a single value)", 
                 value = defaultnbarvalues)
     }
     
   } else if (estimation == "sample"){
     
     if(typeOfSample == "nbar"){
-    
+      
       
     } else {
       
@@ -850,12 +850,12 @@ nbarInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
         
         if(TRUE){
           
-          text_val <- HTML(paste("Number of units per block",
+          text_val <- HTML(paste("Number of units at Level-1 (n bar)",
                                  "<span style=\"color:red\"> (Input multiple values) </span>"))
           
         } else {
           
-          text_val <- HTML(paste("Number of units per block"))
+          text_val <- HTML(paste("Number of units at Level-1 (n bar)"))
           
         }
         
@@ -872,14 +872,14 @@ nbarInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
         defaultnbarvalues <- paste0(c(20))
         
         textInput(id,
-                  "Number of units per block (Input a single value)", 
+                  "Number of units at Level-1 (n bar) (Input a single value)", 
                   value = defaultnbarvalues)
       }
       
     }
     
   }
-    
+  
 } # number of unit per block
 
 ########################################################
@@ -923,18 +923,18 @@ numZeroInputEx <- function(estimation, design, scenario, varVary){
 ############################
 
 jInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
-
+  
   id <- paste0(estimation, "_", "j", "_", design, "_" , scenario, "_", varVary)
-   
+  
   if (estimation == "power" | estimation == "mdes") { 
     
     if(varVary == "j"){
       
       if(TRUE){
-        text_val <- HTML(paste("Number of blocks",
+        text_val <- HTML(paste("Number of groups at Level-2 (J)",
                                "<span style=\"color:red\"> (Input multiple values) </span>"))
       }else{
-        text_val <- HTML(paste("Number of blocks"))
+        text_val <- HTML(paste("Number of groups at Level-2 (J)"))
       }
       
       # default mdes values whose count of number will change depending on number of outcomes
@@ -947,10 +947,10 @@ jInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
       
       defaultjvalues <- paste0(c(50))
       textInput(id,
-                "Number of blocks (Input a single value)", 
+                "Number of groups at Level-2 (J) (Input a single value)", 
                 value = defaultjvalues)
     }
-  
+    
   } else if (estimation == "sample"){
     
     if(typeOfSample == "j"){
@@ -961,10 +961,10 @@ jInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
       if(varVary == "j"){
         
         if(TRUE){
-          text_val <- HTML(paste("Number of blocks",
+          text_val <- HTML(paste("Number of groups at Level-2 (J)",
                                  "<span style=\"color:red\"> (Input multiple values) </span>"))
         }else{
-          text_val <- HTML(paste("Number of blocks"))
+          text_val <- HTML(paste("Number of groups at Level-2 (J)"))
         }
         
         # default mdes values whose count of number will change depending on number of outcomes
@@ -977,7 +977,7 @@ jInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
         
         defaultjvalues <- paste0(c(50))
         textInput(id,
-                  "Number of blocks (Input a single value)", 
+                  "Number of groups at Level-2 (J) (Input a single value)", 
                   value = defaultjvalues)
       }
       
@@ -985,7 +985,7 @@ jInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
     
   }
   
-    
+  
 } # number of unit per block
 
 #########################
@@ -994,34 +994,34 @@ jInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
 
 mInputEx <- function(estimation, design, scenario, varVary){
   
-    id <- paste0(estimation, "_" ,"m", "_", design, "_" , scenario, "_", varVary)
+  id <- paste0(estimation, "_" ,"m", "_", design, "_" , scenario, "_", varVary)
+  
+  if(varVary == "m"){
     
-    if(varVary == "m"){
-      
-      if(TRUE){
-        text_val <- HTML(paste("Number of Outcomes",
-                               "<span style=\"color:red\"> (Input multiple values) </span>"))
-      }else{
-        text_val <- HTML(paste("Number of Outcomes"))
-      }
-      
-      # default m values
-      defaultmvalues <- paste0(c(5, 10), collapse = ",")
-      
-        textInput(id, 
-                  text_val, 
-                  value = defaultmvalues)
-      
-    } else{
-      
-      # default m values
-      defaultmvalues <- paste0(c(5))
-
-      textInput(id, 
-                "Number of Outcomes (Input a single value)", 
-                value = defaultmvalues)
+    if(TRUE){
+      text_val <- HTML(paste("Number of Outcomes (M)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    }else{
+      text_val <- HTML(paste("Number of Outcomes (M)"))
     }
-
+    
+    # default m values
+    defaultmvalues <- paste0(c(5, 10), collapse = ",")
+    
+    textInput(id, 
+              text_val, 
+              value = defaultmvalues)
+    
+  } else{
+    
+    # default m values
+    defaultmvalues <- paste0(c(5))
+    
+    textInput(id, 
+              "Number of Outcomes (M) (Input a single value)", 
+              value = defaultmvalues)
+  }
+  
 } # Number of Outcomes (M)
 
 #########################
@@ -1032,32 +1032,32 @@ targetPowerInputEx <- function(estimation, design, scenario, numOutcome, varVary
   
   id <- paste0(estimation, "_" ,"targetPower", "_", design, "_" , scenario, "_", varVary)
   
-    if(varVary == "targetPower"){
-      
-      if(TRUE){
-        text_val <- HTML(paste("Target Power Values",
-                               "<span style=\"color:red\"> (Input multiple values) </span>"))
-      }else{
-        text_val <- HTML(paste("Target Power Values"))
-      }
-      
-      # default m values
-      defaulttargetpowervalues <- paste0(c(0.75, 0.8), collapse = ",")
-      
-      textInput(id, 
-                text_val, 
-                value = defaulttargetpowervalues)
-      
-    } else{
-      
-      # default m values
-      defaulttargetpowervalues <- paste0(c(0.8))
-      
-      textInput(id, 
-                "Target Power Values (Input a single value)", 
-                value = defaulttargetpowervalues)
+  if(varVary == "targetPower"){
+    
+    if(TRUE){
+      text_val <- HTML(paste("Target Power Values",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
+    }else{
+      text_val <- HTML(paste("Target Power Values"))
     }
-
+    
+    # default m values
+    defaulttargetpowervalues <- paste0(c(0.75, 0.8), collapse = ",")
+    
+    textInput(id, 
+              text_val, 
+              value = defaulttargetpowervalues)
+    
+  } else{
+    
+    # default m values
+    defaulttargetpowervalues <- paste0(c(0.8))
+    
+    textInput(id, 
+              "Target Power Values (Input a single value)", 
+              value = defaulttargetpowervalues)
+  }
+  
 } # Number of Outcomes (M)
 
 ############################
@@ -1070,48 +1070,48 @@ typeOfSampleInputEx <- function(estimation, design, scenario, input){
   
   # if the estimation is sample
   
-    if (design %in% c("d1.1_m1c")) {  
-      print(paste0("I am in this", design))
-      selectInput(id, "Sample type?",
-                  choices = list("Units per block" = "nbar"),
+  if (design %in% c("d1.1_m1c")) {  
+    print(paste0("I am in this", design))
+    selectInput(id, "Sample type?",
+                choices = list("Units per block" = "nbar"),
+                selected = "nbar")
+    
+  } else if (design %in% c("d2.1_m2fc", "d2.1_m2ff","d2.1_m2fr","d2.2_m2rc","d2.2_m2rc")){
+    
+    print(paste0("I am in this", design))
+    if(is.null((input[[id]]))){
+      selectInput(id, "Sample type",
+                  choices = list("Units per block" = "nbar",
+                                 "Number of blocks" = "j"),
                   selected = "nbar")
-      
-    } else if (design %in% c("d2.1_m2fc", "d2.1_m2ff","d2.1_m2fr","d2.2_m2rc","d2.2_m2rc")){
-
-      print(paste0("I am in this", design))
-      if(is.null((input[[id]]))){
-        selectInput(id, "Sample type",
-                    choices = list("Units per block" = "nbar",
-                                   "Number of blocks" = "j"),
-                    selected = "nbar")
-      }else{
-        selectInput(id, "Sample type",
-                    choices = list("Units per block" = "nbar",
-                                   "Number of blocks" = "j"),
-                    selected = input[[id]])
-      }
-      
+    }else{
+      selectInput(id, "Sample type",
+                  choices = list("Units per block" = "nbar",
+                                 "Number of blocks" = "j"),
+                  selected = input[[id]])
+    }
     
-    } else {
- 
-      print(paste0("I am in this", design))
-      
-      if(is.null((input[[id]]))){
-        selectInput(id, "Sample type",
-                    choices = list("Units per block" = "nbar",
-                                   "Number of blocks" = "j",
-                                   "Number of 3-level groupings" = "k"),
-                    selected = "nbar")
-      }else{
-        selectInput(id, "Sample type",
-                    choices = list("Units per block" = "nbar",
-                                   "Number of blocks" = "j",
-                                   "Number of 3-level groupings" = "k"),
-                    selected = input[[id]])
-      }
-     
-    } 
     
+  } else {
+    
+    print(paste0("I am in this", design))
+    
+    if(is.null((input[[id]]))){
+      selectInput(id, "Sample type",
+                  choices = list("Units per block" = "nbar",
+                                 "Number of blocks" = "j",
+                                 "Number of 3-level groupings" = "k"),
+                  selected = "nbar")
+    }else{
+      selectInput(id, "Sample type",
+                  choices = list("Units per block" = "nbar",
+                                 "Number of blocks" = "j",
+                                 "Number of 3-level groupings" = "k"),
+                  selected = input[[id]])
+    }
+    
+  } 
+  
   
 }
 
@@ -1138,23 +1138,23 @@ mtpInputEx <- function(estimation, design, scenario, varVary){
     
     selectInput(id, text_val, 
                 choices = list("Bonferroni" = "Bonferroni", 
-                                "Holm" = "Holm", 
-                                "Benjamini-Hochberg" = "BH", 
-                                "Westfall-Young-Single-Step" = "WY-SS", 
-                                "Westfall-Young-Step-Down" = "WY-SD"),
+                               "Holm" = "Holm", 
+                               "Benjamini-Hochberg" = "BH", 
+                               "Westfall-Young-Single-Step" = "WY-SS", 
+                               "Westfall-Young-Step-Down" = "WY-SD"),
                 selected = c("Bonferroni", "Holm"),
                 multiple = TRUE) # select input buttons div
-} else {
+  } else {
     
-  selectInput(id, "Multiple testing procedure (MTP) (Input only one value)", 
-              choices = list("Bonferroni" = "Bonferroni", 
-                             "Holm" = "Holm", 
-                             "Benjamini-Hochberg" = "BH", 
-                             "Westfall-Young-Single-Step" = "WY-SS", 
-                             "Westfall-Young-Step-Down" = "WY-SD"),
-              selected = "Bonferroni",
-              multiple = TRUE) # select input buttons div
-  
+    selectInput(id, "Multiple testing procedure (MTP) (Input only one value)", 
+                choices = list("Bonferroni" = "Bonferroni", 
+                               "Holm" = "Holm", 
+                               "Benjamini-Hochberg" = "BH", 
+                               "Westfall-Young-Single-Step" = "WY-SS", 
+                               "Westfall-Young-Step-Down" = "WY-SD"),
+                selected = "Bonferroni",
+                multiple = TRUE) # select input buttons div
+    
   } # end of else
 }
 
@@ -1188,49 +1188,49 @@ mtpPopOverEx <- function(estimation, design, scenario, varVary){
 #########################
 
 mdesInputEx <- function(estimation, design, scenario, numOutcome, varVary){
-
-    if(varVary == "mdes") {
-      
-      if(TRUE){
-        text_val <- HTML(paste("Minimum detectable effect size (MDES)",
-                               "<span style=\"color:red\"> (Input multiple values) </span>"))
-      } else {
-        text_val <- HTML(paste("Minimum detectable effect size (MDES)"))
-      }
-      
-      # if initial values are not set yet, set it at 5.  
-      if(length(numOutcome) == 0){
-        
-        numOutcome <- 5
-        
-      } # set default value to numOutcome
-      
-      # default mdes values whose count of number will change depending on number of outcomes
-      defaultmdesvalues <- paste0(c(0.125, 0.2), collapse = ",")
-      
-      id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
-      
-      textInput(id, 
-               text_val, 
-               value = defaultmdesvalues)
+  
+  if(varVary == "mdes") {
+    
+    if(TRUE){
+      text_val <- HTML(paste("Minimum detectable effect size (MDES)",
+                             "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      
-      if(length(numOutcome) == 0){
-        
-        numOutcome <- 5
-        
-      } # set default value to numOutcome
-      
-      # default mdes values whose count of number will change depending on number of outcomes
-      defaultmdesvalues <- paste0(rep(0.125, times = 1), collapse = ",")
-      
-      id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
-      
-      textInput(id, 
-                "Minimum detectable effect size (MDES) (Input a single value)", 
-                value = defaultmdesvalues)
+      text_val <- HTML(paste("Minimum detectable effect size (MDES)"))
     }
-
+    
+    # if initial values are not set yet, set it at 5.  
+    if(length(numOutcome) == 0){
+      
+      numOutcome <- 5
+      
+    } # set default value to numOutcome
+    
+    # default mdes values whose count of number will change depending on number of outcomes
+    defaultmdesvalues <- paste0(c(0.125, 0.2), collapse = ",")
+    
+    id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
+    
+    textInput(id, 
+              text_val, 
+              value = defaultmdesvalues)
+  } else {
+    
+    if(length(numOutcome) == 0){
+      
+      numOutcome <- 5
+      
+    } # set default value to numOutcome
+    
+    # default mdes values whose count of number will change depending on number of outcomes
+    defaultmdesvalues <- paste0(rep(0.125, times = 1), collapse = ",")
+    
+    id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario, "_", varVary)
+    
+    textInput(id, 
+              "Minimum detectable effect sizes (MDES) (Input a single value)", 
+              value = defaultmdesvalues)
+  }
+  
 } # mdesInput
 
 ##################################################################################
@@ -1242,10 +1242,10 @@ rhoInputEx <- function(estimation, design, scenario, varVary){
   if(varVary == "rho"){
     
     if(TRUE){
-      text_val <- HTML(paste("Correlation between test statistics",
+      text_val <- HTML(paste("Correlation between test statistics (rho)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     }else{
-      text_val <- HTML(paste("Correlation between test statistics"))
+      text_val <- HTML(paste("Correlation between test statistics (rho)"))
     }
     
     # default rho values whose count of number will change depending on number of outcomes
@@ -1263,10 +1263,10 @@ rhoInputEx <- function(estimation, design, scenario, varVary){
     
     id <- paste0(estimation, "_", "rho", "_", design, "_" , scenario, "_" , varVary)
     textInput(id, 
-              "Correlation between test statistics (Input a single value)",
+              "Correlation between test statistics (rho) (Input a single value)",
               value = defaultrhovalues)
   }
-    
+  
 } # rhoInput
 
 ##################################################################################
@@ -1278,10 +1278,10 @@ numCovar.1InputEx <- function(estimation, design, scenario, varVary){
   if (varVary == "numCovar.1"){
     
     if(TRUE){
-      text_val <- HTML(paste("Number of level 1 covariates",
+      text_val <- HTML(paste("Number of Level-1 covariates (g1,m)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      text_val <- HTML(paste("Number of level 1 covariates"))
+      text_val <- HTML(paste("Number of Level-1 covariates (g1,m)"))
     }
     
     # default numCovariate 1 values values whose count of number will change depending on number of outcomes
@@ -1298,14 +1298,14 @@ numCovar.1InputEx <- function(estimation, design, scenario, varVary){
     
     id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario, "_", varVary)
     textInput(id, 
-              "Number of level 1 covariates (Input a single value)", 
+              "Number of level 1 covariates (g1,m) (Input a single value)", 
               value = defaultnumCovar.1values)
   }
-    
+  
 } # number of level 1 covariates
 
 ##################################################################################
-# Proportion of treatment assignment
+# Proportions of treatment assignment
 ##################################################################################
 
 tbarInputEx <- function(estimation, design, scenario, varVary){
@@ -1313,10 +1313,10 @@ tbarInputEx <- function(estimation, design, scenario, varVary){
   if (varVary == "tbar") {
     
     if(TRUE){
-      text_val <- HTML(paste("Proportion of treatment assignment",
+      text_val <- HTML(paste("Proportions of treatment assignment (T bar)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      text_val <- HTML(paste("Proportion of treatment assignment"))
+      text_val <- HTML(paste("Proportions of treatment assignment (T bar)"))
     }
     
     # default numCovariate 1 values values whose count of number will change depending on number of outcomes
@@ -1324,8 +1324,8 @@ tbarInputEx <- function(estimation, design, scenario, varVary){
     
     id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-                 text_val, 
-                 value = defaulttbarvalues)
+              text_val, 
+              value = defaulttbarvalues)
   } else {
     
     # default numCovariate 1 values values whose count of number will change depending on number of outcomes
@@ -1333,10 +1333,10 @@ tbarInputEx <- function(estimation, design, scenario, varVary){
     
     id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Proportion of treatment assignment (Input a single value)",
+              "Proportions of treatment assignment (T bar) (Input a single value)",
               value = defaulttbarvalues)
   }
-    
+  
 } # tbarInput
 
 ##################################################################################
@@ -1344,7 +1344,7 @@ tbarInputEx <- function(estimation, design, scenario, varVary){
 ##################################################################################
 
 alphaInputEx <- function(estimation, design, scenario, varVary) {
-
+  
   if (varVary == "alpha"){
     
     if(TRUE){
@@ -1360,8 +1360,8 @@ alphaInputEx <- function(estimation, design, scenario, varVary) {
     defaultalphavalues <- paste0(c(0.125, 0.2), collapse = ",")
     
     textInput(id, 
-                text_val, 
-                value = defaultalphavalues)
+              text_val, 
+              value = defaultalphavalues)
   } else {
     
     id <- paste0(estimation, "_", "alpha", "_", design, "_", scenario, "_", varVary)
@@ -1370,10 +1370,10 @@ alphaInputEx <- function(estimation, design, scenario, varVary) {
     defaultalphavalues <- paste0(c(0.125), collapse = ",")
     
     textInput(id, 
-                 "Significance level (alpha) (Input a single value)", 
-                 value = defaultalphavalues)
+              "Significance level (alpha) (Input a single value)", 
+              value = defaultalphavalues)
   }
-    
+  
 } #alpha
 
 #########################
@@ -1385,10 +1385,10 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   if (varVary == "r2.1") {
     
     if(TRUE){
-      text_val <- HTML(paste("Proportion of variance explained by level-1 covariates (R2.1)",
+      text_val <- HTML(paste("Proportions of variance explained by Level-1 covariates (R2.1)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      text_val <- HTML(paste("Proportion of variance explained by level-1 covariates (R2.1)"))
+      text_val <- HTML(paste("Proportions of variance explained by Level-1 covariates (R2.1)"))
     }
     
     if(length(numOutcome) == 0){
@@ -1401,7 +1401,7 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     defaultr2.1values <- paste0(c(0.2, 0.3), collapse = ",")
     
     id <- paste0(estimation, "_", "r2.1", "_", design, "_" , scenario, "_", varVary)
-  
+    
     textInput(id, 
               text_val, 
               value = defaultr2.1values)
@@ -1421,7 +1421,7 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "r2.1", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-              "Proportion of variance explained by level-1 covariates (R2.1) (Input a single value)", 
+              "Proportions of variance explained by Level-1 covariates (R2.1) (Input a single value)", 
               value = defaultr2.1values)
   }
   
@@ -1434,14 +1434,14 @@ r2.1InputEx <- function(estimation, design, scenario, numOutcome, varVary){
 r2.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   
   if(varVary == "r2.2"){
-
+    
     print("I am in R2.2. R2.2 is triggered")
     
     if(TRUE){
-      text_val <- HTML(paste("Proportion of variance explained by level-2 covariates (R2.2)",
+      text_val <- HTML(paste("Proportions of variance explained by Level-2 covariates (R2.2)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      text_val <- HTML(paste("Proportion of variance explained by level-2 covariates (R2.2)"))
+      text_val <- HTML(paste("Proportions of variance explained by Level-2 covariates (R2.2)"))
     }
     
     if(length(numOutcome) == 0){
@@ -1475,11 +1475,11 @@ r2.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "r2.2", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-              "Proportion of variance explained by level-2 covariates (R2.2) (Input a single value)", 
+              "Proportions of variance explained by Level-2 covariates (R2.2) (Input a single value)", 
               value = defaultr2.2values)
     
   }
-    
+  
 } # R2.2 Input
 
 #########################
@@ -1492,10 +1492,10 @@ icc.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     # if initial values are not set yet, set it at 5.  
     
     if(TRUE){
-      text_val <- HTML(paste("Intraclass correlation between level-2 covariates of each outcome (ICC.2)",
+      text_val <- HTML(paste("Intraclass correlation between Level-2 covariates of each outcome (ICC.2)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      text_val <- HTML(paste("Intraclass correlation between level-2 covariates of each outcome (ICC.2)"))
+      text_val <- HTML(paste("Intraclass correlation between Level-2 covariates of each outcome (ICC.2)"))
     }
     
     if(length(numOutcome) == 0){
@@ -1525,7 +1525,7 @@ icc.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "icc.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Intraclass correlation between level-2 covariates of each outcome (ICC.2) (Input a single value)", 
+              "Intraclass correlation between Level-2 covariates of each outcome (ICC.2) (Input a single value)", 
               value = defaulticc.2values)
   }
   
@@ -1540,10 +1540,10 @@ omega.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
   if(varVary =="omega.2"){
     
     if(TRUE){
-      text_val <- HTML(paste("Ratio of level-2 group covariate effect size variability to random effects variability (omega.2)",
+      text_val <- HTML(paste("Ratios of Level-2 group covariate effect size variability to random effects variability (omega.2)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      text_val <- HTML(paste("Ratio of level-2 group covariate effect size variability to random effects variability (omega.2)"))
+      text_val <- HTML(paste("Ratios of Level-2 group covariate effect size variability to random effects variability (omega.2)"))
     }
     
     # if initial values are not set yet, set it at 5.  
@@ -1575,7 +1575,7 @@ omega.2InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "omega.2", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Ratio of level-2 group covariate effect size variability to random effects variability (omega.2) (Input a single value)", 
+              "Ratios of Level-2 group covariate effect size variability to random effects variability (omega.2) (Input a single value)", 
               value = defaultomega.2values)
   }
   
@@ -1592,10 +1592,10 @@ r2.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     # if initial values are not set yet, set it at 5.  
     
     if(TRUE){
-      text_val <- HTML(paste("Proportion of variance explained by level-3 covariates (R2.3)",
+      text_val <- HTML(paste("Proportions of variance explained by Level-3 covariates (R2.3)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      text_val <- HTML(paste("Proportion of variance explained by level-3 covariates (R2.3)"))
+      text_val <- HTML(paste("Proportions of variance explained by Level-3 covariates (R2.3)"))
     }
     
     if(length(numOutcome) == 0){
@@ -1629,7 +1629,7 @@ r2.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     id <- paste0(estimation, "_", "r2.3", "_", design, "_" , scenario, "_", varVary)
     
     textInput(id, 
-              "Proportion of variance explained by level-3 covariates (R2.3) (Input a single value)", 
+              "Proportions of variance explained by Level-3 covariates (R2.3) (Input a single value)", 
               value = defaultr2.3values)
   }
 } # R2.3 Input
@@ -1644,12 +1644,12 @@ icc.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     # if initial values are not set yet, set it at 5.
     
     if(TRUE){
-      text_val <- HTML(paste("Intraclass correlation between level-3 covariates of each outcome (ICC.3)",
+      text_val <- HTML(paste("Intraclass correlation between Level-3 covariates of each outcome (ICC.3)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      text_val <- HTML(paste("Intraclass correlation between level-3 covariates of each outcome (ICC.3)"))
+      text_val <- HTML(paste("Intraclass correlation between Level-3 covariates of each outcome (ICC.3)"))
     }  
-  
+    
     if(length(numOutcome) == 0){
       
       numOutcome <- 5
@@ -1677,7 +1677,7 @@ icc.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "icc.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Intraclass correlation between level-3 covariates of each outcome (ICC.3) (Input a single value)", 
+              "Intraclass correlation between Level-3 covariates of each outcome (ICC.3) (Input a single value)", 
               value = defaulticc.3values)
   }
 } #ICC.3 element
@@ -1692,10 +1692,10 @@ omega.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     # if initial values are not set yet, set it at 5.
     
     if(TRUE){
-      text_val <- HTML(paste("Ratio of level-3 group covariate effect size variability to random effects variability (omega.3)",
+      text_val <- HTML(paste("Ratios of Level-3 group covariate effect size variability to random effects variability (omega.3)",
                              "<span style=\"color:red\"> (Input multiple values) </span>"))
     } else {
-      text_val <- HTML(paste("Ratio of level-3 group covariate effect size variability to random effects variability (omega.3)"))
+      text_val <- HTML(paste("Ratios of Level-3 group covariate effect size variability to random effects variability (omega.3)"))
     }
     
     if(length(numOutcome) == 0){
@@ -1725,11 +1725,11 @@ omega.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
     
     id <- paste0(estimation, "_", "omega.3", "_", design, "_" , scenario, "_", varVary)
     textInput(id, 
-              "Ratio of level-3 group covariate effect size variability to random effects variability (omega.3) (Input a single value)", 
+              "Ratios of Level-3 group covariate effect size variability to random effects variability (omega.3) (Input a single value)", 
               value = defaultomega.3values)
-
+    
   }
-
+  
 } # omega.3 element
 
 ############################
@@ -1739,14 +1739,14 @@ omega.3InputEx <- function(estimation, design, scenario, numOutcome, varVary){
 kInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
   
   if (estimation == "power" | estimation == "mdes"){
-  
+    
     if(varVary == "k") {
       
       if(TRUE){
-        text_val <- HTML(paste("Number of level-3 groupings",
+        text_val <- HTML(paste("Number of Level-3 groupings",
                                "<span style=\"color:red\"> (Input multiple values) </span>"))
       } else {
-        text_val <- HTML(paste("Number of level-3 groupings"))
+        text_val <- HTML(paste("Number of Level-3 groupings"))
       }
       
       id <- paste0(estimation, "_", "k", "_", design, "_" , scenario, "_", varVary)
@@ -1765,10 +1765,10 @@ kInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
       defaultkvalues <- paste0(c(50))
       
       textInput(id,
-                "Number of level-3 groupings (Input a single value)", 
+                "Number of Level-3 groupings (Input a single value)", 
                 value = defaultkvalues)
     }
-  
+    
   } else if (estimation == "sample"){
     
     if(typeOfSample == "k"){
@@ -1779,10 +1779,10 @@ kInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
       if(varVary == "k") {
         
         if(TRUE){
-          text_val <- HTML(paste("Number of level-3 groupings",
+          text_val <- HTML(paste("Number of Level-3 groupings",
                                  "<span style=\"color:red\"> (Input multiple values) </span>"))
         } else {
-          text_val <- HTML(paste("Number of level-3 groupings"))
+          text_val <- HTML(paste("Number of Level-3 groupings"))
         }
         
         id <- paste0(estimation, "_", "k", "_", design, "_" , scenario, "_", varVary)
@@ -1801,14 +1801,14 @@ kInputEx <- function(estimation, design, scenario, varVary, typeOfSample){
         defaultkvalues <- paste0(c(50))
         
         textInput(id,
-                  "Number of level-3 groupings (Input a single value)", 
+                  "Number of Level-3 groupings (Input a single value)", 
                   value = defaultkvalues)
       }
-
+      
     }
     
   }
-    
-    
+  
+  
 } # number of 3rd level grouping
 

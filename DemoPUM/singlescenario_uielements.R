@@ -11,7 +11,7 @@ nbarInput <- function(estimation = "power", design, scenario){
   id <- paste0(estimation, "_", "nbar", "_", design, "_" , scenario)
   
   numericInput(id,
-               "Number of units per block", 
+               "Number of units at Level-1 (n bar)", 
                min = 2, 
                max = 100, 
                value = 20, 
@@ -27,12 +27,28 @@ jInput <- function(estimation = "power", design, scenario){
   id <- paste0(estimation, "_", "j", "_", design, "_" , scenario)
   
   numericInput(id,
-               "Number of blocks", 
+               "Number of groups at Level-2 (J)", 
                min = 2, 
                max = 100, 
                value = 50, 
                step = 1)
 } # number of unit per block
+
+############################
+# Number of 3-level Grouping
+############################
+
+kInput <- function(estimation = "power", design, scenario){
+  
+  id <- paste0(estimation, "_", "k", "_", design, "_" , scenario)
+  
+  numericInput(id,
+               "Number of groups at Level-3 (K)", 
+               min = 2, 
+               max = 100, 
+               value = 50, 
+               step = 1)
+} # number of 3rd level grouping
 
 #########################
 # Number of Outcomes (M)
@@ -40,13 +56,13 @@ jInput <- function(estimation = "power", design, scenario){
 
 mInput <- function(estimation = "power", design, scenario){
   
-    id <- paste0(estimation, "_" ,"m", "_", design, "_" , scenario)
-    numericInput(id, 
-                 "Number of outcomes", 
-                 min = 1, 
-                 max = 10, 
-                 value = 5, 
-                 step = 1)
+  id <- paste0(estimation, "_" ,"m", "_", design, "_" , scenario)
+  numericInput(id, 
+               "Number of outcomes (M)", 
+               min = 1, 
+               max = 10, 
+               value = 5, 
+               step = 1)
   
 } # Number of Outcomes (M)
 
@@ -76,10 +92,10 @@ mtpInput <- function(estimation = "power", design, scenario){
   
   selectInput(id, "Multiple testing procedure (MTP)", 
               choices = list("Bonferroni" = "Bonferroni", 
-                              "Holm" = "Holm", 
-                              "Benjamini-Hochberg" = "BH", 
-                              "Westfall-Young-Single-Step" = "WY-SS", 
-                              "Westfall-Young-Step-Down" = "WY-SD"),
+                             "Holm" = "Holm", 
+                             "Benjamini-Hochberg" = "BH", 
+                             "Westfall-Young-Single-Step" = "WY-SS", 
+                             "Westfall-Young-Step-Down" = "WY-SD"),
               selected = "Bonferroni",
               multiple = TRUE) # select input buttons div
 } # mtp input
@@ -114,7 +130,7 @@ mtpPopOver <- function(estimation = "power", design, scenario){
 #########################
 
 mdesInput <- function(estimation = "power", design, scenario, numOutcome){
-
+  
   # if initial values are not set yet, set it at 5.  
   if(length(numOutcome) == 0){
     
@@ -127,8 +143,8 @@ mdesInput <- function(estimation = "power", design, scenario, numOutcome){
   
   id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario)
   textInput(id, 
-           "Minimum detectable effect size (MDES) (Vector of length M, comma delimited)", 
-           value = defaultmdesvalues)
+            "Minimum detectable effect sizes (MDES) (vector of length M, comma delimited)", 
+            value = defaultmdesvalues)
 } # mdesInput
 
 #########################
@@ -149,11 +165,11 @@ powerValuesInput <- function(estimation = "power", design, scenario, numOutcome)
   
   id <- paste0(estimation, "_", "mdes", "_", design, "_" , scenario)
   numericInput(id, 
-            "Target power", 
-            min = 0,
-            max = 1,
-            value = defaultpowervalues,
-            step = 0.1)
+               "Target power", 
+               min = 0,
+               max = 1,
+               value = defaultpowervalues,
+               step = 0.1)
 } # powerValuesInput
 
 ##################################################################################
@@ -164,7 +180,7 @@ rhoInput <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "rho", "_", design, "_" , scenario)
   numericInput(id, 
-               "Correlation between test statistics (assumed to be the same between all pairs)", 
+               "Correlation between test statistics (rho) (assumed to be the same between all pairs)", 
                min = 0, 
                max = 1, 
                value = 0.5, 
@@ -179,7 +195,7 @@ numCovar.1Input <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "numCovar.1", "_", design, "_", scenario)
   numericInput(id, 
-               "Number of level 1 covariates", 
+               "Number of Level-1 covariates (g1,m)", 
                min = 0, 
                max = 10, 
                value = 1, 
@@ -187,14 +203,14 @@ numCovar.1Input <- function(estimation = "power", design, scenario){
 } # number of level 1 covariates
 
 ##################################################################################
-# Proportion of treatment assignment
+# Proportions of treatment assignment
 ##################################################################################
 
 tbarInput <- function(estimation = "power", design, scenario){
   
   id <- paste0(estimation, "_", "tbar", "_", design, "_" , scenario)
   numericInput(id, 
-               "Proportion of treatment assignment", 
+               "Proportions of treatment assignment (T bar)", 
                min = 0.001, 
                max = 1.0, 
                value = 0.5, 
@@ -206,14 +222,14 @@ tbarInput <- function(estimation = "power", design, scenario){
 ##################################################################################
 
 alphaInput <- function(estimation = "power", design, scenario) {
-
+  
   id <- paste0(estimation, "_", "alpha", "_", design, "_", scenario)
   numericInput(id, 
                "Significance level (alpha)", 
-                min = 0.001, 
-                max = 0.9, 
-                value = 0.05,                     
-                step = 0.001)
+               min = 0.001, 
+               max = 0.9, 
+               value = 0.05,                     
+               step = 0.001)
 } #alpha
 
 #########################
@@ -234,9 +250,9 @@ r2.1Input <- function(estimation = "power", design, scenario, numOutcome){
   
   
   id <- paste0(estimation, "_", "r2.1", "_", design, "_" , scenario)
-
+  
   textInput(id, 
-            "Proportion of variance explained by level-1 covariates (R2.1)", 
+            "Proportions of variance explained by Level-1 covariates (R2.1) (vector of length M, comma delimited)", 
             value = defaultr2.1values)
 } # R2.1 Input
 
@@ -260,7 +276,7 @@ r2.2Input <- function(estimation = "power", design, scenario, numOutcome){
   id <- paste0(estimation, "_", "r2.2", "_", design, "_" , scenario)
   
   textInput(id, 
-            "Proportion of variance explained by level-2 covariates (R2.2)", 
+            "Proportions of variance explained by Level-2 covariates (R2.2) (vector of length M, comma delimited)", 
             value = defaultr2.2values)
 } # R2.2 Input
 
@@ -282,7 +298,7 @@ icc.2Input <- function(estimation = "power", design, scenario, numOutcome){
   
   id <- paste0(estimation, "_", "icc.2", "_", design, "_" , scenario)
   textInput(id, 
-            "Intraclass correlation between level-2 covariates of each outcome (ICC.2)", 
+            "Intraclass correlations between Level-2 covariates of each outcome (ICC.2) (vector of length M, comma delimited)", 
             value = defaulticc.2values)
 } #ICC.2 element
 
@@ -304,7 +320,7 @@ omega.2Input <- function(estimation = "power", design, scenario, numOutcome){
   
   id <- paste0(estimation, "_", "omega.2", "_", design, "_" , scenario)
   textInput(id, 
-            "Ratio of level-2 group covariate effect size variability to random effects variability (omega.2)", 
+            "Ratios of Level-2 group covariate effect size variability to random effects variability (omega.2) (vector of length M, comma delimited)", 
             value = defaultomega.2values)
 } # omega.2 element
 
@@ -329,7 +345,7 @@ r2.3Input <- function(estimation = "power", design, scenario, numOutcome){
   id <- paste0(estimation, "_", "r2.3", "_", design, "_" , scenario)
   
   textInput(id, 
-            "Proportion of variance explained by level-3 covariates (R2.3)", 
+            "Proportions of variance explained by Level-3 covariates (R2.3) (vector of length M, comma delimited)", 
             value = defaultr2.3values)
 } # R2.3 Input
 
@@ -351,7 +367,7 @@ icc.3Input <- function(estimation = "power", design, scenario, numOutcome){
   
   id <- paste0(estimation, "_", "icc.3", "_", design, "_" , scenario)
   textInput(id, 
-            "Intraclass correlation between level-3 covariates of each outcome (ICC.3)", 
+            "Intraclass correlations between Level-3 covariates of each outcome (ICC.3) (vector of length M, comma delimited)", 
             value = defaulticc.3values)
 } #ICC.3 element
 
@@ -373,23 +389,7 @@ omega.3Input <- function(estimation = "power", design, scenario, numOutcome){
   
   id <- paste0(estimation, "_", "omega.3", "_", design, "_" , scenario)
   textInput(id, 
-            "Ratio of level-3 group covariate effect size variability to random effects variability (omega.3)", 
+            "Ratios of Level-3 group covariate effect size variability to random effects variability (omega.3) (vector of length M, comma delimited)", 
             value = defaultomega.3values)
 } # omega.3 element
-
-############################
-# Number of 3-level Grouping
-############################
-
-kInput <- function(estimation = "power", design, scenario){
-  
-  id <- paste0(estimation, "_", "k", "_", design, "_" , scenario)
-  
-  numericInput(id,
-               "Number of level-3 groupings", 
-               min = 2, 
-               max = 100, 
-               value = 50, 
-               step = 1)
-} # number of 3rd level grouping
 
