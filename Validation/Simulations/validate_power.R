@@ -148,13 +148,14 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     # if we have all the iterations, save it out!
     if(!is.null(adjp.proc) && dim(adjp.proc)[1] == sim.params.list[['S']]*sim.params.list[['Q']])
     {
-      sim.filename = paste0(params.file.base, "simulation_results.RDS")
+      sim.filename <- paste0(params.file.base, "simulation_results.RDS")
       
       power.results <- NULL
       for(p in 1:dim(adjp.proc)[3])
       {
         proc.results <- pum::get_power_results(
-          pval.mat = adjp.proc[,,p],
+          adj.pval.mat = adjp.proc[,,p],
+          unadj.pval.mat = adjp.proc[,,'rawp'],
           ind.nonzero = user.params.list[['ATE_ES']] > 0,
           alpha = sim.params.list[['alpha']]
         )
