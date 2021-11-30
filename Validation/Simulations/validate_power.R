@@ -153,7 +153,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       power.results <- NULL
       for(p in 1:dim(adjp.proc)[3])
       {
-        proc.results <- get.power.results(
+        proc.results <- pum::get_power_results(
           pval.mat = adjp.proc[,,p],
           ind.nonzero = user.params.list[['ATE_ES']] > 0,
           alpha = sim.params.list[['alpha']]
