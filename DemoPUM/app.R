@@ -28,9 +28,12 @@ ui <- fluidPage(
   titlePanel(title = "Power Under Multiplicity", windowTitle = "Power Under Multiplicity"), 
   tabsetPanel(id = "tabset", type = "tabs",
               tabPanel(title = "Home", value = "home_tab"),
-              tabPanel(title = "Educational Resources", value = "edu_tab",
-                       "Testing test"),
-              tabPanel(title = "Power, MDES & SS Explorer", value = "explorer_tab",
+              tabPanel(title = "Why Use the PUMP App", value = "whyuse_tab",
+                       "Testing test"), # KP edited title
+              tabPanel(title = "PUMP Designs and Models", value = "designsmodels_tab"), # KP added
+              tabPanel(title = "PUMP MTPs", value = "mtp_tab"), # KP added
+              tabPanel(title = "How to Use the PUMP App", value = "how_tab"),
+              tabPanel(title = "Power, MDES & Sample Size Explorer", value = "explorer_tab", #KP edited
                        
                        sidebarLayout(
                          sidebarPanel(
@@ -88,18 +91,21 @@ ui <- fluidPage(
                              
                              div(style = "display: inline-block, vertical-align:top;", 
                                  column(12,
-                                        selectInput("designEx", "Research design & model", 
-                                                    choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
-                                                                   "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
-                                                                   "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
-                                                                   "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
-                                                                   "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
-                                                                   "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
-                                                                   "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
-                                                                   "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
-                                                                   "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
+                                        selectInput("designEx", "Research design and model?", # KP edited 
+                                                    # KP edited all choices below, added one and reordered
+                                                    choices = list("d1.1_m1c" = "d1.1_m1c",
+                                                                   "d2.1_m2fc" = "d2.1_m2fc", 
+                                                                   "d2.1_m2ff" = "d2.1_m2ff", 
+                                                                   "d2.1_m2fr" = "d2.1_m2fr",
+                                                                   "d2.2_m2rc" = "d2.2_m2rc",
+                                                                   "d3.1_m3rr2rr" = "d3.1_m3rr2rr",
+                                                                   "d3.2_m3ff2rc" = "d3.2_m3ff2rc", # KP added
+                                                                   "d3.2_m3fc2rc" = "d3.2_m3fc2rc", # KP added 
+                                                                   "d3.2_m3rr2rc" = "d3.2_m3rr2rc", # KP reordered
+                                                                   "d3.3_m3rc2rc" = "d3.3_m3rc2rc"            
                                                     ),
-                                                    selected = "d2.1_m2ff")     
+                                                    selected = "d1.1_m1c")     # KP changed default to simplest
+                                        
                                         
                                  )) # selecting designs
                              
@@ -140,21 +146,21 @@ ui <- fluidPage(
                              column(12,
                                     uiOutput("nbarEx"))
                              
-                           ), # Units per block  
+                           ), # Number of level 1 units # KP edited  
                            
                            fluidRow(
                              
                              column(12,
                                     uiOutput("jEx"))
                              
-                           ), # number of blocks
+                           ), # Number of level 2 units # KP edited
                            
                            fluidRow(
                              
                              column(12,
                                     uiOutput("kEx"))
                              
-                           ), # Adding k
+                           ), # Number of level 3 units # KP edited
                            
                            fluidRow(
                              
@@ -203,7 +209,7 @@ ui <- fluidPage(
                              column(12,
                                     uiOutput("tbarEx"))
                              
-                           ), # proportion of treatment assignment
+                           ), # proportion assigned to treatment # KP edited
                            
                            fluidRow(
                              
@@ -309,7 +315,7 @@ ui <- fluidPage(
                        
               ), # Explorer tab
               
-              tabPanel(title = "Power Single Scenario", value = "single_scenario_tab", 
+              tabPanel(title = "Single Scenario Power Estimator", value = "single_scenario_tab", # KP edited
                        sidebarLayout(
                          sidebarPanel(
                            # css to center the progress bar
@@ -352,18 +358,19 @@ ui <- fluidPage(
                              
                              div(style = "display: inline-block, vertical-align:top;", 
                                  column(12,
-                                        selectInput("designSs", "Research design & model", 
-                                                    choices = list("Design: 1 level, Randomization: level 1 - Constant effects" = "d1.1_m1c",
-                                                                   "Design: 2 levels, Randomization: level 1 - Constant effects" = "d2.1_m2fc", 
-                                                                   "Design: 2 levels, Randomization: level 1 - Fixed effects" = "d2.1_m2ff", 
-                                                                   "Design: 2 levels, Randomization: level 1 - Random effects" = "d2.1_m2fr",
-                                                                   "Design: 3 levels, Randomization: level 1 - Random effects" = "d3.1_m3rr2rr",
-                                                                   "Design: 2 levels, Randomization: level 2 - Random effects" = "d2.2_m2rc",
-                                                                   "Design: 3 levels, Randomization: level 3 - Random effects" = "d3.3_m3rc2rc",
-                                                                   "Design: 3 levels, Randomization: level 2 - Fixed effects" = "d3.2_m3ff2rc",
-                                                                   "Design: 3 levels, Randomization: level 2 - Random effects" = "d3.2_m3rr2rc"
+                                        selectInput("designSs", "Research design & model?", # KP edited 
+                                                    choices = list("d1.1_m1c" = "d1.1_m1c",
+                                                                   "d2.1_m2fc" = "d2.1_m2fc", 
+                                                                   "d2.1_m2ff" = "d2.1_m2ff", 
+                                                                   "d2.1_m2fr" = "d2.1_m2fr",
+                                                                   "d2.2_m2rc" = "d2.2_m2rc",
+                                                                   "d3.1_m3rr2rr" = "d3.1_m3rr2rr",
+                                                                   "d3.2_m3ff2rc" = "d3.2_m3ff2rc", # KP added
+                                                                   "d3.2_m3fc2rc" = "d3.2_m3fc2rc", # KP added 
+                                                                   "d3.2_m3rr2rc" = "d3.2_m3rr2rc", # KP reordered
+                                                                   "d3.3_m3rc2rc" = "d3.3_m3rc2rc"            
                                                     ),
-                                                    selected = "d2.1_m2ff")     
+                                                    selected = "d1.1_m1c") # KP changed to simplest  
                                         
                                  )) # selecting designs
                              
@@ -677,6 +684,8 @@ server <- shinyServer(function(input, output, session = FALSE) {
   # Get reactive expression for experimental chosen design #
   ##########################################################
   
+  # KP edited sections below (getDesignSs and getDesignEx) to update to match edits to above choices
+  
   getDesignSs <- reactive({
     
     if(input$designSs == "d1.1_m1c"){
@@ -688,7 +697,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     if(input$designSs == "d2.1_m2fc"){
       
       print("d2.1_m2fc")
-      return(c("d2.1m2cc"))
+      return(c("d2.1m2fc")) # KP edited mistake here
     }
     
     if(input$designSs == "d2.1_m2ff") {
@@ -711,6 +720,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
       print("d2.2_m2rc")
       return(c("d2.2_m2rc"))}
     
+    if(input$designSs == "d3.2_m3fc2rc"){
+      
+      print("d3.2_m3fc2rc")
+      return(c("d3.2_m3fc2rc"))}
+
     if(input$designSs == "d3.3_m3rc2rc"){
       
       print("d3.3_m3rc2rc")
@@ -739,7 +753,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     if(input$designEx == "d2.1_m2fc"){
       
       print("d2.1_m2fc")
-      return(c("d2.1_m2fc"))
+      return(c("d2.1_m2fc")) # KP edited mistake here
     }
     
     if(input$designEx == "d2.1_m2ff") {
@@ -766,6 +780,11 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       print("d3.3_m3rc2rc")
       return(c("d3.3_m3rc2rc"))}
+    
+    if(input$designEx == "d3.2_m3fc2rc"){
+      
+      print("d3.2_m3fc2rc")
+      return(c("d3.2_m3fc2rc"))}
     
     if(input$designEx == "d3.2_m3ff2rc"){
       
@@ -799,10 +818,17 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
       if(input[[id]] == "m"){
         
-        print(paste0("variable to vary is ", input[[id]]))
+        print(paste0("variable to vary is ", input[[id]])) # KP where does this get printed?
         return(c("m"))
         
       }      
+      
+      if(input[[id]] == "numZero"){ # KP reordered
+        
+        print(paste0("variable to vary is ", input[[id]]))
+        return(c("numZero"))
+        
+      }
       
       if(input[[id]] == "nbar"){
         
@@ -815,13 +841,6 @@ server <- shinyServer(function(input, output, session = FALSE) {
         
         print(paste0("variable to vary is ", input[[id]]))
         return(c("j"))
-        
-      }
-      
-      if(input[[id]] == "numZero"){
-        
-        print(paste0("variable to vary is ", input[[id]]))
-        return(c("numZero"))
         
       }
       
@@ -1038,7 +1057,20 @@ server <- shinyServer(function(input, output, session = FALSE) {
     
   }) # end of Power Reactive reactive expression
   
+  ###########################
+  # Design and Parameter matches
+  ###########################
   
+  # KP again, wouldn't creating some objects help save having to retype and recheck the designs over and over again?
+  # KP: I don't want to mess up the code, but maybe these are helpful objects that could replace code in multiple places
+  
+  D_R2.2 <- c("d2.2_m2rc", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2m3rr2rc")
+  D_icc.2 <- c("d2.1_m2ff" , "d2.1_m2fr" , "d2.2_m2rc" , "d3.1_m3rr2rr" , "d3.2_m3ff2rc" , "d3.2_m3fc2rc", "d3.2_m3rr2rc", "d3.3_m3rc2rc")
+  D_omega.2 <- c("d2.1_m2fr", "d3.1_m3rr2rr")
+  D_R2.3 <- c("d3.3_m3rc2rc")
+  D_icc.3 <- c("d3.1_m3rr2rr", "d3.2_m3ff2rc", "d3.2_m3fc2rc", "d3.2_m3rr2rc", "d3.3_m3rc2rc")
+  D_k <- c("d3.1_m3rr2rr", "d3.2_m3ff2rc", "d3.2_m3fc2rc", "d3.2_m3rr2rc", "d3.3_m3rc2rc")
+  D_omega.3 <- c("d3.1_m3rr2rr", "d3.2_m3rr2rc")
   
   ######################################################
   # Rendering Variable Objects to UI for chosen design #
@@ -1453,8 +1485,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designSs == 'd2.2_m2rc' || input$designSs == 'd3.3_m3rc2rc'||
-       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
+    if(input$designSs %in% D_R2.2){
       print('Design r2-2 Trigger')
       check = TRUE
     }
@@ -1481,8 +1512,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designEx == 'd2.2_m2rc' || input$designEx == 'd3.3_m3rc2rc'||
-       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+    if(input$designEx %in% D_R2.2){
       print('Design r2-2 Trigger')
       check = TRUE
     }
@@ -1511,9 +1541,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designSs == 'd2.1_m2fc' || input$designSs == 'd2.1_m2ff' || input$designSs == 'd2.1_m2fr' ||
-       input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd2.2_m2rc' || input$designSs == 'd3.3_m3rc2rc' ||
-       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
+    if(input$designSs %in% D_icc.2){
       print('Design ICC2 Trigger')
       check = TRUE
     }
@@ -1541,9 +1569,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designEx == 'd2.1_m2fc' || input$designEx == 'd2.1_m2ff' || input$designEx == 'd2.1_m2fr' ||
-       input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd2.2_m2rc' || input$designEx == 'd3.3_m3rc2rc' ||
-       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+    if(input$designEx %in% D_icc.2){
       print('Design icc.2 Trigger')
       check = TRUE
     }
@@ -1572,7 +1598,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designSs == 'd2.1_m2fr' || input$designSs == 'd3.1_m3rr2rr'){
+    if(input$designSs %in% D_omega.2){
       print('Design omega 2 Trigger')
       check = TRUE
     }
@@ -1599,7 +1625,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designEx == 'd2.1_m2fr' || input$designEx == 'd3.1_m3rr2rr'){
+    if(input$designEx %in% D_omega.2){
       print('Design omega 2 Trigger')
       check = TRUE
     }
@@ -1629,7 +1655,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designSs == 'd3.3_m3rc2rc'){
+    if(input$designSs %in% D_R2.3){
       print('Design r2-3 Trigger')
       check = TRUE
     }
@@ -1658,7 +1684,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designEx == 'd3.3_m3rc2rc'){
+    if(input$designEx %in% D_R2.3){
       print('Design r2-3 Trigger')
       check = TRUE
     }
@@ -1686,8 +1712,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.3_m3rc2rc'||
-       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
+    if(input$designSs %in% D_icc.3){
       print('Design icc.3 Trigger')
       check = TRUE
     }
@@ -1714,8 +1739,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd3.3_m3rc2rc'||
-       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+    if(input$designEx %in% D_icc.3){
       print('Design icc.3 Trigger')
       check = TRUE
     }
@@ -1744,7 +1768,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.2_m3rr2rc'){
+    if(input$designSs %in% D_omega.3){
       print('Design omega.3 Trigger')
       check = TRUE
     }
@@ -1772,7 +1796,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd3.2_m3rr2rc'){
+    if(input$designEx %in% D_omega.3){
       print('Design omega.3 Trigger')
       check = TRUE
     }
@@ -1800,8 +1824,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designSs == 'd3.1_m3rr2rr' || input$designSs == 'd3.3_m3rc2rc'||
-       input$designSs == 'd3.2_m3ff2rc' || input$designSs == 'd3.2_m3rr2rc'){
+    if(input$designSs %in% D_k){
       print('Design k Trigger')
       check = TRUE
     }
@@ -1828,8 +1851,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
     check = FALSE # checking default condition as fault
     
     # conditions when check becomes true
-    if(input$designEx == 'd3.1_m3rr2rr' || input$designEx == 'd3.3_m3rc2rc'||
-       input$designEx == 'd3.2_m3ff2rc' || input$designEx == 'd3.2_m3rr2rc'){
+    if(input$designEx %in% D_k){
       print('Design k Trigger')
       check = TRUE
     }
@@ -1941,43 +1963,43 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     }
     
-    if(design %in% c("d2.2_m2rc", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2m3rr2rc")){
+    if(design %in% D_R2.2){
       
       r2.2 <- input[[r2.2_subset]]
       
     } # r2.2
     
-    if(design %in% c("d2.1_m2fc" , "d2.1_m2ff" , "d2.1_m2fr" , "d2.2_m2rc" , "d3.1_m3rr2rr" , "d3.3_m3rc2rc" , "d3.2_m3ff2rc" , "d3.2_m3rr2rc")){
+    if(design %in% D_icc.2){
       
       icc.2 <- input[[icc.2_subset]]
       
     } 
     
-    if (design %in% c("d2.1_m2fr", 'd3.1_m3rr2rr')){
+    if (design %in% D_omega.2){
       
       omega.2 <- input[[omega.2_subset]]
       
     } 
     
-    if (design %in% c("d3.3_m3rc2rc")){
+    if (design %in% D_R2.3){
       
       r2.3 <- input[[r2.3_subset]]
       
     }
     
-    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")) {
+    if (design %in% D_icc.3) {
       
       icc.3 <- input[[icc.3_subset]]
       
     }
     
-    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")){
+    if (design %in% D_k){
       
       k <- input[[k_subset]]
       
     }
     
-    if (design %in% c("d3.1_m3rr2rr", "d3.2_m3rr2rc")) {
+    if (design %in% D_omega.3) {
       
       omega.3 <- input[[omega.3_subset]]
       
@@ -2107,6 +2129,7 @@ server <- shinyServer(function(input, output, session = FALSE) {
   
   observeEvent(input$goButtonEx,{
     
+    
     # set a Reactive Value for Power Table
     reactPowerTable <- reactiveVal()
     
@@ -2227,43 +2250,43 @@ server <- shinyServer(function(input, output, session = FALSE) {
       
     }
     
-    if(design %in% c("d2.2_m2rc", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2m3rr2rc")){
+    if(design %in% D_R2.2){
       
       r2.2 <- input[[r2.2_subset]]
       
     } # r2.2
     
-    if(design %in% c("d2.1_m2fc" , "d2.1_m2ff" , "d2.1_m2fr" , "d2.2_m2rc" , "d3.1_m3rr2rr" , "d3.3_m3rc2rc" , "d3.2_m3ff2rc" , "d3.2_m3rr2rc")){
+    if(design %in% D_icc.2){
       
       icc.2 <- input[[icc.2_subset]]
       
     } 
     
-    if (design %in% c("d2.1_m2fr", 'd3.1_m3rr2rr')){
+    if (design %in% D_omega.2){
       
       omega.2 <- input[[omega.2_subset]]
       
     } 
     
-    if (design %in% c("d3.3_m3rc2rc")){
+    if (design %in% D_R2.3){
       
       r2.3 <- input[[r2.3_subset]]
       
     }
     
-    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")) {
+    if (design %in% D_icc.3) {
       
       icc.3 <- input[[icc.3_subset]]
       
     }
     
-    if (design %in% c("d3.1_m3rr2rr", "d3.3_m3rc2rc", "d3.2_m3ff2rc", "d3.2_m3rr2rc")){
+    if (design %in% D_k){
       
       k <- input[[k_subset]]
       
     }
     
-    if (design %in% c("d3.1_m3rr2rr", "d3.2_m3rr2rc")) {
+    if (design %in% D_omega.3) {
       
       omega.3 <- input[[omega.3_subset]]
       
