@@ -33,9 +33,14 @@ This list is not complete - to be added to and checked off by everyone.
 
 # Discussion questions
 
-- one tailed v. two tailed power
+- two-tailed power
 - why are we hiding vignette output?
 - better name for "design" because it currently means design + model. Scenario?
+- author list in DESCRIPTION file
+- name of package: pum, pum-p, pump
+- whether to surface WY functions to the user
+- whether to discuss blocking/clustering/etc.
+- level of detail introducing MTP
 
 # Shiny app
 - Aim to have draft to share in next meeting
@@ -65,9 +70,11 @@ This list is not complete - to be added to and checked off by everyone.
 - Potentially use simulations to estimate rho matrix for users when entering other information about data - corr between outcomes, R2's (Kristen, maybe, TBD)
 - tool that helps user build a block matrix of correlations based on a list of correlations between outcomes
 - resolve terminology: MDES, ES, ATE_ES, impact?
-- additional designs, including: d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors
+- additional designs, including: d2.2_m2rr, d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors
 - for sample size, allow a vector of MDES, i.e. combination of zero and nonzero values, and allow for numZero flag
+- return raw mdes for individual power to user as comparison/benchmark
 - effect size calculator
 - speed up everything
+- binary outcomes
 
 
