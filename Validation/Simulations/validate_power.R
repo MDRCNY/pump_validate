@@ -157,7 +157,8 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
           adj.pval.mat = adjp.proc[,,p],
           unadj.pval.mat = adjp.proc[,,'rawp'],
           ind.nonzero = user.params.list[['ATE_ES']] > 0,
-          alpha = sim.params.list[['alpha']]
+          alpha = sim.params.list[['alpha']],
+          two.tailed = TRUE
         )
         power.results <- rbind(power.results, proc.results)
       }

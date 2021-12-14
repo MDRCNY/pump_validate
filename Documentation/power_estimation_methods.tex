@@ -201,15 +201,15 @@ Table~\ref{tab:names} shows the list of supported scenarios and their correspond
 % \begin{tabular}{p{5cm} | p{5cm}}
 \textbf{PowerUpR!}	& \textbf{PUMP} \\ \hline
 n/a 				& d1.1\_m1c \\
-blocked\_i1\_2c 	& d2.1\_m2fc \\
-blocked\_i1\_2f 	& d2.1\_m2ff \\
-blocked\_i1\_2r 	& d2.1\_m2fr \\
-blocked\_i1\_3r 	& d3.1\_m3rr2rr \\
-simple\_c2\_2r 		& d2.2\_m2rc \\
-simple\_c3\_3r 		& d3.3\_m3rc2rc \\
-blocked\_c2\_3f 	& d3.2\_m3ff2rc \\
+bira2\_1c 			& d2.1\_m2fc \\
+bira2\_1f 			& d2.1\_m2ff \\
+bira2\_1r 			& d2.1\_m2fr \\
+bira3\_1r 			& d3.1\_m3rr2rr \\
+cra2\_2r 			& d2.2\_m2rc \\
+cra3\_3r 			& d3.3\_m3rc2rc \\
+bcra3\_2f 			& d3.2\_m3ff2rc \\
 n/a					& d3.2\_m3fc2rc \\
-blocked\_c2\_3r 	& d3.2\_m3rr2rc \\
+bcra3\_2r 			& d3.2\_m3rr2rc \\
 \end{tabular}
 \caption{Scenarios: designs and models\label{tab:names}}
 \end{table}
@@ -412,7 +412,7 @@ T.x <- randomizr::block_ra( S.id, prob = Tbar )
 
 \subsubsection{Constant effects (d2.1\_m2fc)}
 
-\textbf{PowerUp name:} blocked\_i1\_2c
+\textbf{PowerUp name:} bira2\_1c
 
 \textbf{Design:} 2-level design, randomization at level 1 (blocked).
 
@@ -506,7 +506,7 @@ This can be viewed as within (PowerUp!) vs. overall (this work) effect size metr
 \newpage 
 \subsubsection{Fixed effects (d2.1\_m2ff)}
 
-\textbf{PowerUp name:} blocked\_i1\_2f
+\textbf{PowerUp name:} bira2\_1f
 
 \textbf{Design:} 2-level design, randomization at level 1 (blocked).
 
@@ -576,7 +576,7 @@ This can be viewed as within (PowerUp!) vs. overall (this work) effect size metr
 \newpage 
 \subsubsection{Random effects (d2.1\_m2fr)}
 
-\textbf{PowerUp name:} blocked\_i1\_2r
+\textbf{PowerUp name:} bira2\_1r
 
 \textbf{Design:} 2-level design, randomization at level 1 (blocked).
 
@@ -657,7 +657,7 @@ PowerUp allows for school covariates to influence the treatment impact, while we
 
 \subsubsection{Random effects (d2.2\_m2rc)}
 
-\textbf{PowerUp name:} simple\_c2\_2r
+\textbf{PowerUp name:} cra2\_2r
 
 
 \textbf{Design:} 2-level design, randomization at level 2 (clusters).
@@ -731,7 +731,7 @@ We can simply use the prior 2 level designs if we lump district variation into t
 
 \subsubsection{Random effects (d3.1\_m3rr2rr)}
 
-\textbf{PowerUp name:} blocked\_i1\_3r
+\textbf{PowerUp name:} cra3\_3r
 
 \textbf{Design:} 3-level design, randomization at level 1 (blocked).
 
@@ -815,7 +815,7 @@ PowerUp allows for school and district covariates to influence the treatment imp
 
 \subsubsection{Fixed effects (d3.2\_m3ff2rc)}
 
-\textbf{PowerUp name:} blocked\_c2\_3f
+\textbf{PowerUp name:} bcra3\_2f
 
 \textbf{Design:} 3-level design, randomization at level 2 (blocked cluster).
 
@@ -889,7 +889,7 @@ T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = T
 \newpage
 \subsubsection{Random effects (d3.2\_m3rr2rc)}
 
-\textbf{PowerUp name:} blocked\_c2\_3r
+\textbf{PowerUp name:} bcra3\_2r
 
 \textbf{Design:} 3-level design, randomization at level 2 (blocked cluster).
 
@@ -971,7 +971,7 @@ T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = T
 
 \subsubsection{Random effects (d3.3\_m3rc2rc)}
 
-\textbf{PowerUp name:} simple\_c3\_3r
+\textbf{PowerUp name:} cra3\_3r
 
 \textbf{Design:} 3-level design, randomization at level 3 (cluster).
 
