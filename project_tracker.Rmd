@@ -3,32 +3,14 @@ Below is a checklist of tasks to complete for finalizing the PUMP project. For e
 This list is not complete - to be added to and checked off by everyone.
 
 # R package
-- Expand models (e.g. D3 designs with ICC non zero, and others discussed) & validate (Kristen, TBD)
-    Done this (in particular the ICC stuff) except for additional models, to be postponed.
-    TO DO: Add the d1.1_mcc model (simple randomization)
-    Done!
-- Run additional validation for extreme values (Kristen, TBD)
-    Done.
-- Update with new naming convention (Kristen)
-    Done!
-- Complete code commenting (Kristen, TBD)
-    Done enough.
-- Complete all testing (Kristen and Luke, TBD)
-    Done enough, will add tests as issues arise.
-- Source code completed, ASCII files, with formatted help files and be packaged for easy installation. 
-    Done.
 - Submit package to CRAN - including JSS submission as vignettes in the package. 
-- Make sure all functions still work when specifying one outcome (Kristen)
-     Done  
 - Issue: when estimating lower-level sample sizes, it's possible for range of sample sizes to produce same power. Kristen refining returned objected to contain information of issue. Luke refining diagnostic plot. Kristen working with Zarni to return note in Shiny, along with revised version of info in vignette. 
-- Luke has added return of all call parameters. Refining formatting. 
-- Vignettes expanding to demonstrate functionality.
-    Done
-- Add functions for expanded designs with same power - e.g. need to add d3.2_m3fc2rc - same power as d3.2_m3ff2rc
-    Done
-- Change d1.1_m2cc to d1.1_m1c (and Kristen will check first)
-    Done
-- Kristin will send nots about credit - including ies grant number.
+     - KH just needs to work with Zarni
+- Kristin will send notes about credit - including ies grant number.
+- Fix so that can insert MDES of zero in middle of vector : KH
+- Adjust so can pass in "none" as MTP for all M: KH
+- Error bars on power estimates in plots? STRETCH GOAL KH
+- Bring Shiny graphs into package
 
 
 # Discussion questions
@@ -51,15 +33,12 @@ This list is not complete - to be added to and checked off by everyone.
 - Not concerned with much testing of package.
 
 # Manuscript
-- presubmission inquiry: abstract and introduction plus outline/structure - TBD whether we do it.
-- draft on 11/31 that feels close to final - then think about presubmission inquiry.
-- Luke finishing vignette and plugging in.
-- Kristen H to do first draft of conclusion.
+- All clean up manuscript by early next week
 - Kristin P will write abstract.
+- Send to DN authors
 
 # Video
-- Reach out to video staff with plans and questions (Zarni, 7/31)
-- Budget video (Kristin, 8/15)
+- review script
 
 # Presentation
 - Success! Kristin P has saved the slides for attaching to our final performance report. 
