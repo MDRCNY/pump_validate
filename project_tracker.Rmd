@@ -9,10 +9,14 @@ This list is not complete - to be added to and checked off by everyone.
 - Add to "Description" file: Development of this app was supported by a grant for the Institute for Education Sciences (R305D170030)
           - KH to paste in
 - Fix so that can insert MDES of zero in middle of vector : KH
+- --- otherwise add instructions to app to put zeros at end of vector
 - Adjust so can pass in "none" as MTP for all M: KH
 - Error bars on power estimates in plots? STRETCH GOAL KH
 - Bring Shiny graphs into package: KH made progress, Luke adding to returned objects from pump functions so both long and wide included
 - KH cleaning up validation function, adding verbose = true option
+- after finalizing manuscript, pull out vignette for R package
+-         KH checking not problem for journal
+- Shiny app will continue to pull from github. 
 
 
 # Discussion questions
@@ -27,8 +31,7 @@ This list is not complete - to be added to and checked off by everyone.
 - level of detail introducing MTP
 
 # Shiny app
-- Aim to have draft to share in next meeting
-- Talk to Zarni about ability to do simple git pulls for updates
+- in separate document
 
 # User testing
 - Luke and Kristen have some possible test users to reach out to
@@ -36,8 +39,8 @@ This list is not complete - to be added to and checked off by everyone.
 
 # Manuscript
 - All clean up manuscript by early next week
-- Kristin P will write abstract.
-- Send to DN authors
+- **Kristin P will write abstract.**
+- **KP implementing comments from DN authors**
 
 # Video
 - review script
