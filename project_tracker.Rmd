@@ -6,11 +6,13 @@ This list is not complete - to be added to and checked off by everyone.
 - Submit package to CRAN - including JSS submission as vignettes in the package. 
 - Issue: when estimating lower-level sample sizes, it's possible for range of sample sizes to produce same power. Kristen refining returned objected to contain information of issue. Luke refining diagnostic plot. Kristen working with Zarni to return note in Shiny, along with revised version of info in vignette. 
      - KH just needs to work with Zarni
-- Kristin will send notes about credit - including ies grant number.
+- Add to "Description" file: Development of this app was supported by a grant for the Institute for Education Sciences (R305D170030)
+          - KH to paste in
 - Fix so that can insert MDES of zero in middle of vector : KH
 - Adjust so can pass in "none" as MTP for all M: KH
 - Error bars on power estimates in plots? STRETCH GOAL KH
-- Bring Shiny graphs into package
+- Bring Shiny graphs into package: KH made progress, Luke adding to returned objects from pump functions so both long and wide included
+- KH cleaning up validation function, adding verbose = true option
 
 
 # Discussion questions
