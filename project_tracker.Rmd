@@ -10,7 +10,16 @@ This list is not complete - to be added to and checked off by everyone.
 - Fix so that can insert MDES of zero in middle of vector : KH
 - Adjust so can pass in "none" as MTP for all M: KH
 - Error bars on power estimates in plots? STRETCH GOAL KH
-- Bring Shiny graphs into package
+- Bring Shiny graphs into package KH, then Luke
+- Silence ROxygen documentation for non-exported functions
+
+
+### Low priority R
+
+- What to do if MDES has zeros in the middle, not the end? KH
+- For single outcome, have min1 and complete columns in printout?  Remove. KH
+- Add flat flag message to the summary and print methods of mdes, etc.  LWM
+
 
 
 # Discussion questions

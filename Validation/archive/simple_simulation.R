@@ -51,14 +51,13 @@ sim.params.list = list(
   , p.j = 0.5        # Binomial assignment probability within a school
   , tnum = 10000     # Number of test statistics (samples) for all procedures other than Westfall-Young
   , ncl = 2          # Number of computer clusters (max on RStudio Server is 16)
-  , check = FALSE    # Run checks such as printing out quantities
 )
 
 # set user-set model parameters
 
 # assumes same correlation structure across all outcomes, covariates, random effects, etc.
 # assumes equal sized schools that are evenly split between districts
-M = 2
+M = 4
 rho.default = 0.5
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 
@@ -137,7 +136,7 @@ if ( FALSE ) {
   model.params.list
   names( model.params.list )
   
-  samp.full <- gen_full_data(model.params.list, check = FALSE )
+  samp.full <- gen_full_data( model.params.list )
   class( samp.full )
   names( samp.full )
   
@@ -194,7 +193,7 @@ if ( FALSE ) {
 
 one_run = function( model.params.list ) {
   
-  samp.full <- gen_full_data(model.params.list, check = FALSE )
+  samp.full <- gen_full_data(model.params.list )
   
   # Randomize
   #T.ijk <- cluster_ra( samp.full$ID$S.jk, prob = sim.params.list$p.j )
@@ -255,6 +254,9 @@ one_experiment = function( psi, R = 10 ) {
   
   rps
 }
+
+
+##### Run the simulation #####
 
 
 

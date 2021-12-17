@@ -107,6 +107,9 @@ convert.vec.to.filename <- function(vec)
 #' @examples
 gen_corr_matrix = function(M, rho.scalar)
 {
+  stopifnot( M > 0 )
+  stopifnot( !is.null( rho.scalar ) )
+  
   rho.matrix = diag(M) + rho.scalar * matrix(1, M, M) - rho.scalar * diag(M)
   return(rho.matrix)
 }
@@ -123,6 +126,12 @@ gen_corr_matrix = function(M, rho.scalar)
 #'
 #' @examples
 gen_cov_matrix = function(D, var1.vec, var2.vec, rho.matrix) {
+  stopifnot( !is.null( rho.matrix ) )
+  stopifnot( is.matrix( rho.matrix ) )
+  stopifnot( dim( rho.matrix ) == c( D, D ) )
+  stopifnot( length( var1.vec ) == D )
+  stopifnot( length( var2.vec ) == D )
+  
   Sigma <- matrix(NA, D, D)
   for(k in 1:D) {
     for(l in 1:D) {
