@@ -19,8 +19,6 @@ output:
     fig_height: 8
     fig_width: 10
     toc: yes
-editor_options: 
-  chunk_output_type: console
 ---
 
 Design: Blocked RCT, with 2 levels, and randomization done at level 1 (individual level).

@@ -26,8 +26,6 @@ This list is not complete - to be added to and checked off by everyone.
 - For single outcome, have min1 and complete columns in printout?  Remove. KH
 - Add flat flag message to the summary and print methods of mdes, etc.  LWM
 
-
-
 # Discussion questions
 
 - two-tailed power

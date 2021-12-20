@@ -59,7 +59,6 @@ gen_full_data <- function(model.params.list) {
   rho.C    <- model.params.list[['rho.C']];   gamma   <- model.params.list[['gamma']];
   rho.r    <- model.params.list[['rho.r']]
   
-  
   # ------------------------------#
   # Generate school and district IDs
   # ------------------------------#
@@ -77,14 +76,6 @@ gen_full_data <- function(model.params.list) {
   
   gen.level.three.data = function(K, M, rho.V, sigma.V, eta0.sq, eta1.sq, rho.w0, rho.w1, kappa.w)
   {
-    stopifnot( !is.null( rho.V ) )
-    stopifnot( !is.null( sigma.V ) )
-    stopifnot( !is.null( rho.w0 ) )
-    stopifnot( !is.null( rho.w1 ) )
-    stopifnot( !is.null( eta0.sq ) )
-    stopifnot( !is.null( eta1.sq ) )
-    stopifnot( !is.null( kappa.w ) )
-    
     # generate district covariates
     Sigma.V  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.V)
     V.k      <- matrix(mvrnorm(K, mu = rep(0, M), Sigma = Sigma.V), K, M)
@@ -106,17 +97,7 @@ gen_full_data <- function(model.params.list) {
   }
 
   if ( has.level.three ) {
-    stopifnot( !is.null( rho.w0 ) )
-    stopifnot( !is.null( rho.V ) )
-    stopifnot( !is.null( rho.w1 ) )
-    stopifnot( !is.null( rho.w0 ) )
-    stopifnot( !is.null( sigma.V ) )
-    
-    level.three.data <- gen.level.three.data(K=K, M=M, rho.V=rho.V, 
-                                             sigma.V = sigma.V, 
-                                             eta0.sq = eta0.sq, eta1.sq=eta1.sq, 
-                                             rho.w0=rho.w0, rho.w1=rho.w1, 
-                                             kappa.w=kappa.w) 
+    level.three.data <- gen.level.three.data(K, M, rho.V, sigma.V, eta0.sq, eta1.sq, rho.w0, rho.w1, kappa.w) 
     V.k <- level.three.data[['V.k']]
     w0.k <- level.three.data[['w0.k']]
     w1.k <- level.three.data[['w1.k']]

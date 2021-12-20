@@ -59,7 +59,7 @@ user.params.list <- list(
   , J = 20                                # number of schools
   , K = 2                                 # number of districts (still required for two-level model)
   , N = 100*20                            # number of individuals
-  , nbar = 100                             # number of individuals per school
+  , n.j = 100                             # number of individuals per school
   , rho.default = rho.default             # default rho value (optional)
   , S.jk = NULL                            # N-length vector of indiv school assignments (optional)
   , S.k = NULL                            # N-length vector of indiv district assignments (optional)
@@ -73,9 +73,8 @@ user.params.list <- list(
   , ICC.3 = rep(0, M)                     # district intraclass correlation
   # for 2-level model, set to 0
   , omega.3 = 0                           # ratio of district effect size variability to random effects variability
-  , rho.w0 = default.rho.matrix            # MxM matrix of correlations for district random effects
-  , rho.w1 = default.rho.matrix            # MxM matrix of correlations for district random effects
-  , rho.V = default.rho.matrix            # MxM matrix of correlations for district impacts
+  , rho.w = default.rho.matrix            # MxM matrix of correlations for district random effects
+  , rho.z = default.rho.matrix            # MxM matrix of correlations for district impacts
   , theta.wz = matrix(0, M, M)            # MxM matrix of correlations between district random effects and impacts
   ################################################## level 2: schools
   , R2.2 = rep(0, M)                      # percent of school variation explained by school covariates
