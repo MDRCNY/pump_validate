@@ -11,26 +11,26 @@
 # remotes::install_github("lmiratrix/blkvar")
 
 # Loading the libraries
-library(abind)
+# library(abind)
 library(blkvar)
-library(dplyr)       # for combing data frames
-library(foreach)
+# library(dplyr)       # for combing data frames
+# library(foreach)
 library(ggplot2)
-library(gridExtra)
+# library(gridExtra)
 library(here)        # for relative file paths
 library(lme4)        # for modeling
-library(MASS)
-library(nlme)
-library(parallel)
-library(pkgcond)     # for suppress_messages
+# library(MASS)
+# library(nlme)
+# library(parallel)
+# library(pkgcond)     # for suppress_messages
 library(PowerUpR)    # for checking with another power estimation function
 library(randomizr)   # for treatment assignment
-library(RcppEigen)   # rcpp for speed issues
-library(reshape2)
-library(rlist)
-library(snow)        # for parallel coding
-library(tibble)      # a modern take on data frames
-library(tictoc)      # for timing
+# library(RcppEigen)   # rcpp for speed issues
+# library(reshape2)
+# library(rlist)
+# library(snow)        # for parallel coding
+# library(tibble)      # a modern take on data frames
+# library(tictoc)      # for timing
 
 ################
 library(PUMP)
@@ -41,7 +41,7 @@ library(PUMP)
 #'
 #' Loop through different simulations like in Table C.3 of the paper
 #'
-#' @param user.params.list list of user-inputted parameters that feed into the DGP
+#' @param model.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
 #' @param q Index of simulation iteration if parallelizing across simulations
@@ -51,10 +51,10 @@ library(PUMP)
 #' @export
 #'
 #' @examples
-validate_power <- function(user.params.list, sim.params.list, design, q = 1, overwrite = TRUE)
+validate_power <- function(model.params.list, sim.params.list, design, q = 1, overwrite = TRUE)
 {
-  if( (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) > 1) |
-      (user.params.list[['M']] == 1 & length(sim.params.list[['procs']]) == 1 & !('Bonferroni' %in% sim.params.list[['procs']] )))
+  if( (model.params.list[['M']] == 1 & length(sim.params.list[['procs']]) > 1) |
+      (model.params.list[['M']] == 1 & length(sim.params.list[['procs']]) == 1 & !('Bonferroni' %in% sim.params.list[['procs']] )))
   {
     stop(print("Multiple testing corrections are not needed when M = 1. Please change multiple testing procedures or increase M."))
   } 
@@ -62,7 +62,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
   t1 = Sys.time()
   
   # for saving out and reading in files based on simulation parameters
-  params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+  params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
   message(paste('Power validation for:', params.file.base))
   
   current.file <- find_file(params.file.base, type = 'power')
@@ -103,7 +103,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
     adjp.filename <- paste0(params.file.base, "adjp_", q, ".RDS")
     if( (overwrite | length(adjp.files) == 0) & sim.params.list[['runSim']]){
       message('Running simulation')
-      adjp.proc <- est_power_sim(user.params.list, sim.params.list, design, cl)
+      adjp.proc <- est_power_sim(model.params.list, sim.params.list, design, cl)
       saveRDS(adjp.proc, file = paste0(intermediate.data.dir, adjp.filename))
     } else {
       if(length(adjp.files) > 0)
@@ -136,7 +136,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
         proc.results <- PUMP::get_power_results(
           adj.pval.mat = adjp.proc[,,p],
           unadj.pval.mat = adjp.proc[,,'rawp'],
-          ind.nonzero = user.params.list[['ATE_ES']] > 0,
+          ind.nonzero = model.params.list[['MDES']] > 0,
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE
         )
@@ -198,135 +198,135 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       if(design == 'd1.1_m2fc')
       {
         powerup_results <- power.bira2c1(
-          es = user.params.list[['ATE_ES']][1],
+          es = model.params.list[['MDES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
           p = sim.params.list[['Tbar']],
           g1 = 1,
-          r21 = user.params.list[['R2.1']][1],
-          n = user.params.list[['nbar']],
-          J = user.params.list[['J']]
+          r21 = model.params.list[['R2.1']][1],
+          n = model.params.list[['nbar']],
+          J = model.params.list[['J']]
         )
       } else if(design == 'd2.1_m2fc')
       {
         powerup_results <- power.bira2c1(
-          es = user.params.list[['ATE_ES']][1],
+          es = model.params.list[['MDES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
           p = sim.params.list[['Tbar']],
           g1 = 1,
-          r21 = user.params.list[['R2.1']][1],
-          n = user.params.list[['nbar']],
-          J = user.params.list[['J']]
+          r21 = model.params.list[['R2.1']][1],
+          n = model.params.list[['nbar']],
+          J = model.params.list[['J']]
         )
       } else if(design == 'd2.1_m2ff')
       {
         powerup_results <- power.bira2f1(
-          es = user.params.list[['ATE_ES']][1],
+          es = model.params.list[['MDES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
           p = sim.params.list[['Tbar']],
           g1 = 1,
-          r21 = user.params.list[['R2.1']][1],
-          n = user.params.list[['nbar']],
-          J = user.params.list[['J']]
+          r21 = model.params.list[['R2.1']][1],
+          n = model.params.list[['nbar']],
+          J = model.params.list[['J']]
         )
       } else if(design == 'd2.1_m2fr')
       {
         powerup_results <- power.bira2r1(
-          es = user.params.list[['ATE_ES']][1],
+          es = model.params.list[['MDES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
           p = sim.params.list[['Tbar']],
           g2 = 1,
-          rho2 = user.params.list[['ICC.2']][1],
-          omega2 = user.params.list[['omega.2']],
-          r21 = user.params.list[['R2.1']][1],
+          rho2 = model.params.list[['ICC.2']][1],
+          omega2 = model.params.list[['omega.2']],
+          r21 = model.params.list[['R2.1']][1],
           r2t2 = 0,
-          n = user.params.list[['nbar']],
-          J = user.params.list[['J']]
+          n = model.params.list[['nbar']],
+          J = model.params.list[['J']]
         )
       } else if(design == 'd3.1_m3rr2rr')
       {
         powerup_results <- power.bira3r1(
-          es = user.params.list[['ATE_ES']][1],
+          es = model.params.list[['MDES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
           p = sim.params.list[['Tbar']],
           g3 = 1,
-          rho2 = user.params.list[['ICC.2']][1],
-          rho3 = user.params.list[['ICC.3']][1],
-          omega2 = user.params.list[['omega.2']],
-          omega3 = user.params.list[['omega.3']],
-          r21 = user.params.list[['R2.1']][1],
+          rho2 = model.params.list[['ICC.2']][1],
+          rho3 = model.params.list[['ICC.3']][1],
+          omega2 = model.params.list[['omega.2']],
+          omega3 = model.params.list[['omega.3']],
+          r21 = model.params.list[['R2.1']][1],
           r2t2 = 0, r2t3 = 0,
-          n = user.params.list[['nbar']],
-          J = user.params.list[['J']],
-          K = user.params.list[['K']]
+          n = model.params.list[['nbar']],
+          J = model.params.list[['J']],
+          K = model.params.list[['K']]
         )
       } else if(design == c('d2.2_m2rc'))
       {
         powerup_results <- power.cra2r2(
-          es = user.params.list[['ATE_ES']][1],
+          es = model.params.list[['MDES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
           p = sim.params.list[['Tbar']],
           g2 = 1,
-          rho2 = user.params.list[['ICC.2']][1],
-          r21 = user.params.list[['R2.1']][1],
-          r22 = user.params.list[['R2.2']][1],
-          n = user.params.list[['nbar']],
-          J = user.params.list[['J']]
+          rho2 = model.params.list[['ICC.2']][1],
+          r21 = model.params.list[['R2.1']][1],
+          r22 = model.params.list[['R2.2']][1],
+          n = model.params.list[['nbar']],
+          J = model.params.list[['J']]
         )
       } else if(design == c('d3.3_m3rc2rc'))
       {
         powerup_results <- power.cra3r3(
-          es = user.params.list[['ATE_ES']][1],
+          es = model.params.list[['MDES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
           p = sim.params.list[['Tbar']],
           g3 = 1,
-          rho2 = user.params.list[['ICC.2']][1],
-          rho3 = user.params.list[['ICC.3']][1],
-          r21 = user.params.list[['R2.1']][1],
-          r22 = user.params.list[['R2.2']][1],
-          r23 = user.params.list[['R2.3']][1],
-          n = user.params.list[['nbar']],
-          J = user.params.list[['J']],
-          K = user.params.list[['K']]
+          rho2 = model.params.list[['ICC.2']][1],
+          rho3 = model.params.list[['ICC.3']][1],
+          r21 = model.params.list[['R2.1']][1],
+          r22 = model.params.list[['R2.2']][1],
+          r23 = model.params.list[['R2.3']][1],
+          n = model.params.list[['nbar']],
+          J = model.params.list[['J']],
+          K = model.params.list[['K']]
         )
       } else if(design == c('d3.2_m3ff2rc'))
       {
         powerup_results <- power.bcra3f2(
-          es = user.params.list[['ATE_ES']][1],
+          es = model.params.list[['MDES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
           p = sim.params.list[['Tbar']],
           g2 = 1,
-          rho2 = user.params.list[['ICC.2']][1],
-          r21 = user.params.list[['R2.1']][1],
-          r22 = user.params.list[['R2.2']][1],
-          n = user.params.list[['nbar']],
-          J = user.params.list[['J']],
-          K = user.params.list[['K']]
+          rho2 = model.params.list[['ICC.2']][1],
+          r21 = model.params.list[['R2.1']][1],
+          r22 = model.params.list[['R2.2']][1],
+          n = model.params.list[['nbar']],
+          J = model.params.list[['J']],
+          K = model.params.list[['K']]
         )
       } else if(design == c('d3.2_m3rr2rc'))
       {
         powerup_results <- power.bcra3r2(
-          es = user.params.list[['ATE_ES']][1],
+          es = model.params.list[['MDES']][1],
           alpha = sim.params.list[['alpha']],
           two.tailed = TRUE,
           p = sim.params.list[['Tbar']],
           g3 = 1,
-          rho2 = user.params.list[['ICC.2']][1],
-          rho3 = user.params.list[['ICC.3']][1],
-          omega3 = user.params.list[['omega.3']],
-          r21 = user.params.list[['R2.1']][1],
-          r22 = user.params.list[['R2.2']][1],
+          rho2 = model.params.list[['ICC.2']][1],
+          rho3 = model.params.list[['ICC.3']][1],
+          omega3 = model.params.list[['omega.3']],
+          r21 = model.params.list[['R2.1']][1],
+          r22 = model.params.list[['R2.2']][1],
           r2t3 = 0,
-          n = user.params.list[['nbar']],
-          J = user.params.list[['J']],
-          K = user.params.list[['K']]
+          n = model.params.list[['nbar']],
+          J = model.params.list[['J']],
+          K = model.params.list[['K']]
         )
       } else {
         stop(paste('Unknown design:', design)) 
@@ -382,29 +382,29 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       
       # for level 3 data
       ICC.3 = NULL
-      if(is.null(user.params.list[['ICC.3']])){
+      if(is.null(model.params.list[['ICC.3']])){
         ICC.3 = 0
       } else
       {
-        ICC.3 = user.params.list[['ICC.3']]
+        ICC.3 = model.params.list[['ICC.3']]
       }
       
       for (MTP in sim.params.list[['procs']]){
         pump_results_iter <- pump_power(
           design = design,
           MTP = MTP,
-          MDES = user.params.list[['ATE_ES']],
-          M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
-          nbar = user.params.list[['nbar']],
+          MDES = model.params.list[['MDES']],
+          M = model.params.list[['M']], J = model.params.list[['J']], K = model.params.list[['K']],
+          nbar = model.params.list[['nbar']],
           Tbar = sim.params.list[['Tbar']],
           alpha = sim.params.list[['alpha']],
-          numCovar.1 = user.params.list[['numCovar.1']],
-          numCovar.2 = user.params.list[['numCovar.2']],
-          numCovar.3 = user.params.list[['numCovar.3']],
-          R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
-          ICC.2 = user.params.list[['ICC.2']], ICC.3 = ICC.3,
-          rho = user.params.list[['rho.default']],
-          omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
+          numCovar.1 = model.params.list[['numCovar.1']],
+          numCovar.2 = model.params.list[['numCovar.2']],
+          numCovar.3 = model.params.list[['numCovar.3']],
+          R2.1 = model.params.list[['R2.1']], R2.2 = model.params.list[['R2.2']], R2.3 = model.params.list[['R2.3']],
+          ICC.2 = model.params.list[['ICC.2']], ICC.3 = ICC.3,
+          rho = model.params.list[['rho.default']],
+          omega.2 = model.params.list[['omega.2']], omega.3 = model.params.list[['omega.3']],
           tnum = sim.params.list[['tnum']], B = sim.params.list[['B']],
           cl = cl
         )
@@ -465,7 +465,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
 #' Validate MDES calculations
 #'
 #'
-#' @param user.params.list list of user-inputted parameters that feed into the DGP
+#' @param model.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
 #' @param overwrite If simulation output files already exist, whether to overwrite
@@ -474,7 +474,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
 #' @export
 #'
 #' @examples
-validate_mdes <- function(user.params.list, sim.params.list, design,
+validate_mdes <- function(model.params.list, sim.params.list, design,
                           power.definition = 'D1indiv', plot.path = FALSE, overwrite = TRUE) {
 
   if(sim.params.list[['parallel']])
@@ -486,7 +486,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
   }
   
   # for saving out and reading in files based on simulation parameters
-  params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+  params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
   print(paste('MDES validation for:', params.file.base))
   
   current.file <- find_file(params.file.base, type = 'mdes')
@@ -512,30 +512,30 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
       
       # for level 3 data
       ICC.3 = NULL
-      if(is.null(user.params.list[['ICC.3']])){
+      if(is.null(model.params.list[['ICC.3']])){
         ICC.3 = 0
       } else
       {
-        ICC.3 = user.params.list[['ICC.3']]
+        ICC.3 = model.params.list[['ICC.3']]
       }
       
       mdes_results_iter <- pump_mdes(
         design = design,
         MTP = MTP,
-        M = user.params.list[['M']], J = user.params.list[['J']], K = user.params.list[['K']],
+        M = model.params.list[['M']], J = model.params.list[['J']], K = model.params.list[['K']],
         target.power = target.power,
         power.definition = power.definition,
         tol = sim.params.list[['tol']],
-        nbar = user.params.list[['nbar']],
+        nbar = model.params.list[['nbar']],
         Tbar = sim.params.list[['Tbar']],
         alpha = sim.params.list[['alpha']],
-        numCovar.1 = user.params.list[['numCovar.1']],
-        numCovar.2 = user.params.list[['numCovar.2']],
-        numCovar.3 = user.params.list[['numCovar.3']],
-        R2.1 = user.params.list[['R2.1']], R2.2 = user.params.list[['R2.2']], R2.3 = user.params.list[['R2.3']],
-        ICC.2 = user.params.list[['ICC.2']], ICC.3 = ICC.3,
-        rho = user.params.list[['rho.default']],
-        omega.2 = user.params.list[['omega.2']], omega.3 = user.params.list[['omega.3']],
+        numCovar.1 = model.params.list[['numCovar.1']],
+        numCovar.2 = model.params.list[['numCovar.2']],
+        numCovar.3 = model.params.list[['numCovar.3']],
+        R2.1 = model.params.list[['R2.1']], R2.2 = model.params.list[['R2.2']], R2.3 = model.params.list[['R2.3']],
+        ICC.2 = model.params.list[['ICC.2']], ICC.3 = ICC.3,
+        rho = model.params.list[['rho.default']],
+        omega.2 = model.params.list[['omega.2']], omega.3 = model.params.list[['omega.3']],
         B = sim.params.list[['B']],
         start.tnum = sim.params.list[['start.tnum']],
         final.tnum = sim.params.list[['final.tnum']],
@@ -564,7 +564,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
     
     mdes_compare_results[,2:3] <- apply(mdes_compare_results[,2:3], 2, as.numeric)
     mdes_compare_results <- as.data.frame(mdes_compare_results)
-    mdes_compare_results = cbind(mdes_compare_results, user.params.list[['ATE_ES']][1])
+    mdes_compare_results = cbind(mdes_compare_results, model.params.list[['MDES']][1])
     colnames(mdes_compare_results) <- c('MTP', 'Adjusted MDES', paste(power.definition, 'Power'), 'Target MDES')
     rownames(mdes_compare_results) <- NULL
     
@@ -586,7 +586,7 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
 #' Estimating sample size
 #'
 #'
-#' @param user.params.list list of user-inputted parameters that feed into the DGP
+#' @param model.params.list list of user-inputted parameters that feed into the DGP
 #' @param sim.params.list list of simulation parameters
 #' @param design RCT design (see list/naming convention)
 #' @param overwrite If simulation output files already exist, whether to overwrite
@@ -595,12 +595,12 @@ validate_mdes <- function(user.params.list, sim.params.list, design,
 #' @export
 #'
 #' @examples
-validate_sample <- function(user.params.list, sim.params.list, design,
+validate_sample <- function(model.params.list, sim.params.list, design,
                             power.definition = 'D1indiv', typesample,
                             plot.path = FALSE, overwrite = TRUE) {
   
   # for saving out and reading in files based on simulation parameters
-  params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+  params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
   print(paste(
     'Sample validation with power def:', power.definition,
     'and typesample', typesample,
@@ -610,15 +610,15 @@ validate_sample <- function(user.params.list, sim.params.list, design,
   current.file <- find_file(params.file.base, type = 'sample')
   
   # convert to a single MDES
-  user.params.list[['ATE_ES']] <- user.params.list[['ATE_ES']][1]
+  model.params.list[['MDES']] <- model.params.list[['MDES']][1]
   
   # nullify parameters
   if ( typesample == "nbar" ) {
-    user.params.list[['nbar']] <- NULL
+    model.params.list[['nbar']] <- NULL
   } else if ( typesample == "J" ) {
-    user.params.list[['J']] <- NULL
+    model.params.list[['J']] <- NULL
   } else if ( typesample == "K" ) {
-    user.params.list[['K']] <- NULL
+    model.params.list[['K']] <- NULL
   }
   
   if(overwrite | length(current.file) == 0)
@@ -651,38 +651,38 @@ validate_sample <- function(user.params.list, sim.params.list, design,
       
       # for level 3 data
       ICC.3 = NULL
-      if(is.null(user.params.list[['ICC.3']])){
+      if(is.null(model.params.list[['ICC.3']])){
         ICC.3 = 0
       } else
       {
-        ICC.3 = user.params.list[['ICC.3']]
+        ICC.3 = model.params.list[['ICC.3']]
       }
       
       sample_results_iter <- pump_sample(
         design = design,
         MTP = MTP,
         typesample = typesample,
-        MDES = user.params.list[['ATE_ES']],
-        M = user.params.list[['M']],
-        J = user.params.list[['J']],
-        K = user.params.list[['K']],
+        MDES = model.params.list[['MDES']],
+        M = model.params.list[['M']],
+        J = model.params.list[['J']],
+        K = model.params.list[['K']],
         target.power = target.power,
         power.definition = power.definition,
         tol = sim.params.list[['tol']],
-        nbar = user.params.list[['nbar']],
+        nbar = model.params.list[['nbar']],
         Tbar = sim.params.list[['Tbar']],
         alpha = sim.params.list[['alpha']],
-        numCovar.1 = user.params.list[['numCovar.1']],
-        numCovar.2 = user.params.list[['numCovar.2']],
-        numCovar.3 = user.params.list[['numCovar.3']],
-        R2.1 = user.params.list[['R2.1']],
-        R2.2 = user.params.list[['R2.2']],
-        R2.3 = user.params.list[['R2.3']],
-        ICC.2 = user.params.list[['ICC.2']],
+        numCovar.1 = model.params.list[['numCovar.1']],
+        numCovar.2 = model.params.list[['numCovar.2']],
+        numCovar.3 = model.params.list[['numCovar.3']],
+        R2.1 = model.params.list[['R2.1']],
+        R2.2 = model.params.list[['R2.2']],
+        R2.3 = model.params.list[['R2.3']],
+        ICC.2 = model.params.list[['ICC.2']],
         ICC.3 = ICC.3,
-        rho = user.params.list[['rho.default']],
-        omega.2 = user.params.list[['omega.2']],
-        omega.3 = user.params.list[['omega.3']],
+        rho = model.params.list[['rho.default']],
+        omega.2 = model.params.list[['omega.2']],
+        omega.3 = model.params.list[['omega.3']],
         B = sim.params.list[['B']],
         start.tnum = sim.params.list[['start.tnum']],
         final.tnum = sim.params.list[['final.tnum']],
@@ -735,28 +735,28 @@ if(FALSE)
   numZero = NULL;
   target.power = 0.8;
   
-  M = user.params.list[['M']];
-  ATE_ES = user.params.list[['ATE_ES']]
-  MDES = user.params.list[['ATE_ES']]
-  J = user.params.list[['J']];
-  K = user.params.list[['K']];
-  nbar = user.params.list[['nbar']];
+  M = model.params.list[['M']];
+  MDES = model.params.list[['MDES']]
+  MDES = model.params.list[['MDES']]
+  J = model.params.list[['J']];
+  K = model.params.list[['K']];
+  nbar = model.params.list[['nbar']];
   power.definition = "D1indiv";
   tol = sim.params.list[['tol']];
   Tbar = sim.params.list[['Tbar']];
   alpha = sim.params.list[['alpha']];
-  R2.1 = user.params.list[['R2.1']];
-  R2.2 = user.params.list[['R2.2']];
-  R2.3 = user.params.list[['R2.3']];
-  ICC.2 = user.params.list[['ICC.2']];
-  ICC.3 = user.params.list[['ICC.3']];
-  rho = user.params.list[['rho.default']];
+  R2.1 = model.params.list[['R2.1']];
+  R2.2 = model.params.list[['R2.2']];
+  R2.3 = model.params.list[['R2.3']];
+  ICC.2 = model.params.list[['ICC.2']];
+  ICC.3 = model.params.list[['ICC.3']];
+  rho = model.params.list[['rho.default']];
   rho.matrix = NULL;
-  omega.2 = user.params.list[['omega.2']];
-  omega.3 = user.params.list[['omega.3']];
-  numCovar.1 = user.params.list[['numCovar.1']];
-  numCovar.2 = user.params.list[['numCovar.2']];
-  numCovar.3 = user.params.list[['numCovar.3']];
+  omega.2 = model.params.list[['omega.2']];
+  omega.3 = model.params.list[['omega.3']];
+  numCovar.1 = model.params.list[['numCovar.1']];
+  numCovar.2 = model.params.list[['numCovar.2']];
+  numCovar.3 = model.params.list[['numCovar.3']];
   tnum = sim.params.list[['tnum']]; B = sim.params.list[['B']];
   max.cum.tnum = sim.params.list[['max.cum.tnum']];
   

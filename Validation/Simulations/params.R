@@ -5,8 +5,6 @@
 
 # MTP Westfall-Young
 source(here::here("Validation/Simulations", "adjust_WY.R"))
-# data generating function
-source(here::here("Validation/Simulations", "gen_data.R"))
 # Estimate power for each of the designs by running data generating function S sample times and fitting models to estimate power.
 source(here::here("Validation/Simulations", "estimate_power_with_simulation.R"))
 # Wrapping and creating 
@@ -19,7 +17,7 @@ source(here::here("Validation/Simulations", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 1000                     # Number of samples for Monte Carlo Simulation
+  S = 100                    # Number of samples for Monte Carlo Simulation
   , Q = 1                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
@@ -33,9 +31,9 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , procs = c("Bonferroni", "BH", "Holm") # Multiple testing procedures
-  , runSim = FALSE        # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = TRUE        # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = TRUE       # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
+  , runSim = TRUE       # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = TRUE       # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPowerUp = TRUE      # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
 #------------------------------------------------------------------#
@@ -76,38 +74,38 @@ M <- 3
 rho.default <- 0.5
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 
-user.params.list <- list(
+model.params.list <- list(
   M = 3                                   # number of outcomes
   , J = 30                                # number of schools
   , K = 10                                # number of districts (for two-level model, set K = 1)
   , nbar = 50                             # number of individuals per school
-  , rho.default = rho.default             # default rho value (optional)
+  , rho.default = 0.5                     # default rho value
   , S.id = NULL                           # N-length vector of indiv school assignments (optional)
   , D.id = NULL                           # N-length vector of indiv district assignments (optional)
   ################################################## grand mean otucome and impact
   , Xi0 = 0                               # scalar grand mean outcome under no treatment
-  , ATE_ES = rep(0.125, M)                # minimum detectable effect size      
+  , MDES = rep(0.125, M)                # minimum detectable effect size      
   ################################################## level 3: districts
   , numCovar.3 = 1                        # number of district covariates
   , R2.3 = rep(0.1, M)                    # percent of district variation explained by district covariates
-  , rho.V = default.rho.matrix            # MxM correlation matrix of district covariates
+  # , rho.V = default.rho.matrix            # MxM correlation matrix of district covariates
   , ICC.3 = rep(0.2, M)                   # district intraclass correlation
   , omega.3 = 0.1                         # ratio of district effect size variability to random effects variability
-  , rho.w0 = default.rho.matrix           # MxM matrix of correlations for district random effects
-  , rho.w1 = default.rho.matrix           # MxM matrix of correlations for district impacts
+  # , rho.w0 = default.rho.matrix           # MxM matrix of correlations for district random effects
+  # , rho.w1 = default.rho.matrix           # MxM matrix of correlations for district impacts
   , kappa.w = matrix(0, M, M)             # MxM matrix of correlations between district random effects and impacts
   ################################################## level 2: schools
   , numCovar.2 = 1                        # number of school covariates
   , R2.2 = rep(0.1, M)                    # percent of school variation explained by school covariates
-  , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
+  # , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
   , ICC.2 = rep(0.2, M)                   # school intraclass correlation	
   , omega.2 = 0.1                         # ratio of school effect size variability to random effects variability
-  , rho.u0 = default.rho.matrix           # MxM matrix of correlations for school random effects
-  , rho.u1 = default.rho.matrix           # MxM matrix of correlations for school impacts
+  # , rho.u0 = default.rho.matrix           # MxM matrix of correlations for school random effects
+  # , rho.u1 = default.rho.matrix           # MxM matrix of correlations for school impacts
   , kappa.u = matrix(0, M, M)             # MxM matrix of correlations between school random effects and impacts
   ################################################## level 1: individuals
   , numCovar.1 = 1                        # number of individual covariates
   , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
-  , rho.C = default.rho.matrix            # MxM correlation matrix of individual covariates
-  , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals 
+  # , rho.C = default.rho.matrix            # MxM correlation matrix of individual covariates
+  # , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals 
 )

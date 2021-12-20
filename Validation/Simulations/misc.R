@@ -96,85 +96,6 @@ convert.vec.to.filename <- function(vec)
   return(out)
 }
 
-# generate correlation matrix when correlation rho is fixed
-#'
-#' @param M dimension of matrix
-#' @param rho.scalar fixed rho value
-#'
-#' @return rho.matrix, M x M matrix with rho.scalar as diag
-#' @export
-#'
-#' @examples
-gen_corr_matrix = function(M, rho.scalar)
-{
-  rho.matrix = diag(M) + rho.scalar * matrix(1, M, M) - rho.scalar * diag(M)
-  return(rho.matrix)
-}
-
-# generate covariance matrix between two variables
-#'
-#' @param D dimension of matrix
-#' @param var1.vec vector of variances of first variable
-#' @param var2.vec vector of variances of second variable
-#' @param rho.matrix matrix of correlations
-#'
-#' @return Sigma matrix of covariance
-#' @export
-#'
-#' @examples
-gen_cov_matrix = function(D, var1.vec, var2.vec, rho.matrix) {
-  Sigma <- matrix(NA, D, D)
-  for(k in 1:D) {
-    for(l in 1:D) {
-      Sigma[k,l] = rho.matrix[k,l] * sqrt(var1.vec[k]) * sqrt(var2.vec[l])
-    }
-  }
-  return(Sigma)
-}
-
-#' generate simple default schools and districts IDs for individual students for
-#' simulations. This assumes equal sized schools in equal sized districts
-#'
-#' @param K number of districts
-#' @param J number of schools per district
-#' @param nbar number of individuals per school
-#'
-#' @return list(S.id, D.id) of school and district assignments for each individual
-#' @export
-#'
-#' @examples
-
-gen_simple_assignments <- function(J, K, nbar){
-
-  N <- nbar * J * K
-
-  # vector of assignments to schools
-  S.id = rep(NA, N)
-  start.index = 1
-  end.index = nbar
-  for(j in 1:(K*J))
-  {
-    S.id[start.index:end.index] = j
-    start.index = end.index + 1
-    end.index = end.index + nbar
-  }
-
-  D.id = rep(NA, N)
-  start.index = 1
-  n.k = N/K
-  end.index = n.k
-  for(k in 1:K)
-  {
-    D.id[start.index:end.index] = k
-    start.index = end.index + 1
-    end.index = end.index + n.k
-  }
-  stopifnot( all( !is.na( S.id ) ) )
-  stopifnot( all( !is.na( D.id ) ) )
-
-  return(list(S.id = S.id, D.id = D.id))
-}
-
 #' read in simulation and user parameters
 #' and return corresponding file name
 #'
@@ -198,7 +119,7 @@ gen_params_file_base <- function(user.params.list, sim.params.list, design)
     sim.params.list[['S']] * sim.params.list[['Q']], "_S_",
     user.params.list[['M']], "_M_",
     B, "_B_",
-    convert.vec.to.filename(user.params.list[['ATE_ES']]),"_ATES_",
+    convert.vec.to.filename(user.params.list[['MDES']]),"_MDES_",
     user.params.list[['J']], "_J_",
     user.params.list[['K']], "_K_",
     user.params.list[['nbar']], "_nbar_",
@@ -259,10 +180,10 @@ find_file <- function(params.file.base, type, intermediate = FALSE)
 {
   if(intermediate)
   {
-    results.files <- list.files(here::here("Validation/data/intermediate_results"), full.names = TRUE)
+    results.files <- list.files(here::here("validation/data/intermediate_results"), full.names = TRUE)
   } else
   {
-    results.files <- list.files(here::here("Validation/data"), full.names = TRUE)
+    results.files <- list.files(here::here("validation/data"), full.names = TRUE)
   }
   
   results.files <- results.files[grep(params.file.base, results.files)]
