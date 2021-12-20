@@ -229,7 +229,7 @@ get.pval.tstat <- function(mod, design, user.params.list) {
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
   } else if(class(mod) == "lmerMod") {
-    df <- pum::calc_df(design, user.params.list[['J']], user.params.list[['K']],
+    df <- PUMP::calc_df(design, user.params.list[['J']], user.params.list[['K']],
                   user.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- (1 - pt(abs(tstat), df = df))*2
@@ -237,7 +237,7 @@ get.pval.tstat <- function(mod, design, user.params.list) {
     pval <- summary(mod)$coef["T.x", "Pr(>|t|)"]
   } else if (class(mod) == "data.frame") {
     # fixed effects models
-    df <- pum::calc_df(design, user.params.list[['J']], user.params.list[['K']],
+    df <- PUMP::calc_df(design, user.params.list[['J']], user.params.list[['K']],
                   user.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- mod$ATE_hat[1]/mod$SE[1]
     pval <- (1 - pt(abs(tstat), df = df))*2
@@ -319,7 +319,8 @@ makelist.samp <-function(samp.obs, T.x) {
 #	Outputs: MxS matrix of adjusted p-values for a single proc 	            #
 # --------------------------------------------------------------------- #
 
-get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id, sim.params.list, model.params.list, design, cl = NULL) {
+get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id,
+                     sim.params.list, model.params.list, design, cl = NULL) {
 
   if(proc == "WY-SD" | proc == "WY-SS"){
     tw1 <- Sys.time()
@@ -338,8 +339,13 @@ get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id, sim.params.list, mod
   else {
     # return a matrix with m columns (domains) and b rows (samples)
     # this needs rawp to be a matrix with m columns and was designed for all samples to be a row.
-    mt.out <- mt.rawp2adjp(rawp, proc, sim.params.list[['alpha']])
-    adjp.proc <- mt.out$adjp[order(mt.out$index), proc]
+    if (proc == "Bonferroni"){
+      adjp.proc <- p.adjust(rawp, method = "bonferroni")
+    } else if (proc == "Holm") {
+      adjp.proc <- p.adjust(rawp, method = "holm")
+    } else if (proc == "BH") {
+      adjp.proc <- p.adjust(rawp, method = "hochberg")
+    }
   }
   return(adjp.proc)
 }

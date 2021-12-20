@@ -6,12 +6,6 @@
 #' ---
 #'
 
-# Installing and Loading Libraries from Bioconductor package
-# if (!requireNamespace("BiocManager", quietly = TRUE)){
-#   install.packages("BiocManager")
-# }
-# BiocManager::install("multtest")
-
 # blkvar package
 # install.packages("remotes")
 # remotes::install_github("lmiratrix/blkvar")
@@ -26,7 +20,6 @@ library(gridExtra)
 library(here)        # for relative file paths
 library(lme4)        # for modeling
 library(MASS)
-library(multtest)    # Multiple Testing Procedures package
 library(nlme)
 library(parallel)
 library(pkgcond)     # for suppress_messages
@@ -40,20 +33,7 @@ library(tibble)      # a modern take on data frames
 library(tictoc)      # for timing
 
 ################
-# local code
-# source(here::here("Methods", "utils.R"))
-# source(here::here("Methods", "pump_power.R"))
-# source(here::here("Methods", "pump_wy.R"))
-# source(here::here("Methods", "utils.R"))
-################
-# install pum from github
-# one way to install pum from github:
-# generate a personal authentication token 'foo'
-# at https://github.com/settings/tokens
-# then run
-# devtools::install_github('MDRCNY/pum-p', ref = 'main', auth_token = 'foo')
-################
-library(pum)
+library(PUMP)
 ################
 
 
@@ -153,7 +133,7 @@ validate_power <- function(user.params.list, sim.params.list, design, q = 1, ove
       power.results <- NULL
       for(p in 1:dim(adjp.proc)[3])
       {
-        proc.results <- pum::get_power_results(
+        proc.results <- PUMP::get_power_results(
           adj.pval.mat = adjp.proc[,,p],
           unadj.pval.mat = adjp.proc[,,'rawp'],
           ind.nonzero = user.params.list[['ATE_ES']] > 0,

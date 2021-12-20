@@ -90,7 +90,7 @@ gen_full_data <- function(model.params.list) {
     Sigma.w.full   <- gen_RE_cov_matrix( Sigma.w0, Sigma.w1, Sigma.w )
     
     # generate full vector of district random effects and impacts
-    w01.k <- mvrnorm(K, mu = rep(0, 2*M), Sigma = Sigma.w.full)
+    w01.k <- matrix(mvrnorm(K, mu = rep(0, 2*M), Sigma = Sigma.w.full), nrow = K, ncol = 2*M)
     w0.k  <- w01.k[,1:M, drop = FALSE]
     w1.k  <- w01.k[,(M+1):(2*M), drop = FALSE]
     return(list(V.k = V.k, w0.k = w0.k, w1.k = w1.k))
