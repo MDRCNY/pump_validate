@@ -50,9 +50,9 @@ if(run.wy)
     user.params.list[['J']] <- 60    
 
     user.params.list[['K']] <- 1
-    user.params.list[['ICC.3']] <- NULL
-    user.params.list[['omega.3']] <- NULL
-    user.params.list[['R2.3']] <- NULL
+    user.params.list[['ICC.3']] <- 0
+    user.params.list[['omega.3']] <- 0
+    user.params.list[['R2.3']] <- 0
 
     # so power isn't too high
     user.params.list[['ATE_ES']] <- rep(0.05, M)
@@ -87,9 +87,9 @@ if(run.wy)
     user.params.list <- user.params.default
     
     user.params.list[['K']] <- 1
-    user.params.list[['ICC.3']] <- NULL
-    user.params.list[['omega.3']] <- NULL
-    user.params.list[['R2.3']] <- NULL
+    user.params.list[['ICC.3']] <- 0
+    user.params.list[['omega.3']] <- 0
+    user.params.list[['R2.3']] <- 0
     user.params.list[['omega.2']] <- 0
     
     # params to help have a decent power
@@ -186,7 +186,7 @@ if(run.d2.1 & run.power)
   # assumptions
   user.params.list[['K']] <- 1
   user.params.list[['J']] <- 20
-  user.params.list[['ICC.3']] <- NULL
+  user.params.list[['ICC.3']] <- 0
   user.params.list[['omega.3']] <- 0
   user.params.list[['R2.3']] <- 0
   
@@ -395,7 +395,7 @@ if(run.d2.1 & run.mdes.ss)
   # assumptions
   user.params.list[['K']] <- 1
   user.params.list[['J']] <- 20
-  user.params.list[['ICC.3']] <- NULL
+  user.params.list[['ICC.3']] <- 0
   user.params.list[['omega.3']] <- 0
   user.params.list[['R2.3']] <- 0
   
@@ -494,7 +494,7 @@ if(run.d2.2 & run.power)
 
   # assumptions
   user.params.list[['K']] <- 1
-  user.params.list[['ICC.3']] <- NULL
+  user.params.list[['ICC.3']] <- 0
   user.params.list[['omega.3']] <- 0
   user.params.list[['R2.3']] <- 0
   user.params.list[['omega.2']] <- 0
@@ -648,7 +648,7 @@ if(run.d2.2 & run.mdes.ss)
   
   # assumptions
   user.params.list[['K']] <- 1
-  user.params.list[['ICC.3']] <- NULL
+  user.params.list[['ICC.3']] <- 0
   user.params.list[['omega.3']] <- 0
   user.params.list[['R2.3']] <- 0
   user.params.list[['omega.2']] <- 0

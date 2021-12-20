@@ -21,4 +21,4 @@ In gen_validation_results_all.R
 make sure overwrite = TRUE or delete all old files in Validation/data/*.RDS
 If desired, run mdes and ss
 
-sbatch Validation/validate.slurm
+sbatch Validation/Simulations/validate_pum.slurm
