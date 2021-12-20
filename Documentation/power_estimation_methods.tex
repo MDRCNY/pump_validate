@@ -1057,7 +1057,7 @@ See the next section for how to translate parameters such as ICC to the DGP para
 \begin{table}[ht!]
 \begin{tabular}{p{1.5cm} | p{15cm}}
 Param											& Description \\ \hline
-$\mb{\rho}^D$									& Correlation matrix of district covariates $\mb{D}_{k\cdot}$ \\
+$\mb{\rho}^V$									& Correlation matrix of district covariates $\mb{V}_{k\cdot}$ \\
 $\mb{\rho}^{w_0}$								& Correlation matrix of district random effects $\mb{w}_{0,k\cdot}$ \\
 $\mb{\rho}^{w_1}$								& Correlation matrix of district impacts $\mb{w}_{1,k\cdot}$\\
 $\boldsymbol{\kappa}^{w}$						& Non-symmetric matrix of correlations between district random effects and impacts, composed of entries $\{\kappa_{m,m^\prime}^{w}\} = Corr(w_{0,km}, w_{1,km^\prime}$) \\ \hline
@@ -1082,11 +1082,11 @@ $\mb{\rho}^r$									& Correlation matrix of individual residuals $\mb{r}_{ijk\
 
 Each outcome has its own district-level covariate, $V_{km}$ with $k = 1, \ldots, K$ and $m = 1, \ldots, M$.
 We have $E(V_{km}) = 0$ and $Var(V_{km}) = 1$.
-We assume a correlation between outcomes, so we define $\mb{\rho}^D$ is a $M \times M$ symmetric correlation matrix, with $\rho^D_{ij}$ is the value in row $i$ and column $j$ of the matrix $\mb{\rho}^D$.
+We assume a correlation between outcomes, so we define $\mb{\rho}^V$ is a $M \times M$ symmetric correlation matrix, with $\rho^V_{ij}$ is the value in row $i$ and column $j$ of the matrix $\mb{\rho}^V$.
 
 \[ \left(
 \begin{array}{c}
-D_{k1}	\\
+V_{k1}	\\
 \vdots 	\\
 V_{km}
 \end{array}\right)

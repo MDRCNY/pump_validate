@@ -8,8 +8,8 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
-run.power = FALSE
-run.mdes.ss = TRUE
+run.power = TRUE
+run.mdes.ss = FALSE
 run.wy = FALSE
 # which designs to run
 run.d2.1 = TRUE

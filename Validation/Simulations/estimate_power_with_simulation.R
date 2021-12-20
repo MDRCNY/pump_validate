@@ -2,17 +2,17 @@
 #'  
 #'  Function to estimate statistical power using simulations (on t-statistics)
 #'
-#' @param user.params.list List of user-supplied parameters
+#' @param model.params.list List of user-supplied parameters
 #' @param sim.params.list List of simulation parameters
 #' @param design RCT design (see list/naming convention)
 #' @param cl cluster object for parallel computing
-est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) {
+est_power_sim <- function(model.params.list, sim.params.list, design, cl = NULL) {
   
   # convert user-inputted parameters into model parameters
-  model.params.list <- convert.params(user.params.list)
+  dgp.params.list <- PUMP::convert_params(model.params.list)
   
   # save out some commonly used variables
-  M <- model.params.list[['M']]
+  M <- dgp.params.list[['M']]
   S <- sim.params.list[['S']]
   Tbar <- sim.params.list[['Tbar']]
   procs <- sim.params.list[['procs']]
@@ -22,7 +22,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
   dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", procs))
   names(adjp.proc) <- c("rawp", procs)
   
-  # how often to print error messages
+  # how often to print messages
   px <- 100
   
   # begin loop through all samples to be generated
@@ -34,40 +34,22 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
-    samp.full <- gen_full_data(model.params.list)
+    samp.full <- PUMP::gen_full_data(dgp.params.list)
     S.id <- samp.full$ID$S.id
     D.id  <- samp.full$ID$D.id
     
-    # unblocked designs
-    if(startsWith(design, 'd1.1'))
-    {
-      T.x <- randomizr::simple_ra(N = user.params.list$nbar, prob = Tbar)
-    # blocked designs
-    } else if(startsWith(design, 'd2.1') | startsWith(design, 'd3.1'))
-    {
-      T.x <- randomizr::block_ra( S.id, prob = Tbar )
-    # cluster designs
-    } else if(startsWith(design, 'd2.2'))
-    { 
-      T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
-    } else if(startsWith(design, 'd3.3'))
-    {
-      T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
-    # blocked cluster designs
-    } else if(startsWith(design, 'd3.2'))
-    {
-      T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
-    } else
-    {
-      stop(print(paste('Design', design, 'not implemented yet')))
-    }
+    T.x <- PUMP::gen_T.x(d_m = design,
+                         S.id = S.id, D.id = D.id,
+                         nbar = dgp.params.list$nbar,
+                         Tbar = sim.params.list$Tbar)
     
+
     # convert full data to observed data
     samp.obs <- samp.full
-    samp.obs$Yobs <- gen_Yobs(samp.full, T.x)
+    samp.obs$Yobs <- PUMP::gen_Yobs(samp.full, T.x)
     
     dat.all <- makelist.samp(samp.obs, T.x) # list length M
-    rawpt.out <- get.rawpt(dat.all, design = design, user.params.list = user.params.list)
+    rawpt.out <- get.rawpt(dat.all, design = design, model.params.list = model.params.list)
     rawp <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['pval']])})
     rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
     
@@ -87,7 +69,7 @@ est_power_sim <- function(user.params.list, sim.params.list, design, cl = NULL) 
         pvals <- get.adjp(
           proc = proc, rawp = rawp, rawt = rawt,
           dat.all = dat.all, S.id = S.id, D.id = S.id,
-          sim.params.list = sim.params.list, model.params.list = model.params.list,
+          sim.params.list = sim.params.list, dgp.params.list = dgp.params.list,
           design = design, cl = cl
         )
         
@@ -223,22 +205,22 @@ make.dummies <- function(dat, dummy.vars, nbar, J){
 #	Outputs: pvalue 									                                      #
 # --------------------------------------------------------------------- #
 
-get.pval.tstat <- function(mod, design, user.params.list) {
+get.pval.tstat <- function(mod, design, model.params.list) {
 
   if(class(mod) == "lm") {
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
   } else if(class(mod) == "lmerMod") {
-    df <- PUMP::calc_df(design, user.params.list[['J']], user.params.list[['K']],
-                  user.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
+    df <- PUMP::calc_df(design, model.params.list[['J']], model.params.list[['K']],
+                  model.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- (1 - pt(abs(tstat), df = df))*2
   } else if (class(mod) == "fastLm") {
     pval <- summary(mod)$coef["T.x", "Pr(>|t|)"]
   } else if (class(mod) == "data.frame") {
     # fixed effects models
-    df <- PUMP::calc_df(design, user.params.list[['J']], user.params.list[['K']],
-                  user.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
+    df <- PUMP::calc_df(design, model.params.list[['J']], model.params.list[['K']],
+                  model.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- mod$ATE_hat[1]/mod$SE[1]
     pval <- (1 - pt(abs(tstat), df = df))*2
   } else
@@ -257,12 +239,12 @@ get.pval.tstat <- function(mod, design, user.params.list) {
 #	Notes: gets raw p-vals for a single dataset and funct at a time	        #
 # --------------------------------------------------------------------- #
 
-get.rawpt <- function(dat.all, design, user.params.list) {
+get.rawpt <- function(dat.all, design, model.params.list) {
   mods.out <- lapply(dat.all, function(m) make.model(m, design))
   mods <- lapply(mods.out, function(m){ return(m[['mod']]) })
   singular <- sapply(mods.out, function(m){ return(m[['singular']]) })
   failed.converge <- sapply(mods.out, function(m){ return(m[['failed.converge']]) })
-  rawpt <- lapply(mods, function(x) get.pval.tstat(x, design, user.params.list))
+  rawpt <- lapply(mods, function(x) get.pval.tstat(x, design, model.params.list))
   return(list(rawpt = rawpt, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
 }
 
@@ -320,7 +302,7 @@ makelist.samp <-function(samp.obs, T.x) {
 # --------------------------------------------------------------------- #
 
 get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id,
-                     sim.params.list, model.params.list, design, cl = NULL) {
+                     sim.params.list, dgp.params.list, design, cl = NULL) {
 
   if(proc == "WY-SD" | proc == "WY-SS"){
     tw1 <- Sys.time()
@@ -330,7 +312,7 @@ get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id,
       S.id = S.id, D.id = D.id,
       proc = proc,
       sim.params.list = sim.params.list,
-      model.params.list = model.params.list,
+      dgp.params.list = dgp.params.list,
       design = design,
       cl = cl
     )
