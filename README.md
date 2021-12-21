@@ -1,6 +1,6 @@
 # Validation repo
 
-This repo contains code and results that validate the power results from the [PUMP package}](https://github.com/MDRCNY/PUMP)
+This repo contains code and results that validate the power results from the [PUMP package](https://github.com/MDRCNY/PUMP)
 
 This package compares the PUMP package power estimation with a simulation-based approach to validate that the
 power calculations are correct.
@@ -49,5 +49,4 @@ The functions return data frames with estimates and lower and upper confidence i
                * __validate_sim_parallel.slurm__: slurm file for running all simulations in parallel on the cloud
                * __validate_pum.slurm__: slurm file for running PUM and PUP results on the cloud
       * __results__
-          * contains 
 
