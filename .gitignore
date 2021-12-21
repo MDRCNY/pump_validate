@@ -50,6 +50,7 @@ inst/doc
 /cache/
 /*_files/
 ManuScript/appendix/appendix_files/*
+manuscript/PUMP_Manuscript_files/*
 
 # Temporary files created by R markdown
 *.utf8.md
