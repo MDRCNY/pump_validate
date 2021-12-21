@@ -1,71 +1,67 @@
-Below is a checklist of tasks to complete for finalizing the PUMP project. For each, we can list champion & target date for completion. 
 
-This list is not complete - to be added to and checked off by everyone.
+Updated: Dec 21 by KH
 
 # R package
-- Submit package to CRAN - including JSS submission as vignettes in the package. 
-- Issue: when estimating lower-level sample sizes, it's possible for range of sample sizes to produce same power. Kristen refining returned objected to contain information of issue. Luke refining diagnostic plot. Kristen working with Zarni to return note in Shiny, along with revised version of info in vignette. 
-     - KH just needs to work with Zarni
-- Add to "Description" file: Development of this app was supported by a grant for the Institute for Education Sciences (R305D170030)
-          - KH to paste in
-- Fix so that can insert MDES of zero in middle of vector : KH
-- --- otherwise add instructions to app to put zeros at end of vector
-- Adjust so can pass in "none" as MTP for all M: KH
-- Error bars on power estimates in plots? STRETCH GOAL KH
-- Bring Shiny graphs into package: KH made progress, Luke adding to returned objects from pump functions so both long and wide included
-- KH cleaning up validation function, adding verbose = true option
-- after finalizing manuscript, pull out vignette for R package
--         KH checking not problem for journal
-- Shiny app will continue to pull from github. 
+
 - Silence ROxygen documentation for non-exported functions
 
-
-### Low priority R
-
-- What to do if MDES has zeros in the middle, not the end? KH
-- For single outcome, have min1 and complete columns in printout?  Remove. KH
-- Add flat flag message to the summary and print methods of mdes, etc.  LWM
-
-# Discussion questions
-
-- two-tailed power
-- why are we hiding vignette output?
-- better name for "design" because it currently means design + model. Scenario?
-- author list in DESCRIPTION file
-- name of package: pum, pum-p, pump
-- whether to surface WY functions to the user
-- whether to discuss blocking/clustering/etc.
-- level of detail introducing MTP
-
-# Shiny app
-- in separate document
-
-# User testing
-- Luke and Kristen have some possible test users to reach out to
-- Not concerned with much testing of package.
-
 # Manuscript
-- All clean up manuscript by early next week
-- **Kristin P will write abstract.**
-- **KP implementing comments from DN authors**
 
-# Video
-- review script
+- finalize a title (anyone)
+- render Rmd, deal with formatting and errors (KH)
+- add plots to vignette (KH or LM)
+- distribute to Evan (KH)
+- add appendices to main document (KH)
+- check if JSS allows vignette to be published separately (KH)
+- once manuscript is ready, move vignette out into package (KH or LM)
+- write abstract (KH or KP)
+- prepare for submission (KH)
+- grammar edits (KH)
+  - multilevel or multi-level
+  - MDES as plural or singular
+  
+# Package updates
 
-# Presentation
-- Success! Kristin P has saved the slides for attaching to our final performance report. 
+- send out for user testing (KH)
+- allow for MDES to have zeros in middle, not just the end (KH)
+- for single outcome, remove min1 and complete columns from printout (KH)
+- error messaging (KH or LM)
+  - collect errors from grid and only print out unique errors
+  - better error messaging for flat power curves (both shiny and non-shiny)
+  - error if user passes same parameter in twice into grid
+- write simulation correlation tool (KH)
+- plotting code (LM)
+  - clean up and condense data wrangling
+  - add new plots for single scenario for mdes, sample size
+  - make plots prettier
+- functions to convert between long and wide (LM)
 
-# Next check-in
+# Validation
+
+- rerun all validation (KH)
+- render validation documents (KH)
+- comprehensive review of WY behavior (KH)
+  - scenarios from KP
+  - default parameter values for B for power, mdes, ss
+  - give user estimate of runtime
+  
+# Waiting
+
+- merge change from design to d_m
 
 # Stretch goals
-- Potentially use simulations to estimate rho matrix for users when entering other information about data - corr between outcomes, R2's (Kristen, maybe, TBD)
-- tool that helps user build a block matrix of correlations based on a list of correlations between outcomes
-- resolve terminology: MDES, ES, ATE_ES, impact?
-- additional designs, including: d2.2_m2rr, d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors
-- for sample size, allow a vector of MDES, i.e. combination of zero and nonzero values, and allow for numZero flag
-- return raw mdes for individual power to user as comparison/benchmark
+
+- surface WY functions to user with good documentation (KH)
+- tool that helps user build a block matrix of correlations based on a list of correlations between outcomes (KH)
+- add monte carlo error bars (LM)
+- additional designs: d2.2_m2rr, d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors
 - effect size calculator
 - speed up everything
 - binary outcomes
 
+# Shiny app
+- in separate document
+
+# Video
+- review script
 

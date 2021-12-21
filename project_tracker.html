@@ -167,93 +167,95 @@ pre code {
 </div>
 
 
-<p>Below is a checklist of tasks to complete for finalizing the PUMP project. For each, we can list champion &amp; target date for completion.</p>
-<p>This list is not complete - to be added to and checked off by everyone.</p>
+<p>Updated: Dec 21 by KH</p>
 <div id="r-package" class="section level1">
 <h1>R package</h1>
 <ul>
-<li>Expand models (e.g. D3 designs with ICC non zero, and others discussed) &amp; validate (Kristen, TBD) Done this (in particular the ICC stuff) except for additional models, to be postponed. TO DO: Add the d1.1_mcc model (simple randomization) Done!</li>
-<li>Run additional validation for extreme values (Kristen, TBD) Done.</li>
-<li>Update with new naming convention (Kristen) Done!</li>
-<li>Complete code commenting (Kristen, TBD) Done enough.</li>
-<li>Complete all testing (Kristen and Luke, TBD) Done enough, will add tests as issues arise.</li>
-<li>Source code completed, ASCII files, with formatted help files and be packaged for easy installation. Done.</li>
-<li>Submit package to CRAN - including JSS submission as vignettes in the package.</li>
-<li>Make sure all functions still work when specifying one outcome (Kristen) Done<br />
-</li>
-<li>Issue: when estimating lower-level sample sizes, it’s possible for range of sample sizes to produce same power. Kristen refining returned objected to contain information of issue. Luke refining diagnostic plot. Kristen working with Zarni to return note in Shiny, along with revised version of info in vignette.</li>
-<li>Luke has added return of all call parameters. Refining formatting.</li>
-<li>Vignettes expanding to demonstrate functionality. Done</li>
-<li>Add functions for expanded designs with same power - e.g. need to add d3.2_m3fc2rc - same power as d3.2_m3ff2rc Done</li>
-<li>Change d1.1_m2cc to d1.1_m1c (and Kristen will check first) Done</li>
-<li>Kristin will send nots about credit - including ies grant number.</li>
-</ul>
-</div>
-<div id="discussion-questions" class="section level1">
-<h1>Discussion questions</h1>
-<ul>
-<li>two-tailed power</li>
-<li>why are we hiding vignette output?</li>
-<li>better name for “design” because it currently means design + model. Scenario?</li>
-<li>author list in DESCRIPTION file</li>
-<li>name of package: pum, pum-p, pump</li>
-<li>whether to surface WY functions to the user</li>
-<li>whether to discuss blocking/clustering/etc.</li>
-<li>level of detail introducing MTP</li>
-</ul>
-</div>
-<div id="shiny-app" class="section level1">
-<h1>Shiny app</h1>
-<ul>
-<li>Aim to have draft to share in next meeting</li>
-<li>Talk to Zarni about ability to do simple git pulls for updates</li>
-</ul>
-</div>
-<div id="user-testing" class="section level1">
-<h1>User testing</h1>
-<ul>
-<li>Luke and Kristen have some possible test users to reach out to</li>
-<li>Not concerned with much testing of package.</li>
+<li>Silence ROxygen documentation for non-exported functions</li>
 </ul>
 </div>
 <div id="manuscript" class="section level1">
 <h1>Manuscript</h1>
 <ul>
-<li>presubmission inquiry: abstract and introduction plus outline/structure - TBD whether we do it.</li>
-<li>draft on 11/31 that feels close to final - then think about presubmission inquiry.</li>
-<li>Luke finishing vignette and plugging in.</li>
-<li>Kristen H to do first draft of conclusion.</li>
-<li>Kristin P will write abstract.</li>
+<li>finalize a title (anyone)</li>
+<li>render Rmd, deal with formatting and errors (KH)</li>
+<li>add plots to vignette (KH or LM)</li>
+<li>distribute to Evan (KH)</li>
+<li>add appendices to main document (KH)</li>
+<li>check if JSS allows vignette to be published separately (KH)</li>
+<li>once manuscript is ready, move vignette out into package (KH or LM)</li>
+<li>write abstract (KH or KP)</li>
+<li>prepare for submission (KH)</li>
+<li>grammar edits (KH)
+<ul>
+<li>multilevel or multi-level</li>
+<li>MDES as plural or singular</li>
+</ul></li>
+</ul>
+</div>
+<div id="package-updates" class="section level1">
+<h1>Package updates</h1>
+<ul>
+<li>send out for user testing (KH)</li>
+<li>allow for MDES to have zeros in middle, not just the end (KH)</li>
+<li>for single outcome, remove min1 and complete columns from printout (KH)</li>
+<li>error messaging (KH or LM)
+<ul>
+<li>collect errors from grid and only print out unique errors</li>
+<li>better error messaging for flat power curves (both shiny and non-shiny)</li>
+<li>error if user passes same parameter in twice into grid</li>
+</ul></li>
+<li>write simulation correlation tool (KH)</li>
+<li>plotting code (LM)
+<ul>
+<li>clean up and condense data wrangling</li>
+<li>add new plots for single scenario for mdes, sample size</li>
+<li>make plots prettier</li>
+</ul></li>
+<li>functions to convert between long and wide (LM)</li>
+</ul>
+</div>
+<div id="validation" class="section level1">
+<h1>Validation</h1>
+<ul>
+<li>rerun all validation (KH)</li>
+<li>render validation documents (KH)</li>
+<li>comprehensive review of WY behavior (KH)
+<ul>
+<li>scenarios from KP</li>
+<li>default parameter values for B for power, mdes, ss</li>
+<li>give user estimate of runtime</li>
+</ul></li>
+</ul>
+</div>
+<div id="waiting" class="section level1">
+<h1>Waiting</h1>
+<ul>
+<li>merge change from design to d_m</li>
+</ul>
+</div>
+<div id="stretch-goals" class="section level1">
+<h1>Stretch goals</h1>
+<ul>
+<li>surface WY functions to user with good documentation (KH)</li>
+<li>tool that helps user build a block matrix of correlations based on a list of correlations between outcomes (KH)</li>
+<li>add monte carlo error bars (LM)</li>
+<li>additional designs: d2.2_m2rr, d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors</li>
+<li>effect size calculator</li>
+<li>speed up everything</li>
+<li>binary outcomes</li>
+</ul>
+</div>
+<div id="shiny-app" class="section level1">
+<h1>Shiny app</h1>
+<ul>
+<li>in separate document</li>
 </ul>
 </div>
 <div id="video" class="section level1">
 <h1>Video</h1>
 <ul>
-<li>Reach out to video staff with plans and questions (Zarni, 7/31)</li>
-<li>Budget video (Kristin, 8/15)</li>
-</ul>
-</div>
-<div id="presentation" class="section level1">
-<h1>Presentation</h1>
-<ul>
-<li>Success! Kristin P has saved the slides for attaching to our final performance report.</li>
-</ul>
-</div>
-<div id="next-check-in" class="section level1">
-<h1>Next check-in</h1>
-</div>
-<div id="stretch-goals" class="section level1">
-<h1>Stretch goals</h1>
-<ul>
-<li>Potentially use simulations to estimate rho matrix for users when entering other information about data - corr between outcomes, R2’s (Kristen, maybe, TBD)</li>
-<li>tool that helps user build a block matrix of correlations based on a list of correlations between outcomes</li>
-<li>resolve terminology: MDES, ES, ATE_ES, impact?</li>
-<li>additional designs, including: d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors</li>
-<li>for sample size, allow a vector of MDES, i.e. combination of zero and nonzero values, and allow for numZero flag</li>
-<li>return raw mdes for individual power to user as comparison/benchmark</li>
-<li>effect size calculator</li>
-<li>speed up everything</li>
-<li>binary outcomes</li>
+<li>review script</li>
 </ul>
 </div>
 
