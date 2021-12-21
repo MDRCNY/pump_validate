@@ -10,6 +10,9 @@ Validation/data/
 *cache*
 Validation/*_files/*
 Validation/wy_test/*
+validation/output/*.RDS
+validation/output/*
+validation/output/intermediate_results/*.RDS
 
 # out and error files
 *.out
