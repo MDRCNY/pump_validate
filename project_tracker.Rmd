@@ -7,39 +7,34 @@ Updated: Dec 21 by KH
 
 # Manuscript
 
-- finalize a title (anyone)
-- render Rmd, deal with formatting and errors (KH)
-- add plots to vignette (KH or LM)
-- distribute to Evan (KH)
+- finalize a title (TBD)
+- add plots to vignette (waiting on LM fix)
 - add appendices to main document (KH)
 - check if JSS allows vignette to be published separately (KH)
 - once manuscript is ready, move vignette out into package (KH or LM)
 - write abstract (KH or KP)
 - prepare for submission (KH)
-- grammar edits (KH)
-  - multilevel or multi-level
-  - MDES as plural or singular
-- discussion of Benjamini-Hochberg
+- discussion of Benjamini-Hochberg (TBD)
   
 # Package updates
 
 - send out for user testing (KH)
-- allow for MDES to have zeros in middle, not just the end (KH)
-- for single outcome, remove min1 and complete columns from printout (KH)
 - error messaging (KH or LM)
   - collect errors from grid and only print out unique errors
   - better error messaging for flat power curves (both shiny and non-shiny)
   - error if user passes same parameter in twice into grid
 - write simulation correlation tool (KH)
+- functions to convert between long and wide (LM)
 - plotting code (LM)
   - clean up and condense data wrangling
   - add new plots for single scenario for mdes, sample size
   - make plots prettier
-- functions to convert between long and wide (LM)
+- allow for MDES to have zeros in middle, not just the end (KH)
+- for single outcome, remove min1 and complete columns from printout (KH)
 
 # Validation
 
-- rerun all validation (KH)
+- rerun all validation (KH, in progress)
 - render validation documents (KH)
 - comprehensive review of WY behavior (KH)
   - scenarios from KP

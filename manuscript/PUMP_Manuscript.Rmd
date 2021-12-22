@@ -31,8 +31,9 @@ set.seed( 1010203 )
 # 1. Introduction
 
 The PUMP R package fills an important gap in open source software and tools needed by researchers to design multi-level randomized controlled trials (RCTs) with sufficient statistical power.
-With this package, researchers can estimate statistical power, minimum detectable effect sizes (MDESs), and needed sample sizes for multilevel experimental designs, in which units are nested within hierarchical structures such as students nested within schools nested with school districts The statistical power is calculated for estimating the impact of a single intervention on multiple outcomes.
-The package focuses on a frequentist framework of mixed effects regression models, which is currently the prevailing framework for estimating impacts from experiments in education and other social policy research.^[Other options include nonparametric or Bayesian methods, but these are less prevalent in applied research (for example, see @GELMANETAL2012). 
+With this package, researchers can estimate statistical power, minimum detectable effect size (MDES), and needed sample size for multi-level experimental designs, in which units are nested within hierarchical structures such as students nested within schools nested with school districts.
+The statistical power is calculated for estimating the impact of a single intervention on multiple outcomes.
+The package focuses on a frequentist framework of mixed effects regression models, which is currently the prevailing framework for estimating impacts from experiments in education and other social policy research.\footnote{Other options include nonparametric or Bayesian methods, but these are less prevalent in applied research (for example, see @GELMANETAL2012).}
 To our knowledge, none of the existing software options or tools for power calculations power allow researchers to account for multiple hypothesis tests and the use of a multiple testing procedure (MTP).
 MTPs adjust $p$-values to reduce the likelihood of spurious findings when researchers are testing for effects on multiple outcomes.
 This adjustment can result in a substantial change in statistical power, greatly reducing the probability of detecting effects when they do exist.
@@ -50,7 +51,7 @@ On the other hand, if the researchers’ goal is to find statistically significa
 The PUMP package allows for directly answering questions such as “How many schools would I need to detect a given effect on at least three of my five outcomes,” or “What size effect can I reliably detect on each outcome, given a planned MTP across all my outcomes,” or “How would the power to detect a given effect change if only half my outcomes truly had impacts.”
 
 PUMP implements new, rigorously validated methods developed by the authors to estimate statistical power for multiple definitions of statistical power across a wide range of common experimental designs.
-PUMP extends functionality of the popular PowerUp! R package (and related tools in the form of a spreadsheet and Shiny application), which compute power or MDES for multilevel RCTs with a single outcome (@RN4473).
+PUMP extends functionality of the popular PowerUp! R package (and related tools in the form of a spreadsheet and Shiny application), which compute power or MDES for multi-level RCTs with a single outcome (@RN4473).
 For a wide variety of RCT designs with a single outcome, researchers can take advantage of closed-form solutions and numerous power estimation tools.
 For example, in education and social policy research, see @RN4473; @RN30153; @RN23884; @RN24179.
 However, closed-form solutions are difficult or impossible to derive when an MTP is applied to a setting with multiple outcomes.
@@ -60,7 +61,7 @@ In order to calculate power, the researcher specifies information about the samp
 An “effect size” generally refers to the standardized mean difference effect size, which “equals the difference in mean outcomes for the treatment group and control group, divided by the standard deviation of outcomes across subjects within experimental groups” (@RN27978).
 Researchers often use effect sizes to standardize outcomes so that outcomes with different scales can be directly compared.
 With PUMP, the user can also choose to apply any of five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg.
-In addition to estimating power, the researcher can target a level of power and estimate either MDESs or sample size requirements. Therefore, the package includes three core functions:
+In addition to estimating power, the researcher can target a level of power and estimate either MDES or sample size requirements. Therefore, the package includes three core functions:
 
 - `pump_power()` for calculating power given a experimental design and assumed model, parameters, and minimum detectable effect size.
 - `pump_mdes()` for calculating minimum detectable effect size given a target power.
@@ -69,16 +70,17 @@ In addition to estimating power, the researcher can target a level of power and 
 The package also includes functions that allow users to easily explore power, MDES or sample size estimates over a range of possible values of parameters to determine sensitivity of calculations to ranges of assumptions.
 PUMP also visually displays results.
 These additional functions include:
-` pump_power_grid()`, `pump_mdes_grid()`, and `pump_sample_grid() for calculating the given output over a range of possible parameter values.
-`update()` to re-run an existing calculation with a small number of parameters updated.
-TODO: graphics
+
+- `pump_power_grid()`, `pump_mdes_grid()`, and `pump_sample_grid() for calculating the given output over a range of possible parameter values.
+- `update()` to re-run an existing calculation with a small number of parameters updated.
+- `plot()` on any pump-generated object to generate plots (including grid outputs).
 
 The PUMP package covers a range of multi-level designs that researchers typically use in practice, in which research units are nested in hierarchical groups.
 These designs are common in education research, for example, in which students are nested within schools, which can be then nested within school districts.
 Our power calculations assume the user will be analyzing these RCTs using frequentist mixed-effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels, as we explain in detail in section TODO and in Appendix X. 
 
 The remainder of this paper is organized as follows: In Section 2, we provide a summary of the multiple testing problem. To do so, we begin with a motivating example from education research, which we refer to throughout the paper.
-We note, however, that the problem of power estimation for multilevel RCTs is not exclusive to the educational setting.
+We note, however, that the problem of power estimation for multi-level RCTs is not exclusive to the educational setting.
 Also in Section 2, we present an overview of the statistical challenges introduced by multiple hypothesis testing and how MTPs protect against spurious impact findings.
 In Section 3, we introduce our methodology for estimating power when taking the use of MTPs into account.
 This section includes a summary of the RCT designs our methods cover, a discussion of how to specify key parameters, and a discussion of our validation processes.
@@ -87,8 +89,10 @@ Section 5 is a brief conclusion.
 
 # 2. The Multiple Testing Problem
 
+## Diplomas Now
+
 We illustrate our package with a published RCT evaluation of a secondary school model called Diplomas Now.
-The Diplomas Now model is designed to increase high school graduation rates and post-secondary readiness. valuators evaluated whether the program was effective by conducting a RCT comparing schools who implemented the model to versus business as usual .
+The Diplomas Now model is designed to increase high school graduation rates and post-secondary readiness. valuators evaluated whether the program was effective by conducting a RCT comparing schools who implemented the model to versus business as usual.
 We refer to this example to illustrate key concepts and to illustrate the application of the PUMP package.
 
 The Diplomas Now model, created by three national organizations, Talent Development, City Year, and Communities In Schools, targets underfunded urban middle and high schools with many students who are not performing well academically.
@@ -110,18 +114,19 @@ The authors of the MDRC report pre-identified three of these outcomes as *primar
 We, by contrast, use this example to illustrate what could be done if there was uncertainty as to what should be the primary outcome.
 In particular, we illustrate how to conduct a power analysis to plan a study where one uses multiple testing adjustment, rather than predesignation, to account for the multiple outcome problem.
 
-Due to the grouped nature of the outcomes, we elect to do a power analysis separately for each outcome group (mimicking the three chosen outcomes of the original study)  to control family-wise error rather than overall error. We would then adjust for the number of outcomes within each group independently.
-We note that there are different guidelines for when to adjust for multiple outcomes in education studies.^[For example, Schochet (2008) recommends organizing primary outcomes into domains, conducting tests on composite domain outcomes, and applying multiplicity corrections to composites across domains. The What Works Clearinghouse applies multiplicity corrections to findings within the same domain rather than across different domains. This paper would apply to either case. In this paper, the word “outcome” refers to either a single outcome or an outcome domain, and the paper focuses on any situation in which an analyst would apply adjustments to account for multiple outcomes.]
+Due to the grouped nature of the outcomes, we elect to do a power analysis separately for each outcome group (mimicking the three chosen outcomes of the original study)  to control family-wise error rather than overall error.
+We would then adjust for the number of outcomes within each group independently.
+We note that there are different guidelines for when to adjust for multiple outcomes in education studies.\footnote{For example, Schochet (2008) recommends organizing primary outcomes into domains, conducting tests on composite domain outcomes, and applying multiplicity corrections to composites across domains. The What Works Clearinghouse applies multiplicity corrections to findings within the same domain rather than across different domains.}
+This paper would apply to either case.
+In this paper, the word “outcome” refers to either a single outcome or an outcome domain, and the paper focuses on any situation in which an analyst would apply adjustments to account for multiple outcomes.]
 We do not provide recommendations for which guidelines to follow when investigating impacts on multiple outcomes. 
 Rather, we address the fact that researchers across many domains are increasingly applying MTPs and therefore need estimate power, MDES and sample size requirements.
 For illustration purposes, we focus on an alternative approach in the Diplomas Now study on assessing impacts of all 12 outcomes and applying MTPs to protect against the potential for spurious findings. 
 
-
-
 # Overview of Multiple Testing 
 
 Our motivating example illustrates that researchers are often interested in testing the effectiveness of an intervention on multiple outcomes.
-The resulting multiplicity of statistical hypothesis tests can lead to spurious findings of effects.^[Testing the effectiveness of an intervention for multiple subgroups, at multiple points in time, or across multiple treatment groups also results in a multiplicity of statistical hypotheses and can also lead to spurious findings of effects, but this is beyond the scope of this paper.]
+The resulting multiplicity of statistical hypothesis tests can lead to spurious findings of effects.\footnote{Testing the effectiveness of an intervention for multiple subgroups, at multiple points in time, or across multiple treatment groups also results in a multiplicity of statistical hypotheses and can also lead to spurious findings of effects, but this is beyond the scope of this paper.}
 Multiple testing procedures (MTPs) counteract this problem by adjusting $p$-values for effect estimates; generally, $p$-values are adjusted upward to require a higher burden of proof.
 When not using an MTP, the probability of finding false positives increases, sometimes dramatically, with the number of tests.
 When using an MTP, this probability is controlled to a specified level.
@@ -138,8 +143,7 @@ from which a raw $p$-value is computed.
 Here, the term "raw" is used to distinguish this $p$-value from a $p$-value that has been adjusted using a procedure for multiple hypothesis tests, as discussed below.
 The raw $p$-value is the probability of a test statistic being at least as extreme as the one observed, given that the null hypothesis is true.
 
-
-For a two-sided test, which is the focus of the discussion going forward (although the PUMP package also allows for one-sided tests), the raw $p$-value for test $m$ is $p_m=2*Pr(T_m \geq |t_m|)$.^[For a one-sided test, depending on the direction of our alternative hypothesis, the raw $p$-value for test $m$ is computed as $p_m=Pr(T_m \leq t_m)$ or $p_m=Pr(T_m \geq t_m)$.]
+For a two-sided test, which is the focus of the discussion going forward (although the PUMP package also allows for one-sided tests), the raw $p$-value for test $m$ is $p_m=2*Pr(T_m \geq |t_m|)$.\footnote{For a one-sided test, depending on the direction of our alternative hypothesis, the raw $p$-value for test $m$ is computed as $p_m=Pr(T_m \leq t_m)$ or $p_m=Pr(T_m \geq t_m)$.}
 To calculate the raw $p$-value, we use our knowledge of the sampling distribution of the $t$-statistic, and we identify where our observed test statistic falls in that distribution.
 
 When testing a _single_ hypothesis under this framework (effects are being assessed on just one outcome, so that $M=1$), researchers typically specify an acceptable maximum probability of making a Type I error, $\alpha$.
@@ -158,7 +162,7 @@ Nonetheless, any error inflation can still make it problematic to draw reliable 
 
 # Using MTPs to protect against spurious impact findings
 
-As introduced above, to counteract the multiple testing problem, multiple testing procedures (MTPs) adjust $p$-values.^[Alternatively, MTPs can decrease the critical values for rejecting hypothesis tests. For ease of presentation, this paper focuses only on the approach of increasing $p$-values.]
+As introduced above, to counteract the multiple testing problem, multiple testing procedures (MTPs) adjust $p$-values.\footnote{Alternatively, MTPs can decrease the critical values for rejecting hypothesis tests. For ease of presentation, this paper focuses only on the approach of increasing $p$-values.}
 We next describe how using a MTP protects against false positives.
 
 Recall that the power of an individual hypothesis test is the probability of correctly rejecting a null hypothesis of at least a specified size.
@@ -193,7 +197,6 @@ In Table 1, A, B, C and D are four possible scenarios: the numbers of true or fa
 $M_0$ and $M_1$ are the unobservable numbers of true null and false null hypotheses.
 $R$ is the number of null hypotheses that were rejected, and $M - R$ is the number of null hypotheses that were not rejected.
 
-
 In Table 1, $F$ is the number of erroneously rejected null hypotheses, or the number of false positive findings.
 Therefore, the FWER is equivalent to $Pr(F > 0)$, the probability of at least one false positive finding.
 Recall that Type I error is inflated when testing for effects on independent outcomes when no MTPs are applied.
@@ -212,27 +215,51 @@ However, if any effects truly exist, then $FWER \geq FDR$.As a result of the dif
 MTPs may provide either weak or strong control of the error rate they target.
 An MTP provides weak control of the FWER or the FDR at level $\alpha$ if the control can only be guaranteed when all nulls are true, or when the effects on all outcomes are zero.
 An MTP provides strong control of the FWER or FDR at level if the control is guaranteed when some null hypotheses are true and some are false, or when there may be effects on at least some outcomes.
-Of course, strong control is preferred.^[The single-step and step-down Westfall Young MTPs (which we discuss below) always provide at least weak control of the FWER. In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (RN33093). The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null. A consequence of this assumption is that the resampling of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (RN33093).]
+Of course, strong control is preferred.\footnote{The single-step and step-down Westfall Young MTPs (which we discuss below) always provide at least weak control of the FWER.
+In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (RN33093).
+The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null.
+A consequence of this assumption is that the resampling of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (RN33093).}
 
 ### Single-step vs. stepwise procedures
 
 A second feature of an MTP that affects its statistical power is whether it is “single-step” or
-“stepwise” procedure. Single-step procedures adjust each $p$-value independently of the other
-$p$-values. For example, the Bonferroni MTP multiplies all raw $p$-values by $M$. Therefore, one $p$-value adjustment does not depend on other $p$-value adjustments, only on the number of tests. In contrast, stepwise procedures first order raw p-values (or test statistics), and then adjust according to the order of the tests. The adjustments depend on null hypotheses already rejected in previous steps. For example, the Holm MTP --- the stepwise counterpart to the Bonferroni MTP --- orders raw $p$-values from smallest to largest. The procedure then multiplies the smallest $p$-value by $M$, the second smallest $p$-value by $M-1$, and so on, but also enforces that each adjusted $p$-value is greater than or equal to the previous adjusted $p$-value and that it is not greater than one. Overall, stepwise MTPs allow for less adjustment than single-step MTPs in later steps, and therefore preserve more power (for outcomes that do not correspond to the most significant $p$-value). The Bonferroni and one of the Westfall-Young MTPs are singlestep; the Holm and Benjamini-Hochberg MTPs and the other Westfall-Young MTP are stepwise. Note that stepwise procedures may be “step-down” or “step-upn,” referring to whether a procedure begins with the smallest $p$-value, and thus the largest effect size (step-down) or the largest $p$-value (step-up).
+“stepwise” procedure.
+Single-step procedures adjust each $p$-value independently of the other
+$p$-values.
+For example, the Bonferroni MTP multiplies all raw $p$-values by $M$.
+Therefore, one $p$-value adjustment does not depend on other $p$-value adjustments, only on the number of tests.
+In contrast, stepwise procedures first order raw p-values (or test statistics), and then adjust according to the order of the tests.
+The adjustments depend on null hypotheses already rejected in previous steps.
+For example, the Holm MTP --- the stepwise counterpart to the Bonferroni MTP --- orders raw $p$-values from smallest to largest.
+The procedure then multiplies the smallest $p$-value by $M$, the second smallest $p$-value by $M-1$, and so on, but also enforces that each adjusted $p$-value is greater than or equal to the previous adjusted $p$-value and that it is not greater than one.
+Overall, stepwise MTPs allow for less adjustment than single-step MTPs in later steps, and therefore preserve more power (for outcomes that do not correspond to the most significant $p$-value).
+The Bonferroni and one of the Westfall-Young MTPs are singlestep; the Holm and Benjamini-Hochberg MTPs and the other Westfall-Young MTP are stepwise.
+Note that stepwise procedures may be “step-down” or “step-upn,” referring to whether a procedure begins with the smallest $p$-value, and thus the largest effect size (step-down) or the largest $p$-value (step-up).
 
-Due to the dependencies of adjustments in stepwise MTPs, a new assumption must be considered when estimating power, MDES or sample size under multiplicity -  the proportion of outcomes on which there are truly impacts of at least the size of the researchers’ desired ESs, or, equivalently, the number of false null hypotheses. There is one scenario in which this assumption does not matter, which is the scenario when one focuses on individual power and uses a single-step MTP. In this case, when adjusting a $p$-value for a single test, the information from other tests is disregarded. For all other scenarios, however, this assumption can be an important one.
+Due to the dependencies of adjustments in stepwise MTPs, a new assumption must be considered when estimating power, MDES or sample size under multiplicity -  the proportion of outcomes on which there are truly impacts of at least the size of the researchers’ desired ESs, or, equivalently, the number of false null hypotheses.
+There is one scenario in which this assumption does not matter, which is the scenario when one focuses on individual power and uses a single-step MTP.
+In this case, when adjusting a $p$-value for a single test, the information from other tests is disregarded.
+For all other scenarios, however, this assumption can be an important one.
 
 Researchers may be inclined to assume that there will be effects on all outcomes, as
-hypotheses of effects probably drive the selection of outcomes in the first place. And when
-estimating power for a single hypothesis test, power is only defined when a true effect exists.
+hypotheses of effects probably drive the selection of outcomes in the first place.
+And when estimating power for a single hypothesis test, power is only defined when a true effect exists.
 However, if the researchers are incorrect and there turn out not to be effects on all outcomes, the probability of detecting the effects that do actually exist can be diminished, sometimes substantially.
 
 It is important to point out that under the assumption that there are not truly effects on every
-outcome under study, the definitions of the d-minimal powers (e.g., 1-minimal power, 1/3-minimal power, etc.) and of complete power become fuzzy. For example, 1/3-minimal power is defined as the probability of detecting effects (of a specified size or larger) on at least 1/3 of the total outcomes ($M$), regardless of the number of outcomes with actual effects. That is, 1/3-power is not defined as the probability of detecting effects among the M outcomes on which the effects truly exist. Therefore, while individual power is defined based on false nulls, the definition is loosened here and includes the probability of erroneous rejections of true nulls (which are controlled to occur at no more than 5% for those MTPs that control the FWER). This fuzziness of definition is needed because the researcher would only ever define power based on the total number of tests. Moreover, if the $d-$minimal powers are defined only based on false nulls, then their levels could increase when the proportion of false nulls decreases. Complete power has the same issue. If there are truly only effects on two of the three outcomes, then complete power is not the probability of rejecting just two false null hypotheses. In this case, complete power is undefined.
+outcome under study, the definitions of the d-minimal powers (e.g., 1-minimal power, 1/3-minimal power, etc.) and of complete power become fuzzy.
+For example, 1/3-minimal power is defined as the probability of detecting effects (of a specified size or larger) on at least 1/3 of the total outcomes ($M$), regardless of the number of outcomes with actual effects.
+That is, 1/3-power is not defined as the probability of detecting effects among the M outcomes on which the effects truly exist.
+Therefore, while individual power is defined based on false nulls, the definition is loosened here and includes the probability of erroneous rejections of true nulls (which are controlled to occur at no more than 5% for those MTPs that control the FWER).
+This fuzziness of definition is needed because the researcher would only ever define power based on the total number of tests.
+Moreover, if the $d-$minimal powers are defined only based on false nulls, then their levels could increase when the proportion of false nulls decreases.
+Complete power has the same issue.
+If there are truly only effects on two of the three outcomes, then complete power is not the probability of rejecting just two false null hypotheses.
+In this case, complete power is undefined.
 
 There is an additional technical note about the calculation of complete power.
 To calculate complete power, we do not need to adjust the $p$-values, and can instead reject each individual test based on the unadjusted $p$-values.
-Complete power is the power of the test constructed by whether or not we reject all the null hypotheses.^[ Complete power has also been referred to as “conjunctive power” (Bretz et al., 2011) and “all pairs power” (@RN33097).]
+Complete power is the power of the test constructed by whether or not we reject all the null hypotheses.\footnote{Complete power has also been referred to as “conjunctive power” (Bretz et al., 2011) and “all pairs power” (@RN33097).}
 This test was originally introduced as the intersection-union test because the null hypothesis is expressed as a union and the alternative hypothesis is expressed as an intersection [@Berger1982, @Berger1996].
 @Berger1982 showed that if all the individual tests are level $\alpha$, the intersection-union test is also a level$\alpha$ test.
 To provide some intuition, we do not need to adjust $p$-values for complete power because it is a special case where  we must reject *all* the hypothesis tests.
@@ -245,24 +272,46 @@ For example, if we have two independent tests with type I error $\alpha$, then i
 
 
 ### Correlation between test statistics
-Finally, a third feature of an MTP that affects its statistical power is whether or not it takes into account the correlation of test statistics. The Bonferroni and Holm procedures strongly control
-the FWER in call cases, even when the multiple tests’ statistics are correlated, but they adjust $p$-values more than is necessary in that case. Along with the Bonferroni and Holm MTPs, the Benjamin-Hochberg MTP also does not take correlations into account.^[The Benjamini-Hochberg procedure was originally shown to control the FDR for independent test statistics. However, Benjamini and Yekutieli (2001) showed that it also controls the FDR for true null hypotheses with “positive regression dependence.” This condition is satisfied
-for most applications in practice.] In contrast, both of the Westfall-Young MTPs rely on the estimation of the joint distribution of test statistics when the “complete null hypothesis” (that there are not effects on any of the outcomes) is true. This joint distribution of the test statistics is estimated from the study’s data. For example, permutations of the treatment indicator can be used to estimate impacts when the association between treatment status and the outcome is broken. Random permutations of the research group assignments are conducted a large number of times, resulting in a distribution of test statistics under the complete null. Because the actual data are used to generate this null distribution, correlations among the test statistics are captured. Then observed test statistics can be compared with the distribution of test statistics under the complete null hypothesis.^[Instead of using test statistics, the Westfall-Young MTPs can alternatively compare raw p-values with the estimated joint null distribution of p-values.]
+Finally, a third feature of an MTP that affects its statistical power is whether or not it takes into account the correlation of test statistics.
+The Bonferroni and Holm procedures strongly control
+the FWER in call cases, even when the multiple tests’ statistics are correlated, but they adjust $p$-values more than is necessary in that case.
+Along with the Bonferroni and Holm MTPs, the Benjamin-Hochberg MTP also does not take correlations into account.\footnote{The Benjamini-Hochberg procedure was originally shown to control the FDR for independent test statistics. However, Benjamini and Yekutieli (2001) showed that it also controls the FDR for true null hypotheses with “positive regression dependence.” This condition is satisfied
+for most applications in practice.}
+In contrast, both of the Westfall-Young MTPs rely on the estimation of the joint distribution of test statistics when the “complete null hypothesis” (that there are not effects on any of the outcomes) is true.
+This joint distribution of the test statistics is estimated from the study’s data.
+For example, permutations of the treatment indicator can be used to estimate impacts when the association between treatment status and the outcome is broken.
+Random permutations of the research group assignments are conducted a large number of times, resulting in a distribution of test statistics under the complete null.
+Because the actual data are used to generate this null distribution, correlations among the test statistics are captured.
+Then observed test statistics can be compared with the distribution of test statistics under the complete null hypothesis.\footnote{Instead of using test statistics, the Westfall-Young MTPs can alternatively compare raw p-values with the estimated joint null distribution of p-values.}
 
-The correlation between test statistics is a parameter a researcher must specify in order to estimate power, MDES or sample size requirements when using an MTP. The $M$ pairwise correlations are equal to the $M$ pairwise correlations between the residuals in the $M$ impact models. If there are no covariates in the impact models or if the $R^2$’s of the covariates are equivalent in all impact models, then the correlations between the test statistics are equal to the correlations between the outcomes. However, having different $R^2$’s across the impact models reduces the correlations between the residuals and therefore between test statistics.^[For example, one of the multiple outcomes may have a baseline covariate with a high $R^2$ while another may have a baseline covariate with
-a smaller $R^2$. Also, block dummies may explain more variation in some outcomes than in others.] Models of outcomes that are highly correlated are more likely to have residuals that are highly correlated because baseline covariates will tend to have similar $R^2$’s. The gaps between the correlations between outcomes and the correlations between residuals --- and therefore the test statistics --- may be wider for moderately or weakly correlated outcomes. In any case, the upper bounds of correlations between the test statistics are the correlations between the outcomes.
+The correlation between test statistics is a parameter a researcher must specify in order to estimate power, MDES or sample size requirements when using an MTP.
+The $M$ pairwise correlations are equal to the $M$ pairwise correlations between the residuals in the $M$ impact models.
+If there are no covariates in the impact models or if the $R^2$’s of the covariates are equivalent in all impact models, then the correlations between the test statistics are equal to the correlations between the outcomes.
+However, having different $R^2$’s across the impact models reduces the correlations between the residuals and therefore between test statistics.\footnote{For example, one of the multiple outcomes may have a baseline covariate with a high $R^2$ while another may have a baseline covariate with
+a smaller $R^2$. Also, block dummies may explain more variation in some outcomes than in others.}
+Models of outcomes that are highly correlated are more likely to have residuals that are highly correlated because baseline covariates will tend to have similar $R^2$’s.
+The gaps between the correlations between outcomes and the correlations between residuals --- and therefore the test statistics --- may be wider for moderately or weakly correlated outcomes.
+In any case, the upper bounds of correlations between the test statistics are the correlations between the outcomes.
 
 To review, the list of multiple testing procedures supported by the PUMP package is:
-*Bonferroni*: adjusts $p$-values by multiplying them by $M$ to ensure strong control of the FWER.  Bonferroni is a simple procedure, but the most conservative.
-*Holm*: a step-down version of Bonferroni. Starting from smallest to largest, $p$-values are sequentially adjusted by different multipliers. Holm is less conservative than Bonferroni for larger $p$-values.
-*Benjamini-Hochberg*: A sequential, step-up procedure that controls the FDR. Using the BH method, only null hypotheses with $p$-values below a certain threshold are rejected, where the threshold is determined by the number of tests and the level $\alpha$.
-*Single-step Westfall-Young*: A permutation-based procedure for controlling the FWER, which directly takes into account the joint correlation structure of the outcomes. In the single-step approach, all outcomes are adjusted by using the permuted distribution of the minimum $p$-value. Although Westfall-Young procedures are less conservative while still protecting against false discoveries, they are computationally very intensive.
-*Step-down Westfall-Young*: A similar approach to the single-step procedure, except that outcomes are adjusted sequentially from smallest to largest according to the permuted distributions of the corresponding sequential $p$-values.
 
+- *Bonferroni*: adjusts $p$-values by multiplying them by $M$ to ensure strong control of the FWER.  Bonferroni is a simple procedure, but the most conservative.
+- *Holm*: a step-down version of Bonferroni. Starting from smallest to largest, $p$-values are sequentially adjusted by different multipliers. Holm is less conservative than Bonferroni for larger $p$-values.
+- *Benjamini-Hochberg*: A sequential, step-up procedure that controls the FDR. Using the BH method, only null hypotheses with $p$-values below a certain threshold are rejected, where the threshold is determined by the number of tests and the level $\alpha$.
+- *Single-step Westfall-Young*: A permutation-based procedure for controlling the FWER, which directly takes into account the joint correlation structure of the outcomes. In the single-step approach, all outcomes are adjusted by using the permuted distribution of the minimum $p$-value. Although Westfall-Young procedures are less conservative while still protecting against false discoveries, they are computationally very intensive.
+- *Step-down Westfall-Young*: A similar approach to the single-step procedure, except that outcomes are adjusted sequentially from smallest to largest according to the permuted distributions of the corresponding sequential $p$-values.
 For a more detailed explanation of each MTP, see Appendix A of @Porter2018.
 
 The following table summarizes the important features for each of the MTPs supported by PUMP: 
-TODO insert table.
+
+
+Procedure                           | Control     | Single-step or stepwise | Accounts for correlation  |
+-----                               | ----------  | ----------------------- | ------------------------- |
+Bonferroni (BF)                     | FWER        |  single-step            | No                        |
+Holm (HO)                           | FWER        |  stepwise               | No                        |
+Westfall-Young Single-step (WY-SS)  | FWER        |  single-step            | Yes                       |
+Westfall-Young Step-down (WY-SD)    | FWER        |  stepwise               | Yes                       |
+Benjamini-Hochberg (BH)             | FDR         |  stepwise               | No                        |
 
 # 3 Estimating power, MDES and sample size in studies with multiple outcomes
 
@@ -297,7 +346,7 @@ This process would involve specifying parameter values such as $R^2$, the amount
 
 2. *Estimate impacts on the simulated data.*
 Given simulated data, we could fit $M$ regression models (specified to match the experimental design and model assumptions).
-For the proposed mixed models, the relevant functions would be lm(), lmer() from the lme4 library (@lme4), and interacted_linear_estimators() from the blkvar library.^[This package is currently under development on GitHub; see https://github.com/lmiratrix/blkvar]
+For the proposed mixed models, the relevant functions would be lm(), lmer() from the lme4 library (@lme4), and interacted_linear_estimators() from the blkvar library.\footnote{This package is currently under development on GitHub; see https://github.com/lmiratrix/blkvar}
 Each of these models result in test statistics $t_m$ for the estimated impacts, one statistic for each outcome, along with estimated standard errors.
 
 3. *Calculate unadjusted $p$-values.*
@@ -323,10 +372,12 @@ Using $\mathbf{H}$, we can compute all definitions of power.
 7. *Calculate power.*
 To compute the different definitions of power:
 
-    - *Individual power for outcome $m$* is the proportion of the `tnum` rows in which the null hypothesis $m$ was rejected (the mean of column $m$ of $\mathbf{H}$). We would have 12 different power values for Diplomas Now, corresponding to each outcome of interest.
-    - *$d$-minimal power* is the proportion of the $tnum$ rows in which at least $d$ of the $M$ hypotheses were rejected.^[Note that others refer to 1-minimal power simply as “minimal power” (e.g., @RN33095; @RN23882; @MTSAS), “disjunctive power” (e.g., @RN33091), or “any pair” power (@RN33097). @RN23882 use the terminology of “r-power” for what is referred to here as d-minimal power for d>1.]
+- *Individual power* for outcome $m$ is the proportion of the `tnum` rows in which the null hypothesis $m$ was rejected (the mean of column $m$ of $\mathbf{H}$). We would have 12 different power values for Diplomas Now, corresponding to each outcome of interest.
+  
+- *$d$-minimal power* is the proportion of the $tnum$ rows in which at least $d$ of the $M$ hypotheses were rejected.\footnote{Note that others refer to 1-minimal power simply as “minimal power” (e.g., @RN33095; @RN23882; @MTSAS), “disjunctive power” (e.g., @RN33091), or “any pair” power (@RN33097). @RN23882 use the terminology of “r-power” for what is referred to here as d-minimal power for d>1.}
 For example, for Diplomas Now, we could consider $1$-minimal power, which is the probability at least one of our outcomes is statistically significant, or $3$-minimal power, the probability 3/5 of the outcomes are significant. 
-    -  *Complete power* is the proportion of the $tnum$ rows in which all of the null hypotheses were rejected based on the raw $p$-values rather than adjusted $p$-values.
+
+-  *Complete power* is the proportion of the $tnum$ rows in which all of the null hypotheses were rejected based on the raw $p$-values rather than adjusted $p$-values.
 We would be interested in complete power if we want to evaluate whether Diplomas Now resulted in improvement for every single outcome of interest.
 With $5$ outcomes, this criteria is a relatively strict indicator of success!
 
@@ -420,7 +471,7 @@ In particular the researcher has to decide about the intercepts and the treatmen
 - Whether level 2 and level 3 treatment effects are:
   - constant: we model all units in a level as having the same single average impact.
   - fixed: we allow each block or cluster within a level to have its own individual estimated impact (we can only do this if we have treated and control units within said block or cluster).
-  - random: we allow variation as with fixed, but model the collection of treatment impacts as Normally distributed around a grand mean mean impact.  This is implicitly allowing for the sample as being representative of a larger super-population, in terms of treatment impact estimation ().
+  - random: we allow variation as with fixed, but model the collection of treatment impacts as Normally distributed around a grand mean mean impact.  This is implicitly allowing for the sample as being representative of a larger super-population, in terms of treatment impact estimation.
   
 We denote the research design by $d$, followed by the number of levels and randomization level, so `d3.1` is a $3$-level design with randomization at level $1$.
 The model is denoted by $m$, followed by the level and the assumption for the intercept, either $f$ or $r$ and then the assumption for the treatment impacts, $c$, $f$, or $r$.
@@ -446,21 +497,22 @@ kable(info$Parameters)
 
 A few parameters warrant more explanation.
 
--The quantity $\text{ICC}$ is the Intraclass Correlation, and gives a measure of variation at different levels of the model.
+- The quantity $\text{ICC}$ is the Intraclass Correlation, and gives a measure of variation at different levels of the model.
 
 For each outcome, the ICC for each level is defined as the ratio of the variance at that level divided by the overall variance of the individual outcomes.
 The ICC is for the unconditional model, and therefore includes the variation due to covariates.
 
--For each outcome, the quantity $\omega$ for each level is the ratio between impact variation at that level and mean variation at that level. It is a measure of treatment impact heterogeneity.
+- For each outcome, the quantity $\omega$ for each level is the ratio between impact variation at that level and mean variation at that level. It is a measure of treatment impact heterogeneity.
 
--The $R^2$ expressions are the percent of variation at a particular level predicted by covariates specific to that level. For simplicity we assume covariates at a level are group mean centered, so only covariates at a particular level explain variance at that level.
+- The $R^2$ expressions are the percent of variation at a particular level predicted by covariates specific to that level. For simplicity we assume covariates at a level are group mean centered, so only covariates at a particular level explain variance at that level.
 
 In addition to design parameters, there are additional parameters that control the precision of the power estimates themselves:
 
-$tnum$ is the number of test statistics generated in order to estimate power. A larger number of test statistics results in greater computation time, but also a more precise estimate of power.  (Note that the `pump_mdes()` and `pump_sample()` have multiple `tnum` parameters controlling the precision of the search).
-$B$ is the number of Westfall-Young permutations. Again, there is a tradeoff between precision and computation time.
+- $tnum$ is the number of test statistics generated in order to estimate power. A larger number of test statistics results in greater computation time, but also a more precise estimate of power.  (Note that the `pump_mdes()` and `pump_sample()` have multiple `tnum` parameters controlling the precision of the search).
+- $B$ is the number of Westfall-Young permutations. Again, there is a tradeoff between precision and computation time.
 
 TODO: add references to specific appendix sections for formulas
+
 ## Determining MDES and sample size
 
 Frequently, a researcher's main concern with power is prospectively calculating either the MDES for each outcome in a given study, or determining the necessary sample size to achieve a target power given a specified set of MDES values.
@@ -532,7 +584,7 @@ We next discuss selection of all needed design parameters and modeling choices.
 For further discussion of selecting these parameters see, for example, see @RN27978, @RN4473 and @Porter2018.
 
 *Analytic model.* We first need to specify how we will analyze our data; this choice can also determine which design parameters we will need to specify.
-Following the original Diplomas Now report, we plan on using a multilevel model (a common choice for cluster randomized experiments, and especially common in education) with fixed effects at level three, a random intercept at level two, and a single treatment coefficient.
+Following the original Diplomas Now report, we plan on using a multi-level model (a common choice for cluster randomized experiments, and especially common in education) with fixed effects at level three, a random intercept at level two, and a single treatment coefficient.
 We represent this model as "m3fc2rc."
 The "3fc" means we are including block fixed effects, and not modeling any treatment impact variation at level three.
 The "2rc" means random intercept and no modeled variation of treatment within each block (the "c" is for "constant").
@@ -628,7 +680,7 @@ m2 <- update( m, power.definition = "min1" )
 kable(m2, digits=2)
 ```
 
-The `update()` method can replace any number of arguments of the prior call with new ones, making exploration of different scenarios very straightforward.^[The `update()` method re-runs the underlying call of `pump_mdes()`, `pump_sample()`, or `pump_power()` with the revised set of design parameters. You can even change which call to use via the `type` parameter.]
+The `update()` method can replace any number of arguments of the prior call with new ones, making exploration of different scenarios very straightforward.\footnote{The $`update()`$ method re-runs the underlying call of $`pump_mdes()`$, $`pump_sample()`$, or $`pump_power()`$ with the revised set of design parameters. You can even change which call to use via the `type` parameter.}
 Our results show that if we just want to detect at least one outcome with 80% power, we can reliably detect an effect of size 0.084 (assuming all three outcomes have effects of at least that size):
 
 
@@ -676,7 +728,7 @@ When we do this, we can also increase the number of iterations to get more preci
 
 ```{r samplesizeverify, cache=TRUE}
 p_check <- update( smp, type="power", tnum = 100000 )
-p_check
+kable(p_check, digits = 2)
 ```
 
 When calculating power directly, we get power for all the implemented definitions of power applicable to the design.
@@ -686,9 +738,15 @@ The first row is power without adjustment, and the second row has our power with
 
 The next columns show different multi-outcome definitions of power.
 In particular, `min1` and `min2` show the chance of rejecting at least one or two hypotheses, respectively.
-The `complete` column shows the power to reject all hypotheses; it is only defined if all outcomes are specified to have a non-zero effect.^[The package does not show power for these without adjustment for multiple testing, as that power would be grossly inflated and meaningless.]
+The `complete` column shows the power to reject all hypotheses; it is only defined if all outcomes are specified to have a non-zero effect.\footnote{The package does not show power for these without adjustment for multiple testing, as that power would be grossly inflated and meaningless.}
 
-We can look at a power curve to assess how sensitive power is to our level two sample size:^[The points on the plots show the evaluated simulation trials, with larger points corresponding to more iterations and greater precision.]
+We can also plot the resulting power object, comparing the different MTPs and definitions of power.
+
+```{r cache=TRUE}
+plot( p_check )
+```
+
+We can look at a power curve to assess how sensitive power is to our level two sample size:\footnote{The points on the plots show the evaluated simulation trials, with larger points corresponding to more iterations and greater precision.}
 
 ```{r, fig.height = 3.5, fig.width=5, echo=TRUE}
 plot_power_curve( smp )
@@ -707,7 +765,7 @@ Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young 
 m
 ```{r othercorrections, cache=TRUE}
 p2 <- update( p_check, MTP = c("Bonferroni", "Holm", "WY-SD") )
-p2
+print( p2 )
 ```
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
@@ -730,15 +788,15 @@ Random effects models allow for level three covariates, which we would need to s
 
 ```{r}
 p3 <- update( p_check, design="d3.2_m3rr2rc", numCovar.3 = 3, R2.3 = 0.40 )
-p3
+print( p3 )
 ```
 
 
 ## Exploring sensitivity to design parameters
 
 Given the above, we might wonder how power shifts if we change our design parameters.
-For some discussion of what parameters will affect power more generally, see @RN4473 <<PowerUp paper?>>.
-For discussion of how design parameters can affect the overall power in the multiple testing context, especially with regards to the overall power measures such as min1 or complete power, see @Porter2018<<Kristen paper>>; the findings there are general, as they are a function of the final distribution of test statistics.
+For some discussion of what parameters will affect power more generally, see @RN4473.
+For discussion of how design parameters can affect the overall power in the multiple testing context, especially with regards to the overall power measures such as min1 or complete power, see @Porter2018; the findings there are general, as they are a function of the final distribution of test statistics.
 The key insight into this approach is that power is a function of only a few summarizing elements: the individual-level standard errors, the degrees of freedom, and the correlation structure of the test statistics.
 Once we have these elements, regardless of the design, we can proceed.
 
@@ -758,7 +816,7 @@ Update allows for a quick change of some of the set of parameters used in a prio
 As a further example, here we examine what happens if the ICCs are more equally split across levels two and three:
 ```{r}
 p_b <- update( p_check, ICC.2 = 0.20, ICC.3 = 0.25 )
-p_b
+print( p_b )
 ```
 
 We immediately see that our assumption of substantial variation in level three matters a great deal for power.
@@ -771,7 +829,7 @@ p_d = update( p_check,
           	R2.1 = c( 0.1, 0.3, 0.1, 0.2, 0.2 ),
           	R2.2 = c( 0.4, 0.8, 0.3, 0.2, 0.2 ),
           	omega.3 = c( 0.2, 0.4, 0.3, 0.2, 0.2 ) )
-p_d
+print( p_d )
 ```
 
 Notice how the individual powers are heavily impacted.  The min-$d$ powers naturally take the varying outcomes into account as we are calculating a joint distribution of test statistics that will have the correct marginal distributions based on these different design parameter values.
