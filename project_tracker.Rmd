@@ -4,6 +4,7 @@ Updated: Dec 21 by KH
 # R package
 
 - Silence ROxygen documentation for non-exported functions
+- double check Min powers returned when numZero >0 (or help KP finally have clarity)
 
 # Manuscript
 
