@@ -248,25 +248,25 @@ For a more detailed discussion of these expressions, see Section~\ref{sec:tune}.
 
 The quantity $\text{ICC}$ is the Intraclass Correlation for the unconditional model. The following expressions include the variation, therefore, due to covariates.  All covariates are assumed to be group-mean centered and have unit variance.  (This creates the pairing of terms in the equations below.)
 
-\begin{align*}
+\begin{align}
 \text{ICC}_{3,m} &= \frac{Var(\mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\xi^2_m + \eta_{0,m}^2}{\left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}\\
 \text{ICC}_{2,m} &= \frac{Var(\theta_{0,jkm} \mid \mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\delta_m^2  + \tau_{0,m}^2}{ \left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}
-\end{align*}
+\end{align}
 
 The quantity $\omega$ is the ratio between impact variation and mean variation.
 
-\begin{align*}
+\begin{align}
 \omega_{3,m} &=  \frac{Var(\mu_{1,jkm})}{Var(\mu_{0,km})} = \frac{\eta^2_{1,m}}{\xi^2_m + \eta_{0,m}^2}\\
 \omega_{2,m} &=  \frac{Var(\psi_{1,jkm} \mid \mu_{1,km})}{Var(\theta_{0,jkm} \mid \mu_{0,km})} = \frac{\tau^2_{1,m}}{\delta_m^2 + \tau^2_{0,m}}
-\end{align*}
+\end{align}
 
 The $R^2$ expressions are the percent of variation at a particular level predicted by covariates specific to that level.
 
-\begin{align*}
+\begin{align}
 R_{3,m}^2 &= 1 - \frac{Var(w_{0,km})}{Var(\mu_{0,km})} = 1 - \frac{\eta^2_{0,m}}{\xi_m^2 + \eta^2_{0,m}} \\
 R_{2,m}^2 &= 1 - \frac{Var(u_{0,jkm})}{Var(\theta_{0,jkm} \mid D_{id})} = 1 - \frac{\tau^2_{0,m}}{\delta_m^2 + \tau^2_{0,m}}\\
 R^2_{1,m} &= 1 - \frac{Var(r_{ijkm})}{Var( Y_{ijkm}(0) \mid S_{id}, D_{id})} = 1 - \frac{ \sigma^2_m }{ \gamma_m^2 + \sigma^2_m }
-\end{align*}
+\end{align}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
