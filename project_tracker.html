@@ -168,22 +168,32 @@ pre code {
 
 
 <p>Updated: Dec 22 by KH</p>
-<div id="r-package-zarni" class="section level1">
-<h1>R package (Zarni)</h1>
+<div id="r-package" class="section level1">
+<h1>R package</h1>
 <ul>
-<li>Silence ROxygen documentation for non-exported functions</li>
+<li>Silence ROxygen documentation for non-exported functions (Zarni?)</li>
 <li>double check Min powers returned when numZero &gt;0 (or help KP finally have clarity)</li>
+</ul>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
+<ul>
+<li>plots</li>
+<li>recruit more users for testing</li>
 </ul>
 </div>
 <div id="manuscript" class="section level1">
 <h1>Manuscript</h1>
 <ul>
 <li>finalize a title (TBD)</li>
+<li>cover letter (LM)</li>
+<li>finalize pdf (Kristen)</li>
+<li>look at submission website (Kristen)</li>
 <li>check if JSS allows vignette to be published separately (KH)</li>
 <li>add plots to vignette (KH or LM)</li>
 <li>write abstract (KH or KP)</li>
 <li>prepare formatting for submission (KH)</li>
-<li>discussion of Benjamini-Hochberg (TBD)</li>
+<li>explanation of min power when numZero &gt; 0 (KP)</li>
 </ul>
 <p><em>Waiting</em></p>
 <ul>
@@ -195,7 +205,11 @@ pre code {
 <h1>Package updates</h1>
 <p><em>High priority</em></p>
 <ul>
-<li>recruit people for user testing?</li>
+<li>recruit people for user testing of package (KH/LM)</li>
+<li>add flag to not drop any outcomes (KH)</li>
+<li>fix MDES code for zero MDES (LM)</li>
+<li>check one-sided and two-sided tests (KH)</li>
+<li>WY checks (KH)</li>
 </ul>
 <p><em>Medium priority</em></p>
 <ul>
@@ -203,20 +217,22 @@ pre code {
 </ul>
 <p><em>Low priority</em></p>
 <ul>
-<li>functions to convert between long and wide (LM)</li>
 <li>plotting code (LM)
 <ul>
 <li>clean up and condense data wrangling</li>
-<li>add additional plots from vignette?</li>
-<li>add new plots for single scenario for mdes, sample size</li>
 <li>make plots prettier</li>
 </ul></li>
 <li>error/other messaging (KH or LM)
 <ul>
+<li>tell user that mdes and sample size single scenario plots don’t make sense (KH)</li>
 <li>collect errors from grid and only print out unique errors</li>
 <li>better error messaging for flat power curves (both shiny and non-shiny)</li>
 <li>error if user passes same parameter in twice into grid</li>
 <li>give user estimate of runtime for WY (MDES and SS will require extra work)</li>
+</ul></li>
+<li>small things
+<ul>
+<li>user can’t pass in vector of numCovar (KH)</li>
 </ul></li>
 </ul>
 </div>
@@ -238,14 +254,15 @@ pre code {
 <div id="stretch-goals" class="section level1">
 <h1>Stretch goals</h1>
 <ul>
+<li>vary multiple factors in plots (LM)</li>
 <li>surface WY functions to user with good documentation (KH)</li>
 <li>tool that helps user build a block matrix of correlations based on a list of correlations between outcomes (KH)</li>
-<li>add monte carlo error bars (LM)</li>
 <li>generate a data frame of reasonable defaults for shiny that produce 80% power</li>
 <li>additional designs: d2.2_m2rr, d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors</li>
 <li>effect size calculator</li>
 <li>speed up everything</li>
 <li>binary outcomes</li>
+<li>discussion of Benjamini-Hochberg</li>
 </ul>
 </div>
 <div id="shiny-app" class="section level1">

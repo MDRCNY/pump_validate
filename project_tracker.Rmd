@@ -1,19 +1,27 @@
 
 Updated: Dec 22 by KH
 
-# R package (Zarni)
+# R package
 
-- Silence ROxygen documentation for non-exported functions
+- Silence ROxygen documentation for non-exported functions (Zarni?)
 - double check Min powers returned when numZero >0 (or help KP finally have clarity)
+
+# Discussion
+
+- plots
+- recruit more users for testing
 
 # Manuscript
 
 - finalize a title (TBD)
+- cover letter (LM)
+- finalize pdf (Kristen)
+- look at submission website (Kristen)
 - check if JSS allows vignette to be published separately (KH)
 - add plots to vignette (KH or LM)
 - write abstract (KH or KP)
 - prepare formatting for submission (KH)
-- discussion of Benjamini-Hochberg (TBD)
+- explanation of min power when numZero > 0 (KP)
 
 *Waiting*
 
@@ -24,7 +32,11 @@ Updated: Dec 22 by KH
 
 *High priority*
 
-- recruit people for user testing?
+- recruit people for user testing of package (KH/LM)
+- add flag to not drop any outcomes (KH)
+- fix MDES code for zero MDES (LM)
+- check one-sided and two-sided tests (KH)
+- WY checks (KH)
 
 *Medium priority*
 
@@ -32,17 +44,17 @@ Updated: Dec 22 by KH
 
 *Low priority*
 
-- functions to convert between long and wide (LM)
 - plotting code (LM)
   - clean up and condense data wrangling
-  - add additional plots from vignette?
-  - add new plots for single scenario for mdes, sample size
   - make plots prettier
 - error/other messaging (KH or LM)
+  - tell user that mdes and sample size single scenario plots don't make sense (KH)
   - collect errors from grid and only print out unique errors
   - better error messaging for flat power curves (both shiny and non-shiny)
   - error if user passes same parameter in twice into grid
   - give user estimate of runtime for WY (MDES and SS will require extra work)
+- small things
+  - user can't pass in vector of numCovar (KH)
 
 # Validation
 
@@ -57,14 +69,15 @@ Updated: Dec 22 by KH
 
 # Stretch goals
 
+- vary multiple factors in plots (LM)
 - surface WY functions to user with good documentation (KH)
 - tool that helps user build a block matrix of correlations based on a list of correlations between outcomes (KH)
-- add monte carlo error bars (LM)
 - generate a data frame of reasonable defaults for shiny that produce 80% power
 - additional designs: d2.2_m2rr, d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors
 - effect size calculator
 - speed up everything
 - binary outcomes
+- discussion of Benjamini-Hochberg
 
 # Shiny app
 - in separate document
