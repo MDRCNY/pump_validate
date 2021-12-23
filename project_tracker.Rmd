@@ -1,24 +1,24 @@
 
 Updated: Dec 22 by KH
 
-# R package
+# R package (Zarni)
 
-- Silence ROxygen documentation for non-exported functions (?)
+- Silence ROxygen documentation for non-exported functions
 - double check Min powers returned when numZero >0 (or help KP finally have clarity)
 
 # Manuscript
 
 - finalize a title (TBD)
 - check if JSS allows vignette to be published separately (KH)
+- add plots to vignette (KH or LM)
 - write abstract (KH or KP)
 - prepare formatting for submission (KH)
 - discussion of Benjamini-Hochberg (TBD)
 
 *Waiting*
 
-- add plots to vignette (waiting on LM fix)
 - add appendices to main document (waiting on validation to finish KH)
-- once manuscript is ready, move vignette ijnto package (KH or LM)
+- once manuscript is ready, move vignette into package (KH or LM)
 
 # Package updates
 
@@ -34,8 +34,8 @@ Updated: Dec 22 by KH
 
 - functions to convert between long and wide (LM)
 - plotting code (LM)
-  - fix broken plots for grid function
   - clean up and condense data wrangling
+  - add additional plots from vignette?
   - add new plots for single scenario for mdes, sample size
   - make plots prettier
 - error/other messaging (KH or LM)
@@ -46,6 +46,7 @@ Updated: Dec 22 by KH
 
 # Validation
 
+- WY validation (KH)
 - rerun all validation (KH, in progress)
 - render validation documents (KH)
 - incorporate into appendix (KH)
