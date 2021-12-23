@@ -6,19 +6,18 @@ Updated: Dec 22 by KH
 - Silence ROxygen documentation for non-exported functions (Zarni?)
 - double check Min powers returned when numZero >0 (or help KP finally have clarity)
 
-# Discussion
+# KH 12/23
 
-- plots
-- recruit more users for testing
+- finalize pdf and send to Luke for pre-submission inquiry
+- look into journal submission process
+- check if JSS allows vignette to be published separately
+- send user test "homework" assignment to Luke
 
 # Manuscript
 
 - finalize a title (TBD)
-- cover letter (LM)
-- finalize pdf (Kristen)
-- look at submission website (Kristen)
-- check if JSS allows vignette to be published separately (KH)
-- add plots to vignette (KH or LM)
+- cover letter (LM) 
+- add plots to vignette (LM)
 - write abstract (KH or KP)
 - prepare formatting for submission (KH)
 - explanation of min power when numZero > 0 (KP)
@@ -58,8 +57,6 @@ Updated: Dec 22 by KH
 
 # Validation
 
-- WY validation (KH)
-- rerun all validation (KH, in progress)
 - render validation documents (KH)
 - incorporate into appendix (KH)
   
