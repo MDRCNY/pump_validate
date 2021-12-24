@@ -9,7 +9,7 @@ library(here)
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
-run.mdes.ss = FALSE
+run.mdes.ss = TRUE
 # whether to run limited westfall young validations
 run.wy = FALSE
 # which d_ms to run
@@ -39,7 +39,7 @@ source(here::here("validation/code", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 3                      # Number of samples for Monte Carlo Simulation
+  S = 5000                      # Number of samples for Monte Carlo Simulation
   , Q = 1                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
@@ -53,9 +53,9 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , MTP = c("Bonferroni", "BH", "Holm") # Multiple testing procedures
-  , runSim = TRUE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = FALSE           # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = FALSE       # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
+  , runSim = FALSE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = TRUE           # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPowerUp = TRUE       # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
 #------------------------------------------------------------------#
@@ -432,7 +432,7 @@ if(run.d2.1 & run.power)
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   
-  model.params.list[['omega.2']] <- NULL
+  model.params.list[['omega.2']] <- rep(0, M)
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   model.params.list[['omega.2']] <- model.params.default[['omega.2']]
@@ -1461,7 +1461,7 @@ if(run.d3.2 & run.power)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   
   
-  model.params.list[['omega.3']] <- NULL
+  model.params.list[['omega.3']] <- rep(0, M)
   model.params.list[['K']] <- model.params.default[['K']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]

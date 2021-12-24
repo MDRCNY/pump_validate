@@ -57,6 +57,7 @@ Updated: Dec 22 by KH
 
 # Validation
 
+- fix validation complaint (KH)
 - render validation documents (KH)
 - incorporate into appendix (KH)
   
