@@ -4,18 +4,11 @@ Updated: Dec 22 by KH
 # R package
 
 - Silence ROxygen documentation for non-exported functions (Zarni?)
-- double check Min powers returned when numZero >0 (or help KP finally have clarity)
-
-# KH 12/23
-
-- finalize pdf and send to Luke for pre-submission inquiry
-- look into journal submission process
-- check if JSS allows vignette to be published separately
-- send user test "homework" assignment to Luke
 
 # Manuscript
 
-- finalize a title (TBD)
+- look into journal submission process (KH)
+- check if JSS allows vignette to be published separately (KH)
 - cover letter (LM) 
 - add plots to vignette (LM)
 - write abstract (KH or KP)
@@ -31,11 +24,10 @@ Updated: Dec 22 by KH
 
 *High priority*
 
+- send user test "homework" assignment to Luke (KH)
 - recruit people for user testing of package (KH/LM)
 - add flag to not drop any outcomes (KH)
 - fix MDES code for zero MDES (LM)
-- check one-sided and two-sided tests (KH)
-- WY checks (KH)
 
 *Medium priority*
 
@@ -53,11 +45,12 @@ Updated: Dec 22 by KH
   - error if user passes same parameter in twice into grid
   - give user estimate of runtime for WY (MDES and SS will require extra work)
 - small things
-  - user can't pass in vector of numCovar (KH)
+  - make sure user can't pass in vector of numCovar (KH)
 
 # Validation
 
-- fix validation complaint (KH)
+- re-run non-WY validation with sided tests fixed (KH)
+- re-run WY validation (KH)
 - render validation documents (KH)
 - incorporate into appendix (KH)
   

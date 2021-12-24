@@ -1,14 +1,12 @@
 ---
-title: "PUMP manuscript draft"
+title: "PUMP: Estimating power, MDES, and sample size with multiple outcomes"
 output:
   pdf_document:
-    includes:
-      keep_tex: yes
+    keep_tex: true
     number_sections: yes
-    toc_depth: 2
 bibliography: refs.bib
-header-includes:
-    - \usepackage{setspace}\doublespacing
+# header-includes:
+#     - \usepackage{setspace}\doublespacing
 ---
 
 ```{r setup, include = FALSE}
@@ -30,12 +28,6 @@ options(knitr.kable.NA = '')
 theme_set( theme_minimal() )
 set.seed( 1010203 )
 ```
-
-\section{TODO}
-
-- fix tables
-- add abstract
-- add title
 
 \section{Introduction}
 \label{sec:intro}
@@ -201,32 +193,41 @@ MTPS that control false discovery rate (FDR) take an entirely different approach
 
 FDR is a less stringent criteria than FWER.
 Introduced by Benjamini and Hochberg (1995), the FDR is the expected proportion of all rejected hypotheses that are erroneously rejected.
-The two-by-two representation in Table 1 is often found in articles on multiple hypothesis testing, and helps to illustrate the difference between FWER and FDR.
+The two-by-two representation in Table~\ref{tab:twobytwo} is often found in articles on multiple hypothesis testing, and helps to illustrate the difference between FWER and FDR.
 Let $M$ be the total number of tests.
 Therefore, we have $M$ unobserved truths: whether or not each null hypothesis is true or false.
 We also have $M$ observed decisions: whether or not the null hypotheses were rejected, because the $p$-values were less than $\alpha$.
-In Table 1, A, B, C and D are four possible scenarios: the numbers of true or false hypotheses not rejected or rejected. 
+In Table~\ref{tab:twobytwo}, A, B, C and D are four possible scenarios: the numbers of true or false hypotheses not rejected or rejected. 
 $M_0$ and $M_1$ are the unobservable numbers of true null and false null hypotheses.
 $R$ is the number of null hypotheses that were rejected, and $M - R$ is the number of null hypotheses that were not rejected.
 
 
-Table 1: Numbers of hypothesis types and decisions.
+\begin{table}[h!]
+\centering
+\begin{tabular}{l l l l}
+                                      & \multicolumn{3}{c}{Observed decisions}\\ \hline
+Unobserved truths                     & Number not rejected     & Number rejected   & Total \\ \hline
+Number of true null hypotheses        & A                       & B                 & M0 \\
+Number of false null hypotheses       & C                       & D                 & M1 \\ \hline
+Total                                 & M-R                     & R                 & M
+\end{tabular}
+\caption{Numbers of hypothesis types and decisions.}
+  \label{tab:twobytwo}
+\end{table}
 
-TODO insert table.
-
-In Table 1, $F$ is the number of erroneously rejected null hypotheses, or the number of false positive findings.
+In Table~\ref{tab:twobytwo}, $F$ is the number of erroneously rejected null hypotheses, or the number of false positive findings.
 Therefore, the FWER is equivalent to $Pr(F > 0)$, the probability of at least one false positive finding.
 Recall that Type I error is inflated when testing for effects on independent outcomes when no MTPs are applied.
 The Type I error was almost $10\%$ when testing effects on two independent outcomes and $23\%$ when testing effects on five independent outcomes.
 These Type I error rates both correspond to the FWER.
 The goal of MTPs that control the FWER is to bring these percentages back down to $5\%$. 
 
-Also in Table 1, the FDR is equal to $E(\frac{F}{R})$ but is defined to be $0$ when $R=0$, or when no hypotheses are rejected.
+Also in Table~\ref{tab:twobytwo}, the FDR is equal to $E(\frac{F}{R})$ but is defined to be $0$ when $R=0$, or when no hypotheses are rejected.
 As is frequently noted in the literature (e.g., @RN352; @RN23748), the FWER and FDR have different objectives.
 Control of the FWER protects researchers from spurious findings and so may be preferred when even a single false positive could lead to the wrong conclusion about the effectiveness of an intervention.
 On the other hand, the FDR is more lenient with false positives.
 Researchers may be willing to accept a few false positives, $E$, when the total number of rejected hypotheses, $R$, is large.
-Note that under the complete null hypothesis that all $M$ null hypotheses are null, the FDR is equal to the FWER, because when referring back to Table 1 we have $FWER=P(R>0)=E(\frac{E}{R})=FDR$.
+Note that under the complete null hypothesis that all $M$ null hypotheses are null, the FDR is equal to the FWER, because when referring back to Table~\ref{tab:twobytwo} we have $FWER=P(R>0)=E(\frac{E}{R})=FDR$.
 However, if any effects truly exist, then $FWER \geq FDR$.As a result of the difference in objective between FWER and FDR, in the case where there is at least one false null hypothesis (at least one true effect at least as large as a specified effect size), an MTP that controls the FDR at $5\%$ will have a Type I error rate that is greater than $5\%$.
 
 MTPs may provide either weak or strong control of the error rate they target.
@@ -251,8 +252,8 @@ The adjustments depend on null hypotheses already rejected in previous steps.
 For example, the Holm MTP --- the stepwise counterpart to the Bonferroni MTP --- orders raw $p$-values from smallest to largest.
 The procedure then multiplies the smallest $p$-value by $M$, the second smallest $p$-value by $M-1$, and so on, but also enforces that each adjusted $p$-value is greater than or equal to the previous adjusted $p$-value and that it is not greater than one.
 Overall, stepwise MTPs allow for less adjustment than single-step MTPs in later steps, and therefore preserve more power (for outcomes that do not correspond to the most significant $p$-value).
-The Bonferroni and one of the Westfall-Young MTPs are singlestep; the Holm and Benjamini-Hochberg MTPs and the other Westfall-Young MTP are stepwise.
-Note that stepwise procedures may be “step-down” or “step-upn,” referring to whether a procedure begins with the smallest $p$-value, and thus the largest effect size (step-down) or the largest $p$-value (step-up).
+The Bonferroni and one of the Westfall-Young MTPs are single-step; the Holm and Benjamini-Hochberg MTPs and the other Westfall-Young MTP are stepwise.
+Note that stepwise procedures may be “step-down” or “step-up,” referring to whether a procedure begins with the smallest $p$-value, and thus the largest effect size (step-down) or the largest $p$-value (step-up).
 
 Due to the dependencies of adjustments in stepwise MTPs, a new assumption must be considered when estimating power, MDES or sample size under multiplicity -  the proportion of outcomes on which there are truly impacts of at least the size of the researchers’ desired ESs, or, equivalently, the number of false null hypotheses.
 There is one scenario in which this assumption does not matter, which is the scenario when one focuses on individual power and uses a single-step MTP.
@@ -324,15 +325,19 @@ For a more detailed explanation of each MTP, see Appendix A of @Porter2018.
 
 The following table summarizes the important features for each of the MTPs supported by PUMP: 
 
-
-Table 2: Summary of MTP procedures.
-Procedure                           | Control     | Single-step or stepwise | Accounts for correlation  |
------                               | ----------  | ----------------------- | ------------------------- |
-Bonferroni (BF)                     | FWER        |  single-step            | No                        |
-Holm (HO)                           | FWER        |  stepwise               | No                        |
-Westfall-Young Single-step (WY-SS)  | FWER        |  single-step            | Yes                       |
-Westfall-Young Step-down (WY-SD)    | FWER        |  stepwise               | Yes                       |
-Benjamini-Hochberg (BH)             | FDR         |  stepwise               | No                        |
+\begin{table}[h!]
+\centering
+\begin{tabular}{l l l l}
+Procedure                             & Control & Single-step or stepwise & Accounts for correlation \\ \hline
+Bonferroni (BF)                       & FWER    & single-step             & No                       \\
+Holm (HO)                             & FWER    & stepwise                & No\\
+Westfall-Young Single-step (WY-SS)    & FWER    & single-step             & Yes\\
+Westfall-Young Step-down (WY-SD)      & FWER    & stepwise                & Yes\\
+Benjamini-Hochberg (BH)               & FDR     & stepwise                & No
+\end{tabular}
+\caption{Summary of MTP procedures.}
+  \label{tab:mtp}
+\end{table}
 
 \section{Estimating power, MDES and sample size in studies with multiple outcomes}
 \label{sec:est}
@@ -671,7 +676,7 @@ We do this by specifying the type (`power.definition`) and desired power (`targe
 
 Here, for example, we find the MDES if we want an 80% chance of detecting an impact on our first outcome when using the Holm procedure:
 
-```{r MDEScalc, cache=TRUE}
+```{r MDEScalc}
 m <- pump_mdes(
         	design = "d3.2_m3fc2rc", # choice of design and analysis strategy
         	MTP = "Holm", # multiple testing procedure
@@ -702,7 +707,7 @@ Lower tolerance and higher `tnum` values will give more exact results (and take 
 
 Changing the type of power is straightforward: for example, to identify the MDES for min-1 power (i.e., what effect do we have to assume across all observations such that we will find some significant result with 80% power?), we simply update our result with our new power definition:
 
-```{r MDEScalcmin1, echo=TRUE, cache=TRUE}
+```{r MDEScalcmin1, echo=TRUE}
 m2 <- update( m, power.definition = "min1" )
 kable(m2, digits=2)
 ```
@@ -714,7 +719,7 @@ Our results show that if we just want to detect at least one outcome with 80% po
 When estimating power for multiple outcomes, it is important to consider cases where some of the outcomes in fact have null, or very small, effects, to hedge against circumstances such as one of the outcomes not being well measured.
 One way to to do this here is to assume two of our outcomes have no effect; the `numZero` parameter allows for this as follows:
 
-```{r MDESwithNumZero, cache=TRUE, echo=TRUE}
+```{r MDESwithNumZero, echo=TRUE}
 m3 <- update( m2, numZero = 2 )
 kable(m3, digits=2)
 ```
@@ -732,7 +737,7 @@ The `pump_sample` method will search over any one of these, as requested.
 
 Assuming we have three schools per block, we first calculate how many blocks we would need to achieve a MDES of 0.10 for min-1 power (this answer the question of how big of an experiment do we need in order to have an 80% chance of finding at least one outcome significant, if all outcomes had a true effect size of 0.10).
 
-```{r samplesizecalc, cache=TRUE}
+```{r samplesizecalc}
 smp <- pump_sample(
   design = "d3.2_m3fc2rc",
   MTP = "Holm",
@@ -753,7 +758,7 @@ We recommend checking MDES and sample-size calculators as the estimation error c
 A check is easy to do; simply run the found design through `pump_power()`, which directly calculates power for a given scenario, to see if we recover our originally targeted power (we can use `update()` and set the type to `power` to pass all the design parameters automatically).
 When we do this, we can also increase the number of iterations to get more precise estimates of power, as well:
 
-```{r samplesizeverify, cache=TRUE}
+```{r samplesizeverify}
 p_check <- update( smp, type="power", tnum = 100000 )
 kable(p_check, digits = 2)
 ```
@@ -769,7 +774,7 @@ The `complete` column shows the power to reject all hypotheses; it is only defin
 
 We can also plot the resulting power object, comparing the different MTPs and definitions of power.
 
-```{r cache=TRUE}
+```{r}
 plot( p_check )
 ```
 
@@ -790,7 +795,7 @@ Alternatively, simply provide a list of procedures you wish to compare.
 If you provide a list, the package will re-run the power calculator for each item on the list; this can make the overall call computationally intensive.
 Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young adjustments:
 m
-```{r othercorrections, cache=TRUE}
+```{r othercorrections}
 p2 <- update( p_check, MTP = c("Bonferroni", "Holm", "WY-SD") )
 print( p2 )
 ```
@@ -875,7 +880,7 @@ We above saw that the ICC does impact power considerably.
 We next extend this evaluation by exploring a range of options for both level two and three ICCs, so we can assess whether our power is sufficient across a set of plausible values.
 The `update_grid()` call makes this straightforward: we pass our baseline scenario along with lists of parameters to additionally explore:
 
-```{r, cache=TRUE, fig.height=3, fig.width=7}
+```{r, fig.height=3, fig.width=7}
 grid <- update_grid( p_check,
         	ICC.2 = seq( 0, 0.3, 0.05 ),
         	ICC.3 = seq( 0, 0.60, 0.20 ),
@@ -917,7 +922,7 @@ For example, with Westfall-Young, we saw that the correlation can improve our in
 We might not know what will happen to min-2 power, however: on one hand, correlated statistics make individual adjustment less severe, and on the other correlation means we succeed or fail all together.
 We can explore this relatively easily by letting `rho` vary as so:
 
-```{r, cache=TRUE, fig.height=3, fig.width=7}
+```{r, fig.height=3, fig.width=7}
 grid <- update_grid( p_check,
         	MTP = c( "Bonferroni", "WY-SS" ),
         	rho = c( 0, 0.15, 0.3, 0.45, 0.6 ),
@@ -926,7 +931,7 @@ grid <- update_grid( p_check,
 ```
 
 We then plot our results
-```{r, cache=TRUE, fig.height=3, fig.width=7}
+```{r, fig.height=3, fig.width=7}
 gridL = filter( grid, MTP != "None" ) %>%
   pivot_longer( cols=c(indiv.mean, min1, min2, complete),
             	names_to="definition", values_to="power" ) %>%
@@ -951,14 +956,14 @@ We finally explore varying the number of outcomes with no effects.
 This exploration is an important way to hedge a design against the possibility that some number of the identified outcomes are measured poorly, or are simply not impacted by treatment.
 We use a grid search, varying the number of outcomes that have no treatment impact via the `numZero` design parameter:
 
-```{r, cache=TRUE, fig.width = 7, fig.height = 2.5 }
+```{r, fig.width = 7, fig.height = 2.5 }
 grid <- update_grid( p_check,
         	numZero = 0:4,
         	M = 5 )
 ```
 
 We then can make a plot as we did above:
-```{r, cache=TRUE, echo=FALSE, fig.width = 7, fig.height = 2.5, warnings=FALSE }
+```{r, echo=FALSE, fig.width = 7, fig.height = 2.5, warnings=FALSE }
 gridL = filter( grid, MTP != "None" ) %>%
   pivot_longer( cols=c(indiv.mean, min1, min2, complete),
             	names_to="definition", values_to="power" ) %>%
@@ -1005,7 +1010,7 @@ We compare point estimates of power from PUMP and PowerUpR for D1 individual, un
 For all other types of power definitions and adjustments, we are only able to compare PUMP to the estimated power from Monte Carlo simulations.
 The simulations produce a 95\% confidence interval for power, and we check that the PUMP estimate is within the confidence interval.
 
-## Monte Carlo Simulations
+\subsection{Monte Carlo Simulations}
 
 The main work of this validation step was to design monte carlo simulations in order to estimate power.
 In order to estimate power by simulation, we follow the following steps.
@@ -1022,7 +1027,7 @@ We also validate MDES and sample size calculations.
 For MDES, we choose one default scenario for each design and model, then input the already-calculated D1 individual power and see if the output MDES is the same as the original input MDES.
 Similarly, for sample size validation, we input the already-calculated D1 individual power and see if the output sample size (either $J$ or $K$ depending on design) is the same as the original sample size.
 
-## Simulation parameters
+\subsection{Simulation parameters}
 
 In order to validate that the method works in a wide range of scenarios, which vary the following parameters.
 
@@ -1045,149 +1050,149 @@ We do not vary:
 * Correlations between school random effects and impacts $\kappa$
 * $\rho$ informs all correlations; we keep the same correlation between covariates, residuals, impacts, random effects for all levels and across all outcomes
 
-# Validation results
+<!-- # Validation results -->
 
-Below is an example of a graph we use for validation.
-The red dot is the PUM estimate of power, the green dot is the PowerUpR estimate of power, and the 95% confidence intervals based on the monte carlo simulations are shown in blue.
-To validate that PUMP produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals.
-The plot shows the results across different types of power and different MTPs.
-We repeat this graph for each set of parameters for each design.
-
-
-```{r}
-sim.params.list <- list(
-  S = 100                   # Number of samples for Monte Carlo Simulation
-  , Q = 10                  # Number of times entire simulation is repeated, so total iterations = S * Q
-  , B = NULL                # Number of samples for WestFall-Young. The equivalent is snum in our new method.
-  , alpha = 0.05            # Significance level
-  , tol = 0.01              # tolerance for MDES and sample  size calculations
-  , Tbar = 0.5              # Binomial assignment probability
-  , tnum = 10000            # Number of test statistics (samples) for all procedures other than Westfall-Young
-  , parallel = TRUE         # parallelize within each monte carlo iteration
-  , ncl = 3                 # Number of computer clusters (max on RStudio Server is 16)
-  , start.tnum = 2000       # number of iterations for starting to testing mdes and power
-  , final.tnum = 100000     # final number of iterations to check power
-  , max.steps = 20          # maximum number of iterations for MDES or sample size calculations
-  , max.cum.tnum = 10000000 # maximum cumulative tnum for MDES and sample size
-  , procs = c("Bonferroni", "BH", "Holm")
-  , runSim = TRUE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = TRUE          # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = TRUE       # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
-)
-
-M <- 3
-rho.default <- 0.5
-default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-
-user.params.list <- list(
-  M = 3                                   # number of outcomes
-  , J = 60                                # number of schools
-  , K = 1                                 # number of districts (for two-level model, set K = 1)
-  , nbar = 50                             # number of individuals per school
-  , rho.default = rho.default             # default rho value (optional)
-  , S.id = NULL                           # N-length vector of indiv school assignments (optional)
-  , D.id = NULL                           # N-length vector of indiv district assignments (optional)
-  ################################################## grand mean otucome and impact
-  , Xi0 = 0                               # scalar grand mean outcome under no treatment
-  , ATE_ES = rep(0.125, M)                # minimum detectable effect size      
-  ################################################## level 3: districts
-  , R2.3 = rep(0.1, M)                    # percent of district variation explained by district covariates
-  , rho.V = default.rho.matrix            # MxM correlation matrix of district covariates
-  , ICC.3 = rep(0.2, M)                   # district intraclass correlation
-  , omega.3 = 0.1                         # ratio of district effect size variability to random effects variability
-  , rho.w0 = default.rho.matrix           # MxM matrix of correlations for district random effects
-  , rho.w1 = default.rho.matrix           # MxM matrix of correlations for district impacts
-  , theta.w = matrix(0, M, M)             # MxM matrix of correlations between district random effects and impacts
-  ################################################## level 2: schools
-  , R2.2 = rep(0.1, M)                    # percent of school variation explained by school covariates
-  , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates
-  , ICC.2 = rep(0.2, M)                   # school intraclass correlation	
-  , omega.2 = 0.1                         # ratio of school effect size variability to random effects variability
-  , rho.u0 = default.rho.matrix           # MxM matrix of correlations for school random effects
-  , rho.u1 = default.rho.matrix           # MxM matrix of correlations for school impacts
-  , theta.u = matrix(0, M, M)             # MxM matrix of correlations between school random effects and impacts
-  ################################################## level 1: individuals
-  , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
-  , rho.C = default.rho.matrix            # MxM correlation matrix of individual covariates
-  , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals 
-)
-
-user.params.list[['omega.2']] <- 0
-user.params.list[['J']] <- 30
-user.params.list[['K']] <- 10
-user.params.list[['nbar']] <- 50
-sim.params.list[['S']] <- 1000
-sim.params.list[['Q']] <- 1
-user.params.list[['nbar']] <- 100
-```
+<!-- Below is an example of a graph we use for validation. -->
+<!-- The red dot is the PUM estimate of power, the green dot is the PowerUpR estimate of power, and the 95% confidence intervals based on the monte carlo simulations are shown in blue. -->
+<!-- To validate that PUMP produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals. -->
+<!-- The plot shows the results across different types of power and different MTPs. -->
+<!-- We repeat this graph for each set of parameters for each design. -->
 
 
-**TODO** include plot
+<!-- ```{r} -->
+<!-- sim.params.list <- list( -->
+<!--   S = 100                   # Number of samples for Monte Carlo Simulation -->
+<!--   , Q = 10                  # Number of times entire simulation is repeated, so total iterations = S * Q -->
+<!--   , B = NULL                # Number of samples for WestFall-Young. The equivalent is snum in our new method. -->
+<!--   , alpha = 0.05            # Significance level -->
+<!--   , tol = 0.01              # tolerance for MDES and sample  size calculations -->
+<!--   , Tbar = 0.5              # Binomial assignment probability -->
+<!--   , tnum = 10000            # Number of test statistics (samples) for all procedures other than Westfall-Young -->
+<!--   , parallel = TRUE         # parallelize within each monte carlo iteration -->
+<!--   , ncl = 3                 # Number of computer clusters (max on RStudio Server is 16) -->
+<!--   , start.tnum = 2000       # number of iterations for starting to testing mdes and power -->
+<!--   , final.tnum = 100000     # final number of iterations to check power -->
+<!--   , max.steps = 20          # maximum number of iterations for MDES or sample size calculations -->
+<!--   , max.cum.tnum = 10000000 # maximum cumulative tnum for MDES and sample size -->
+<!--   , procs = c("Bonferroni", "BH", "Holm") -->
+<!--   , runSim = TRUE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result. -->
+<!--   , runPump = TRUE          # If TRUE, we will run method from our package. If FALSE, we will pull previous run result. -->
+<!--   , runPowerUp = TRUE       # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result. -->
+<!-- ) -->
 
-```{r validate.power, fig.height=6, fig.width=6}
-# design <- "d3.2_m3ff2rc"
-# user.params.list[['R2.3']] <- rep(0, M)
-# params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-# power_plot <- gen.power.results.plot(params.file.base, design)
-# print(power_plot)
-```
+<!-- M <- 3 -->
+<!-- rho.default <- 0.5 -->
+<!-- default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default) -->
 
-Next, we validate MDES and sample size calculations.
-The first column shows the calculated MDES or sample size, the middle column is the power we plugged into the calculation, and the last column shows the MDES or sample size that we are targeting.
-Thus, ideally we want the first and last columns to match.
+<!-- user.params.list <- list( -->
+<!--   M = 3                                   # number of outcomes -->
+<!--   , J = 60                                # number of schools -->
+<!--   , K = 1                                 # number of districts (for two-level model, set K = 1) -->
+<!--   , nbar = 50                             # number of individuals per school -->
+<!--   , rho.default = rho.default             # default rho value (optional) -->
+<!--   , S.id = NULL                           # N-length vector of indiv school assignments (optional) -->
+<!--   , D.id = NULL                           # N-length vector of indiv district assignments (optional) -->
+<!--   ################################################## grand mean otucome and impact -->
+<!--   , Xi0 = 0                               # scalar grand mean outcome under no treatment -->
+<!--   , ATE_ES = rep(0.125, M)                # minimum detectable effect size       -->
+<!--   ################################################## level 3: districts -->
+<!--   , R2.3 = rep(0.1, M)                    # percent of district variation explained by district covariates -->
+<!--   , rho.V = default.rho.matrix            # MxM correlation matrix of district covariates -->
+<!--   , ICC.3 = rep(0.2, M)                   # district intraclass correlation -->
+<!--   , omega.3 = 0.1                         # ratio of district effect size variability to random effects variability -->
+<!--   , rho.w0 = default.rho.matrix           # MxM matrix of correlations for district random effects -->
+<!--   , rho.w1 = default.rho.matrix           # MxM matrix of correlations for district impacts -->
+<!--   , theta.w = matrix(0, M, M)             # MxM matrix of correlations between district random effects and impacts -->
+<!--   ################################################## level 2: schools -->
+<!--   , R2.2 = rep(0.1, M)                    # percent of school variation explained by school covariates -->
+<!--   , rho.X = default.rho.matrix            # MxM correlation matrix of school covariates -->
+<!--   , ICC.2 = rep(0.2, M)                   # school intraclass correlation	 -->
+<!--   , omega.2 = 0.1                         # ratio of school effect size variability to random effects variability -->
+<!--   , rho.u0 = default.rho.matrix           # MxM matrix of correlations for school random effects -->
+<!--   , rho.u1 = default.rho.matrix           # MxM matrix of correlations for school impacts -->
+<!--   , theta.u = matrix(0, M, M)             # MxM matrix of correlations between school random effects and impacts -->
+<!--   ################################################## level 1: individuals -->
+<!--   , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates -->
+<!--   , rho.C = default.rho.matrix            # MxM correlation matrix of individual covariates -->
+<!--   , rho.r = default.rho.matrix            # MxM matrix of correlations for individual residuals  -->
+<!-- ) -->
 
-**TODO** include tables
-```{r}
-# user.params.list[['nbar']] <- 50
-# params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-# mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
-# mdes_D1_results <- readRDS(mdes.file)
-# pander::pandoc.table(
-#   mdes_D1_results,
-#   style = "grid", split.tables = 100, row.names = FALSE,
-#   caption = design
-# )
-```
+<!-- user.params.list[['omega.2']] <- 0 -->
+<!-- user.params.list[['J']] <- 30 -->
+<!-- user.params.list[['K']] <- 10 -->
+<!-- user.params.list[['nbar']] <- 50 -->
+<!-- sim.params.list[['S']] <- 1000 -->
+<!-- sim.params.list[['Q']] <- 1 -->
+<!-- user.params.list[['nbar']] <- 100 -->
+<!-- ``` -->
 
 
-```{r}
-# sample.file <- find_file(params.file.base, type = 'sample_D1indiv')
-# sample_D1_results <- readRDS(sample.file)
-# pander::pandoc.table(
-#   sample_D1_results,
-#   style = "grid", split.tables = 100, row.names = FALSE,
-#   caption = design
-# )
-```
+<!-- **TODO** include plot -->
 
-## Westfall-Young procedures
+<!-- ```{r validate.power, fig.height=6, fig.width=6} -->
+<!-- # design <- "d3.2_m3ff2rc" -->
+<!-- # user.params.list[['R2.3']] <- rep(0, M) -->
+<!-- # params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design) -->
+<!-- # power_plot <- gen.power.results.plot(params.file.base, design) -->
+<!-- # print(power_plot) -->
+<!-- ``` -->
 
-The Westfall-Young procedure was validated separately due to its unique complications and computational burden.
+<!-- Next, we validate MDES and sample size calculations. -->
+<!-- The first column shows the calculated MDES or sample size, the middle column is the power we plugged into the calculation, and the last column shows the MDES or sample size that we are targeting. -->
+<!-- Thus, ideally we want the first and last columns to match. -->
 
-First, we wrote a series of careful unit tests ensuring that our code worked as expected for each step of the WY procedure. One of these tests compared results from our procedure to the WY procedure in the multtest package, and found it matched quite well.
+<!-- **TODO** include tables -->
+<!-- ```{r} -->
+<!-- # user.params.list[['nbar']] <- 50 -->
+<!-- # params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design) -->
+<!-- # mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv') -->
+<!-- # mdes_D1_results <- readRDS(mdes.file) -->
+<!-- # pander::pandoc.table( -->
+<!-- #   mdes_D1_results, -->
+<!-- #   style = "grid", split.tables = 100, row.names = FALSE, -->
+<!-- #   caption = design -->
+<!-- # ) -->
+<!-- ``` -->
 
-Second, we also tested the WY procedures using the same simulation procedure described above.
-For constant effect and fixed effect models, the power estimation matches between PUM and the simulations.
-However, for random effects models, the two methods diverge in some cases.
-We find that the simulated power matches the PUMP-calculated power only when (1) there is a large number of blocks/clusters, and (2) the user has a large number of WY permutations.
-Below, we discuss the single-step procedure because it is simpler, although the same concepts hold for the step-down procedure.
-Although it is difficult to verify why this discrepancy occurs, our hypothesis is that this behavior occurs due to the combination of the sensitivity of the WY procedure, and the instability of the random effects model.
 
-The goal of the WY procedure is to estimate the adjusted p-value for outcome $i$
-$$\tilde{p}_i = Pr\left(\min_{1 \leq j \leq k} P_j \leq p_i \mid H_0^C\right).$$
-where $P_j$ is a random variable representing a $p$-value for outcome $j$, and lowercase $p_i$ is the observed realization for outcome $i$.
-We assume a set of $k$ tests with corresponding null hypotheses $H_{0i}$ for $i = 1, \cdots, k$.
-The complete null hypothesis is the setting where all the null hypotheses are true: $H_0^C = \cap_{i=1}^{k} H_{0i} = \{\text{all } H_i \text{are true}\}$.
-In order to estimate this p-value, the p-value is calculated across $B$ permutations
-$$\tilde{p}_i = \frac{1}{B}\sum_{b = 1}^{B} \mathbb{1}(\min_{1 \leq j \leq k} p_{b,j}^\star \leq p_i).$$
+<!-- ```{r} -->
+<!-- # sample.file <- find_file(params.file.base, type = 'sample_D1indiv') -->
+<!-- # sample_D1_results <- readRDS(sample.file) -->
+<!-- # pander::pandoc.table( -->
+<!-- #   sample_D1_results, -->
+<!-- #   style = "grid", split.tables = 100, row.names = FALSE, -->
+<!-- #   caption = design -->
+<!-- # ) -->
+<!-- ``` -->
 
-In order for the procedure to be correct, we should be generating the p-values $P_j$ from the the true distribution of p-values under the null hypothesis.
-We generally are testing outcomes that are truly significant, so the observed p-values are small.
-Thus, looking at these expressions, we are concerned about tail behavior; we are testing whether a small observed p-value is less than the minimum of of the generated p-values of our multiple outcomes.
-This combination of factors means that a small discrepancy in the tails between the generated null distribution and the true distribution could have a large impact on the adjusted p-value.
+<!-- ## Westfall-Young procedures -->
 
-Given that we are relying on tail behavior, this explains why we need both a large number of permutations, and a large number of blocks/clusters.
-The large number of permutations is required because we are trying to estimate a rare event.
-With a significant outcome, it is rare that the observed p-value will be less than the minimum of p-values generated from the null distribution.
-The large number of blocks/clusters is required to accurately estimate the tail behavior for random effects models.
-With a small number of blocks/clusters, we may not properly estimate the spread of the distribution, resulting in a poor estimate of the tail behavior.
+<!-- The Westfall-Young procedure was validated separately due to its unique complications and computational burden. -->
+
+<!-- First, we wrote a series of careful unit tests ensuring that our code worked as expected for each step of the WY procedure. One of these tests compared results from our procedure to the WY procedure in the multtest package, and found it matched quite well. -->
+
+<!-- Second, we also tested the WY procedures using the same simulation procedure described above. -->
+<!-- For constant effect and fixed effect models, the power estimation matches between PUM and the simulations. -->
+<!-- However, for random effects models, the two methods diverge in some cases. -->
+<!-- We find that the simulated power matches the PUMP-calculated power only when (1) there is a large number of blocks/clusters, and (2) the user has a large number of WY permutations. -->
+<!-- Below, we discuss the single-step procedure because it is simpler, although the same concepts hold for the step-down procedure. -->
+<!-- Although it is difficult to verify why this discrepancy occurs, our hypothesis is that this behavior occurs due to the combination of the sensitivity of the WY procedure, and the instability of the random effects model. -->
+
+<!-- The goal of the WY procedure is to estimate the adjusted p-value for outcome $i$ -->
+<!-- $$\tilde{p}_i = Pr\left(\min_{1 \leq j \leq k} P_j \leq p_i \mid H_0^C\right).$$ -->
+<!-- where $P_j$ is a random variable representing a $p$-value for outcome $j$, and lowercase $p_i$ is the observed realization for outcome $i$. -->
+<!-- We assume a set of $k$ tests with corresponding null hypotheses $H_{0i}$ for $i = 1, \cdots, k$. -->
+<!-- The complete null hypothesis is the setting where all the null hypotheses are true: $H_0^C = \cap_{i=1}^{k} H_{0i} = \{\text{all } H_i \text{are true}\}$. -->
+<!-- In order to estimate this p-value, the p-value is calculated across $B$ permutations -->
+<!-- $$\tilde{p}_i = \frac{1}{B}\sum_{b = 1}^{B} \mathbb{1}(\min_{1 \leq j \leq k} p_{b,j}^\star \leq p_i).$$ -->
+
+<!-- In order for the procedure to be correct, we should be generating the p-values $P_j$ from the the true distribution of p-values under the null hypothesis. -->
+<!-- We generally are testing outcomes that are truly significant, so the observed p-values are small. -->
+<!-- Thus, looking at these expressions, we are concerned about tail behavior; we are testing whether a small observed p-value is less than the minimum of of the generated p-values of our multiple outcomes. -->
+<!-- This combination of factors means that a small discrepancy in the tails between the generated null distribution and the true distribution could have a large impact on the adjusted p-value. -->
+
+<!-- Given that we are relying on tail behavior, this explains why we need both a large number of permutations, and a large number of blocks/clusters. -->
+<!-- The large number of permutations is required because we are trying to estimate a rare event. -->
+<!-- With a significant outcome, it is rare that the observed p-value will be less than the minimum of p-values generated from the null distribution. -->
+<!-- The large number of blocks/clusters is required to accurately estimate the tail behavior for random effects models. -->
+<!-- With a small number of blocks/clusters, we may not properly estimate the spread of the distribution, resulting in a poor estimate of the tail behavior. -->

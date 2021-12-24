@@ -120,12 +120,17 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
       power.results <- NULL
       for(p in 1:dim(adjp.proc)[3])
       {
-        proc.results <- PUMP::get_power_results(
+        # proc.results <- PUMP::get_power_results(
+        #   adj.pval.mat = adjp.proc[,,p],
+        #   unadj.pval.mat = adjp.proc[,,'rawp'],
+        #   ind.nonzero = model.params.list[['MDES']] > 0,
+        #   alpha = sim.params.list[['alpha']]
+        # )
+        proc.results <- get_power_results(
           adj.pval.mat = adjp.proc[,,p],
           unadj.pval.mat = adjp.proc[,,'rawp'],
           ind.nonzero = model.params.list[['MDES']] > 0,
-          alpha = sim.params.list[['alpha']],
-          two.tailed = TRUE
+          alpha = sim.params.list[['alpha']]
         )
         power.results <- rbind(power.results, proc.results)
       }

@@ -114,6 +114,11 @@ gen_params_file_base <- function(user.params.list, sim.params.list, d_m)
     B <- NULL
   }
   
+  if(is.null(sim.params.list[['Q']]))
+  {
+    sim.params.list[['Q']] <- 1
+  }
+  
   params.file.base <- paste0(
     d_m, "_",
     sim.params.list[['S']] * sim.params.list[['Q']], "_S_",
