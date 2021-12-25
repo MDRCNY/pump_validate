@@ -25,7 +25,6 @@ Updated: Dec 22 by KH
 *High priority*
 
 - recruit people for user testing of package (KH/LM)
-- fix MDES code for zero MDES (LM)
 
 *Medium priority*
 
@@ -47,10 +46,8 @@ Updated: Dec 22 by KH
 
 # Validation
 
-- check on p-value calculations, one-sided v. two-sided, for validation (KH)
-- re-run non-WY validation with sided tests fixed (KH)
+- figure out issues with validation results (KH)
 - re-run WY validation (KH)
-- render validation documents (KH)
 - incorporate into appendix (KH)
   
 # Waiting
