@@ -1,0 +1,312 @@
+---
+title: "Validate Power: d2.2"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+Design: Cluster RCT, with 2 levels, and randomization done at level 2 (school level).
+
+Models: random treatment effects.
+
+```{r knit.options, echo = FALSE}
+knitr::opts_chunk$set(
+  cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE,
+  fig.height = 4
+)
+```
+
+```{r setup}
+library(here)
+library(PUMP)
+library(pander)
+# default tables to round to 3 digits
+panderOptions('round', 3)
+source(here::here("validation/code", "misc.R"))
+```
+
+```{r sim.params}
+sim.params.list <- list(
+  S = 5000                     # Number of samples for Monte Carlo Simulation
+  , Q = 1
+)
+```
+
+```{r model.params}
+M <- 3
+model.params.list <- list(
+  M = 3                                   # number of outcomes
+  , J = 60                                # number of schools
+  , K = 1                                 # number of districts (for two-level model, set K = 1)
+  , nbar = 50                             # number of individuals per school
+  , rho.default = 0.5                     # default rho value
+  ################################################## grand mean outcome and impact
+  , MDES = rep(0.125, M)                  # minimum detectable effect size      
+  ################################################## level 2: schools
+  , numCovar.2 = 1                        # number of school covariates
+  , R2.2 = rep(0.1, M)                    # percent of school variation explained by school covariates
+  , ICC.2 = rep(0.1, M)                   # school intraclass correlation	
+  ################################################## level 1: individuals
+  , numCovar.1 = 1                        # number of individual covariates
+  , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
+)
+
+design <- "d2.2_m2rc"
+params.default <- model.params.list
+```
+
+Default parameters:
+
+* M = `r model.params.list[['M']]`
+* J = `r model.params.list[['J']]`
+* rho: $\rho$ =  `r model.params.list[['rho.default']]`
+* MDES = `r model.params.list[['MDES']]`
+* R2: $R^2_1$ = `r model.params.list[['R2.1']]`, $R^2_2$ = `r model.params.list[['R2.2']]`
+* ICC: $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
+
+Assumptions
+
+* Two-level design: $\text{ICC}_3 = 0$,  $\omega_3 = 0$, $K = 1$
+* Constant treatment effects: $\omega_2 = 0$
+
+# Power Validation
+
+## Base case
+
+```{r 2r_nj50}
+d2.2_m2rc_nj50_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_nj50_power_plot)
+```
+
+## Varying school size
+
+```{r nj100}
+model.params.list[['nbar']] <- 100
+```
+
+$\bar{n}$ = `r model.params.list[['nbar']]`
+
+```{r 2r_nj100}
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+d2.2_m2rc_nj100_power_plot <- gen.power.results.plot(params.file.base, design)
+print(d2.2_m2rc_nj100_power_plot)
+```
+
+```{r nj75}
+model.params.list[['nbar']] <- 75
+```
+
+$\bar{n}$ = `r model.params.list[['nbar']]`
+
+```{r 2r_nj75}
+d2.2_m2rc_nj75_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_nj75_power_plot)
+```
+
+```{r nj50}
+model.params.list[['nbar']] <- 50
+```
+
+## Varying R2
+
+```{r r2106}
+model.params.list[['R2.1']] <- rep(0.6, M)  
+```
+
+$R^2_1 =$ `r model.params.list[['R2.1']]`
+
+```{r 2r_r2106}
+d2.2_m2rc_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_r2.1_power_plot)
+model.params.list[['R2.1']] <- params.default[['R2.1']]  
+```
+
+```{r r2206}
+model.params.list[['R2.2']] <- rep(0.6, M)  
+```
+
+$R^2_2 =$ `r model.params.list[['R2.2']]`
+
+```{r 2r_r2206}
+d2.2_m2rc_r2.2_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_r2.2_power_plot)
+model.params.list[['R2.2']] <- params.default[['R2.2']]  
+```
+
+```{r r210r220}
+model.params.list[['R2.1']] <- rep(0, M)  
+model.params.list[['R2.2']] <- rep(0, M)  
+```
+
+$R^2_1 =$ `r model.params.list[['R2.1']]`
+$R^2_2 =$ `r model.params.list[['R2.2']]`
+
+```{r 2r_r210r220}
+d2.2_m2rc_r2.2_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_r2.2_power_plot)
+model.params.list[['R2.1']] <- params.default[['R2.1']]  
+model.params.list[['R2.2']] <- params.default[['R2.2']]  
+```
+
+
+## Varying rho
+
+```{r rho02}
+rho.default <- 0.2
+default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+model.params.list[['rho.default']] <- rho.default
+model.params.list[['rho.X']] <- model.params.list[['rho.C']] <-rho.default
+model.params.list[['rho.u']] <- model.params.list[['rho.v']] <- model.params.list[['rho.r']] <- rho.default
+```
+
+$\rho =$ `r model.params.list[['rho.default']]`
+
+```{r 2r_rho02}
+d2.2_m2rc_rho0.2_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_rho0.2_power_plot)
+```
+
+```{r rho08}
+rho.default <- 0.8
+default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+model.params.list[['rho.default']] <- rho.default
+model.params.list[['rho.X']] <- model.params.list[['rho.C']] <-rho.default
+model.params.list[['rho.u']] <- model.params.list[['rho.v']] <- model.params.list[['rho.r']] <-rho.default
+```
+
+$\rho =$ `r model.params.list[['rho.default']]`
+
+```{r 2r_rho08}
+d2.2_m2rc_rho0.8_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_rho0.8_power_plot)
+# reset
+rho.default <- params.default[['rho.default']]
+default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+model.params.list[['rho.default']] <- rho.default
+model.params.list[['rho.X']] <- model.params.list[['rho.C']] <-rho.default
+model.params.list[['rho.u']] <- model.params.list[['rho.v']] <- model.params.list[['rho.r']] <-rho.default
+```
+
+## Varying true positives
+
+```{r MDES012500}
+model.params.list[['MDES']] <- c(0.125, 0, 0)
+```
+
+MDES = `r model.params.list[['MDES']]`
+
+
+```{r 2r_MDES012500}
+d2.2_m2rc_mdes0.1250.00.0.00_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_mdes0.1250.00.0.00_power_plot)
+model.params.list[['MDES']] <- params.default[['MDES']]
+```
+
+## Varying ICC
+
+```{r ICC207}
+model.params.list[['ICC.2']] <- rep(0.7, M)
+```
+
+$\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
+
+```{r 2r_ICC207}
+d2.2_m2rc_ICC2.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_ICC2.0.7_power_plot)
+model.params.list[['ICC.2']] <- params.default[['ICC.2']]
+```
+
+
+```{r ICC20}
+model.params.list[['ICC.2']] <- rep(0, M)
+```
+
+$\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
+
+```{r 2r_ICC20}
+d2.2_m2rc_ICC2.0_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_ICC2.0_power_plot)
+model.params.list[['ICC.2']] <- params.default[['ICC.2']]
+```
+
+## Kappa
+
+```{r kappa04}
+kappa <- 0.4
+kappa.matrix <- diag(kappa, M)
+model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- kappa.matrix
+```
+
+$\kappa$ = `r kappa`
+
+```{r 2r_kappa04}
+design <- "d2.2_m2rc"
+d2.2_m2rc_kappa0.4_power_plot <-
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+print(d2.2_m2rc_kappa0.4_power_plot)
+```
+
+```{r kappa04reset}
+model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- params.default[['kappa.w']]
+```
+
+# MDES validation
+
+```{r}
+# reset to defaults
+model.params.list <- params.default 
+```
+
+```{r 2r_mdes}
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
+if(length(mdes.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  d2.2_m2rc_mdes_results <- readRDS(mdes.file)
+  pander::pandoc.table(
+    d2.2_m2rc_mdes_results,
+    style = "grid", split.tables = 100, row.names = FALSE, 
+    caption = design
+  )
+}
+```
+
+# Sample size validation
+
+```{r 2r_sampleD1_J}
+design <- "d2.2_m2rc"
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_J_D1indiv')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  d2.2_m2rc_sample_D1_J_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    d2.2_m2rc_sample_D1_J_results,
+    style = "grid", split.tables = 100, row.names = FALSE,
+    caption = design
+  )
+}
+```
+
+```{r 2r_sampleD1_nbar}
+design <- "d2.2_m2rc"
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_nbar_D1indiv')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  d2.2_m2rc_sample_D1_nbar_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    d2.2_m2rc_sample_D1_nbar_results,
+    style = "grid", split.tables = 100, row.names = FALSE,
+    caption = design
+  )
+}
+```

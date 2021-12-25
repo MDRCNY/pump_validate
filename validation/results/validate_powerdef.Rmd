@@ -1,153 +1,147 @@
 ---
 title: "Validate Power: MDES and SS power definitions"
-author: "Kristin Porter, Zarni Htet, Kristen Hunter"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
-output:
-  html_document:
-    code_folding: hide
-    df_print: paged
-    fig_caption: yes
-    fig_height: 8
-    fig_width: 10
-    highlight: monochrome
-    theme: spacelab
-    toc: yes
-    toc_depth: 5
-    toc_float: yes
-  github_document:
-    df_print: paged
-    fig_caption: yes
-    fig_height: 8
-    fig_width: 10
-    toc: yes
+output: pdf_document
 ---
+
 
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE)
+knitr::opts_chunk$set(
+  cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE,
+  fig.height = 4
+)
 ```
 
 ```{r setup}
 library(here)
-library(pander)    # For good table format
-
+library(PUMP)
+library(pander)
 # default tables to round to 3 digits
 panderOptions('round', 3)
+source(here::here("validation/code", "misc.R"))
+```
 
-# simulation and user parameters
-source(here::here("Validation/Simulations", "params.R"))
-params.default <- user.params.list
+```{r sim.params}
+sim.params.list <- list(
+  S = 5000                     # Number of samples for Monte Carlo Simulation
+  , Q = 1
+)
 ```
 
 ```{r}
-# assumptions
-user.params.list[['omega.2']] <- 0
-user.params.list[['J']] <- 20
-user.params.list[['K']] <- 10
-user.params.list[['nbar']] <- 50
-user.params.list[['R2.3']] <- rep(0, M)
-
-sim.params.list[['S']] <- 1000
+M <- 3
+model.params.list <- list(
+  M = 3                                   # number of outcomes
+  , J = 30                                # number of schools
+  , K = 10                                # number of districts (for two-level model, set K = 1)
+  , nbar = 50                             # number of individuals per school
+  , rho.default = 0.5                     # default rho value
+  ################################################## grand mean outcome and impact
+  , MDES = rep(0.125, M)                  # minimum detectable effect size      
+  ################################################## level 3: districts
+  , numCovar.3 = 1                        # number of district covariates
+  , R2.3 = rep(0.1, M)                    # percent of district variation explained by district covariates
+  , ICC.3 = rep(0.2, M)                   # district intraclass correlation
+  ################################################## level 2: schools
+  , numCovar.2 = 1                        # number of school covariates
+  , R2.2 = rep(0.1, M)                    # percent of school variation explained by school covariates
+  , ICC.2 = rep(0.2, M)                   # school intraclass correlation	
+  , omega.2 = rep(0.1, M)                 # ratio of school effect size variability to random effects 
+  ################################################## level 1: individuals
+  , numCovar.1 = 1                        # number of individual covariates
+  , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
+)
+params.default <- model.params.list
+design <- "d3.2_m3ff2rc"
 ```
-
-Default parameters:
-
-* M = `r user.params.list[['M']]`
-* J = `r user.params.list[['J']]`
-* K = `r user.params.list[['K']]`
-* rho: $\rho$ =  `r user.params.list[['rho.default']]`
-* ATE ES = `r user.params.list[['ATE_ES']]`
-* R21, R22: $R^2_1$ = `r user.params.list[['R2.1']]`, $R^2_2$ = `r user.params.list[['R2.2']]`
-* ICC2: $\text{ICC}_2$ = `r user.params.list[['ICC.2']]`
-* Omega: $\omega_2$ = `r user.params.list[['omega.2']]`, $\omega_3$ = `r user.params.list[['omega.3']]`
-
-Parameters by model type:
-
-* R23: $R^2_3 = 0$ for fixed effects model, $R^2_3$ = `r user.params.list[['R2.3']]` for random effects model
-* ICC3: $\text{ICC}_3 = 0$ for fixed model, $\text{ICC}_3$ = `r user.params.list[['ICC.3']]` for random effects model
 
 # Power Validation
 
-```{r raw.D1indiv}
+```{r raw_D1indiv}
 design <- "d3.2_m3ff2rc"
-user.params.list$ATE_ES <- rep(0.1, 3)
-user.params.list$J <- 3
-user.params.list$K <- 22
-user.params.list$nbar <- 150
-user.params.list$R2.1 <- 0.1
-user.params.list$R2.2 <- 0.7
-user.params.list$ICC.2 <- 0.05
-user.params.list$ICC.3 <- 0.4
-user.params.list$rho <- 0.4
-d3.2_m3ff2rc_rawD1indiv_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+model.params.list$MDES <- rep(0.1, 3)
+model.params.list$J <- 3
+model.params.list$K <- 22
+model.params.list$nbar <- 150
+model.params.list$R2.1 <- rep(0.1, M)
+model.params.list$R2.2 <- rep(0.7, M)
+model.params.list$R2.3 <- NULL
+model.params.list$ICC.2 <- rep(0.05, M)
+model.params.list$ICC.3 <- rep(0.4, M)
+model.params.list$rho <- 0.4
+d3.2_m3ff2rc_rawD1indiv_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
 print(d3.2_m3ff2rc_rawD1indiv_power_plot)
 ```
 
-```{r bonf.D1indiv}
+```{r bonf_D1indiv}
 design <- "d3.2_m3ff2rc"
-user.params.list$ATE_ES <- rep(0.1, 3)
-user.params.list$J <- 4
-user.params.list$K <- 17
-user.params.list$nbar <- 160
-user.params.list$R2.1 <- 0.3
-user.params.list$R2.2 <- 0.75
-user.params.list$ICC.2 <- 0.05
-user.params.list$ICC.3 <- 0.4
-user.params.list$rho <- 0.4
-d3.2_m3ff2rc_bonfD1indiv_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+model.params.list$MDES <- rep(0.1, 3)
+model.params.list$J <- 4
+model.params.list$K <- 17
+model.params.list$nbar <- 160
+model.params.list$R2.1 <- rep(0.3, M)
+model.params.list$R2.2 <- rep(0.75, M)
+model.params.list$R2.3 <- NULL
+model.params.list$ICC.2 <- rep(0.05, M)
+model.params.list$ICC.3 <- rep(0.4, M)
+model.params.list$rho <- 0.4
+d3.2_m3ff2rc_bonfD1indiv_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
 print(d3.2_m3ff2rc_bonfD1indiv_power_plot)
 ```
 
-```{r bonf.min1}
+```{r bonf_min1}
 design <- "d3.2_m3ff2rc"
-user.params.list$ATE_ES <- rep(0.1, 3)
-user.params.list$J <- 4
-user.params.list$K <- 16
-user.params.list$nbar <- 150
-user.params.list$R2.1 <- 0.25
-user.params.list$R2.2 <- 0.75
-user.params.list$ICC.2 <- 0.05
-user.params.list$ICC.3 <- 0.4
-user.params.list$rho <- 0.4
-d3.2_m3ff2rc_bonfmin1_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+model.params.list$MDES <- rep(0.1, 3)
+model.params.list$J <- 4
+model.params.list$K <- 16
+model.params.list$nbar <- 150
+model.params.list$R2.1 <- rep(0.25, M)
+model.params.list$R2.2 <- rep(0.75, M)
+model.params.list$R2.3 <- NULL
+model.params.list$ICC.2 <- rep(0.05, M)
+model.params.list$ICC.3 <- rep(0.4, M)
+model.params.list$rho <- 0.4
+d3.2_m3ff2rc_bonfmin1_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
 print(d3.2_m3ff2rc_bonfmin1_power_plot)
 ```
 
-```{r bonf.complete}
+```{r bonf_complete}
 design <- "d3.2_m3ff2rc"
-user.params.list$ATE_ES <- rep(0.1, 3)
-user.params.list$J <- 4
-user.params.list$K <- 16
-user.params.list$nbar <- 150
-user.params.list$R2.1 <- 0.25
-user.params.list$R2.2 <- 0.75
-user.params.list$ICC.2 <- 0.05
-user.params.list$ICC.3 <- 0.4
-user.params.list$rho <- 0.4
-d3.2_m3ff2rc_bonfcomplete_power_plot <- gen.power.results.plot(gen_params_file_base(user.params.list, sim.params.list, design), design)
+model.params.list$MDES <- rep(0.1, 3)
+model.params.list$J <- 4
+model.params.list$K <- 16
+model.params.list$nbar <- 150
+model.params.list$R2.1 <- rep(0.25, M)
+model.params.list$R2.2 <- rep(0.75, M)
+model.params.list$R2.3 <- NULL
+model.params.list$ICC.2 <- rep(0.05, M)
+model.params.list$ICC.3 <- rep(0.4, M)
+model.params.list$rho <- 0.4
+d3.2_m3ff2rc_bonfcomplete_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
 print(d3.2_m3ff2rc_bonfcomplete_power_plot)
 ```
 
 # MDES
 
 ```{r}
-user.params.list <- params.default
+model.params.list <- params.default
 
 # assumptions
-user.params.list[['omega.2']] <- 0
-user.params.list[['omega.3']] <- 0
+model.params.list[['omega.2']] <- NULL
+model.params.list[['omega.3']] <- NULL
 
 # param settings to have a decent level of power
-user.params.list[['J']] <- 40
-user.params.list[['K']] <- 20
-user.params.list[['ATE_ES']] <- rep(0.25, M)
-user.params.list[['ICC.3']] <- rep(0.1, M)
-user.params.list[['ICC.2']] <- rep(0.1, M)
+model.params.list[['J']] <- 40
+model.params.list[['K']] <- 20
+model.params.list[['MDES']] <- rep(0.25, M)
+model.params.list[['ICC.3']] <- rep(0.1, M)
+model.params.list[['ICC.2']] <- rep(0.1, M)
 ```
 
-```{r mdes.D1indiv}
+```{r mdes_D1indiv}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -163,9 +157,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r mdes.min1}
+```{r mdes_min1}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_min1')
 if(length(sample.file) == 0)
 {
@@ -181,9 +175,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r mdes.min2}
+```{r mdes_min2}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_min2')
 if(length(sample.file) == 0)
 {
@@ -199,9 +193,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r mdes.complete}
+```{r mdes_complete}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_complete')
 if(length(sample.file) == 0)
 {
@@ -221,9 +215,9 @@ if(length(sample.file) == 0)
 
 ## Sample Size J
 
-```{r ss.D1indiv.J}
+```{r ss_D1indiv_J}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_J_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -239,9 +233,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r ss.min1.J}
+```{r ss_min1_J}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_J_min1')
 if(length(sample.file) == 0)
 {
@@ -257,9 +251,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r ss.min2.J}
+```{r ss_min2_J}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_J_min2')
 if(length(sample.file) == 0)
 {
@@ -275,10 +269,10 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r ss.complete.J}
+```{r ss_complete_J}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-sample.file <- find_file(params.file.base, type = 'sample_J_min2')
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_J_complete')
 if(length(sample.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))
@@ -286,7 +280,7 @@ if(length(sample.file) == 0)
 {
   d3.3_m3rc2rc_sample_J_complete_results <- readRDS(sample.file)
   pander::pandoc.table(
-    d3.3_m3rc2rc_sample_2_complete_results,
+    d3.3_m3rc2rc_sample_J_complete_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -295,9 +289,9 @@ if(length(sample.file) == 0)
 
 ## Sample Size K
 
-```{r ss.D1indiv.K}
+```{r ss_D1indiv_K}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_K_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -313,9 +307,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r ss.min1.K}
+```{r ss_min1_K}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_K_min1')
 if(length(sample.file) == 0)
 {
@@ -331,9 +325,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r ss.min2.K}
+```{r ss_min2_K}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_K_min2')
 if(length(sample.file) == 0)
 {
@@ -349,10 +343,10 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r ss.complete.K}
+```{r ss_complete_K}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-sample.file <- find_file(params.file.base, type = 'sample_K_min2')
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_K_complete')
 if(length(sample.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))
@@ -360,7 +354,7 @@ if(length(sample.file) == 0)
 {
   d3.3_m3rc2rc_sample_K_complete_results <- readRDS(sample.file)
   pander::pandoc.table(
-    d3.3_m3rc2rc_sample_2_complete_results,
+    d3.3_m3rc2rc_sample_K_complete_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -369,9 +363,9 @@ if(length(sample.file) == 0)
 
 ## Sample Size nbar
 
-```{r ss.D1indiv.nbar}
+```{r ss_D1indiv_nbar}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_nbar_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -387,9 +381,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r ss.min1.nbar}
+```{r ss_min1_nbar}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_nbar_min1')
 if(length(sample.file) == 0)
 {
@@ -405,9 +399,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r ss.min2.nbar}
+```{r ss_min2_nbar}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_nbar_min2')
 if(length(sample.file) == 0)
 {
@@ -423,10 +417,10 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r ss.complete.nbar}
+```{r ss_complete_nbar}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-sample.file <- find_file(params.file.base, type = 'sample_nbar_min2')
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+sample.file <- find_file(params.file.base, type = 'sample_nbar_complete')
 if(length(sample.file) == 0)
 {
   warning(paste('Results not yet computed for given parameters:', params.file.base))
@@ -434,7 +428,7 @@ if(length(sample.file) == 0)
 {
   d3.3_m3rc2rc_sample_nbar_complete_results <- readRDS(sample.file)
   pander::pandoc.table(
-    d3.3_m3rc2rc_sample_2_complete_results,
+    d3.3_m3rc2rc_sample_nbar_complete_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -447,12 +441,12 @@ if(length(sample.file) == 0)
 ## correlation = 0
 
 ```{r rho0}
-user.params.list[['rho']] <- 0
+model.params.list[['rho']] <- 0
 ```
 
-```{r mdes.min1.rho0}
+```{r mdes_min1_rho0}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_min1')
 if(length(sample.file) == 0)
 {
@@ -468,9 +462,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r mdes.complete.rho0}
+```{r mdes_complete_rho0}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_complete')
 if(length(sample.file) == 0)
 {
@@ -487,9 +481,9 @@ if(length(sample.file) == 0)
 ```
 
 
-```{r ss.min1.J.rho0}
+```{r ss_min1_J_rho0}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_J_min1')
 if(length(sample.file) == 0)
 {
@@ -506,9 +500,9 @@ if(length(sample.file) == 0)
 ```
 
 
-```{r ss.complete.J.rho0}
+```{r ss_complete_J_rho0}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_J_min2')
 if(length(sample.file) == 0)
 {
@@ -517,7 +511,7 @@ if(length(sample.file) == 0)
 {
   d3.3_m3rc2rc_sample_J_complete_results <- readRDS(sample.file)
   pander::pandoc.table(
-    d3.3_m3rc2rc_sample_2_complete_results,
+    d3.3_m3rc2rc_sample_J_complete_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -526,13 +520,13 @@ if(length(sample.file) == 0)
 
 ## correlation = 0.8
 
-```{r rho0.8}
-user.params.list[['rho']] <- 0.8
+```{r rho08}
+model.params.list[['rho']] <- 0.8
 ```
 
-```{r mdes.min1.rho0.8}
+```{r mdes_min1_rho08}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_min1')
 if(length(sample.file) == 0)
 {
@@ -548,9 +542,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r mdes.complete.rho0.8}
+```{r mdes_complete_rho08}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_complete')
 if(length(sample.file) == 0)
 {
@@ -567,9 +561,9 @@ if(length(sample.file) == 0)
 ```
 
 
-```{r ss.min1.J.rho0.8}
+```{r ss_min1_J_rho08}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_J_min1')
 if(length(sample.file) == 0)
 {
@@ -586,9 +580,9 @@ if(length(sample.file) == 0)
 ```
 
 
-```{r ss.complete.J.rho0.8}
+```{r ss_complete_J_rho08}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_J_min2')
 if(length(sample.file) == 0)
 {
@@ -597,7 +591,7 @@ if(length(sample.file) == 0)
 {
   d3.3_m3rc2rc_sample_J_complete_results <- readRDS(sample.file)
   pander::pandoc.table(
-    d3.3_m3rc2rc_sample_2_complete_results,
+    d3.3_m3rc2rc_sample_J_complete_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )
@@ -608,12 +602,12 @@ if(length(sample.file) == 0)
 ## correlation = 1
 
 ```{r rho1}
-user.params.list[['rho']] <- 1
+model.params.list[['rho']] <- 1
 ```
 
-```{r mdes.min1.rho1}
+```{r mdes_min1_rho1}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_min1')
 if(length(sample.file) == 0)
 {
@@ -629,9 +623,9 @@ if(length(sample.file) == 0)
 }
 ```
 
-```{r mdes.complete.rho1}
+```{r mdes_complete_rho1}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'mdes_complete')
 if(length(sample.file) == 0)
 {
@@ -648,9 +642,9 @@ if(length(sample.file) == 0)
 ```
 
 
-```{r ss.min1.J.rho1}
+```{r ss_min1_J_rho1}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_J_min1')
 if(length(sample.file) == 0)
 {
@@ -667,9 +661,9 @@ if(length(sample.file) == 0)
 ```
 
 
-```{r ss.complete.J.rho1}
+```{r ss_complete_J_rho1}
 design <- "d3.3_m3rc2rc"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
 sample.file <- find_file(params.file.base, type = 'sample_J_min2')
 if(length(sample.file) == 0)
 {
@@ -678,7 +672,7 @@ if(length(sample.file) == 0)
 {
   d3.3_m3rc2rc_sample_J_complete_results <- readRDS(sample.file)
   pander::pandoc.table(
-    d3.3_m3rc2rc_sample_2_complete_results,
+    d3.3_m3rc2rc_sample_J_complete_results,
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = design
   )

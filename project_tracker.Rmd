@@ -24,9 +24,7 @@ Updated: Dec 22 by KH
 
 *High priority*
 
-- send user test "homework" assignment to Luke (KH)
 - recruit people for user testing of package (KH/LM)
-- add flag to not drop any outcomes (KH)
 - fix MDES code for zero MDES (LM)
 
 *Medium priority*
@@ -44,8 +42,6 @@ Updated: Dec 22 by KH
   - better error messaging for flat power curves (both shiny and non-shiny)
   - error if user passes same parameter in twice into grid
   - give user estimate of runtime for WY (MDES and SS will require extra work)
-- small things
-  - make sure user can't pass in vector of numCovar (KH)
 - parallel processing
   - make it work for WY
 

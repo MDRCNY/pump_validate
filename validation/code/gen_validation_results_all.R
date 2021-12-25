@@ -76,7 +76,7 @@ model.params.list <- list(
   , rho.default = 0.5                     # default rho value
   # , S.id = NULL                         # N-length vector of indiv school assignments (optional)
   # , D.id = NULL                         # N-length vector of indiv district assignments (optional)
-  ################################################## grand mean otucome and impact
+  ################################################## grand mean outcome and impact
   # , Xi0 = 0                             # scalar grand mean outcome under no treatment
   , MDES = rep(0.125, M)                  # minimum detectable effect size      
   ################################################## level 3: districts

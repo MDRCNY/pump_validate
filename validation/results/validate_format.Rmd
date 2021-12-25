@@ -1,24 +1,7 @@
 ---
 title: "Validate Power Guide"
-author: "Kristin Porter, Zarni Htet, Kristen Hunter"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
-output:
-  html_document:
-    df_print: paged
-    fig_caption: yes
-    fig_height: 8
-    fig_width: 10
-    highlight: monochrome
-    theme: spacelab
-    toc: yes
-    toc_depth: 5
-    toc_float: yes
-  github_document:
-    df_print: paged
-    fig_caption: yes
-    fig_height: 8
-    fig_width: 10
-    toc: yes
+output: pdf_document
 ---
 
 Each document lays out results for estimating statistical power, minimum detectable effect size (MDES), and sample size for a specific design.

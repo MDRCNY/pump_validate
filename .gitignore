@@ -51,6 +51,7 @@ inst/doc
 /*_files/
 ManuScript/appendix/appendix_files/*
 manuscript/PUMP_Manuscript_files/*
+validation/results/*files*/
 
 # Temporary files created by R markdown
 *.utf8.md
