@@ -170,11 +170,11 @@ pre code {
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>You are designing a randomized control trial for an educational program at the state level. First, you would like to determine the power of your current study design. If the power of the current setup is insufficient, you would like to know the necessary sample size to increase the power, or the smallest effect size you would detect with your current sample. You also want to explore how different choices of parameter values will impact your power.</p>
+<p>You are designing a randomized control trial for an educational program. First, you would like to determine the power of your current study design. If the power of the current setup is insufficient, you would like to know the necessary sample size to increase the power, or the smallest effect size you would detect with your current sample. You also want to explore how different choices of parameter values will impact your power.</p>
 <p>Background information:</p>
 <ul>
 <li>Your trial will test <span class="math inline">\(4\)</span> different outcomes, which you think are moderately correlated.</li>
-<li>Your current plan is to do a cluster design, which means that entire districts will be assigned to either treatment or control.</li>
+<li>Your current plan is to do a cluster design, which means that entire districts will be assigned to either treatment or control (randomization occurs at level 3).</li>
 <li>50% of the units will receive the treatment.</li>
 <li>You plan to use a Holm adjustment to adjust for the multiple outcomes.</li>
 </ul>
@@ -186,160 +186,49 @@ pre code {
 </ul>
 <p>You also have a few other pieces of information:</p>
 <ul>
-<li>You have 4 covariates describing the students, and 2 covariates describing the schools, but no covariates at the district level. You think that the student-level covariates are quite predictive, but your school-level covariates are not very predictive.</li>
+<li>You have 4 covariates describing the students, and 2 covariates describing the schools, but no covariates at the district level. You think that the student-level covariates are quite predictive of the outcomes, but your school-level covariates are not very predictive of the outcomes.</li>
 <li>You expect most of the variation to occur at the district level, and not very much variation to occur at the school level. In other words, schools within the same district should have similar outcomes, but outcomes may vary moderately between districts.</li>
 <li>You would like to detect a treatment effect of <span class="math inline">\(0.25\)</span> effect size units on all outcomes.</li>
 </ul>
+<div id="instructions" class="section level2">
+<h2>Instructions</h2>
+<p><em>Documentation</em></p>
+<ul>
+<li>To understand the package, please use the attached vignette.</li>
+<li>If you would like more detail, see the attached paper or the supplementary materials.</li>
+</ul>
+<p><em>Feedback</em></p>
+<ul>
+<li>Please send back a completed version of this markdown, with code you wrote to answer the questions.</li>
+<li>At which points were you confused?</li>
+<li>Is there anything missing from the documentation?</li>
+<li>Was the vignette sufficient for documentation, or did you need to refer to the paper or supplementary materials?</li>
+</ul>
+</div>
 </div>
 <div id="using-pump" class="section level1">
 <h1>Using PUMP</h1>
-<ol style="list-style-type: decimal">
-<li>Determine the individual power for each outcome of the current study. Choose reasonable values of parameters given the information given.</li>
+<ol start="0" style="list-style-type: decimal">
+<li>First, install the package.</li>
 </ol>
-<pre class="r"><code>library(pum)
-p &lt;- pump_power(
-  design = &#39;d3.3_m3rc2rc&#39;,
-  MTP = &#39;Holm&#39;,
-  MDES = 0.25,
-  M = 4,
-  K = 6,
-  J = 4,
-  nbar = 500,
-  Tbar = 0.5,
-  ICC.2 = 0.1, ICC.3 = 0.4,
-  numCovar.1 = 4, numCovar.2 = 2, numCovar.3 = 0,
-  R2.1 = 0.6, R2.2 = 0.2, R2.3 = 0,
-  rho = 0.6
-)
-print(p)</code></pre>
-<pre><code>## power result: d3.3_m3rc2rc design with 4 outcomes
-##   MTP D1indiv D2indiv D3indiv D4indiv indiv.mean   min1   min2   min3 complete
-##  None  0.0596  0.0595  0.0561  0.0560    0.05780     NA     NA     NA       NA
-##  Holm  0.0172  0.0177  0.0154  0.0171    0.01685 0.0352 0.0163 0.0099    0.009</code></pre>
-<ol start="2" style="list-style-type: decimal">
+<p>Install the devtools package. Download the tar file to your Desktop, then use devtools to install.</p>
+<pre class="r"><code>library(devtools)
+devtools::install_local(path = &#39;~/Desktop/PUMP_0.1.0.tar.gz&#39;)
+library(PUMP)</code></pre>
+<ol style="list-style-type: decimal">
+<li><p>Determine the individual power for each outcome of the current study. Choose reasonable values of parameters given the information given.</p></li>
 <li><p>What is the 1-minimal power?</p></li>
 <li><p>What happens to individual power if you change your design to randomize at the school level instead? (Note: you will have to pick a model, choose what you want!)</p></li>
 </ol>
-<pre class="r"><code>p &lt;- pump_power(
-  design = &#39;d3.2_m3ff2rc&#39;,
-  MTP = &#39;Holm&#39;,
-  MDES = 0.25,
-  M = 4,
-  K = 6,
-  J = 4,
-  nbar = 500,
-  Tbar = 0.5,
-  ICC.2 = 0.1, ICC.3 = 0.4,
-  numCovar.1 = 4, numCovar.2 = 2, numCovar.3 = 0,
-  R2.1 = 0.6, R2.2 = 0.2, R2.3 = 0,
-  rho = 0.6
-)
-print(p)</code></pre>
-<pre><code>## power result: d3.2_m3ff2rc design with 4 outcomes
-##   MTP D1indiv D2indiv D3indiv D4indiv indiv.mean   min1  min2   min3 complete
-##  None  0.4729  0.4697  0.4724  0.4720    0.47175     NA    NA     NA       NA
-##  Holm  0.2522  0.2575  0.2596  0.2591    0.25710 0.4035 0.268 0.2031   0.2057</code></pre>
+<p><strong>For the remaining questions, return back to the cluster design, where randomization is at level 3.</strong></p>
 <ol start="4" style="list-style-type: decimal">
-<li>Going back to the original design, determine the minimum detectable effect size of the study at your current target power for <span class="math inline">\(1\)</span>-minimal power.</li>
+<li><p>You want to update your assumption concerning the predictive power of your covariates. What happens to complete power if the covariates are highly predictive of the first two outcomes, but not very predictive of the second two outcomes?</p></li>
+<li><p>Determine the minimum detectable effect size of the study at your current target power for <span class="math inline">\(1\)</span>-minimal power.</p></li>
+<li><p>Determine the number of school districts you would need with your original MDES to achieve 80% individual power.</p></li>
+<li><p>Returning to all the original parameters, see how your power would change if you increase the correlation between outcomes, but keep everything else fixed.</p></li>
+<li><p>Check how your power would vary over a range of values for the intraclass correlation at level 3.</p></li>
+<li><p>Visualize this change in power due to ICC.</p></li>
 </ol>
-<pre class="r"><code>m &lt;- pump_mdes(
-  design = &#39;d3.3_m3rc2rc&#39;,
-  target.power = 0.038,
-  power.definition = &#39;min1&#39;,
-  MTP = &#39;Holm&#39;,
-  alpha = 0.05,
-  M = 4,
-  K = 6,
-  J = 4,
-  nbar = 500,
-  Tbar = 0.5,
-  ICC.2 = 0.1, ICC.3 = 0.4,
-  numCovar.1 = 4, numCovar.2 = 2, numCovar.3 = 0,
-  R2.1 = 0.6, R2.2 = 0.2, R2.3 = 0,
-  rho = 0.6
-)
-print(m)</code></pre>
-<pre><code>## mdes result: d3.3_m3rc2rc design with 4 outcomes
-##   target min1 power: 0.04
-##   MTP Adjusted.MDES min1.power
-##  Holm     0.4805326   0.045375
-##  (12 steps in search)</code></pre>
-<ol start="5" style="list-style-type: decimal">
-<li>Determine the number of school districts you would need with your original MDES to achieve 80% individual power.</li>
-</ol>
-<pre class="r"><code>s &lt;- pump_sample(
-  design = &#39;d3.3_m3rc2rc&#39;,
-  target.power = 0.8,
-  power.definition = &#39;D1indiv&#39;,
-  typesample = &#39;K&#39;,
-  MTP = &#39;Holm&#39;,
-  alpha = 0.05,
-  MDES = 0.25,
-  M = 4,
-  J = 4,
-  nbar = 500,
-  Tbar = 0.5,
-  ICC.2 = 0.1, ICC.3 = 0.4,
-  numCovar.1 = 4, numCovar.2 = 2, numCovar.3 = 0,
-  R2.1 = 0.6, R2.2 = 0.2, R2.3 = 0,
-  rho = 0.6
-)
-print(s)</code></pre>
-<pre><code>## sample result: d3.3_m3rc2rc design with 4 outcomes
-##   target D1indiv power: 0.80
-##   MTP Sample.type Sample.size D1indiv.power
-##  Holm           K         262       0.80625
-##  (13 steps in search)</code></pre>
-<ol start="6" style="list-style-type: decimal">
-<li>Returning to all the original parameters, see how your power would change if you increase the correlation between outcomes, but keep everything else fixed.</li>
-</ol>
-<pre class="r"><code>p2 &lt;- update(p, rho = 0.8)
-print(p2)</code></pre>
-<pre><code>## power result: d3.2_m3ff2rc design with 4 outcomes
-##   MTP D1indiv D2indiv D3indiv D4indiv indiv.mean   min1   min2   min3 complete
-##  None  0.4802  0.4769  0.4766  0.4787     0.4781     NA     NA     NA       NA
-##  Holm  0.2612  0.2643  0.2614  0.2675     0.2636 0.3392 0.2658 0.2344   0.2903</code></pre>
-<ol start="7" style="list-style-type: decimal">
-<li>Check how your power would vary over a range of values for the intraclass correlation at level 3.</li>
-</ol>
-<pre class="r"><code>g &lt;- pump_power_grid(
-  design = &#39;d3.3_m3rc2rc&#39;,
-  MTP = &#39;Holm&#39;,
-  MDES = 0.25,
-  M = 4,
-  K = 6,
-  J = 4,
-  nbar = 500,
-  Tbar = 0.5,
-  alpha = 0.05,
-  ICC.2 = 0.2, ICC.3 = seq(0, 0.8, 0.1),
-  numCovar.1 = 4, numCovar.2 = 2, numCovar.3 = 0,
-  R2.1 = 0.6, R2.2 = 0.2, R2.3 = 0,
-  rho = 0.6
-)
-print(g)</code></pre>
-<pre><code>## # A tibble: 18 × 13
-##    MTP    MDES design   ICC.3 D1indiv D2indiv D3indiv D4indiv indiv.mean    min1
-##    &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;
-##  1 Holm   0.25 d3.3_m3…   0    0.0366  0.0358  0.0361  0.0367     0.0363  0.0691
-##  2 Holm   0.25 d3.3_m3…   0.1  0.0198  0.0204  0.0202  0.0201     0.0201  0.0389
-##  3 Holm   0.25 d3.3_m3…   0.2  0.0177  0.0187  0.0165  0.0179     0.0177  0.036 
-##  4 Holm   0.25 d3.3_m3…   0.3  0.0154  0.0155  0.0146  0.0153     0.0152  0.0335
-##  5 Holm   0.25 d3.3_m3…   0.4  0.0177  0.018   0.0166  0.0171     0.0174  0.0359
-##  6 Holm   0.25 d3.3_m3…   0.5  0.0176  0.0156  0.0149  0.0161     0.0161  0.0316
-##  7 Holm   0.25 d3.3_m3…   0.6  0.0183  0.0183  0.0179  0.0179     0.0181  0.0387
-##  8 Holm   0.25 d3.3_m3…   0.7  0.0163  0.0152  0.0151  0.0155     0.0155  0.0325
-##  9 Holm   0.25 d3.3_m3…   0.8  0.0153  0.0169  0.017   0.0164     0.0164  0.0338
-## 10 None   0.25 d3.3_m3…   0    0.148   0.148   0.151   0.146      0.148  NA     
-## 11 None   0.25 d3.3_m3…   0.1  0.0725  0.0724  0.0722  0.0707     0.0720 NA     
-## 12 None   0.25 d3.3_m3…   0.2  0.0611  0.0617  0.0626  0.063      0.0621 NA     
-## 13 None   0.25 d3.3_m3…   0.3  0.0588  0.0571  0.0563  0.0551     0.0568 NA     
-## 14 None   0.25 d3.3_m3…   0.4  0.0563  0.0571  0.058   0.0571     0.0571 NA     
-## 15 None   0.25 d3.3_m3…   0.5  0.0573  0.0548  0.0525  0.0532     0.0544 NA     
-## 16 None   0.25 d3.3_m3…   0.6  0.0588  0.0587  0.0593  0.0579     0.0587 NA     
-## 17 None   0.25 d3.3_m3…   0.7  0.0538  0.0513  0.0505  0.0545     0.0525 NA     
-## 18 None   0.25 d3.3_m3…   0.8  0.0516  0.0542  0.05    0.0503     0.0515 NA     
-## # … with 3 more variables: min2 &lt;dbl&gt;, min3 &lt;dbl&gt;, complete &lt;dbl&gt;</code></pre>
 </div>
 
 

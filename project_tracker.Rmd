@@ -46,9 +46,12 @@ Updated: Dec 22 by KH
   - give user estimate of runtime for WY (MDES and SS will require extra work)
 - small things
   - make sure user can't pass in vector of numCovar (KH)
+- parallel processing
+  - make it work for WY
 
 # Validation
 
+- check on p-value calculations, one-sided v. two-sided, for validation (KH)
 - re-run non-WY validation with sided tests fixed (KH)
 - re-run WY validation (KH)
 - render validation documents (KH)
