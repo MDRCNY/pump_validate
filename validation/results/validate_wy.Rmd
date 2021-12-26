@@ -74,31 +74,31 @@ user.params.list[['ATE_ES']] <- rep(0.1, M)
 Constant effects
 
 ```{r blocked.2c}
-design <- "blocked_i1_2c"
+d_m <- "blocked_i1_2c"
 user.params.list[['omega.2']] <- 0
 user.params.list[['ICC.2']] <- rep(0, M)
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2c_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2c_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2c_power_plot)
 ```
 
 Fixed effects
 
 ```{r blocked.2f}
-design <- "blocked_i1_2f"
+d_m <- "blocked_i1_2f"
 user.params.list[['omega.2']] <- user.params.default[['omega.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2f_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2f_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2f_power_plot)
 ```
 
 Random effects
 
 ```{r blocked.2r}
-design <- "blocked_i1_2r"
+d_m <- "blocked_i1_2r"
 user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2r_power_plot)
 ```
 
@@ -114,44 +114,44 @@ user.params.list[['J']] <- 100
 Constant effects
 
 ```{r blocked.2c.largeB}
-design <- "blocked_i1_2c"
+d_m <- "blocked_i1_2c"
 user.params.list[['omega.2']] <- 0
 user.params.list[['ICC.2']] <- rep(0, M)
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2c_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2c_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2c_power_plot)
 ```
 
 Fixed effects
 
 ```{r blocked.2f.largeB}
-design <- "blocked_i1_2f"
+d_m <- "blocked_i1_2f"
 user.params.list[['omega.2']] <- user.params.default[['omega.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2f_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2f_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2f_power_plot)
 ```
 
 Random effects
 
 ```{r blocked.2r.largeB}
-design <- "blocked_i1_2r"
+d_m <- "blocked_i1_2r"
 user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2r_power_plot)
 ```
 
 Random effects with large $B = 10000$ and large $J = 100$ with lower power
 
 ```{r blocked.2r.largeB.lowpower}
-design <- "blocked_i1_2r"
+d_m <- "blocked_i1_2r"
 user.params.list[['nbar']] <- 100
 user.params.list[['ATE_ES']] <- rep(0.05, M)
 
 user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2r_power_plot)
 ```
 
@@ -160,26 +160,26 @@ print(blocked_i1_2r_power_plot)
 Random effects with small $J = 15$ and medium $B = 3000$
 
 ```{r blocked.2r.smallJ}
-design <- "blocked_i1_2r"
+d_m <- "blocked_i1_2r"
 user.params.list[['J']] <- 15
 sim.params.list[['B']] <- 3000
 user.params.list[['ATE_ES']] <- rep(0.1, M)
 user.params.list[['nbar']] <- 50
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2r_power_plot)
 ```
 
 Random effects with small $B = 200$ and large $J = 60$
 
 ```{r blocked.2r.smallB}
-design <- "blocked_i1_2r"
+d_m <- "blocked_i1_2r"
 user.params.list[['J']] <- 60
 sim.params.list[['B']] <- 200
 user.params.list[['ATE_ES']] <- rep(0.1, M)
 user.params.list[['nbar']] <- 50
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2r_power_plot)
 ```
 
@@ -187,28 +187,28 @@ print(blocked_i1_2r_power_plot)
 Random effects with large $B = 10000$ and small $J = 20$
 
 ```{r blocked.2r.largeB.smallJ}
-design <- "blocked_i1_2r"
+d_m <- "blocked_i1_2r"
 sim.params.list[['B']] <- 10000
 user.params.list[['J']] <- 20
 user.params.list[['nbar']] <- 50
 user.params.list[['ATE_ES']] <- rep(0.125, M)
 user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2r_power_plot)
 ```
 
 Random effects with large $B = 10000$ and medium $J = 30$
 
 ```{r blocked.2r.largeB.medJ}
-design <- "blocked_i1_2r"
+d_m <- "blocked_i1_2r"
 sim.params.list[['B']] <- 10000
 user.params.list[['J']] <- 30
 user.params.list[['nbar']] <- 50
 user.params.list[['ATE_ES']] <- rep(0.125, M)
 user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_2r_power_plot)
 ```
 
@@ -230,9 +230,9 @@ user.params.list[['ICC.2']] <- rep(0.1, M)
 user.params.list[['J']] <- 60
 user.params.list[['ATE_ES']] <- rep(0.25, M)
 
-design <- "simple_c2_2r"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-simple_c2_2r_power_plot <- gen.power.results.plot(params.file.base, design)
+d_m <- "simple_c2_2r"
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+simple_c2_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(simple_c2_2r_power_plot)
 ```
 
@@ -247,9 +247,9 @@ user.params.list[['J']] <- 20
 user.params.list[['K']] <- 20
 user.params.list[['nbar']] <- 20
     
-design <- "blocked_i1_3r"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_i1_3r_power_plot <- gen.power.results.plot(params.file.base, design)
+d_m <- "blocked_i1_3r"
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_i1_3r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_i1_3r_power_plot)
 ```
 
@@ -271,9 +271,9 @@ user.params.list[['ATE_ES']] <- rep(0.25, M)
 user.params.list[['ICC.3']] <- rep(0.1, M)
 user.params.list[['ICC.2']] <- rep(0.1, M)
 
-design <- "simple_c3_3r"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-simple_c3_3r_power_plot <- gen.power.results.plot(params.file.base, design)
+d_m <- "simple_c3_3r"
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+simple_c3_3r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(simple_c3_3r_power_plot)
 ```
 
@@ -287,18 +287,18 @@ user.params.list[['omega.2']] <- 0
 Blocked cluster, fixed effects
 
 ```{r blocked.cluster.3f}
-design <- "blocked_c2_3f"
+d_m <- "blocked_c2_3f"
 user.params.list[['R2.3']] <- rep(0, M)
 user.params.list[['ICC.3']] <- rep(0, M)
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_c2_3f_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_c2_3f_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_c2_3f_power_plot)
 ```
 
 Blocked cluster, random effects
 
 ```{r blocked.cluster.3r}
-design <- "blocked_c2_3r"
+d_m <- "blocked_c2_3r"
 user.params.list[['R2.3']] <- user.params.default[['R2.3']]
 user.params.list[['ICC.3']] <- user.params.default[['ICC.3']]
 
@@ -310,8 +310,8 @@ user.params.list[['ATE_ES']] <- rep(0.25, M)
 # user.params.list[['ICC.3']] <- rep(0.1, M)
 # user.params.list[['ICC.2']] <- rep(0.1, M)
 
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, design)
-blocked_c2_3r_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
+blocked_c2_3r_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(blocked_c2_3r_power_plot)
 ```
 

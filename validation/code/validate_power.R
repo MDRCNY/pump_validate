@@ -34,12 +34,7 @@ library(PUMP)
 #' @examples
 validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overwrite = TRUE)
 {
-  if( (model.params.list[['M']] == 1 & length(sim.params.list[['MTP']]) > 1) |
-      (model.params.list[['M']] == 1 & length(sim.params.list[['MTP']]) == 1 & !('BF' %in% sim.params.list[['MTP']] )))
-  {
-    stop(print("Multiple testing corrections are not needed when M = 1. Please change multiple testing procedures or increase M."))
-  } 
-  
+
   # set defaults
   if(is.null(sim.params.list[['Q']]))
   {
@@ -122,7 +117,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
       {
         proc.results <- PUMP::get_power_results(
           adj.pval.mat = adjp.proc[,,p],
-          unadj.pval.mat = adjp.proc[,,'rawp'],
+          unadj.pval.mat = adjp.proc[,,'None'],
           ind.nonzero = model.params.list[['MDES']] > 0,
           alpha = sim.params.list[['alpha']]
         )
@@ -319,7 +314,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
       }
 
       powerup_results <- data.frame(
-        MTP = 'rawp',
+        MTP = 'None',
         variable = 'D1indiv',
         method = 'pup',
         value = powerup_results$power,

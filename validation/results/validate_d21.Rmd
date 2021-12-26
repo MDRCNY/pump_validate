@@ -4,7 +4,7 @@ date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: pdf_document
 ---
 
-Design: Blocked RCT, with 2 levels, and randomization done at level 1 (individual level).
+d_m: Blocked RCT, with 2 levels, and randomization done at level 1 (individual level).
 
 Models: Constant treatment effects, fixed treatment effects, and random treatment effects.
 
@@ -74,23 +74,23 @@ Assumptions:
 ## Base case
 
 ```{r 2c_nbar50}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-d2.1_m2fc_nbar50_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2fc_nbar50_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_nbar50_power_plot)
 ```
 
 ```{r 2f_nbar50}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-d2.1_m2ff_nbar50_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2ff_nbar50_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2ff_nbar50_power_plot)
 ```
 
 ```{r 2r_nbar50}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-d2.1_m2fr_nbar50_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2fr_nbar50_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fr_nbar50_power_plot)
 ```
 
@@ -103,27 +103,27 @@ model.params.list[['nbar']] <- 100
 $\bar{n}$ = `r model.params.list[['nbar']]`
 
 ```{r 2c_nbar100}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
-d2.1_m2fc_nbar100_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d2.1_m2fc_nbar100_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(d2.1_m2fc_nbar100_power_plot)
 ```
 
 
 ```{r 2f_nbar100}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
-d2.1_m2ff_nbar100_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d2.1_m2ff_nbar100_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(d2.1_m2ff_nbar100_power_plot)
 ```
 
 ```{r 2r_nbar100}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
-d2.1_m2fr_nbar100_power_plot <- gen.power.results.plot(params.file.base, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d2.1_m2fr_nbar100_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(d2.1_m2fr_nbar100_power_plot)
 ```
 
@@ -134,24 +134,24 @@ model.params.list[['nbar']] <- 75
 $\bar{n}$ = `r model.params.list[['nbar']]`
 
 ```{r 2c_nbar75}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-d2.1_m2fc_nbar75_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2fc_nbar75_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_nbar75_power_plot)
 ```
 
 
 ```{r 2f_nbar75}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-d2.1_m2fc_nbar75_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2fc_nbar75_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_nbar75_power_plot)
 ```
 
 ```{r 2r_nbar75}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-d2.1_m2fr_nbar75_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2fr_nbar75_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fr_nbar75_power_plot)
 ```
 
@@ -168,9 +168,9 @@ model.params.list[['R2.1']] <- rep(0.6, M)
 $R^2_1 =$ `r model.params.list[['R2.1']]`
 
 ```{r 2c_r2_106}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-d2.1_m2fc_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2fc_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_r2.1_power_plot)
 model.params.list[['R2.1']] <- params.default[['R2.1']]  
 ```
@@ -183,9 +183,9 @@ model.params.list[['R2.1']] <- rep(0, M)
 $R^2_1 =$ `r model.params.list[['R2.1']]`
 
 ```{r 2c_r2_10r2_20}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-d2.1_m2fc_r2.2_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2fc_r2.2_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_r2.2_power_plot)
 model.params.list[['R2.1']] <- params.default[['R2.1']]  
 ```
@@ -203,9 +203,9 @@ model.params.list[['rho.u']] <- model.params.list[['rho.v']] <- model.params.lis
 $\rho =$ `r model.params.list[['rho.default']]`
 
 ```{r 2c_rho0_2}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-d2.1_m2fc_rho0.2_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2fc_rho0.2_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_rho0.2_power_plot)
 ```
 
@@ -220,8 +220,8 @@ model.params.list[['rho.u']] <- model.params.list[['rho.v']] <- model.params.lis
 $\rho =$ `r model.params.list[['rho.default']]`
 
 ```{r 2c_rho0_8}
-design <- "d2.1_m2fc"
-d2.1_m2fc_rho0.8_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d_m <- "d2.1_m2fc"
+d2.1_m2fc_rho0.8_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_rho0.8_power_plot)
 # reset
 rho.default <- params.default[['rho.default']]
@@ -241,9 +241,9 @@ model.params.list[['MDES']] <- c(0.125, 0, 0)
 MDES = `r model.params.list[['MDES']]`
 
 ```{r 2c_MDES012500}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-d2.1_m2fc_mdes0.1250.00.0.00_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+d2.1_m2fc_mdes0.1250.00.0.00_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_mdes0.1250.00.0.00_power_plot)
 model.params.list[['MDES']] <- params.default[['MDES']]
 ```
@@ -259,26 +259,26 @@ model.params.list[['ICC.2']] <- rep(0.7, M)
 $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
 
 ```{r 2c_ICC207}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
 d2.1_m2fc_ICC2.0.7_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_ICC2.0.7_power_plot)
 ```
 
 ```{r 2f_ICC207}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
 d2.1_m2ff_ICC2.0.7_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2ff_ICC2.0.7_power_plot)
 ```
 
 ```{r 2r_ICC207}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
 d2.1_m2fr_ICC2.0.7_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fr_ICC2.0.7_power_plot)
 model.params.list[['ICC.2']] <- params.default[['ICC.2']]
 ```
@@ -291,26 +291,26 @@ model.params.list[['ICC.2']] <- rep(0, M)
 $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
 
 ```{r 2c_ICC20}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
 d2.1_m2fc_ICC2.0_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_ICC2.0_power_plot)
 ```
 
 ```{r 2f_ICC20}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
 d2.1_m2ff_ICC2.0_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2ff_ICC2.0_power_plot)
 ```
 
 ```{r 2r_ICC20}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
 d2.1_m2fr_ICC2.0_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fr_ICC2.0_power_plot)
 model.params.list[['ICC.2']] <- params.default[['ICC.2']]
 ```
@@ -324,16 +324,16 @@ model.params.list[['omega.2']] <- rep(0.8, M)
 $\omega_2$ = `r model.params.list[['omega.2']]`
 
 ```{r 2f_omega208}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 d2.1_m2ff_omega20.8_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2ff_omega20.8_power_plot)
 ```
 
 ```{r 2r_omega08}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 d2.1_m2fr_omega20.8_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fr_omega20.8_power_plot)
 ```
 
@@ -345,16 +345,16 @@ model.params.list[['omega.2']] <- rep(0, M)
 $\omega_2$ = `r model.params.list[['omega.2']]`
 
 ```{r 2f_omega20}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 d2.1_m2ff_omega20_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2ff_omega20_power_plot)
 ```
 
 ```{r 2r_omega0}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 d2.1_m2fr_omega20_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fr_omega20_power_plot)
 ```
 
@@ -373,25 +373,25 @@ model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- kappa.matrix
 $\kappa$ = `r kappa`
 
 ```{r 2c_kappa04}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
 d2.1_m2fc_kappa0.4_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_kappa0.4_power_plot)
 ```
 
 ```{r 2f_kappa04}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
 d2.1_m2ff_kappa0.4_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2ff_kappa0.4_power_plot)
 ```
 
 ```{r 2r_kappa04}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 d2.1_m2fr_kappa0.4_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, design), design)
+  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fr_kappa0.4_power_plot)
 ```
 
@@ -407,9 +407,9 @@ model.params.list <- params.default
 
 
 ```{r 2c_mdes_D1}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
 if(length(mdes.file) == 0)
 {
@@ -420,15 +420,15 @@ if(length(mdes.file) == 0)
   pander::pandoc.table(
     d2.1_m2fc_mdes_D1_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
-    caption = design
+    caption = d_m
   )
 }
 ```
 
 ```{r 2f_mdes_D1}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
 if(length(mdes.file) == 0)
 {
@@ -439,16 +439,16 @@ if(length(mdes.file) == 0)
   pander::pandoc.table(
     d2.1_m2ff_mdes_D1_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
-    caption = design
+    caption = d_m
   )    
 }
 ```
 
 ```{r 2r_mdes_D1}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
 model.params.list[['ICC.2']] <- params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
 if(length(mdes.file) == 0)
 {
@@ -459,7 +459,7 @@ if(length(mdes.file) == 0)
   pander::pandoc.table(
     d2.1_m2fr_mdes_D1_results,
     style = "grid", split.tables = 100, row.names = FALSE, 
-    caption = design
+    caption = d_m
   )
 }
 ```
@@ -467,9 +467,9 @@ if(length(mdes.file) == 0)
 # Sample size validation
 
 ```{r 2c_sampleD1_J}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 sample.file <- find_file(params.file.base, type = 'sample_J_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -480,15 +480,15 @@ if(length(sample.file) == 0)
   pander::pandoc.table(
     d2.1_m2fc_sample_D1_J_results,
     style = "grid", split.tables = 100, row.names = FALSE,
-    caption = design
+    caption = d_m
   )
 }
 ```
 
 ```{r 2c_sampleD1_nbar}
-design <- "d2.1_m2fc"
+d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 sample.file <- find_file(params.file.base, type = 'sample_nbar_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -499,15 +499,15 @@ if(length(sample.file) == 0)
   pander::pandoc.table(
     d2.1_m2fc_sample_D1_nbar_results,
     style = "grid", split.tables = 100, row.names = FALSE,
-    caption = design
+    caption = d_m
   )
 }
 ```
 
 ```{r 2f_sampleD1_J}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 sample.file <- find_file(params.file.base, type = 'sample_J_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -518,15 +518,15 @@ if(length(sample.file) == 0)
   pander::pandoc.table(
     d2.1_m2ff_sample_D1_J_results,
     style = "grid", split.tables = 100, row.names = FALSE,
-    caption = design
+    caption = d_m
   )
 }
 ```
 
 ```{r 2f_sampleD1_nbar}
-design <- "d2.1_m2ff"
+d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 sample.file <- find_file(params.file.base, type = 'sample_nbar_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -537,16 +537,16 @@ if(length(sample.file) == 0)
   pander::pandoc.table(
     d2.1_m2ff_sample_D1_nbar_results,
     style = "grid", split.tables = 100, row.names = FALSE,
-    caption = design
+    caption = d_m
   )
 }
 ```
 
 
 ```{r 2r_sampleD1_J}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 sample.file <- find_file(params.file.base, type = 'sample_J_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -557,15 +557,15 @@ if(length(sample.file) == 0)
   pander::pandoc.table(
     d2.1_m2fr_sample_D1_J_results,
     style = "grid", split.tables = 100, row.names = FALSE,
-    caption = design
+    caption = d_m
   )
 }
 ```
 
 ```{r 2r_sampleD1_nbar}
-design <- "d2.1_m2fr"
+d_m <- "d2.1_m2fr"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, design)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 sample.file <- find_file(params.file.base, type = 'sample_J_D1indiv')
 if(length(sample.file) == 0)
 {
@@ -576,7 +576,7 @@ if(length(sample.file) == 0)
   pander::pandoc.table(
     d2.1_m2fr_sample_D1_nbar_results,
     style = "grid", split.tables = 100, row.names = FALSE,
-    caption = design
+    caption = d_m
   )
 }
 ```

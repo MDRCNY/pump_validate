@@ -9,16 +9,16 @@ library(here)
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
-run.mdes.ss = TRUE
+run.mdes.ss = FALSE
 # whether to run limited westfall young validations
 run.wy = FALSE
 # which d_ms to run
 run.d2.1 = TRUE
-run.d2.2 = TRUE
-run.d3.1 = TRUE
-run.d3.3 = TRUE
-run.d3.2 = TRUE
-run.power.def = TRUE
+run.d2.2 = FALSE
+run.d3.1 = FALSE
+run.d3.3 = FALSE
+run.d3.2 = FALSE
+run.power.def = FALSE
 
 # for parallel processing
 q <- as.numeric(as.character(Sys.getenv("q")))
@@ -53,7 +53,7 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , MTP = c("Bonferroni", "BH", "Holm") # Multiple testing procedures
-  , runSim = FALSE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runSim = TRUE          # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE           # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
   , runPowerUp = TRUE       # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )

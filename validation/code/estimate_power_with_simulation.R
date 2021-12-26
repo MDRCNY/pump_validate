@@ -19,8 +19,8 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
 
   # list of adjustment procedures
   adjp.proc <- array(0, c(S, M, length(MTP) + 1))
-  dimnames(adjp.proc) <- list(NULL, NULL, c("rawp", MTP))
-  names(adjp.proc) <- c("rawp", MTP)
+  dimnames(adjp.proc) <- list(NULL, NULL, c("None", MTP))
+  names(adjp.proc) <- c("None", MTP)
   
   # how often to print messages
   px <- 100
@@ -57,11 +57,11 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
     num.singular.raw <- num.singular.raw + rawpt.out[['num.singular']]
     num.failed.converge.raw <- num.failed.converge.raw + rawpt.out[['num.failed.converge']]
     
-    # loop through adjustment procedures (adding 'rawp' as default in all cases)
+    # loop through adjustment procedures (adding 'None' as default in all cases)
     for (p in 1:(length(MTP) + 1)) {
       if (p == 1) {
         pvals <- rawp
-        proc <- "rawp"
+        proc <- "None"
       } else {
         t11 <- Sys.time()
         

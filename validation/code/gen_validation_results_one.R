@@ -81,3 +81,21 @@ print(j.results)
 
 nbar.results <- validate_sample(model.params.list, sim.params.list, d_m = "d2.1_m2fr", typesample = "nbar")
 print(nbar.results)
+
+
+
+
+
+# assumptions
+model.params.list[['K']] <- 1
+model.params.list[['J']] <- 20
+model.params.list[['ICC.3']] <- NULL
+model.params.list[['omega.3']] <- NULL
+model.params.list[['numCovar.3']] <- 0
+model.params.list[['R2.3']] <- NULL
+model.params.list[['numCovar.2']] <- 0
+model.params.list[['R2.2']] <- NULL
+model.params.list[['omega.2']] <- NULL
+
+power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc")
+print(power.results)
