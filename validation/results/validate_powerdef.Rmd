@@ -8,8 +8,8 @@ output: pdf_document
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
 knitr::opts_chunk$set(
-  cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE,
-  fig.height = 4
+  cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE,
+  fig.height = 7
 )
 ```
 

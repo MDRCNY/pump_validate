@@ -10,8 +10,8 @@ Models: random treatment effects.
 
 ```{r knit.options, echo = FALSE}
 knitr::opts_chunk$set(
-  cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE,
-  fig.height = 4
+  cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE,
+  fig.height = 7
 )
 ```
 
@@ -76,6 +76,7 @@ d3.1_m3rr2rr_nbar100_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(d3.1_m3rr2rr_nbar100_power_plot)
 ```
 
+\newpage
 ## Varying school size
 
 ```{r nbar75}
@@ -104,6 +105,7 @@ print(d3.1_m3rr2rr_nbar50_power_plot)
 model.params.list[['nbar']] <- 100
 ```
 
+\newpage
 ## Varying R2
 
 ```{r r2106}
@@ -132,6 +134,7 @@ model.params.list[['R2.1']] <- params.default[['R2.1']]
 ```
 
 
+\newpage
 ## Varying rho
 
 ```{r rho02}
@@ -171,6 +174,7 @@ model.params.list[['rho.u']] <- model.params.list[['rho.v']] <- model.params.lis
 ```
 
 
+\newpage
 ## Varying true positives
 
 ```{r MDES012500}
@@ -185,6 +189,7 @@ print(d3.1_m3rr2rr_mdes0.1250.00.0.00_power_plot)
 model.params.list[['MDES']] <- params.default[['MDES']]
 ```
 
+\newpage
 ## Varying ICC
 
 ```{r ICC207}
@@ -236,6 +241,7 @@ print(d3.1_m3rr2rr_ICC3.0_power_plot)
 model.params.list[['ICC.3']] <- params.default[['ICC.3']]
 ```
 
+\newpage
 ## Varying Omega
 
 ```{r omega208}
@@ -317,6 +323,7 @@ model.params.list[['omega.2']] <- params.default[['omega.2']]
 model.params.list[['omega.3']] <- params.default[['omega.3']]
 ```
 
+\newpage
 ## Kappa
 
 ```{r kappa04}
@@ -338,6 +345,7 @@ print(d3.1_m3rr2rr_kappa0.4_power_plot)
 model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- params.default[['kappa.w']]
 ```
 
+\newpage
 # MDES validation
 
 ```{r}
