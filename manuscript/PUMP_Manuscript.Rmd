@@ -106,7 +106,8 @@ We note, however, that the problem of power estimation for multi-level RCTs is n
 In Section \ref{sec:mtp_overview}, we provide a summary of the multiple testing problem.
 Also in Section \ref{sec:mtp_overview}, we present an overview of the statistical challenges introduced by multiple hypothesis testing and how MTPs protect against spurious impact findings.
 In Section \ref{sec:est}, we introduce our methodology for estimating power when taking the use of MTPs into account.
-This section includes a summary of the RCT designs our methods cover, a discussion of how to specify key parameters, and a discussion of our validation process.
+This section also briefly discusses our validation process.
+Section~\ref{sec:choices} discusses the various choices a user must make when using the package, including the designs and models, MTPs, and key design and model parameters.
 Section \ref{sec:vignette} provides a detailed presentation of the PUMP package with multiple examples of using the packages functions to conduct calculations for our education RCT example.
 Section \ref{sec:conclusion} is a brief conclusion. 
 
@@ -525,6 +526,7 @@ For example, for certain models PowerUp assumes the intraclass correlation is ze
 When there are discrepancies, these are noted in the appendix.
 
 \section{User choices}
+\label{sec:choices}
 
 In this section, we outline in detail the choices a user must make when calculating power, MDES, or sample size.
 
