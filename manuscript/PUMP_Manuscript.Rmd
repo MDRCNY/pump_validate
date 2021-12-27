@@ -120,7 +120,7 @@ Evaluators conducted a RCT comparing schools who implemented the model to busine
 We refer to this example throughout this paper to illustrate key concepts and to illustrate the application of the PUMP package.
 
 The Diplomas Now model, created by three national organizations, Talent Development, City Year, and Communities In Schools, targets underfunded urban middle and high schools with many students who are not performing well academically.
-The model is designed to be robust and intense enough to transform or turn around high-poverty and high-needs \textcolor{red}{middle grade and high schools KH: is there a typo here?} attended by many students who fall off the path to high school graduation.
+The model is designed to be robust and intense enough to transform or turn around high-poverty and high-needs middle and high schools attended by many students who fall off the path to high school graduation.
 Diplomas Now, with MDRC as a partner, was one of the first validation grants awarded as part of the Investing in Innovation (i3) competition administered by the federal Department of Education.
 
 We follow the general design of the Diplomas Now evaluation, conducted by MDRC.
@@ -664,7 +664,7 @@ In particular, fixed effects included at level two are actually accounting for v
 For our context, this gives about three schools per randomization block; we can later do a sensitivity check where we increase and decrease this to see how power changes.
 The Diplomas Now report states there were 14,950 students, yielding around 258 students per school.
 Normally we would use the geometric means of schools per randomization block and students per school as our design parameters, but that information is not available in the report.
-We assume 50% of the schools are treated; our \textcolor{red}{calculates} will be approximate here in that we could not actually treat exactly 50% in small and odd-sized blocks.
+We assume 50% of the schools are treated; our calculations will be approximate here in that we could not actually treat exactly 50% in small and odd-sized blocks.
 
 
 *Control variables.* We next need values for the $R^2$ of the possible covariates.
@@ -760,7 +760,7 @@ m3 <- update( m2, numZero = 2 )
 kable(m3, digits = 2)
 ```
 
-The MDES goes up, as expected. \textcolor{red}{KH: add one sentence explaining why this is expected?}
+The MDES goes up, as expected. \textcolor{red}{KH: add one sentence explaining why this is expected? KP suggestion: When there are not effects on all outcomes, the probability of detecting the effects that do actually exist is diminished. Therefore, an increased MDES is required to achieve the same level of desired power (80 percent). Below we provide a deeper dive into the extent to which numZero can effect power estimates.}
 
 
 
