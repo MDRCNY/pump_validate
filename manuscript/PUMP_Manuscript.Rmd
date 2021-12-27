@@ -5,8 +5,9 @@ output:
     keep_tex: true
     number_sections: yes
 bibliography: refs.bib
-# header-includes:
-#     - \usepackage{setspace}\doublespacing
+header-includes:
+  - \usepackage{setspace}
+  - \usepackage{color}
 ---
 
 ```{r setup, include = FALSE}
@@ -29,30 +30,44 @@ theme_set( theme_minimal() )
 set.seed( 1010203 )
 ```
 
+\section*{Abstract}
+
+Researchers in the social sciences and other fields frequently use randomized controlled trials (RCTs) to determine the impact of an intervention of interest.
+We introduce the PUMP R package as a tool for analysts to estimate statistical power, minimum detectable effect size, and sample size requirements for multi-level RCTs.
+PUMP fills a gap in existing software tools by estimating power when applying a multiple testing procedure to adjust for measuring the impact of a single intervention on multiple outcomes.
+Current power estimation software does not take into account the use of multiple testing procedures, which can result in inaccurate estimate of power, and limits the different notions of power an analyst may want to consider.
+The PUMP package supports a variety of commonly-used RCT designs and models and multiple testing procedures.
+In addition to the main functionality of estimating power, minimum detectable effect size, and sample size requirements, the package allows the user to easily explore sensitivity of these quantities to changes in underlying assumptions.
+In this paper, we first introduce the package, and motivate the problem of multiple testing.
+Next, we introduce a specific educational experiment as a running example throughout the paper.
+We then introduce the package functionality, and the simulation-based approach to power estimation employed by the package.
+Finally, we demonstrate applying PUMP to the educational experiment to inform an analyst's choices.
+
 \section{Introduction}
 \label{sec:intro}
 
 The PUMP R package fills an important gap in open source software and tools needed by researchers to design multi-level randomized controlled trials (RCTs) with sufficient statistical power.
-With this package, researchers can estimate statistical power, minimum detectable effect size (MDES), and needed sample size for multi-level experimental designs, in which units are nested within hierarchical structures such as students nested within schools nested with school districts.
+With this package, researchers can estimate statistical power, minimum detectable effect size (MDES), and needed sample size for multi-level experimental designs, in which units are nested within hierarchical structures such as students nested within schools nested within school districts.
 The statistical power is calculated for estimating the impact of a single intervention on multiple outcomes.
 The package focuses on a frequentist framework of mixed effects regression models, which is currently the prevailing framework for estimating impacts from experiments in education and other social policy research.\footnote{Other options include nonparametric or Bayesian methods, but these are less prevalent in applied research (for example, see @GELMANETAL2012, @GelmanHill2007).}
-To our knowledge, none of the existing software options or tools for power calculations power allow researchers to account for multiple hypothesis tests and the use of a multiple testing procedure (MTP).
+
+To our knowledge, none of the existing software options or tools for power calculations allow researchers to account for multiple hypothesis tests and the use of a multiple testing procedure (MTP).
 MTPs adjust $p$-values to reduce the likelihood of spurious findings when researchers are testing for effects on multiple outcomes.
 This adjustment can result in a substantial change in statistical power, greatly reducing the probability of detecting effects when they do exist.
 Unfortunately, when designing studies, researchers who plan to test for effects on multiple outcomes and employ MTPs frequently ignore the power implications of the MTPs.
 
 Also, as researchers change their focus from one outcome to multiple outcomes, multiple definitions of statistical power emerge (@RN23882; @RN23878; @RN23881; @MTSAS).
-The PUMP package allows researchers to consider multiple definitions of power, as some may be more appropriate for the goals of their study.
+The PUMP package allows researchers to consider multiple definitions of power, as some may be most suited for the goals of their study.
 For example, one might consider *individual power,* the probability of detecting an effect of a particular size (specified by the researcher) or larger for each hypothesis test.
 Individual power corresponds to how power is defined when there is focus on a single outcome.
 However, researchers might also consider *1-minimal power,* the probability of detecting effects of at least a particular size on at least one outcome. In contrast, one might consider *complete power,* the power to detect effects of at least a particular size on *all* outcomes. 
 
 The prevailing default in many studies–-individual power–-may or may not be the most appropriate type of power.
-If the researchers’ goal is to find statistically significant estimates of effects on most or all primary outcomes of interest, then even after taking multiplicity adjustments into account, estimates of individual power can grossly understate the actual power required.
-On the other hand, if the researchers’ goal is to find statistically significant estimates of effects on at least one or a small proportion of outcomes, their power may be much better than anticipated. They may be able to reduce their sample size, or they may be able to detect smaller effects.
+If the researcher’s goal is to find statistically significant estimates of effects on most or all primary outcomes of interest, then even after taking multiplicity adjustments into account, estimates of individual power can grossly understate the actual power required.
+On the other hand, if the researcher’s goal is to find statistically significant estimates of effects on at least one or a small proportion of outcomes, their power may be much better than anticipated. They may be able to reduce their sample size, or they may be able to detect smaller effects.
 The PUMP package allows for directly answering questions such as “How many schools would I need to detect a given effect on at least three of my five outcomes,” or “What size effect can I reliably detect on each outcome, given a planned MTP across all my outcomes,” or “How would the power to detect a given effect change if only half my outcomes truly had impacts.”
 
-PUMP implements new, rigorously validated methods developed by the authors to estimate statistical power for multiple definitions of statistical power across a wide range of common experimental designs.
+PUMP implements new, rigorously validated methods developed by the authors to estimate statistical power for multiple definitions of power across a wide range of common experimental designs.
 PUMP extends functionality of the popular PowerUp! R package (and related tools in the form of a spreadsheet and Shiny application), which compute power or MDES for multi-level RCTs with a single outcome (@RN4473).
 For a wide variety of RCT designs with a single outcome, researchers can take advantage of closed-form solutions and numerous power estimation tools.
 For example, in education and social policy research, see @RN4473; @RN30153; @RN23884; @RN24179.
@@ -62,83 +77,91 @@ Instead, we use a simulation-based approach to achieve estimates of power.
 In order to calculate power, the researcher specifies information about the sample size at each level, the minimum detectable effect size (MDES) for each outcome (the smallest true effect sizes to detect with statistical significance, in units of standard deviations), the level of statistical significance, and parameters of the data generating distribution.
 An “effect size” generally refers to the standardized mean difference effect size, which “equals the difference in mean outcomes for the treatment group and control group, divided by the standard deviation of outcomes across subjects within experimental groups” (@RN27978).
 Researchers often use effect sizes to standardize outcomes so that outcomes with different scales can be directly compared.
-With PUMP, the user can also choose to apply any of five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg.
-In addition to estimating power, the researcher can target a level of power and estimate either MDES or sample size requirements. Therefore, the package includes three core functions:
+
+The package includes three core functions:
 
 - `pump_power()` for calculating power given a experimental design and assumed model, parameters, and minimum detectable effect size.
-- `pump_mdes()` for calculating minimum detectable effect size given a target power.
+- `pump_mdes()` for calculating minimum detectable effect size given a target power and sample sizes.
 - `pump_sample()` for calculating the required sample size for achieving a given target power for a given minimum detectable effect size.
 
-The package also includes functions that allow users to easily explore power, MDES or sample size estimates over a range of possible values of parameters to determine sensitivity of calculations to ranges of assumptions.
+For any of these core functions, the user begins with two main choices.
+First, the user chooses the assumed design and model of the RCT.
+The PUMP package covers a range of multi-level designs, up to 3 levels of hierarchy, that researchers typically use in practice, in which research units are nested in hierarchical groups.
+Our power calculations assume the user will be analyzing these RCTs using frequentist mixed-effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels, as we explain in detail in Section~\ref{sec:est_power} and in the Supplementary Materials. 
+Second, the user chooses the MTP to be applied.
+PUMP supports 5 common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg.
+After these two main choices, the user must also make a variety of decisions about parameters of the data generating distribution.
+
+The package also includes functions that allow users to easily explore estimates over a range of possible values of parameters to determine sensitivity of calculations to different assumptions.
 PUMP also visually displays results.
 These additional functions include:
 
-- `pump_power_grid()`, `pump_mdes_grid()`, and `pump_sample_grid() for calculating the given output over a range of possible parameter values.
+- `pump_power_grid()`, `pump_mdes_grid()`, and `pump_sample_grid()` for calculating the given output over a range of possible parameter values.
 - `update()` to re-run an existing calculation with a small number of parameters updated.
-- `plot()` on any pump-generated object to generate plots (including grid outputs).
+- `plot()` on any PUMP-generated object to generate plots (including grid outputs).
 
-The PUMP package covers a range of multi-level designs that researchers typically use in practice, in which research units are nested in hierarchical groups.
-These designs are common in education research, for example, in which students are nested within schools, which can be then nested within school districts.
-Our power calculations assume the user will be analyzing these RCTs using frequentist mixed-effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels, as we explain in detail in Section~\ref{sec:est_power} and in the Supplementary Materials. 
-
-The remainder of this paper is organized as follows: In Section 2, we provide a summary of the multiple testing problem. To do so, we begin with a motivating example from education research, which we refer to throughout the paper.
+The remainder of this paper is organized as follows.
+In Section \ref{sec:diplomas}, we introduce Diplomas Now, an educational experiment, to be used as a running example throughout the paper.
 We note, however, that the problem of power estimation for multi-level RCTs is not exclusive to the educational setting.
-Also in Section 2, we present an overview of the statistical challenges introduced by multiple hypothesis testing and how MTPs protect against spurious impact findings.
-In Section 3, we introduce our methodology for estimating power when taking the use of MTPs into account.
-This section includes a summary of the RCT designs our methods cover, a discussion of how to specify key parameters, and a discussion of our validation processes.
-Section 4 provides a detailed presentation of the PUMP package with multiple examples of using the packages functions to conduct calculations for our education RCT example.
-Section 5 is a brief conclusion. 
+In Section \ref{sec:mtp_overview}, we provide a summary of the multiple testing problem.
+Also in Section \ref{sec:mtp_overview}, we present an overview of the statistical challenges introduced by multiple hypothesis testing and how MTPs protect against spurious impact findings.
+In Section \ref{sec:est}, we introduce our methodology for estimating power when taking the use of MTPs into account.
+This section includes a summary of the RCT designs our methods cover, a discussion of how to specify key parameters, and a discussion of our validation process.
+Section \ref{sec:vignette} provides a detailed presentation of the PUMP package with multiple examples of using the packages functions to conduct calculations for our education RCT example.
+Section \ref{sec:conclusion} is a brief conclusion. 
 
 \section{Diplomas Now}
 \label{sec:diplomas}
 
 We illustrate our package with a published RCT evaluation of a secondary school model called Diplomas Now.
 The Diplomas Now model is designed to increase high school graduation rates and post-secondary readiness.
-Evaluators evaluated whether the program was effective by conducting a RCT comparing schools who implemented the model to versus business as usual.
-We refer to this example to illustrate key concepts and to illustrate the application of the PUMP package.
+Evaluators conducted a RCT comparing schools who implemented the model to business-as-usual.
+We refer to this example throughout this paper to illustrate key concepts and to illustrate the application of the PUMP package.
 
 The Diplomas Now model, created by three national organizations, Talent Development, City Year, and Communities In Schools, targets underfunded urban middle and high schools with many students who are not performing well academically.
-The model is designed to be robust and intense enough to transform or turn around high-poverty and high-needs middle grade and high schools attended by many students who fall off the path to high school graduation.
+The model is designed to be robust and intense enough to transform or turn around high-poverty and high-needs \textcolor{red}{middle grade and high schools KH: is there a typo here?} attended by many students who fall off the path to high school graduation.
 Diplomas Now, with MDRC as a partner, was one of the first validation grants awarded as part of the Investing in Innovation (i3) competition administered by the federal Department of Education.
+
 We follow the general design of the Diplomas Now evaluation, conducted by MDRC.
 The RCT contains three levels (students within schools within districts) with random assignment at level 2 (schools).
 The initial evaluation, which included two cohorts of schools with each cohort implementing for two years (2011-2013 for Cohort 1 and 2012-2014 for Cohort 2), included 62 secondary schools (both middle and high schools) in 11 school districts that agreed to participate.
 Schools in the active treatment group were assigned to implement the Diplomas Now model, while the schools in the control group continued their existing school programs or implemented other reform strategies of their choosing (See @DNREPORT.)
-
 The MDRC researchers conducted randomization of the schools within blocks defined by district, school type, and year of roll-out.
 After having to drop some schools due to various reasons, the researchers were left with 29 high schools and 29 middle schools grouped in 21 random assignment blocks.
 Within each block, schools were randomized to the active treatment or business-as-usual, resulting in 32 schools in the treatment group, and 30 schools in the control group.
 
-The evaluation focused on three categories of outcomes (Attendance, Behavior, Course performance, called the "ABC's", with multiple measures for each category), along with overall ABC composite measures of whether a student is above given thresholds on all three categories. 
+The evaluation focused on 3 categories of outcomes (Attendance, Behavior, Course performance, called the "ABC's", with multiple measures for each category), along with overall ABC composite measures of whether a student is above given thresholds on all three categories. 
 This grouping constitutes 12 total outcomes of interest.
 Evaluating each of the 12 outcomes independently would not be good practice, as the chance of a spurious finding is not well controlled.
 The authors of the MDRC report pre-identified three of these outcomes as *primary* outcomes before the start of the study in order to protect against such spurious findings that might arise from conducting multiple hypothesis tests without adjustment. 
 We, by contrast, use this example to illustrate what could be done if there was uncertainty as to what should be the primary outcome.
 In particular, we illustrate how to conduct a power analysis to plan a study where one uses multiple testing adjustment, rather than predesignation, to account for the multiple outcome problem.
 
+\textcolor{red}{KH: this paragraph feels a bit disjointed to me, and possibly unnecessary? I'm struggling with what the main message is.}
 Due to the grouped nature of the outcomes, we elect to do a power analysis separately for each outcome group (mimicking the three chosen outcomes of the original study)  to control family-wise error rather than overall error.
 We would then adjust for the number of outcomes within each group independently.
 We note that there are different guidelines for when to adjust for multiple outcomes in education studies.\footnote{For example, Schochet (2008) recommends organizing primary outcomes into domains, conducting tests on composite domain outcomes, and applying multiplicity corrections to composites across domains. The What Works Clearinghouse applies multiplicity corrections to findings within the same domain rather than across different domains.}
-This paper would apply to either case.
-In this paper, the word “outcome” refers to either a single outcome or an outcome domain, and the paper focuses on any situation in which an analyst would apply adjustments to account for multiple outcomes.]
+\textcolor{red}{This paper would apply to either case.
+In this paper, the word “outcome” refers to either a single outcome or an outcome domain, and the paper focuses on any situation in which an analyst would apply adjustments to account for multiple outcomes. KH: what are the two cases? Also, it seems like some formatting got messed up, should this be a footnote, and if so, where?}
 We do not provide recommendations for which guidelines to follow when investigating impacts on multiple outcomes. 
-Rather, we address the fact that researchers across many domains are increasingly applying MTPs and therefore need estimate power, MDES and sample size requirements.
-For illustration purposes, we focus on an alternative approach in the Diplomas Now study on assessing impacts of all 12 outcomes and applying MTPs to protect against the potential for spurious findings. 
+Rather, we address the fact that researchers across many domains are increasingly applying MTPs and therefore need to correctly estimate power, MDES and sample size requirements accounting for this choice.
+For illustration purposes, we focus on an alternative approach in the Diplomas Now study involving assessing impacts on all 12 outcomes and applying MTPs to protect against the potential for spurious findings. 
 
 \section{Overview of multiple testing}
 \label{sec:mtp_overview}
 
-Our motivating example illustrates that researchers are often interested in testing the effectiveness of an intervention on multiple outcomes.
+Our motivating example illustrates that researchers are often interested in testing the effectiveness of a single intervention on multiple outcomes.
 The resulting multiplicity of statistical hypothesis tests can lead to spurious findings of effects.\footnote{Testing the effectiveness of an intervention for multiple subgroups, at multiple points in time, or across multiple treatment groups also results in a multiplicity of statistical hypotheses and can also lead to spurious findings of effects, but this is beyond the scope of this paper.}
 Multiple testing procedures (MTPs) counteract this problem by adjusting $p$-values for effect estimates; generally, $p$-values are adjusted upward to require a higher burden of proof.
 When not using an MTP, the probability of finding false positives increases, sometimes dramatically, with the number of tests.
 When using an MTP, this probability is controlled to a specified level.
 
-
+First, we remind the reader of how raw, or unadjusted, $p$-values are calculated in this setting, before introducing adjustments due to multiple testing.
 Consider that a researcher is interested in testing the impact of an intervention on $M$ outcomes.
 In our running example of the Diplomas Now study, if we had 5 outcomes in the attendance group, we would have $M = 5$.
-In the frequentist framework, when framing impacts in terms of effect sizes ($ES$), for the outcome $m$, one typically tests a null hypothesis of no effect, $H_{0_m}: ES_m = 0$, against an alternative hypothesis $H_{1_m}: ES_m \neq 0$ for a two-sided tests or $H_{1_m}: ES_m > 0$ or $H_{1_m}: ES_m < 0$ for a one-sided test.
-A significance test, such as a two- or one-sided $t$-test, would then typically be driven by whether a test statistic given by
+We apply a frequentist hypothesis testing framework, and frame impacts in terms of effect sizes ($ES$).
+For outcome $m$, we can test a null hypothesis of no effect, $H_{0_m}: ES_m = 0$, against an alternative hypothesis $H_{1_m}: ES_m \neq 0$ for a two-sided tests or $H_{1_m}: ES_m > 0$ or $H_{1_m}: ES_m < 0$ for a one-sided test.
+A significance test, such as a two- or one-sided $t$-test, would then typically be driven by a test statistic given by
 \begin{equation}
 t_m = \frac{\hat{ES}_m}{SE(\hat{ES}_m)},
 \end{equation}
@@ -156,8 +179,8 @@ If $\alpha=0.05$, then the null hypothesis is rejected if the $p$-value is less 
 
 When one tests _multiple_ hypotheses under this framework (such that $M>1$) and one conducts a separate test for each of the hypotheses with $\alpha=0.05$, there is a _greater_ than $5\%$ chance of a false positive finding in the study.
 If the multiple tests are independent, the probability that at least one of the null hypothesis tests will be erroneously rejected is 1-Pr(none of the null hypotheses will be erroneously rejected) $= 1-(1-\alpha)^M$.
-Therefore, if researchers are estimating effects on three outcomes (and if these outcomes are independent) the probability of at least one false positive finding is $1-(1-0.05)^3=0.14$.
-If the researchers were instead estimating effects on five independent outcomes, the probability of at least one false positive finding rises to $0.23$.
+Therefore, if researchers are estimating effects on 3 outcomes (and if these outcomes are independent) the probability of at least one false positive finding is $1-(1-0.05)^3=0.14$.
+If the researchers were instead estimating effects on 5 independent outcomes, the probability of at least one false positive finding rises to $0.23$.
 This Type I error inflation for independent outcomes demonstrates the crux of the multiple testing problem.
 In practice, however, the multiple outcomes are usually at least somewhat correlated, which makes the test statistics correlated and reduces the extent of Type I error inflation.
 Nonetheless, any error inflation can still make it problematic to draw reliable conclusions about the existence of effects.
@@ -178,10 +201,10 @@ MTPs also reduce all other definitions of power compared with the situation when
 For example, $1$-minimal power, the probability of detecting effects (of at least a specified size) on at least one outcome -- after adjusting for multiplicity -- is typically greater than the probability of detecting an effect of the same size on a single, prespecified, outcome.
 This increase may or may not occur with other definitions of power (e.g., the probability of detecting a third, half, or all false null hypotheses).
 
-The MTPs that are the focus of this paper have three key features that affect statistical power (or MDES or needed sample size): (1) whether the MTP is a familywise procedure or a false discovery rate procedure (2) whether the MTP is single-step or stepwise; and (3) whether the MTP takes the correlation between test statistics into account.
+The MTPs that are the focus of this paper have three key features that affect statistical power (or MDES or needed sample size): (1) whether the MTP is a familywise procedure or a false discovery rate procedure; (2) whether the MTP is single-step or stepwise; and (3) whether the MTP takes the correlation between test statistics into account.
 Below we explain each of these features of MTPs and provide discussion of the new parameter specifications they require when estimating power, MDES or sample size requirements.
 
-\subsubsection{Familywise error rate vs. false discovery error rate}
+\subsection{Familywise error rate vs. false discovery error rate}
 
 Familywise procedures reframe Type I error as a rate across the entire set or “family” of multiple hypothesis tests.
 This rate is called the familywise error rate (FWER; @RN33098).
@@ -238,7 +261,7 @@ In order for these procedures to provide strong control of the FWER, they requir
 The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null.
 A consequence of this assumption is that the resampling of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (@RN33093).}
 
-\subsubsection{Single-step vs. stepwise procedures}
+\subsection{Single-step vs. stepwise procedures}
 \label{sec:stepwise}
 
 A second feature of an MTP that affects its statistical power is whether it is “single-step” or
@@ -290,7 +313,7 @@ The downside of an intersection-union test is that it is conservative: the FWER 
 For example, if we have two independent tests with type I error $\alpha$, then if both of the nulls are true, the probability of a type I error is $\alpha^2$ [@Deng2008].
 
 
-\subsubsection{Correlation between test statistics}
+\subsection{Correlation between test statistics}
 \label{sec:corr}
 
 Finally, a third feature of an MTP that affects its statistical power is whether or not it takes into account the correlation of test statistics.
@@ -341,6 +364,10 @@ Benjamini-Hochberg (BH)               & FDR     & stepwise                & No
 
 \section{Estimating power, MDES and sample size in studies with multiple outcomes}
 \label{sec:est}
+
+In this section, we introduce the ne
+First, we outline our approach for estimating power using a simulation-based procedure.
+
 
 \subsection{Power estimation strategy}
 \label{sec:est_power}
@@ -594,6 +621,7 @@ For example, for certain models PowerUp assumes the intraclass correlation is ze
 When there are discrepancies, these are noted in the appendix.
 
 \section{The PUMP package}
+\label{sec:vignette}
 
 In this section, we illustrate how to use the PUMP package, using our example motivated by the Diplomas Now study. Given the study’s design, we ask a natural initial question: What size of impact could we reasonably detect after using an MTP to adjust $p$-values to account for our multiple outcomes?
 
@@ -605,7 +633,7 @@ We next calculate MDES for the resulting context and then determine how necessar
 We finally illustrate some sensitivity checks, looking at how MDES changes as a function of rho, the correlation of the test statistics.
 
 
-## Establishing needed design parameters
+\subsection{Establishing needed design parameters}
 
 To conduct power, MDES, and sample size calculations, we first must specify the design, model, and level of statistical significance.
 We must also must specify parameters of the data generating distribution (e.g., expected relationships between covariates, outcomes, and units in the study) that match the design and model.
@@ -982,6 +1010,7 @@ The `grid()` functions, by contrast, take a single MDES value for the non-null o
 (This single value plus `numZero` parameter also works with `pump_power()` if desired.)
 
 \section{Conclusion}
+\label{sec:conclusion}
 
 We introduce the power under multiplicity project (PUMP) package, which estimates power for multi-level randomized control trials with multiple outcomes.
 PUMP allows users to estimate power, MDES, and sample size requirements for a wide variety of commonly used RCT designs and models across different definitions of power and applying different MTPs.
