@@ -221,7 +221,7 @@ study. For example, one might consider \emph{individual power,} the
 probability of detecting an effect of a particular size (specified by
 the researcher) or larger for each hypothesis test. Individual power
 corresponds to how power is defined when there is focus on a single
-outcome. However, researchers might also consider \emph{1-minimal
+outcome. However, researchers might also consider \emph{\(1-\)minimal
 power,} the probability of detecting effects of at least a particular
 size on at least one outcome. In contrast, one might consider
 \emph{complete power,} the power to detect effects of at least a
@@ -515,7 +515,7 @@ situation when there is only one hypothesis test.
 MTPs also reduce all other definitions of power compared with the
 situation when no multiplicity adjustments are made -- but not
 necessarily compared with the situation when there is only one
-hypothesis test. For example, \(1\)-minimal power, the probability of
+hypothesis test. For example, \(1-\)minimal power, the probability of
 detecting effects (of at least a specified size) on at least one outcome
 -- after adjusting for multiplicity -- is typically greater than the
 probability of detecting an effect of the same size on a single,
@@ -545,64 +545,63 @@ Type I error across the entire set of hypothesis tests is no more than
 Holm (1979), and P. H. Westfall and Young (1993) control the FWER.
 
 MTPS that control false discovery rate (FDR) take an entirely different
-approach to the multiple testing problem.
-
-FDR is a less stringent criteria than FWER. Introduced by Benjamini and
-Hochberg (1995), the FDR is the expected proportion of all rejected
-hypotheses that are erroneously rejected. The two-by-two representation
-in Table\textasciitilde{}\ref{tab:twobytwo} is often found in articles
-on multiple hypothesis testing, and helps to illustrate the difference
+approach to the multiple testing problem. FDR is a less stringent
+criteria than FWER. Introduced by Benjamini and Hochberg (1995), the FDR
+is the expected proportion of all rejected hypotheses that are
+erroneously rejected. The two-by-two representation in
+Table\textasciitilde{}\ref{tab:twobytwo} is often found in articles on
+multiple hypothesis testing, and helps to illustrate the difference
 between FWER and FDR. Let \(M\) be the total number of tests. Therefore,
 we have \(M\) unobserved truths: whether or not each null hypothesis is
 true or false. We also have \(M\) observed decisions: whether or not the
 null hypotheses were rejected, because the \(p\)-values were less than
-\(\alpha\). In Table\textasciitilde{}\ref{tab:twobytwo}, A, B, C and D
-are four possible scenarios: the numbers of true or false hypotheses not
-rejected or rejected. \(M_0\) and \(M_1\) are the unobservable numbers
-of true null and false null hypotheses. \(R\) is the number of null
-hypotheses that were rejected, and \(M - R\) is the number of null
-hypotheses that were not rejected.
+\(\alpha\). In Table\textasciitilde{}\ref{tab:twobytwo}, \(U\), \(V\),
+\(W\), and \(X\) are four possible scenarios: the numbers of true or
+false hypotheses not rejected or rejected. \(M_0\) and \(M_1\) are the
+unobservable numbers of true null and false null hypotheses. \(R\) is
+the number of null hypotheses that were rejected, and \(M - R\) is the
+number of null hypotheses that were not rejected.
 
 \begin{table}[h!]
 \centering
 \begin{tabular}{l l l l}
                                       & \multicolumn{3}{c}{Observed decisions}\\ \hline
 Unobserved truths                     & Number not rejected     & Number rejected   & Total \\ \hline
-Number of true null hypotheses        & A                       & B                 & M0 \\
-Number of false null hypotheses       & C                       & D                 & M1 \\ \hline
-Total                                 & M-R                     & R                 & M
+Number of true null hypotheses        & $U$                     & $V$               & $M_0$ \\
+Number of false null hypotheses       & $W$                     & $X$               & $M_1$ \\ \hline
+Total                                 & $M-R$                   & $R$               & $M$
 \end{tabular}
 \caption{Numbers of hypothesis types and decisions.}
   \label{tab:twobytwo}
 \end{table}
 
-In Table\textasciitilde{}\ref{tab:twobytwo}, \(F\) is the number of
+In Table\textasciitilde{}\ref{tab:twobytwo}, \(V\) is the number of
 erroneously rejected null hypotheses, or the number of false positive
-findings. Therefore, the FWER is equivalent to \(Pr(F > 0)\), the
+findings. Therefore, the FWER is equivalent to \(Pr(V > 0)\), the
 probability of at least one false positive finding. Recall that Type I
 error is inflated when testing for effects on independent outcomes when
-no MTPs are applied. The Type I error was almost \(10\%\) when testing
-effects on two independent outcomes and \(23\%\) when testing effects on
-five independent outcomes. These Type I error rates both correspond to
-the FWER. The goal of MTPs that control the FWER is to bring these
+no MTPs are applied. The Type I error is almost \(10\%\) when testing
+effects on 2 independent outcomes and \(23\%\) when testing effects on 5
+independent outcomes. These Type I error rates both correspond to the
+FWER. The goal of MTPs that control the FWER is to bring these
 percentages back down to \(5\%\).
 
 Also in Table\textasciitilde{}\ref{tab:twobytwo}, the FDR is equal to
-\(E(\frac{F}{R})\) but is defined to be \(0\) when \(R=0\), or when no
+\(E(V/R)\) but is defined to be \(0\) when \(R=0\), or when no
 hypotheses are rejected. As is frequently noted in the literature (e.g.,
 Shaffer (1995); Schochet (2008)), the FWER and FDR have different
 objectives. Control of the FWER protects researchers from spurious
 findings and so may be preferred when even a single false positive could
 lead to the wrong conclusion about the effectiveness of an intervention.
 On the other hand, the FDR is more lenient with false positives.
-Researchers may be willing to accept a few false positives, \(E\), when
+Researchers may be willing to accept a few false positives, \(V\), when
 the total number of rejected hypotheses, \(R\), is large. Note that
 under the complete null hypothesis that all \(M\) null hypotheses are
-null, the FDR is equal to the FWER, because when referring back to
+true, the FDR is equal to the FWER, because when referring back to
 Table\textasciitilde{}\ref{tab:twobytwo} we have
-\(FWER=P(R>0)=E(\frac{E}{R})=FDR\). However, if any effects truly exist,
-then \(FWER \geq FDR\).As a result of the difference in objective
-between FWER and FDR, in the case where there is at least one false null
+\(FWER=P(R>0)=E(V/R)=FDR\). However, if any effects truly exist, then
+\(FWER \geq FDR\). As a result of the difference in objective between
+FWER and FDR, in the case where there is at least one false null
 hypothesis (at least one true effect at least as large as a specified
 effect size), an MTP that controls the FDR at \(5\%\) will have a Type I
 error rate that is greater than \(5\%\).
@@ -610,52 +609,54 @@ error rate that is greater than \(5\%\).
 MTPs may provide either weak or strong control of the error rate they
 target. An MTP provides weak control of the FWER or the FDR at level
 \(\alpha\) if the control can only be guaranteed when all nulls are
-true, or when the effects on all outcomes are zero. An MTP provides
-strong control of the FWER or FDR at level if the control is guaranteed
-when some null hypotheses are true and some are false, or when there may
-be effects on at least some outcomes. Of course, strong control is
+true, e.g.~when the effects on all outcomes are zero. An MTP provides
+strong control of the FWER or FDR at level \(\alpha\) if the control is
+guaranteed when some null hypotheses are true and some are false,
+e.g.~when there may be effects on at least some outcomes. Of course,
+strong control is
 preferred.\footnote{The single-step and step-down Westfall Young MTPs (which we discuss below) always provide at least weak control of the FWER.
 In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (@RN33093).
 The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null.
-A consequence of this assumption is that the resampling of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (@RN33093).}
+A consequence of this assumption is that the permutation of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (@RN33093).}
 
 \subsection{Single-step vs. stepwise procedures}
 \label{sec:stepwise}
 
-A second feature of an MTP that affects its statistical power is whether
-it is ``single-step'' or ``stepwise'' procedure. Single-step procedures
-adjust each \(p\)-value independently of the other \(p\)-values. For
-example, the Bonferroni MTP multiplies all raw \(p\)-values by \(M\).
-Therefore, one \(p\)-value adjustment does not depend on other
-\(p\)-value adjustments, only on the number of tests. In contrast,
-stepwise procedures first order raw \(p\)-values (or test statistics),
-and then adjust according to the order of the tests. The adjustments
-depend on null hypotheses already rejected in previous steps. For
-example, the Holm MTP --- the stepwise counterpart to the Bonferroni MTP
---- orders raw \(p\)-values from smallest to largest. The procedure then
-multiplies the smallest \(p\)-value by \(M\), the second smallest
-\(p\)-value by \(M-1\), and so on, but also enforces that each adjusted
+A second feature of a MTP that affects its statistical power is whether
+it is a ``single-step'' or ``stepwise'' procedure. Single-step
+procedures adjust each \(p\)-value independently of the other
+\(p\)-values. For example, the Bonferroni MTP multiplies all raw
+\(p\)-values by \(M\). Therefore, one \(p\)-value adjustment does not
+depend on other \(p\)-value adjustments, only on the number of tests. In
+contrast, stepwise procedures first order raw \(p\)-values (or test
+statistics), and then adjust according to the order of the tests. The
+adjustments depend on the null hypotheses already rejected in previous
+steps. For example, the Holm MTP --- the stepwise counterpart to the
+Bonferroni MTP --- orders raw \(p\)-values from smallest to largest. The
+procedure then multiplies the smallest \(p\)-value by \(M\), the second
+smallest \(p\)-value by \(M-1\), and so on. The Holm MTP, like most
+other stepwise procedures, also enforces monotonicity: each adjusted
 \(p\)-value is greater than or equal to the previous adjusted
-\(p\)-value and that it is not greater than one. Overall, stepwise MTPs
-allow for less adjustment than single-step MTPs in later steps, and
-therefore preserve more power (for outcomes that do not correspond to
-the most significant \(p\)-value). The Bonferroni and one of the
-Westfall-Young MTPs are single-step; the Holm and Benjamini-Hochberg
-MTPs and the other Westfall-Young MTP are stepwise. Note that stepwise
-procedures may be ``step-down'' or ``step-up,'' referring to whether a
-procedure begins with the smallest \(p\)-value, and thus the largest
-effect size (step-down) or the largest \(p\)-value (step-up).
+\(p\)-value, and enforces that any \(p\)-values is not greater than one.
+Overall, stepwise MTPs allow for less adjustment than single-step MTPs
+in later steps, and therefore preserve more power (for outcomes in the
+later steps). The Bonferroni and one of the Westfall-Young MTPs are
+single-step; the Holm and Benjamini-Hochberg MTPs and the other
+Westfall-Young MTP are stepwise. Note that stepwise procedures may be
+``step-down'' or ``step-up,'' referring to whether a procedure begins
+with the smallest \(p\)-value, and thus the largest effect size
+(step-down) or the largest \(p\)-value (step-up).
 
 Due to the dependencies of adjustments in stepwise MTPs, a new
 assumption must be considered when estimating power, MDES or sample size
-under multiplicity - the proportion of outcomes on which there are truly
-impacts of at least the size of the researchers' desired ESs, or,
+under multiplicity: the proportion of outcomes on which there are truly
+impacts of at least the size of the researchers' desired ES, or,
 equivalently, the number of false null hypotheses. There is one scenario
 in which this assumption does not matter, which is the scenario when one
 focuses on individual power and uses a single-step MTP. In this case,
 when adjusting a \(p\)-value for a single test, the information from
-other tests is disregarded. For all other scenarios, however, this
-assumption can be an important one.
+other tests is disregarded. For all other scenarios, however, the
+assumption of the number of false nulls can be an important one.
 
 Researchers may be inclined to assume that there will be effects on all
 outcomes, as hypotheses of effects probably drive the selection of
@@ -663,28 +664,28 @@ outcomes in the first place. And when estimating power for a single
 hypothesis test, power is only defined when a true effect exists.
 However, if the researchers are incorrect and there turn out not to be
 effects on all outcomes, the probability of detecting the effects that
-do actually exist can be diminished, sometimes substantially.
+actually do exist can be diminished, sometimes substantially.
 
 It is important to point out that under the assumption that there are
 not truly effects on every outcome under study, the definitions of the
-d-minimal powers (e.g., 1-minimal power, 1/3-minimal power, etc.) and of
-complete power become fuzzy. For example, 1/3-minimal power is defined
-as the probability of detecting effects (of a specified size or larger)
-on at least 1/3 of the total outcomes (\(M\)), regardless of the number
-of outcomes with actual effects. That is, 1/3-power is not defined as
-the probability of detecting effects among the M outcomes on which the
-effects truly exist. Therefore, while individual power is defined based
-on false nulls, the definition is loosened here and includes the
-probability of erroneous rejections of true nulls (which are controlled
-to occur at no more than 5\% for those MTPs that control the FWER). This
-fuzziness of definition is needed because the researcher would only ever
-define power based on the total number of tests. Moreover, if the
-\(d-\)minimal powers are defined only based on false nulls, then their
-levels could increase when the proportion of false nulls decreases.
-Complete power has the same issue. If there are truly only effects on
-two of the three outcomes, then complete power is not the probability of
-rejecting just two false null hypotheses. In this case, complete power
-is undefined.
+\(d-\)minimal powers (e.g., \(1-\)minimal power, \(1/3-\)minimal power,
+etc.) and of complete power become fuzzy. For example, \(1/3-\)minimal
+power is defined as the probability of detecting effects (of a specified
+size or larger) on at least \(1/3\) of the total outcomes (\(M\)),
+regardless of the number of outcomes with actual effects. That is,
+\(1/3-\)minimal power is not defined as the probability of detecting
+effects among the M outcomes on which the effects truly exist.
+Therefore, while individual power is defined based on false nulls, the
+definition of power is loosened here and includes the probability of
+erroneous rejections of true nulls (which are controlled to occur at no
+more than 5\% for those MTPs that control the FWER). This fuzziness of
+definition is needed because the researcher would only ever define power
+based on the total number of tests. Moreover, if the \(d-\)minimal
+powers are defined only based on false nulls, then their levels could
+increase when the proportion of false nulls decreases. Complete power
+has the same issue. If there are truly only effects on two of the three
+outcomes, then complete power is not the probability of rejecting just
+two false null hypotheses. In this case, complete power is undefined.
 
 There is an additional technical note about the calculation of complete
 power. To calculate complete power, we do not need to adjust the
@@ -694,39 +695,39 @@ constructed by whether or not we reject all the null
 hypotheses.\footnote{Complete power has also been referred to as “conjunctive power” (Bretz et al., 2011) and “all pairs power” (@RN33097).}
 This test was originally introduced as the intersection-union test
 because the null hypothesis is expressed as a union and the alternative
-hypothesis is expressed as an intersection Berger and Hsu (1996). Berger
-(1982) showed that if all the individual tests are level \(\alpha\), the
-intersection-union test is also a level\(\alpha\) test. To provide some
-intuition, we do not need to adjust \(p\)-values for complete power
-because it is a special case where we must reject \emph{all} the
-hypothesis tests. Thus, there is no way for the omnibus test to be
-rejected by chance because of a favorable configuration (Chen 2011). For
-example, consider if we have 4 tests, with 2 false nulls and 2 true
-nulls. If we consider \(3\)-minimal power, we just need one of the two
-true nulls to be rejected by chance alone, and there are two ways for
-this to occur. For complete power, there is only one way for us to
-reject all of the nulls. The downside of an intersection-union test is
-that it is conservative: the FWER is generally less than \(\alpha\). For
-example, if we have two independent tests with type I error \(\alpha\),
-then if both of the nulls are true, the probability of a type I error is
-\(\alpha^2\) (Deng, Xu, and Wang 2008).
+hypothesis is expressed as an intersection (Berger (1982), Berger and
+Hsu (1996)). Berger (1982) showed that if all the individual tests are
+level \(\alpha\), the intersection-union test is also a level \(\alpha\)
+test. To provide some intuition, we do not need to adjust \(p\)-values
+for complete power because it is a special case where we must reject
+\emph{all} the hypothesis tests. Thus, there is no way for the omnibus
+test to be rejected by chance because of a favorable configuration (Chen
+(2011)). For example, consider if we have 4 tests, with 2 false nulls
+and 2 true nulls. If we consider \(3-\)minimal power, we just need one
+of the two true nulls to be rejected by chance alone, and there are two
+ways for this to occur. For complete power, there is only one way for us
+to reject all of the nulls. The downside of an intersection-union test
+is that it is conservative: the FWER is generally less than \(\alpha\).
+For example, if we have two independent tests with Type I error
+\(\alpha\), then if both of the nulls are true, the probability of a
+Type I error is \(\alpha^2\) (Deng, Xu, and Wang 2008).
 
 \subsection{Correlation between test statistics}
 \label{sec:corr}
 
 Finally, a third feature of an MTP that affects its statistical power is
-whether or not it takes into account the correlation of test statistics.
-The Bonferroni and Holm procedures strongly control the FWER in call
-cases, even when the multiple tests' statistics are correlated, but they
+whether or not it takes into account the correlation between test
+statistics. The Bonferroni and Holm procedures strongly control the FWER
+in all cases, even when the test statistics are correlated, but they
 adjust \(p\)-values more than is necessary in that case. Along with the
 Bonferroni and Holm MTPs, the Benjamin-Hochberg MTP also does not take
 correlations into
 account.\footnote{The Benjamini-Hochberg procedure was originally shown to control the FDR for independent test statistics. However, Benjamini and Yekutieli (2001) showed that it also controls the FDR for true null hypotheses with “positive regression dependence.” This condition is satisfied
 for most applications in practice.} In contrast, both of the
 Westfall-Young MTPs rely on the estimation of the joint distribution of
-test statistics when the ``complete null hypothesis'' (that there are
-not effects on any of the outcomes) is true. This joint distribution of
-the test statistics is estimated from the study's data. For example,
+test statistics when the complete null hypothesis (that there are not
+effects on any of the outcomes) is true. This joint distribution of the
+test statistics is estimated from the study's data. For example,
 permutations of the treatment indicator can be used to estimate impacts
 when the association between treatment status and the outcome is broken.
 Random permutations of the research group assignments are conducted a
@@ -756,6 +757,8 @@ between outcomes and the correlations between residuals --- and
 therefore the test statistics --- may be wider for moderately or weakly
 correlated outcomes. In any case, the upper bounds of correlations
 between the test statistics are the correlations between the outcomes.
+
+\subsection{Summary of multiple testing procedures}
 
 To review, the list of multiple testing procedures supported by the PUMP
 package is:
@@ -789,12 +792,14 @@ package is:
   \emph{Step-down Westfall-Young}: A similar approach to the single-step
   procedure, except that outcomes are adjusted sequentially from
   smallest to largest according to the permuted distributions of the
-  corresponding sequential \(p\)-values. For a more detailed explanation
-  of each MTP, see Appendix A of Porter (2018).
+  corresponding sequential \(p\)-values.
 \end{itemize}
 
+For a more detailed explanation of each MTP, see Appendix A of Porter
+(2018).
+
 The following table summarizes the important features for each of the
-MTPs supported by PUMP:
+MTPs supported by PUMP.
 
 \begin{table}[h!]
 \centering
@@ -813,25 +818,22 @@ Benjamini-Hochberg (BH)               & FDR     & stepwise                & No
 \section{Estimating power, MDES and sample size in studies with multiple outcomes}
 \label{sec:est}
 
-In this section, we introduce the ne First, we outline our approach for
-estimating power using a simulation-based procedure.
-
-\subsection{Power estimation strategy}
+\subsection{Power estimation approach}
 \label{sec:est_power}
 
-We take an innovative simulation-based approach to estimating power for
-multiple outcomes, as introduced in Porter (2018). We then build on this
-approach to estimating MDES and sample size. We view simulation as
-necessary: in order to estimate power for a single outcome, we can often
-use closed-form algebraic expressions, which are derived from the
-assumed model. However, with multiple outcomes, finding such expressions
-can be quite difficult, or even impossible, depending on the multiple
-testing procedure. In cases where it is possible to find a closed-form
-expression, we would need to find expressions for every design, MTP, and
-definition of power. Importantly, we would \emph{also} need to find new
-expressions for each number of outcomes, which quickly becomes an
-intractable problem! Furthermore, in some cases, such as
-permutation-based procedures like Westfall-Young approaches, a
+We take an innovative simulation-based approach to estimating power, as
+introduced in Porter (2018). This approach is then also applied to
+estimate MDES and sample size. We view simulation as necessary: in order
+to estimate power for a single outcome, we can often use closed-form
+algebraic expressions, which are derived from the assumed model.
+However, with multiple outcomes, finding such expressions can be quite
+difficult, or even impossible, depending on the multiple testing
+procedure. In cases where it is possible to find a closed-form
+expression, we would need to find expressions for every design and
+model, MTP, and definition of power. Importantly, we would \emph{also}
+need to find new expressions for any possible number of outcomes, which
+quickly becomes an intractable problem. Furthermore, in some cases, such
+as permutation-based procedures like Westfall-Young approaches, a
 closed-form solution does not exist. To avoid these complexities, we
 rely on simulation to calculate estimated power. The approach outlined
 below can estimate power for any scenario.
@@ -839,8 +841,8 @@ below can estimate power for any scenario.
 If we were to rely on a \emph{full} simulation approach, we could use
 the following method to estimate power. We note that we introduce this
 full simulation approach to provide intuition, but use a simplified and
-less computationally intensive approach in the package, discussed below.
-We illustrate using the Diplomas Now example.
+less computationally intensive approach in the package, as discussed
+below.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -848,19 +850,20 @@ We illustrate using the Diplomas Now example.
   \emph{Simulate a data sample according to the joint alternative
   hypothesis.} First, we formulate what we will refer to as the
   \emph{joint alternative hypothesis}, which is the set of outcomes we
-  assume to have nonzero treatment effects. We define \(\psi_m\) to be
-  the treatment effect for outcome \(m\), with \(M\) total outcomes. If
-  we have \(M = 5\) outcomes, as in the Diplomas Now study, one possible
-  joint alternative hypothesis is that all outcomes have effects:
+  assume to have treatment effects above the desired size. We define
+  \(\psi_m\) to be the treatment effect for outcome \(m\), with \(M\)
+  total outcomes. If we have \(M = 5\) outcomes, as in the Diplomas Now
+  study, one possible joint alternative hypothesis is that all outcomes
+  have effects above specified sizes:
   \(H_A: \psi_1 > 0.125, \psi_2 > 0.2, \psi_3 > 0.1, \psi_4 > 0.1, \psi_5 > 0.05\).
   Another possible joint alternative hypothesis is one where only the
-  first two outcomes have nonzero effects:
-  \(H_A: \psi_1 > 0.125, \psi_2 > 0.2,, \psi_3 = \psi_4 = \psi_5 = 0\).
+  first two outcomes have effects above the desired sizes:
+  \(H_A: \psi_1 > 0.125, \psi_2 > 0.2, \psi_3 = \psi_4 = \psi_5 = 0\).
   Once our joint alternative hypothesis is specified, we would generate
   simulated data under this hypothesis. To simulate data, we need to
   specify the full set of parameters as mentioned in
   Section\textasciitilde{}\ref{sec:params} that allow for data
-  generation. See the Supplementary Details for more details about the
+  generation. The Supplementary Material contains more details about the
   assumed data-generating process. For example, for the Diplomas Now
   experiment, we would assume a specific data generating process to
   allow us to simulate synthetic students, schools, and districts,
@@ -874,29 +877,29 @@ We illustrate using the Diplomas Now example.
   \emph{Estimate impacts on the simulated data.} Given simulated data,
   we could fit \(M\) regression models (specified to match the
   experimental design and model assumptions). For the proposed mixed
-  models, the relevant functions would be lm(), lmer() from the lme4
-  library (Bates et al. (2015)), and interacted\_linear\_estimators()
-  from the blkvar
+  models, the relevant functions would be \texttt{lm()}, \texttt{lmer()}
+  from the \texttt{lme4} library (Bates et al. (2015)), and
+  \texttt{interacted\_linear\_estimators()} from the \texttt{blkvar}
   library.\footnote{This package is currently under development on GitHub; see https://github.com/lmiratrix/blkvar}
-  Each of these models result in test statistics \(t_m\) for the
+  From the model output we extract the test statistics \(t_m\) for the
   estimated impacts, one statistic for each outcome, along with
   estimated standard errors.
 \item
   \emph{Calculate unadjusted \(p\)-values.} The test statistics and
-  standard errors would in turn give raw (unadjusted) \(p\)-values;
-  these are the \(p\)-values routinely returned by regression functions
-  in software packages. In Diplomas Now, for example, we would run a
+  standard errors would in turn give raw (unadjusted) \(p\)-values. We
+  can either calculate these by hand, or use the \(p\)-values routinely
+  returned by regression functions. For Diplomas Now we could run a
   regression model of each attendance measure on treatment status and
   student and school covariates, and extract \(p\)-values from the
   regression outputs.
 \item
   \emph{Repeat above steps (1 through 3) for a large number of
-  iterations.} Denote the number of iterations \(tnum\). Repeating steps
-  \(1\)-\(3\) \(tnum\) times results in a matrix of unadjusted
-  \(p\)-values which we call \(\mathbf{F}\), and is of dimension
-  \(tnum \times M\). One row corresponds to one set of simulated raw
-  \(p\)-values from regressions for the \(5\) attendance outcomes of
-  interest for Diplomas Now.
+  iterations.} Denote the number of iterations \texttt{tnum}. Repeating
+  steps \(1\)-\(3\) \texttt{tnum} times results in a matrix of
+  unadjusted \(p\)-values which we call \(\mathbf{F}\), and is of
+  dimension \(tnum \times M\). One row corresponds to one set of
+  simulated raw \(p\)-values from regressions for the \(5\) attendance
+  outcomes of interest for Diplomas Now.
 \item
   \emph{Adjust \(p\)-values.} For each row, corresponding to one
   simulated dataset, the \(M\) raw \(p\)-values corresponding to the
@@ -907,10 +910,10 @@ We illustrate using the Diplomas Now example.
   in R (found in the \texttt{stats} package). We developed our own
   functions for implementing adjustment using the Westfall-Young
   procedures. One row corresponds to one set of simulated
-  \emph{adjusted} \(p\)-values for the \(12\) outcomes of interest for
-  Diplomas Now.
+  \emph{adjusted} \(p\)-values for the \(5\) attendance outcomes of
+  interest for Diplomas Now.
 \item
-  \emph{Calculate hypothesis rejection indicators.} For each MTP, the
+  \emph{Calculate hypothesis rejection indicators.} For any MTP, the
   matrix of adjusted \(p\)-values \(\mathbf{G}\) can then be compared
   with a specified value of \(\alpha\) (the default is \(0.05\), but the
   value can be changed by the user). For each row, corresponding to one
@@ -927,24 +930,23 @@ We illustrate using the Diplomas Now example.
 \item
   \emph{Individual power} for outcome \(m\) is the proportion of the
   \texttt{tnum} rows in which the null hypothesis \(m\) was rejected
-  (the mean of column \(m\) of \(\mathbf{H}\)). We would have 12
-  different power values for Diplomas Now, corresponding to each outcome
-  of interest.
+  (the mean of column \(m\) of \(\mathbf{H}\)). We would have \(5\)
+  different individual power values for Diplomas Now, corresponding to
+  each outcome of interest.
 \item
   \emph{\(d\)-minimal power} is the proportion of the \(tnum\) rows in
   which at least \(d\) of the \(M\) hypotheses were
-  rejected.\footnote{Note that others refer to 1-minimal power simply as “minimal power” (e.g., @RN33095; @RN23882; @MTSAS), “disjunctive power” (e.g., @RN33091), or “any pair” power (@RN33097). @RN23882 use the terminology of “r-power” for what is referred to here as d-minimal power for d>1.}
-  For example, for Diplomas Now, we could consider \(1\)-minimal power,
-  which is the probability at least one of our outcomes is statistically
-  significant, or \(3\)-minimal power, the probability 3/5 of the
-  outcomes are significant.
+  rejected.\footnote{Note that others refer to $1-$minimal power simply as “minimal power” (e.g., @RN33095; @RN23882; @MTSAS), “disjunctive power” (e.g., @RN33091), or “any pair” power (@RN33097). @RN23882 use the terminology of “r-power” for what is referred to here as $d-$minimal power for d>1.}
+  For Diplomas Now, we could consider \(1\)-minimal power through
+  \(4\)-minimal power.
 \item
   \emph{Complete power} is the proportion of the \(tnum\) rows in which
   all of the null hypotheses were rejected based on the raw \(p\)-values
-  rather than adjusted \(p\)-values. We would be interested in complete
-  power if we want to evaluate whether Diplomas Now resulted in
-  improvement for every single outcome of interest. With \(5\) outcomes,
-  this criteria is a relatively strict indicator of success!
+  rather than adjusted \(p\)-values (based on the matrix \(\mathbf{G}\)
+  rather than \(\mathbf{H}\).) We would be interested in complete power
+  if we want to evaluate whether Diplomas Now resulted in improvement
+  for every single attendance outcome of interest. With \(5\) outcomes,
+  this criteria is a relatively strict indicator of success.
 \end{itemize}
 
 Above, we outlined a full simulation-based approach for calculating
@@ -963,7 +965,7 @@ summary, our approach is:
 \item
   \textbf{Generate} draws of \emph{test statistics \(t_1, \dots, t_M\)
   under the joint alternative hypothesis.} This step produces a
-  \(tnum \times M\) matrix \(E\).
+  \(tnum \times M\) matrix \(\mathbf{E}\).
 \item
   \emph{Calculate unadjusted \(p\)-values.} This produces the matrix
   \(\mathbf{F}\), as in the procedure above.
@@ -977,16 +979,13 @@ summary, our approach is:
   \emph{Calculate power.}
 \end{enumerate}
 
-We now describe how to sample from \(f(t_m)\) directly. First, we assume
-a particular research design and model. In our example based on the
-Diplomas Now study, the research design is a \(3\)-level experiment,
-with randomization at level \(2\). That is, students are nested within
-schools, which are nested within randomization blocks (where similar
-schools, defined by districts and school type, were grouped together);
-schools were the unit of randomization. For our example, we plan for
-analyzing our data with a linear regression model with fixed intercepts
-at the district level, random intercepts at the school level, and a
-constant treatment effect across schools and districts. Define
+We now describe how to sample from \(f(t_1, \dots, t_M)\) directly.
+First, we assume a particular research design and model. In our example
+based on the Diplomas Now study, the research design is a \(3\)-level
+experiment, with randomization at level \(2\). We plan for analyzing our
+data with a linear regression model with fixed intercepts at the
+district level, random intercepts at the school level, and a constant
+treatment effect across schools and districts. As previously, denote
 \(\psi_m\) as the treatment effect for outcome \(m\). We express
 treatment effects in terms of effect sizes:
 \[ES_m = \frac{\psi_m}{\sigma_{m}}\] where \(\sigma_{m}\) is the
@@ -995,11 +994,11 @@ calculate power, we also need the standard error of the impact in effect
 size units, which we denote as \[Q_m = SE(\hat{ES}_m).\] The quantity
 \(Q_m\) is a consequence of the assumed model, the number of units at
 different levels, the percent of units treated, the assumed \(R^2\), and
-other parameters; our technical appendix shows formula for \(Q_m\) for
-all the designs our package supports. In our Diplomas Now example,
-\(Q_m\) will be a function of the number of students, schools, and
-districts; the proportion of treated units; the number of student and
-school covariates; the explanatory power of the student and school
+other parameters; our technical appendix shows formulae for \(Q_m\) for
+all the designs and models our package supports. In our Diplomas Now
+example, \(Q_m\) will be a function of the number of students, schools,
+and districts; the proportion of treated units; the number of student
+and school covariates; the explanatory power of the student and school
 covariates; the proportion of variation in the outcome explained by
 schools and districts; and the amount of impact variation relative to
 the amount of mean variation. Some parameters, such as the percent of
@@ -1017,19 +1016,20 @@ hypothesis for outcome \(m\), \(t_m\) has a \(t\) distribution with
 degrees of freedom \(df\) and mean \(ES_m/Q_m\). Finally, in addition to
 the parameters above, we also need to choose the correlation matrix
 between test statistics \(\rho\) to sample from the joint distribution
-of \(t_m, m = 1, \dots M\).
+of \(f(t_1, \dots, t_M)\). With these distributions specified, we can
+calculate \(p\)-values.
 
-With these distributions specified, we can calculate \(p\)-value
-adjustment as described above. Note that this approach of simulating
-test statistics builds on work by Bang (2005), who use simulated test
-statistics to identify critical values based on the distribution of the
-maximum test statistics. Their approach produces the same estimates as
-the approach described here for the single-step Westfall-Young MTP. Chen
-(2011) derived explicit formulas for \(d-\)minimal powers of stepwise
-procedures and for complete power of single-step procedures, but only
-for \(1\), \(2\), or \(3\) tests. The approach presented here is more
-generally applicable, as it can be used for all MTPs, for any number of
-tests, and for all definitions of power discussed in the present paper.
+Note that this approach of simulating test statistics builds on work by
+Bang (2005), who use simulated test statistics to identify critical
+values based on the distribution of the maximum test statistics. Their
+approach produces the same estimates as the approach described here for
+the single-step Westfall-Young MTP. As an alternative to a
+simulation-based approach, Chen (2011) derived explicit formulae for
+\(d-\)minimal powers of stepwise procedures and for complete power of
+single-step procedures, but only for \(1\), \(2\), or \(3\) tests. The
+approach presented here is more generally applicable, as it can be used
+for all MTPs, for any number of tests, and for all definitions of power
+discussed in the present paper.
 
 \emph{Remark.} The \(p\)-value adjustment using Westfall-Young
 procedures is the most complex correction procedure, so we briefly
@@ -1053,7 +1053,7 @@ permuted datasets under the joint null, so we would have to generate
 When we skip the step of simulating data, then for each iteration \(t\)
 in \(1, \dots, tnum\) we first generate a set of \(M\) observed test
 statistics from the joint alternative distribution. Then, we draw \(B\)
-samples of test statistics under the joint null rather than resampling
+samples of test statistics under the joint null rather than permuting
 the data \(B\) times. Under the null hypothesis, \(t_m\) has a \(t\)
 distribution with degrees of freedom \(df\) and mean \(0\). As before,
 we then compare the distribution of observed test statistics to the
@@ -1063,6 +1063,86 @@ intensive, so the approach of skipping the simulated data step is
 particularly helpful here. This approach substantially reduces
 computational time by drawing test statistics directly rather than
 resampling data.
+
+\subsection{Determining MDES and sample size}
+\label{sec:est_mdes_ss}
+
+Frequently, a researcher's main concern with power is calculating either
+the MDES for each outcome in a given study, or determining the necessary
+sample size to achieve a target power given a specified set of MDES
+values. In Diplomas Now, we might want to know what sample sizes we
+would need to detect at least one significant effect across our outcomes
+if all the outcomes had a specified effect size (corresponding to
+\(1-\)minimal power) and we were planning on using the Holm procedure.
+
+For \texttt{pump\_mdes()} and \texttt{pump\_sample()}, the user provides
+a particular target power, say \(80\%\). The method then conducts a
+stochastic optimization problem to determine a value (of sample size or
+MDES) that is within a specified tolerance of the target power with high
+probability. We discuss the algorithm for MDES, although the approach
+for determining sample size is the same.
+
+The algorithm first determines an initial range of MDES values that
+likely contain the target MDES. The lower bound is determined by the
+MDES for an analysis with no adjustment, and the upper bound is
+determined by the MDES for an analysis with a Bonferroni adjustment, as
+these provide conservative bounds and can be found using closed-form
+solutions.
+
+The initial range is calculated using formulae based on the standard
+errors and degrees of freedom. In particular, from Dong and Maynard
+(2013), in general the MDES can be estimated as
+\[ MDES = MT_{df} \times SE / \sigma_{m} \] where \(MT_{df}\) is known
+as the multiplier and is the sum of two \(t\) statistics with degrees of
+freedom \(df\). For one-tailed tests,
+\(MT_{df} = t_{\alpha}^\star + t_{1-\beta}^\star\) where \(\alpha\) is
+the Type I error rate and \(\beta\) is the desired power. For two-tailed
+tests, \(MT_{df} = t_{\alpha/2}^\star + t_{1-\beta}^\star\). We do not
+explain the details of the derivations of the multiplier here; for more
+details and understanding, see Dong and Maynard (2013) or Bloom (2006).
+These expressions can be further manipulated to obtain sample size
+formulae; see the technical appendix for all formula in the package.
+
+Using these formulae we can calculate bounds by manipulating the
+\(\alpha\) and \(\beta\) values. To calculate the lower bound, we apply
+the formula above as given; to calculate the upper bound, we apply the
+formula using \(\alpha/M\) to correspond to a Bonferroni correction. We
+use the \(\beta\) to adjust for the desired power and definition. For
+example, if we are interested in complete power, we need a larger upper
+bound than for individual power; in order to have a complete power of
+\(0.8\), we would need each outcome to have an individual power of
+\(\text{0.8}^{(1/M)}\), assuming independence. If we are interested in
+minimal power, we must have a smaller lower bound; in order to have
+\(1-\)minimal power of \(0.8\), each outcome needs to have individual
+power of \(1 - (1 - \text{0.8})^{(1/M)}\). We ignore correlation in the
+setting of the initial bounds; the bounds do not need to be strict,
+given the adaptive nature of the subsequent search.
+
+Once the initial range is established, we use \texttt{pump\_power()}
+with the complete array of design parameters including the correlation
+between test statistics to obtain rough (using a small \texttt{tnum}, or
+number of simulation trials) estimates of power for five initial values
+across this range. We then fit a scaled logistic curve to these five
+points, and identify where the curve crosses the desired power level.
+After fitting an initial curve, we iterate, repeatedly calculating power
+for the targeted point and using the result to update the logistic curve
+model. With each iteration we increase \texttt{tnum} to increase
+precision as we narrow in on the final answer; with each update to our
+estimated power curve, we weigh the collection of observations by their
+precisions (determined by corresponding \texttt{tnum} value). If a test
+point achieves the target power to within tolerance, we conduct an
+additional simulation check using a high number of replicates to verify
+the proposed answer is within a specified tolerance of the target power;
+if it is not, we continue the iterative search. The default tolerance is
+\(1\%\), so given a target power of \(80\%\), we stop when we find a
+MDES that gives an estimated power between \(79\%\) and \(81\%\). In
+practice, due to the monotonic nature of the logistic functional form,
+our algorithm generally converges fairly rapidly. However, in certain
+corner cases the algorithm may fail to converge on a value within
+tolerance. For more information on applying the search algorithm, see
+the sample size vignette on CRAN.
+
+\section{Package information}
 
 \subsection{Designs and models}
 \label{sec:d_m}
@@ -1268,78 +1348,6 @@ control the precision of the power estimates themselves:
   \(B\) is the number of Westfall-Young permutations. Again, there is a
   tradeoff between precision and computation time.
 \end{itemize}
-
-\subsection{Determining MDES and sample size}
-\label{sec:est_mdes_ss}
-
-Frequently, a researcher's main concern with power is prospectively
-calculating either the MDES for each outcome in a given study, or
-determining the necessary sample size to achieve a target power given a
-specified set of MDES values. For our example based on Diplomas Now, we
-might be interested in calculating the MDES values of the outcomes in
-the current study, or determining how much we would want to alter the
-size of our sample of schools and districts given different power
-agendas. For example, we might want to know what sized study we would
-need to detect at least one significant effect across our outcomes if
-all the outcomes had a specified effect size and we were planning on
-using the Holm procedure.
-
-For \texttt{pump\_mdes()} and \texttt{pump\_sample()}, the user provides
-a particular target power, say \(80\%\). The method then conducts a
-stochastic optimization problem to determine a value (of sample size or
-MDES) that is within a specified tolerance of the target power with high
-probability. We discuss the algorithm for MDES, although the approach
-for the sample sizes is the same.
-
-The algorithm first determines an initial range of MDES values that
-likely contain the target MDES. The initial range is calculated using
-formula based on the standard errors and degrees of freedom. In
-particular, from Dong and Maynard (2013), in general the MDES can be
-estimated as \[ MDES = MT_{df} \times SE / \sigma_{m} \] where
-\(MT_{df}\) is known as the multiplier and is the sum of two \(t\)
-statistics with degrees of freedom \(df\). For one-tailed tests,
-\(MT_{df} = t_{\alpha}^\star + t_{1-\beta}^\star\) where \(\alpha\) is
-the type I error rate and \(\beta\) is the desired power. For two-tailed
-tests, \(MT_{df} = t_{\alpha/2}^\star + t_{1-\beta}^\star\). We do not
-explain the details of the derivations of the multiplier here; for more
-details and understanding, see Dong and Maynard (2013) or Bloom (2006).
-These expressions can be further manipulated to obtain sample size
-formulae; see the technical appendix for all formula in the package.
-
-Using these formula we can calculate bounds by manipulating the
-\(\beta\) values. For example, if we are interested in complete power of
-\(0.8\), for the upper bound we would need each outcome to have an
-individual power of \(\text{0.8}^{(1/M)}\) for the Bonferroni
-correction, assuming independence. If we are interested in minimal
-power, we must have a smaller lower bound; in order to have 1-minimal
-power of \(0.8\), each outcome needs to have individual power of
-\(1 - (1 - \text{0.8})^{(1/M)}\). We ignore correlation in the setting
-of the initial bounds; the bounds do not need to be strict, given the
-adaptive nature of the subsequent search.
-
-Once the initial range is established, we use \texttt{pump\_power()}
-with the complete array of design parameters including the correlation
-between test statistics to obtain rough (using a small \texttt{tnum}, or
-number of simulation trials) estimates of power for five initial values
-across this range. We then fit a scaled logistic curve to these five
-points, and identify where the curve crosses the desired power level.
-After fitting an initial curve, we iterate, repeatedly calculating power
-for the targeted point and using the result to update the logistic curve
-model. With each iteration we increase \texttt{tnum} to increase
-precision as we narrow in on the final answer; with each update to our
-estimated power curve, we weigh the collection of observations by their
-precisions (determined by corresponding \texttt{tnum} value). If a test
-point achieves the target power to within tolerance, we conduct an
-additional simulation check using a high number of replicates to verify
-the proposed answer is within a specified tolerance of the target power;
-if it is not, we continue the iterative search. The default tolerance is
-\(1%
-\), so given a target power of \(80%
-\), we stop when we find a MDES that gives an estimated power between
-\(79%
-\) and \(81%
-\). In practice, due to the monotonic nature of the logistic functional
-form, our algorithm generally converges fairly rapidly.
 
 \subsection{Package Validation}
 
