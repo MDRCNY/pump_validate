@@ -315,7 +315,7 @@ get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id,
     tw1 <- Sys.time()
     adjp.proc <- adjust_WY(
       dat.all = dat.all,
-      rawt = rawt,
+      rawp = rawp,
       S.id = S.id, D.id = D.id,
       proc = proc,
       sim.params.list = sim.params.list,

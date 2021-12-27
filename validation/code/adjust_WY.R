@@ -2,7 +2,7 @@
 #' Adjust.WY: does WY adjustments for a single sample in parallel
 #'
 #' @param data A list of length M. Each element in the list is a data frame holding the m'th data set
-#' @param rawt Vector of length M of the raw test statistics
+#' @param rawp Vector of length M of the raw test statistics
 #' @param S.id vector of school assignments
 #' @param D.id vector of district assignments
 #' @param d_m RCT d_m (see list/naming convention)
@@ -15,7 +15,7 @@
 #'
 #' @examples
 #'
-adjust_WY <- function(dat.all, rawt, S.id, D.id,
+adjust_WY <- function(dat.all, rawp, S.id, D.id,
                       d_m, proc,
                       sim.params.list,
                       dgp.params.list,
@@ -54,26 +54,26 @@ adjust_WY <- function(dat.all, rawt, S.id, D.id,
       "lmer", "interacted_linear_estimators", "isSingular"
     ), envir = environment())
     
-    nullt <- t(parallel::parApply(
+    nullp <- t(parallel::parApply(
       cl, permT, 2, perm.regs, dat.all = dat.all,
       d_m = d_m, dgp.params.list = dgp.params.list
     ))
   } else
   {
-    nullt <- t(apply(
+    nullp <- t(apply(
       permT, 2, perm.regs, dat.all = dat.all,
       d_m = d_m, dgp.params.list = dgp.params.list
     ))
   }
   
   # now calculate WY p-values
-  rawt.order <- order(rawt, decreasing = TRUE)
+  rawp.order <- order(rawp, decreasing = FALSE)
   if (proc == 'WY-SS') {
-    ind.B <- t(apply(nullt, 1, PUMP::comp_rawt_ss, rawt))
+    ind.B <- t(apply(nullp, 1, PUMP::comp_rawp_ss, rawp))
     adjp <- colMeans(ind.B)
   } else if (proc == 'WY-SD') {
-    ind.B <- t(apply(nullt, 1, PUMP::comp_rawt_sd, rawt, rawt.order))
-    adjp <- get.adjp.minp(ind.B, rawt.order)
+    ind.B <- t(apply(nullp, 1, PUMP::comp_rawp_sd, rawp, rawp.order))
+    adjp <- get.adjp.minp(ind.B, rawp.order)
   }
   
   return(adjp)
@@ -99,7 +99,7 @@ perm.regs <- function(permT.vec, dat.all, d_m, dgp.params.list) {
     dat.m$T.x <- permT.vec
     mod <- make.model(dat.m, d_m)[['mod']]
     pval.tstat <- get.pval.tstat(mod, d_m, dgp.params.list)
-    out[m] <- pval.tstat[['tstat']]
+    out[m] <- pval.tstat[['pval']]
   }
   return(out)
 }
