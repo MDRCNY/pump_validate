@@ -7,18 +7,15 @@ Updated: Dec 22 by KH
 
 # Manuscript
 
-- look into journal submission process (KH)
-- check if JSS allows vignette to be published separately (KH)
-- cover letter (LM) 
-- add plots to vignette (LM)
+- pre-submission inquiry (LM) 
 - write abstract (KH or KP)
-- prepare formatting for submission (KH)
 - explanation of min power when numZero > 0 (KP)
 
 *Waiting*
 
+- prepare formatting for submission (KH)
 - add appendices to main document (waiting on validation to finish KH)
-- once manuscript is ready, move vignette into package (KH or LM)
+- move vignette into package (KH or LM)
 
 # Package updates
 
@@ -46,9 +43,8 @@ Updated: Dec 22 by KH
 
 # Validation
 
-- figure out issues with validation results (KH)
+- figure out remaining issues with validation results (KH)
 - re-run WY validation (KH)
-- incorporate into appendix (KH)
   
 # Waiting
 

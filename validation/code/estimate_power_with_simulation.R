@@ -1,3 +1,10 @@
+# to install blkvar package:
+# install.packages("remotes")
+# remotes::install_github("lmiratrix/blkvar")
+
+library(blkvar)
+library(lme4)
+
 #'  Function: est_power_sim				                                       
 #'  
 #'  Function to estimate statistical power using simulations (on t-statistics)

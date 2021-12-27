@@ -1,12 +1,6 @@
-# to install blkvar package:
-# install.packages("remotes")
-# remotes::install_github("lmiratrix/blkvar")
-
 library(abind)
-library(blkvar)
 library(ggplot2)
 library(here)
-library(lme4)
 library(PowerUpR)
 library(randomizr)
 library(reshape2)

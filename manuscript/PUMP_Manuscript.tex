@@ -4,8 +4,8 @@
 %
 \documentclass[
 ]{article}
-\title{PUMP: Estimating power, MDES, and sample size with multiple
-outcomes}
+\title{PUMP: Estimating Power, MDES, and Sample Size with Multiple
+Outcomes}
 \author{}
 \date{\vspace{-2.5em}}
 
@@ -41,7 +41,7 @@ outcomes}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={PUMP: Estimating power, MDES, and sample size with multiple outcomes},
+  pdftitle={PUMP: Estimating Power, MDES, and Sample Size with Multiple Outcomes},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
@@ -172,7 +172,7 @@ intervention on multiple outcomes. The package focuses on a frequentist
 framework of mixed effects regression models, which is currently the
 prevailing framework for estimating impacts from experiments in
 education and other social policy
-research.\footnote{Other options include nonparametric or Bayesian methods, but these are less prevalent in applied research (for example, see @GELMANETAL2012).}
+research.\footnote{Other options include nonparametric or Bayesian methods, but these are less prevalent in applied research (for example, see @GELMANETAL2012, @GelmanHill2007).}
 To our knowledge, none of the existing software options or tools for
 power calculations power allow researchers to account for multiple
 hypothesis tests and the use of a multiple testing procedure (MTP). MTPs
@@ -409,7 +409,7 @@ Now study, if we had 5 outcomes in the attendance group, we would have
 of effect sizes (\(ES\)), for the outcome \(m\), one typically tests a
 null hypothesis of no effect, \(H_{0_m}: ES_m = 0\), against an
 alternative hypothesis \(H_{1_m}: ES_m \neq 0\) for a two-sided tests or
-\(H_{1_m}: ES_m > 0\) or \(H1_m: ES_m < 0\) for a one-sided test. A
+\(H_{1_m}: ES_m > 0\) or \(H_{1_m}: ES_m < 0\) for a one-sided test. A
 significance test, such as a two- or one-sided \(t\)-test, would then
 typically be driven by whether a test statistic given by
 \begin{equation}
@@ -500,9 +500,7 @@ explain each of these features of MTPs and provide discussion of the new
 parameter specifications they require when estimating power, MDES or
 sample size requirements.
 
-\hypertarget{familywise-error-rate-vs.-false-discovery-error-rate}{%
-\subsubsection{Familywise error rate vs.~false discovery error
-rate}\label{familywise-error-rate-vs.-false-discovery-error-rate}}
+\subsubsection{Familywise error rate vs. false discovery error rate}
 
 Familywise procedures reframe Type I error as a rate across the entire
 set or ``family'' of multiple hypothesis tests. This rate is called the
@@ -585,9 +583,9 @@ strong control of the FWER or FDR at level if the control is guaranteed
 when some null hypotheses are true and some are false, or when there may
 be effects on at least some outcomes. Of course, strong control is
 preferred.\footnote{The single-step and step-down Westfall Young MTPs (which we discuss below) always provide at least weak control of the FWER.
-In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (RN33093).
+In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (@RN33093).
 The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null.
-A consequence of this assumption is that the resampling of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (RN33093).}
+A consequence of this assumption is that the resampling of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (@RN33093).}
 
 \subsubsection{Single-step vs. stepwise procedures}
 \label{sec:stepwise}
@@ -598,23 +596,23 @@ adjust each \(p\)-value independently of the other \(p\)-values. For
 example, the Bonferroni MTP multiplies all raw \(p\)-values by \(M\).
 Therefore, one \(p\)-value adjustment does not depend on other
 \(p\)-value adjustments, only on the number of tests. In contrast,
-stepwise procedures first order raw p-values (or test statistics), and
-then adjust according to the order of the tests. The adjustments depend
-on null hypotheses already rejected in previous steps. For example, the
-Holm MTP --- the stepwise counterpart to the Bonferroni MTP --- orders
-raw \(p\)-values from smallest to largest. The procedure then multiplies
-the smallest \(p\)-value by \(M\), the second smallest \(p\)-value by
-\(M-1\), and so on, but also enforces that each adjusted \(p\)-value is
-greater than or equal to the previous adjusted \(p\)-value and that it
-is not greater than one. Overall, stepwise MTPs allow for less
-adjustment than single-step MTPs in later steps, and therefore preserve
-more power (for outcomes that do not correspond to the most significant
-\(p\)-value). The Bonferroni and one of the Westfall-Young MTPs are
-single-step; the Holm and Benjamini-Hochberg MTPs and the other
-Westfall-Young MTP are stepwise. Note that stepwise procedures may be
-``step-down'' or ``step-up,'' referring to whether a procedure begins
-with the smallest \(p\)-value, and thus the largest effect size
-(step-down) or the largest \(p\)-value (step-up).
+stepwise procedures first order raw \(p\)-values (or test statistics),
+and then adjust according to the order of the tests. The adjustments
+depend on null hypotheses already rejected in previous steps. For
+example, the Holm MTP --- the stepwise counterpart to the Bonferroni MTP
+--- orders raw \(p\)-values from smallest to largest. The procedure then
+multiplies the smallest \(p\)-value by \(M\), the second smallest
+\(p\)-value by \(M-1\), and so on, but also enforces that each adjusted
+\(p\)-value is greater than or equal to the previous adjusted
+\(p\)-value and that it is not greater than one. Overall, stepwise MTPs
+allow for less adjustment than single-step MTPs in later steps, and
+therefore preserve more power (for outcomes that do not correspond to
+the most significant \(p\)-value). The Bonferroni and one of the
+Westfall-Young MTPs are single-step; the Holm and Benjamini-Hochberg
+MTPs and the other Westfall-Young MTP are stepwise. Note that stepwise
+procedures may be ``step-down'' or ``step-up,'' referring to whether a
+procedure begins with the smallest \(p\)-value, and thus the largest
+effect size (step-down) or the largest \(p\)-value (step-up).
 
 Due to the dependencies of adjustments in stepwise MTPs, a new
 assumption must be considered when estimating power, MDES or sample size
@@ -705,7 +703,7 @@ under the complete null. Because the actual data are used to generate
 this null distribution, correlations among the test statistics are
 captured. Then observed test statistics can be compared with the
 distribution of test statistics under the complete null
-hypothesis.\footnote{Instead of using test statistics, the Westfall-Young MTPs can alternatively compare raw p-values with the estimated joint null distribution of p-values.}
+hypothesis.\footnote{Instead of using test statistics, the Westfall-Young MTPs can alternatively compare raw $p$-values with the estimated joint null distribution of $p$-values.}
 
 The correlation between test statistics is a parameter a researcher must
 specify in order to estimate power, MDES or sample size requirements
@@ -1149,7 +1147,7 @@ d3.3\_m3rc2rc & d3.3 & m3rc2rc & cra3\_3r\\
 \hline
 \end{tabular}
 
-\subsubsection{Overview of function parameters}
+\subsection{Overview of function parameters}
 \label{sec:params}
 
 The table below shows the parameters that influence \(Q_m\) formulae for
@@ -2036,6 +2034,13 @@ calculations. A user can and should try a range of parameter values to
 determine the sensitivity of the power of their study to different
 assumptions; this package simplifies that process.
 
+\section*{Acknowledgements}
+
+We acknowledge the Diplomas Now team. Development of this package was
+supported by a grant from the Institute for Education Sciences
+(R305D170030). We would like to thank members of the Harvard CARES lab
+for their feedback on the manuscript.
+
 \section{References}
 
 \hypertarget{refs}{}
@@ -2128,9 +2133,7 @@ Bloom, and C Hill. 2011. {``Optimal Design Plus Empirical Evidence
 Schochet, Peter Z. 2008. {``Guidelines for Multiple Testing in Impact
 Evaluations of Educational Interventions. Final Report.''} Report.
 Mathematica Policy Research, Inc. P.O. Box 2393, Princeton, NJ
-08543-2393. Tel: 609-799-3535; Fax: 609-799-0005; e-mail:
-info@mathematica-mpr.com; Web site:
-http://www.mathematica-mpr.com/publications/.
+08543-2393.
 \url{http://www.eric.ed.gov/ERICWebPortal/contentdelivery/servlet/ERICServlet?accno=ED502199}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-RN23881}{}}%
@@ -2206,7 +2209,7 @@ For iteration \(s = 1, \dots S\):
 \item
   Generate simulated treatment assignment
 \item
-  Calculate p-value given simulated data, treatment assignment, and
+  Calculate \(p\)-value given simulated data, treatment assignment, and
   assumed model
 \end{enumerate}
 

@@ -8,10 +8,12 @@ d_m: Blocked RCT, with 2 levels, and randomization done at level 1 (individual l
 
 Models: Constant treatment effects, fixed treatment effects, and random treatment effects.
 
+Note: we expect a discrepancy when ICC is not zero between powerup and pump.
+
 ```{r knit.options, echo = FALSE}
 knitr::opts_chunk$set(
-  cache = TRUE, warning = FALSE, message = FALSE, echo = FALSE,
-  fig.height = 4
+  cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE,
+  fig.height = 7
 )
 ```
 
@@ -56,10 +58,10 @@ Default parameters:
 
 * M = `r model.params.list[['M']]`
 * J = `r model.params.list[['J']]`
-* rho: $\rho$ =  `r model.params.list[['rho.default']]`
+* $\rho$ =  `r model.params.list[['rho.default']]`
 * MDES = `r model.params.list[['MDES']]`
-* R2.1: $R^2_1$ = `r model.params.list[['R2.1']]`
-* ICC: $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
+* $R^2_1$ = `r model.params.list[['R2.1']]`
+* $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
 
 Parameters by model type:
 
@@ -94,6 +96,7 @@ d2.1_m2fr_nbar50_power_plot <- gen.power.results.plot(gen_params_file_base(model
 print(d2.1_m2fr_nbar50_power_plot)
 ```
 
+\newpage
 ## Varying school size
 
 ```{r nbar100}
@@ -159,6 +162,7 @@ print(d2.1_m2fr_nbar75_power_plot)
 model.params.list[['nbar']] <- 50
 ```
 
+\newpage
 ## Varying R2
 
 ```{r r2_106}
@@ -190,6 +194,7 @@ print(d2.1_m2fc_r2.2_power_plot)
 model.params.list[['R2.1']] <- params.default[['R2.1']]  
 ```
 
+\newpage
 ## Varying rho
 
 ```{r rho0_2}
@@ -232,6 +237,7 @@ model.params.list[['rho.u']] <- model.params.list[['rho.v']] <- model.params.lis
 ```
 
 
+\newpage
 ## Varying true positives
 
 ```{r MDES012500}
@@ -248,9 +254,10 @@ print(d2.1_m2fc_mdes0.1250.00.0.00_power_plot)
 model.params.list[['MDES']] <- params.default[['MDES']]
 ```
 
+\newpage
 ## Varying ICC
 
-Note: we expect a discrepancy when ICC is not zero between powerup and pump.
+
 
 ```{r ICC207}
 model.params.list[['ICC.2']] <- rep(0.7, M)
@@ -315,6 +322,8 @@ print(d2.1_m2fr_ICC2.0_power_plot)
 model.params.list[['ICC.2']] <- params.default[['ICC.2']]
 ```
 
+\newpage
+\newpage
 ## Varying Omega
 
 ```{r omega08}
@@ -362,6 +371,7 @@ print(d2.1_m2fr_omega20_power_plot)
 model.params.list[['omega.2']] <- params.default[['omega.2']]
 ```
 
+\newpage
 ## Kappa
 
 ```{r kappa04}
@@ -399,6 +409,8 @@ print(d2.1_m2fr_kappa0.4_power_plot)
 model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- params.default[['kappa.w']]
 ```
 
+
+\newpage
 # MDES validation
 
 ```{r}
@@ -464,6 +476,7 @@ if(length(mdes.file) == 0)
 }
 ```
 
+\newpage
 # Sample size validation
 
 ```{r 2c_sampleD1_J}
