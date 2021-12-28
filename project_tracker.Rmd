@@ -1,5 +1,5 @@
 
-Updated: Dec 22 by KH
+Updated: Dec 27 by KH
 
 # R package
 
@@ -7,20 +7,18 @@ Updated: Dec 22 by KH
 
 # Manuscript
 
-- pre-submission inquiry (LM) 
-- explanation of min power when numZero > 0 (KP)
+- add discussion of parallel computing for WY (KH)
+- add discussion of shiny (KP)
+- pre-submission inquiry (LM)
+- is it plagiarism to be too close to previous Porter paper?
+- update appendix with validation (KH)
 
 *Waiting*
 
 - prepare formatting for submission (KH)
-- add appendices to main document (waiting on validation to finish KH)
 - move vignette into package (KH or LM)
 
 # Package updates
-
-*High priority*
-
-- recruit people for user testing of package (KH/LM)
 
 *Medium priority*
 
@@ -32,23 +30,15 @@ Updated: Dec 22 by KH
   - clean up and condense data wrangling
   - make plots prettier
 - error/other messaging (KH or LM)
-  - tell user that mdes and sample size single scenario plots don't make sense (KH)
   - collect errors from grid and only print out unique errors
   - better error messaging for flat power curves (both shiny and non-shiny)
-  - error if user passes same parameter in twice into grid
   - give user estimate of runtime for WY (MDES and SS will require extra work)
-- parallel processing
-  - make it work for WY
 
 # Validation
 
-- figure out remaining issues with validation results (KH)
+- remaining issues with validation results (KH)
 - re-run WY validation (KH)
   
-# Waiting
-
-- merge change from design to d_m, new MTP names
-
 # Stretch goals
 
 - vary multiple factors in plots (LM)
