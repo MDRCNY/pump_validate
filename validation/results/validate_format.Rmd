@@ -1,5 +1,5 @@
 ---
-title: "Validate Power Guide"
+title: "Validation guide"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: pdf_document
 ---
@@ -44,3 +44,5 @@ Parameters that vary:
 We choose one default scenario for each design and model, then input the already-calculated D1 individual power and see if the output MDES is the same as the original input MDES.
 
 Similarly, for sample size validation, we input the already-calculated D1 individual power and see if the output sample size (either $\bar{n}$, $J$, or $K$ depending on design) is the same as the original sample size.
+
+*Remark* In some cases, there will be a discrepancy between the input sample size and the return sample size when the power curve is relatively flat, and a variety of sample sizes result in similar power.

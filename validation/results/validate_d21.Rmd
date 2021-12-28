@@ -71,6 +71,8 @@ Assumptions:
 
 * Two-level design: $\text{ICC}_3 = 0$,  $\omega_3 = 0$, $K = 1$
 
+*Remark*. For all $d2.1$ designs and models, PowerUpR! assumes $ICC.2 = 0$, but we do not make that assumption here. Thus, we expect to see a discrepancy betweeen PUMP and Powerup except for the setting when we assume $ICC.2 = 0$.
+
 # Power Validation
 
 ## Base case
@@ -129,7 +131,7 @@ params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m
 d2.1_m2fr_nbar100_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(d2.1_m2fr_nbar100_power_plot)
 ```
-
+\newpage
 ```{r nbar75}
 model.params.list[['nbar']] <- 75
 ```
@@ -179,7 +181,7 @@ print(d2.1_m2fc_r2.1_power_plot)
 model.params.list[['R2.1']] <- params.default[['R2.1']]  
 ```
 
-
+\newpage
 ```{r r2_10r2_20}
 model.params.list[['R2.1']] <- rep(0, M)  
 ```
@@ -221,7 +223,7 @@ model.params.list[['rho.default']] <- rho.default
 model.params.list[['rho.X']] <- model.params.list[['rho.C']] <-rho.default
 model.params.list[['rho.u']] <- model.params.list[['rho.v']] <- model.params.list[['rho.r']] <-rho.default
 ```
-
+\newpage
 $\rho =$ `r model.params.list[['rho.default']]`
 
 ```{r 2c_rho0_8}
@@ -294,7 +296,7 @@ model.params.list[['ICC.2']] <- params.default[['ICC.2']]
 ```{r ICC20}
 model.params.list[['ICC.2']] <- rep(0, M)
 ```
-
+\newpage
 $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
 
 ```{r 2c_ICC20}
@@ -350,7 +352,7 @@ print(d2.1_m2fr_omega20.8_power_plot)
 ```{r omega20}
 model.params.list[['omega.2']] <- rep(0, M)
 ```
-
+\newpage
 $\omega_2$ = `r model.params.list[['omega.2']]`
 
 ```{r 2f_omega20}
@@ -372,46 +374,9 @@ model.params.list[['omega.2']] <- params.default[['omega.2']]
 ```
 
 \newpage
-## Kappa
-
-```{r kappa04}
-kappa <- 0.4
-kappa.matrix <- diag(kappa, M)
-model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- kappa.matrix
-```
-
-$\kappa$ = `r kappa`
-
-```{r 2c_kappa04}
-d_m <- "d2.1_m2fc"
-model.params.list[['omega.2']] <- NULL
-d2.1_m2fc_kappa0.4_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
-print(d2.1_m2fc_kappa0.4_power_plot)
-```
-
-```{r 2f_kappa04}
-d_m <- "d2.1_m2ff"
-model.params.list[['omega.2']] <- params.default[['omega.2']]
-d2.1_m2ff_kappa0.4_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
-print(d2.1_m2ff_kappa0.4_power_plot)
-```
-
-```{r 2r_kappa04}
-d_m <- "d2.1_m2fr"
-d2.1_m2fr_kappa0.4_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
-print(d2.1_m2fr_kappa0.4_power_plot)
-```
-
-```{r kappa04reset}
-model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- params.default[['kappa.w']]
-```
-
-
-\newpage
 # MDES validation
+
+Target value: `r model.params.list[['MDES']][1]`
 
 ```{r}
 model.params.list <- params.default 
@@ -479,6 +444,9 @@ if(length(mdes.file) == 0)
 \newpage
 # Sample size validation
 
+
+Target value: `r model.params.list[['J']]`
+
 ```{r 2c_sampleD1_J}
 d_m <- "d2.1_m2fc"
 model.params.list[['omega.2']] <- NULL
@@ -535,6 +503,9 @@ if(length(sample.file) == 0)
   )
 }
 ```
+
+
+Target value: `r model.params.list[['nbar']]`
 
 ```{r 2f_sampleD1_nbar}
 d_m <- "d2.1_m2ff"

@@ -8,7 +8,6 @@ Updated: Dec 22 by KH
 # Manuscript
 
 - pre-submission inquiry (LM) 
-- write abstract (KH or KP)
 - explanation of min power when numZero > 0 (KP)
 
 *Waiting*
