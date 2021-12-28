@@ -73,13 +73,13 @@ print(power.results)
 power.file <- gen_params_file_base(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
 gen.power.results.plot(power.file, d_m = "d3.2_m3ff2rc")
   
-mdes.results <- validate_mdes(model.params.list, sim.params.list, d_m = "d2.1_m2fr")
+mdes.results <- validate_mdes(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
 print(mdes.results)
 
-j.results <- validate_sample(model.params.list, sim.params.list, d_m = "d2.1_m2fr", typesample = "J")
+j.results <- validate_sample(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", typesample = "J")
 print(j.results)
 
-nbar.results <- validate_sample(model.params.list, sim.params.list, d_m = "d2.1_m2fr", typesample = "nbar")
+nbar.results <- validate_sample(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", typesample = "nbar")
 print(nbar.results)
 
 
@@ -97,5 +97,10 @@ model.params.list[['numCovar.2']] <- 0
 model.params.list[['R2.2']] <- NULL
 model.params.list[['omega.2']] <- NULL
 
-power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc")
+
+model.params.list[['ICC.2']] <- rep(0.7, M)
+model.params.list[['omega.2']] <- rep(0.1, M) 
+power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = 1, overwrite = TRUE)
 print(power.results)
+power.file <- gen_params_file_base(model.params.list, sim.params.list, d_m = "d2.1_m2ff")
+gen.power.results.plot(power.file, d_m = "d3.2_m3ff2rc")

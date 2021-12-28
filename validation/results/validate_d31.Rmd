@@ -93,7 +93,7 @@ print(d3.1_m3rr2rr_nbar75_power_plot)
 ```{r nbar50}
 model.params.list[['nbar']] <- 50
 ```
-
+\newpage
 $\bar{n}$ = `r model.params.list[['nbar']]`
 
 ```{r 3r_nbar50}
@@ -124,7 +124,7 @@ model.params.list[['R2.1']] <- params.default[['R2.1']]
 ```{r r210r220r230}
 model.params.list[['R2.1']] <- rep(0, M)  
 ```
-
+\newpage
 $R^2_1 =$ `r model.params.list[['R2.1']]`
 
 ```{r 3r_r210r220r230}
@@ -159,7 +159,7 @@ model.params.list[['rho.default']] <- rho.default
 model.params.list[['rho.X']] <- model.params.list[['rho.C']] <-rho.default
 model.params.list[['rho.u']] <- model.params.list[['rho.v']] <- model.params.list[['rho.r']] <-rho.default
 ```
-
+\newpage
 $\rho =$ `r model.params.list[['rho.default']]`
 
 ```{r 3r_rho08}
@@ -207,7 +207,7 @@ model.params.list[['ICC.2']] <- params.default[['ICC.2']]
 ```{r ICC307}
 model.params.list[['ICC.3']] <- rep(0.7, M)
 ```
-
+\newpage
 $\text{ICC}_3$ = `r model.params.list[['ICC.3']]`
 
 ```{r 3r_ICC307}
@@ -220,7 +220,7 @@ model.params.list[['ICC.3']] <- params.default[['ICC.3']]
 ```{r ICC20}
 model.params.list[['ICC.2']] <- rep(0, M)
 ```
-
+\newpage
 $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
 
 ```{r 3r_ICC20}
@@ -232,7 +232,7 @@ model.params.list[['ICC.2']] <- params.default[['ICC.2']]
 ```{r ICC30}
 model.params.list[['ICC.3']] <- rep(0, M)
 ```
-
+\newpage
 $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
 
 ```{r 3r_ICC30}
@@ -260,7 +260,7 @@ print(d3.1_m3rr2rr_omega2.0.8_power_plot)
 model.params.list[['omega.2']] <- params.default[['omega.2']]
 model.params.list[['omega.3']] <- rep(0.8, M)
 ```
-
+\newpage
 $\omega_2$ = `r model.params.list[['omega.2']]`, $\omega_3$ = `r model.params.list[['omega.3']]`
 
 ```{r 3r_omega308}
@@ -272,7 +272,7 @@ print(d3.1_m3rr2rr_omega3.0.8_power_plot)
 model.params.list[['omega.2']] <- rep(0.8, M)
 model.params.list[['omega.3']] <- rep(0.8, M)
 ```
-
+\newpage
 $\omega_2$ = `r model.params.list[['omega.2']]`, $\omega_3$ = `r model.params.list[['omega.3']]`
 
 ```{r 3r_omega208omega308}
@@ -287,7 +287,7 @@ model.params.list[['omega.2']] <- params.default[['omega.2']]
 model.params.list[['omega.2']] <- rep(0, M)
 model.params.list[['omega.3']] <- params.default[['omega.3']]
 ```
-
+\newpage
 $\omega_2$ = `r model.params.list[['omega.2']]`, $\omega_3$ = `r model.params.list[['omega.3']]`
 
 ```{r 3r_omega20}
@@ -300,7 +300,7 @@ model.params.list[['omega.2']] <- params.default[['omega.2']]
 ```{r omega30}
 model.params.list[['omega.3']] <- rep(0, M)
 ```
-
+\newpage
 $\omega_2$ = `r model.params.list[['omega.2']]`, $\omega_3$ = `r model.params.list[['omega.3']]`
 
 ```{r 3r_omega30}
@@ -313,7 +313,7 @@ model.params.list[['omega.3']] <- params.default[['omega.3']]
 model.params.list[['omega.2']] <- rep(0, M)
 model.params.list[['omega.3']] <- rep(0, M)
 ```
-
+\newpage
 $\omega_2$ = `r model.params.list[['omega.2']]`, $\omega_3$ = `r model.params.list[['omega.3']]`
 
 ```{r 3r_omega2030}
@@ -322,29 +322,6 @@ print(d3.1_m3rr2rr_omega2.03.0_power_plot)
 model.params.list[['omega.2']] <- params.default[['omega.2']]
 model.params.list[['omega.3']] <- params.default[['omega.3']]
 ```
-
-\newpage
-## Kappa
-
-```{r kappa04}
-kappa <- 0.4
-kappa.matrix <- diag(kappa, M)
-model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- kappa.matrix
-```
-
-$\kappa$ = `r kappa`
-
-```{r 3r_kappa04}
-d_m <- "d3.1_m3rr2rr"
-d3.1_m3rr2rr_kappa0.4_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
-print(d3.1_m3rr2rr_kappa0.4_power_plot)
-```
-
-```{r kappa04reset}
-model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- params.default[['kappa.w']]
-```
-
 \newpage
 # MDES validation
 
@@ -352,6 +329,8 @@ model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- params.defau
 # reset to defaults
 model.params.list <- params.default 
 ```
+
+Target value: `r model.params.list[['MDES']][1]`
 
 ```{r 3r_mdes}
 params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
@@ -372,23 +351,7 @@ if(length(mdes.file) == 0)
 
 # Sample size validation
 
-```{r 2r.sampleD1_J}
-d_m <- "d3.1_m3rr2rr"
-params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
-sample.file <- find_file(params.file.base, type = 'sample_J_D1indiv')
-if(length(sample.file) == 0)
-{
-  warning(paste('Results not yet computed for given parameters:', params.file.base))
-} else
-{
-  d3.1_m3rr2rr_sample_D1_J_results <- readRDS(sample.file)
-  pander::pandoc.table(
-    d3.1_m3rr2rr_sample_D1_J_results,
-    style = "grid", split.tables = 100, row.names = FALSE,
-    caption = d_m
-  )
-}
-```
+Target value: `r model.params.list[['K']]`
 
 ```{r 2r.sampleD1_K}
 d_m <- "d3.1_m3rr2rr"
@@ -408,6 +371,59 @@ if(length(sample.file) == 0)
 }
 ```
 
+Target value: `r model.params.list[['J']]`
+
+```{r 2r.sampleD1_J}
+d_m <- "d3.1_m3rr2rr"
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+sample.file <- find_file(params.file.base, type = 'sample_J_D1indiv')
+if(length(sample.file) == 0)
+{
+  warning(paste('Results not yet computed for given parameters:', params.file.base))
+} else
+{
+  d3.1_m3rr2rr_sample_D1_J_results <- readRDS(sample.file)
+  pander::pandoc.table(
+    d3.1_m3rr2rr_sample_D1_J_results,
+    style = "grid", split.tables = 100, row.names = FALSE,
+    caption = d_m
+  )
+}
+```
+
+Note: particularly flat power curves results in discrepancy for `J`.
+
+```{r, results = 'hide', fig.width=5, fig.height=4}
+smp <- PUMP::pump_sample(
+  design = "d3.1_m3rr2rr",
+  MTP = 'Bonferroni',
+  typesample = 'J',
+  MDES = model.params.list[['MDES']],
+  M = model.params.list[['M']],
+  K = model.params.list[['K']],
+  nbar = model.params.list[['nbar']],
+  target.power = 0.727,
+  power.definition = 'D1indiv',
+  numCovar.1 = model.params.list[['numCovar.1']],
+  numCovar.2 = model.params.list[['numCovar.2']],
+  numCovar.3 = 1,
+  R2.1 = model.params.list[['R2.1']],
+  R2.2 = model.params.list[['R2.2']],
+  R2.3 = model.params.list[['R2.3']],
+  ICC.2 = model.params.list[['ICC.2']],
+  ICC.3 = model.params.list[['ICC.3']],
+  rho = model.params.list[['rho.default']],
+  omega.2 = model.params.list[['omega.2']],
+  omega.3 = model.params.list[['omega.3']],
+  Tbar = 0.5,
+  alpha = 0.05,
+  verbose = TRUE
+)
+plot_power_curve(smp)
+```
+
+Target value: `r model.params.list[['nbar']]`
+
 ```{r 2r.sampleD1_nbar}
 d_m <- "d3.1_m3rr2rr"
 params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
@@ -424,4 +440,36 @@ if(length(sample.file) == 0)
     caption = d_m
   )
 }
+```
+
+Note: particularly flat power curves results in discrepancy for `nbar`.
+
+```{r, results = 'hide', fig.width=5, fig.height=4}
+set.seed(2344)
+smp <- PUMP::pump_sample(
+  design = "d3.1_m3rr2rr",
+  MTP = 'BH',
+  typesample = 'nbar',
+  MDES = model.params.list[['MDES']],
+  M = model.params.list[['M']],
+  J = model.params.list[['J']],
+  K = model.params.list[['K']],
+  target.power = 0.824,
+  power.definition = 'D1indiv',
+  numCovar.1 = model.params.list[['numCovar.1']],
+  numCovar.2 = model.params.list[['numCovar.2']],
+  numCovar.3 = model.params.list[['numCovar.3']],
+  R2.1 = model.params.list[['R2.1']],
+  R2.2 = model.params.list[['R2.2']],
+  R2.3 = model.params.list[['R2.3']],
+  ICC.2 = model.params.list[['ICC.2']],
+  ICC.3 = model.params.list[['ICC.3']],
+  rho = model.params.list[['rho.default']],
+  omega.2 = model.params.list[['omega.2']],
+  omega.3 = model.params.list[['omega.3']],
+  Tbar = 0.5,
+  alpha = 0.05,
+  verbose = TRUE
+)
+plot_power_curve(smp)
 ```

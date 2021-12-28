@@ -41,14 +41,17 @@ You also have a few other pieces of information:
 *Documentation*
 
 - To understand the package, please use the attached vignette.
-- If you would like more detail, see the attached paper or the supplementary materials.
+- Optional materials: If you would like more detail, see the attached paper or the supplementary materials.
+
+Note that the optional materials are pretty long, and our intention is for users to be able to use the package without them, and only refer to them if someone wants more detail.
+So if you are stuck, you can just note that you didn't know how to answer the question with just the vignette and package documentation.
 
 *Feedback*
 
 - Please send back a completed version of this markdown, with code you wrote to answer the questions.
 - At which points were you confused?
 - Is there anything missing from the documentation?
-- Was the vignette sufficient for documentation, or did you need to refer to the paper or supplementary materials?
+- Did you end up referring to the paper or supplementary materials?
 
 # Using PUMP
 

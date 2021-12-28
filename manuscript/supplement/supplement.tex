@@ -24,7 +24,6 @@
 
 \begin{document}
 
-\author{Hunter, Miratrix, Porter}
 \title{Supplementary materials: PUMP Package}
 
 \maketitle
@@ -776,7 +775,7 @@ The standard error of the treatment effect estimate is given by:
 \frac{(1-\text{ICC}_{2,m} - \text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) JK\bar{n}}
 }.\end{align}
 The degrees of freedom are
-\begin{align}\text{df}_m = K - g_{3,m} - 1.\end{align}
+\begin{align}\text{df}_m = K - 1.\end{align}
 
 This is a very conservative degrees of freedom.
 
@@ -799,7 +798,7 @@ T.x <- randomizr::block_ra( S.id, prob = Tbar )
 \end{verbatim}
 
 \paragraph{PowerUp! Differences.}
-PowerUp allows for school and district covariates to influence the treatment impact, while we do not allow for this. In PowerUp terms, we assume $R^2_{3T} = 0$ and $R^2_{2T} = 0$.
+PowerUp allows for school and district covariates to influence the treatment impact, while we do not allow for this. In PowerUp terms, we assume $R^2_{3T} = 0$ and $R^2_{2T} = 0$. This also impacts our degrees of freedom formula, which is $\text{df}_m = K - 1$ instead of $\text{df}_m = K - g_{3,m} - 1$.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -931,13 +930,15 @@ Q_m = \sqrt{
 \frac{\text{ICC}_{2,m}(1 - R^2_{2,m})}{\bar{T}(1 - \bar{T}) J K } +
 \frac{(1-\text{ICC}_{2,m} - \text{ICC}_{3,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J K\bar{n}} }.\end{align}
 The degrees of freedom are
-\begin{align}\text{df}_m = K - g_{3,m} - 1.\end{align}
+\begin{align}\text{df}_m = K - 1.\end{align}
 
 Parameter assumptions
 \begin{itemize}
 \item $\omega_{2,m} = 0$
 \end{itemize}
 
+\paragraph{PowerUp! Differences.}
+PowerUp allows for district covariates to influence the treatment impact, while we do not allow for this. In PowerUp terms, we assume $R^2_{3T} = 0$. This also impacts our degrees of freedom formula, which is $\text{df}_m = K - 1$ instead of $\text{df}_m = K - g_{3,m} - 1$.
 
 \paragraph{Sample size formula.} 
 \begin{align}

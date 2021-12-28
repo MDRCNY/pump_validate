@@ -49,4 +49,6 @@ The functions return data frames with estimates and lower and upper confidence i
                * __validate_sim_parallel.slurm__: slurm file for running all simulations in parallel on the cloud
                * __validate_pum.slurm__: slurm file for running PUM and PUP results on the cloud
       * __results__
+          * contains markdown documents and rendered PDFs of all validation scenarios.
+          * for a general guide to the format of these documents, see validate_format.
 
