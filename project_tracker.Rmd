@@ -32,7 +32,7 @@ Updated: Dec 27 by KH
 - error/other messaging (KH or LM)
   - collect errors from grid and only print out unique errors
   - better error messaging for flat power curves (both shiny and non-shiny)
-  - give user estimate of runtime for WY (MDES and SS will require extra work)
+  - give user estimate of runtime for WY for MDES and SS
 
 # Validation
 
