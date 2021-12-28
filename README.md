@@ -8,16 +8,17 @@ power calculations are correct.
 ## Validation results
 
 The complete set of validation results can be found in validation/results.
-This folder contains Rmarkdown files and output html files for all validation scenarios.
-Each file shows graphs comparing monte carlo estimates (plus error) compared to PUMP and PowerUP.
-Note that PowerUp only works with a single outcome, $M = 1$.
+This folder contains Rmarkdown files and output PDF files for all validation scenarios.
+Each file shows graphs comparing power estimated using monte carlo simulations compared to PUMP and PowerUP.
+Note that PowerUp only works with a single outcome, M = 1.
+For a general guide to the format of these documents, see validatate_format.
 
 The script we used for running all validation scenarios is validation/code/gen_validation_results_all.R.
 This script can take several days to run, depending on choice of simulation parameters.
 
 ## Running your own validation
 
-To run your own validation, use validation/code/gen_validation_results_one.R.  
+To run your own validation of a specific scenario, use validation/code/gen_validation_results_one.R.  
 Set the design, model, and parameters to your desired values.
 For more information about these choices, see the PUMP package documentation.
 

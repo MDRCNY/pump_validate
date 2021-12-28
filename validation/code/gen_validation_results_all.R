@@ -44,7 +44,7 @@ sim.params.list <- list(
   , alpha = 0.05             # Significance level
   , tol = 0.01               # tolerance for MDES and sample  size calculations
   , Tbar = 0.5               # Binomial assignment probability
-  , tnum = 1000              # Number of test statistics (samples) for all procedures other than Westfall-Young
+  , tnum = 10000             # Number of test statistics (samples) for all procedures other than Westfall-Young
   , parallel = TRUE          # parallelize within each monte carlo iteration
   , ncl = 8                  # Number of computer clusters
   , start.tnum = 200         # number of iterations for starting to testing mdes and power
@@ -116,6 +116,7 @@ if(run.wy)
   # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
   
   sim.params.list[['B']] <- 1000
+  sim.params.list[['tnum']] <- 1000
   
   model.params.list <- model.params.default
   
@@ -125,6 +126,8 @@ if(run.wy)
   if(run.d2.1)
   {
     model.params.list <- model.params.default
+    sim.params.list <- sim.params.default
+    sim.params.list[['B']] <- 1000
 
     model.params.list[['K']] <- 1
     model.params.list[['ICC.3']] <- NULL
@@ -158,6 +161,8 @@ if(run.wy)
   if(run.d2.2)
   {
     model.params.list <- model.params.default
+    sim.params.list <- sim.params.default
+    sim.params.list[['B']] <- 1000
     
     model.params.list[['K']] <- 1
     model.params.list[['ICC.3']] <- NULL
@@ -182,6 +187,7 @@ if(run.wy)
   if(run.d3.1)
   {
     model.params.list <- model.params.default
+    sim.params.list <- sim.params.default
     sim.params.list[['B']] <- 100
     
     # assumptions
@@ -206,6 +212,7 @@ if(run.wy)
   if(run.d3.3)
   {
     model.params.list <- model.params.default
+    sim.params.list <- sim.params.default
     sim.params.list[['B']] <- 1000
     
     # assumptions
@@ -230,6 +237,7 @@ if(run.wy)
   if(run.d3.2)
   {
     model.params.list <- model.params.default
+    sim.params.list <- sim.params.default
     sim.params.list[['B']] <- 1000
     
     # assumptions
