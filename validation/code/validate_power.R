@@ -368,7 +368,6 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
           omega.3 = model.params.list[['omega.3']],
           tnum = sim.params.list[['tnum']],
           B = sim.params.list[['B']],
-          cl = cl,
           verbose = TRUE
         )
         if (iterator == 0) {
@@ -506,7 +505,6 @@ validate_mdes <- function(model.params.list, sim.params.list, d_m,
         start.tnum = sim.params.list[['start.tnum']],
         final.tnum = sim.params.list[['final.tnum']],
         max.steps = sim.params.list[['max.steps']],
-        cl = cl,
         verbose = TRUE
       )
       mdes_compare_results <- rbind(mdes_compare_results, mdes_results_iter)
@@ -636,7 +634,6 @@ validate_sample <- function(model.params.list, sim.params.list, d_m,
         start.tnum = sim.params.list[['start.tnum']],
         final.tnum = sim.params.list[['final.tnum']],
         max.steps = sim.params.list[['max.steps']],
-        cl = cl, 
         verbose = TRUE
       )
       sample_compare_results <- rbind(sample_compare_results, sample_results_iter)
@@ -702,6 +699,5 @@ if(FALSE)
   # typesample = 'J';
   J0 = 10; nbar0 = 10; K0 = 4;
   two.tailed = TRUE;
-  cl = NULL;
   start.tnum = 1000; max.steps = 30; max.cum.tnum = 50000; final.tnum = 20000 
 }

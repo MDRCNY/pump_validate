@@ -73,7 +73,7 @@ adjust_WY <- function(dat.all, rawp, S.id, D.id,
     adjp <- colMeans(ind.B)
   } else if (proc == 'WY-SD') {
     ind.B <- t(apply(nullp, 1, PUMP::comp_rawp_sd, rawp, rawp.order))
-    adjp <- get.adjp.minp(ind.B, rawp.order)
+    adjp <- PUMP::get_adjp_minp(ind.B, rawp.order)
   }
   
   return(adjp)
