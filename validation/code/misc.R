@@ -86,7 +86,7 @@ convert.vec.to.filename <- function(vec)
 #' @return params.file.base
 gen_params_file_base <- function(user.params.list, sim.params.list, d_m)
 {
-  if('WY-SS' %in% sim.params.list[['procs']] | 'WY-SD' %in% sim.params.list[['procs']])
+  if('WY-SS' %in% sim.params.list[['MTP']] | 'WY-SD' %in% sim.params.list[['MTP']])
   {
     B <- sim.params.list[['B']]
   } else
