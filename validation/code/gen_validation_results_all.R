@@ -23,7 +23,6 @@ run.d3.2 = TRUE
 q <- as.numeric(as.character(Sys.getenv("q")))
 if(is.na(q)) { q <- 1 }
 
-
 #------------------------------------------------------------------#
 # source files
 #------------------------------------------------------------------#
@@ -112,11 +111,12 @@ sim.params.default <- sim.params.list
 if(run.wy)
 {
   sim.params.list <- sim.params.default
-  sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
-  # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+  # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
+  sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
   
+  # set simulations and B
+  sim.params.list[['S']] <- 100
   sim.params.list[['B']] <- 1000
-  sim.params.list[['tnum']] <- 1000
   
   model.params.list <- model.params.default
   
@@ -127,6 +127,7 @@ if(run.wy)
   {
     model.params.list <- model.params.default
     sim.params.list <- sim.params.default
+    sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 1000
 
     model.params.list[['K']] <- 1
@@ -162,6 +163,7 @@ if(run.wy)
   {
     model.params.list <- model.params.default
     sim.params.list <- sim.params.default
+    sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 1000
     
     model.params.list[['K']] <- 1
@@ -188,6 +190,7 @@ if(run.wy)
   {
     model.params.list <- model.params.default
     sim.params.list <- sim.params.default
+    sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 100
     
     # assumptions
@@ -213,6 +216,7 @@ if(run.wy)
   {
     model.params.list <- model.params.default
     sim.params.list <- sim.params.default
+    sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 1000
     
     # assumptions
@@ -238,6 +242,7 @@ if(run.wy)
   {
     model.params.list <- model.params.default
     sim.params.list <- sim.params.default
+    sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 1000
     
     # assumptions
