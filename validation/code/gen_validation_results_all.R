@@ -37,7 +37,7 @@ source(here::here("validation/code", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 250                      # Number of samples for Monte Carlo Simulation
+  S = 100                      # Number of samples for Monte Carlo Simulation
   , Q = 20                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
@@ -114,19 +114,12 @@ if(run.wy)
   # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
   sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
   
-  # set simulations and B
-  sim.params.list[['S']] <- 100
-  sim.params.list[['B']] <- 1000
-  
-  model.params.list <- model.params.default
-  
   #------------------------------------#
   # blocked 2 level
   #------------------------------------#
   if(run.d2.1)
   {
     model.params.list <- model.params.default
-    sim.params.list <- sim.params.default
     sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 1000
 
@@ -149,9 +142,7 @@ if(run.wy)
     model.params.list[['omega.2']] <- model.params.default[['omega.2']]
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
-    
-    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")    
-
+  
     gc()
   }
 
@@ -162,7 +153,6 @@ if(run.wy)
   if(run.d2.2)
   {
     model.params.list <- model.params.default
-    sim.params.list <- sim.params.default
     sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 1000
     
@@ -189,7 +179,6 @@ if(run.wy)
   if(run.d3.1)
   {
     model.params.list <- model.params.default
-    sim.params.list <- sim.params.default
     sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 100
     
@@ -215,7 +204,6 @@ if(run.wy)
   if(run.d3.3)
   {
     model.params.list <- model.params.default
-    sim.params.list <- sim.params.default
     sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 1000
     
@@ -241,7 +229,6 @@ if(run.wy)
   if(run.d3.2)
   {
     model.params.list <- model.params.default
-    sim.params.list <- sim.params.default
     sim.params.list[['S']] <- 100
     sim.params.list[['B']] <- 1000
     
