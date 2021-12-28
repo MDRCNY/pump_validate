@@ -6,12 +6,12 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = TRUE
+overwrite = FALSE
 # whether or not to run power, mdes and sample size
-run.power = TRUE
-run.mdes.ss = TRUE
+run.power = FALSE
+run.mdes.ss = FALSE
 # whether to run limited westfall young validations
-run.wy = FALSE
+run.wy = TRUE
 # which d_ms to run
 run.d2.1 = TRUE
 run.d2.2 = TRUE
@@ -38,8 +38,8 @@ source(here::here("validation/code", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 5000                      # Number of samples for Monte Carlo Simulation
-  , Q = 1                    # Number of times entire simulation is repeated, so total iterations = S * Q
+  S = 250                      # Number of samples for Monte Carlo Simulation
+  , Q = 20                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
   , tol = 0.01               # tolerance for MDES and sample  size calculations
@@ -52,8 +52,8 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , MTP = c("Bonferroni", "BH", "Holm") # Multiple testing procedures
-  , runSim = FALSE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = TRUE           # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runSim = TRUE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = FALSE           # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
   , runPowerUp = FALSE       # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
@@ -115,7 +115,7 @@ if(run.wy)
   sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
   # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
   
-  sim.params.list[['B']] <- 100
+  sim.params.list[['B']] <- 1000
   
   model.params.list <- model.params.default
   
@@ -182,6 +182,7 @@ if(run.wy)
   if(run.d3.1)
   {
     model.params.list <- model.params.default
+    sim.params.list[['B']] <- 100
     
     # assumptions
     model.params.list[['numCovar.3']] <- 0
@@ -205,6 +206,7 @@ if(run.wy)
   if(run.d3.3)
   {
     model.params.list <- model.params.default
+    sim.params.list[['B']] <- 1000
     
     # assumptions
     model.params.list[['omega.2']] <- NULL
@@ -228,6 +230,7 @@ if(run.wy)
   if(run.d3.2)
   {
     model.params.list <- model.params.default
+    sim.params.list[['B']] <- 1000
     
     # assumptions
     model.params.list[['numCovar.3']] <- 0
