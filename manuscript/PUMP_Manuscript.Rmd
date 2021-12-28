@@ -1,5 +1,5 @@
 ---
-title: 'PUMP: Estimating Power, MDES, and Sample Size with Multiple Outcomes'
+title: 'Power Under Multiplicity Project (PUMP): Estimating Power, Minimum Detectable Effect Size and Sample Size When Adjusting for Multiple Outcomes'
 output:
   pdf_document:
     keep_tex: yes
