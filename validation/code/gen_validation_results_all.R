@@ -237,13 +237,25 @@ if(run.wy)
   if(run.d3.2)
   {
     model.params.list <- model.params.default
-    sim.params.list[['S']] <- 100
-    sim.params.list[['B']] <- 1000
     
     # assumptions
     model.params.list[['numCovar.3']] <- 0
     model.params.list[['R2.3']] <- NULL
     model.params.list[['omega.2']] <- NULL
+    
+    # for reasonable power and runtime
+    model.params.list[['nbar']] <- 50
+    model.params.list[['J']] <- 5
+    model.params.list[['K']] <- 10
+    model.params.list[['MDES']] <- rep(0.25, M)
+    model.params.list[['ICC.3']] <- rep(0.1, M)
+    model.params.list[['ICC.2']] <- rep(0.1, M)
+    model.params.list[['R2.1']] <- rep(0.4, M)
+    model.params.list[['R2.2']] <- rep(0.4, M)
+    model.params.list[['R2.3']] <- rep(0.4, M)
+    
+    sim.params.list[['S']] <- 100
+    sim.params.list[['B']] <- 100
     
     model.params.list[['omega.3']] <- NULL
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
