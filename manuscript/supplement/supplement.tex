@@ -37,23 +37,24 @@
 \section{Introduction}
 \label{sec:intro}
 
-We model multilevel randomized control trials using mixed effects linear regression models.
-To provide a concrete example, throughout we assume an education setting, where we have students (level 1) nested within schools (level 2) within districts (level 3).
-
-Our package allows for power calculations across a range of common scenarios.
+Our package allows for power calculations across a range of common scenarios that a user might select.
 Each scenario is categorized by two choices.
 First, the user chooses the planned experimental design (e.g., clustered data, with randomization within cluster).
-Second, the user makes modeling choices (e.g. random impacts model).
-Each of these components need to be identified and specified.
+Second, the user makes a choice of the planned analytic model they would use for the data, once they had it (e.g. a multilevel model with random impacts).
+%Both of these components need to be identified and specified.
+To provide a concrete example, throughout we assume an education setting where we have students (level 1) nested within schools (level 2) nested, in the three-level case, within districts (level 3).
 
-The \emph{design} is characterized by the number of levels of nesting (e.g., students in schools in districts would be three levels) and the level of randomization (e.g., randomization at schools would be randomization at level 2).
+The \emph{design} is characterized by the number of levels of nesting (e.g., students in schools, no districts, would be two levels) and the level of randomization (e.g., randomization of schools would be randomization at level two).
+
+The \emph{model} choices are a bit more complex, and we discuss them in detail below.
+In particular, for each model we support, we create a taxonomy by noting what modeling choice is used at each level of the model, and how covariates are used.
 
 The outline of this appendix is as follows.
 In the introduction, we provide notation, a taxonomy for models, explain user-set parameters, and outline the power estimation strategy.
-The bulk of the appendix then provides detailed information about each supported scenario, including the assumed model and standard error.
-The next section details the assumed data generating process.
-Though we use the process for our validation procedure, it is also useful for readers who wish to understand the models and assumptions more deeply.
-Finally, the last section shows how parameters chosen by the user influence the generated data.
+The bulk of the appendix then provides detailed information about each supported scenario, including the assumed model and standard error formula.
+We then describe the data generating process that we used for the package validation; this section might also be useful for readers who wish to understand the models and assumptions more deeply.
+The final two sections provide explicit formula linking the user-specified parameters to the full set of parameters used for data generation, followed by derivations of these formula.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Model taxonomy
@@ -61,11 +62,9 @@ Finally, the last section shows how parameters chosen by the user influence the 
 
 \subsection{Model taxonomy}
 
-The \emph{model} choices are a bit more complex.
-For the models used for analysis, we create a taxonomy by noting what modeling choice is used at each level of the model, and how covariates are used.
 
-First, to outline our models, we assume a set of observed quantities, shown in Table~\ref{tab:observed_param}, such as the outcomes, covariate values, and membership of each unit to level 2 or 3 units (such as assignment of a student to a school within a district).
-For all notation, we use $i$ to index individuals, $j$ to index level 2 groups, $k$ to index level 3 groups, and $m$ to index outcomes.
+To define our models, we first assume a set of observed quantities, shown in Table~\ref{tab:observed_param}, such as sample sizes, the outcomes, and covariates.
+For all notation, we use $i$ to index level 1 (individuals), $j$ to index level 2 (schools), $k$ to index level 3 (districts), and $m$ to index outcomes.
 
 \begin{table}[h]
 \begin{tabular}{p{1.5cm} | p{16cm}}

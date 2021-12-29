@@ -37,7 +37,7 @@ Updated: Dec 28 by KH
 - surface WY functions to user with good documentation (KH)
 - tool that helps user build a block matrix of correlations based on a list of correlations between outcomes (KH)
 - generate a data frame of reasonable defaults for shiny that produce 80% power
-- additional designs: d2.2_m2rr, d3.3_2mff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors
+- additional designs: d2.2_m2rr, d3.3_m2ff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors
 - effect size calculator
 - speed up everything
 - binary outcomes
