@@ -14,10 +14,10 @@ run.mdes.ss = FALSE
 run.wy = TRUE
 # which d_ms to run
 run.d2.1 = TRUE
-run.d2.2 = FALSE
-run.d3.1 = FALSE
-run.d3.3 = FALSE
-run.d3.2 = FALSE
+run.d2.2 = TRUE
+run.d3.1 = TRUE
+run.d3.3 = TRUE
+run.d3.2 = TRUE
 
 # for parallel processing
 q <- as.numeric(as.character(Sys.getenv("q")))
@@ -37,8 +37,8 @@ source(here::here("validation/code", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 3                      # Number of samples for Monte Carlo Simulation
-  , Q = 1                    # Number of times entire simulation is repeated, so total iterations = S * Q
+  S = 10                      # Number of samples for Monte Carlo Simulation
+  , Q = 20                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
   , tol = 0.01               # tolerance for MDES and sample  size calculations
@@ -189,9 +189,13 @@ if(run.wy)
     model.params.list[['R2.2']] <- NULL
     
     # for a reasonable runtime and power
-    model.params.list[['nbar']] <- 20
-    model.params.list[['J']] <- 20
-    model.params.list[['K']] <- 20
+    model.params.list[['nbar']] <- 100
+    model.params.list[['J']] <- 5
+    model.params.list[['K']] <- 5
+    model.params.list[['ICC.2']] <- rep(0.1, M)
+    model.params.list[['ICC.3']] <- rep(0.1, M)
+    model.params.list[['omega.2']] <- rep(0.05, M)
+    model.params.list[['omega.3']] <- rep(0.05, M)
     
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.1_m3rr2rr", q = q, overwrite)
     gc()
@@ -205,18 +209,22 @@ if(run.wy)
   {
     model.params.list <- model.params.default
     sim.params.list[['S']] <- 100
-    sim.params.list[['B']] <- 1000
+    sim.params.list[['B']] <- 100
     
     # assumptions
     model.params.list[['omega.2']] <- NULL
     model.params.list[['omega.3']] <- NULL
     
-    # for a reasonable power
-    model.params.list[['J']] <- 40
-    model.params.list[['K']] <- 20
-    model.params.list[['MDES']] <- rep(0.25, M)
-    model.params.list[['ICC.3']] <- rep(0.1, M)
-    model.params.list[['ICC.2']] <- rep(0.1, M)
+    # for a reasonable runtime and power
+    model.params.list[['J']] <- 10
+    model.params.list[['K']] <- 10
+    model.params.list[['nbar']] <- 100
+    model.params.list[['MDES']] <- rep(0.3, M)
+    model.params.list[['ICC.3']] <- rep(0.05, M)
+    model.params.list[['ICC.2']] <- rep(0.05, M)
+    model.params.list[['R2.1']] <- rep(0.4, M)
+    model.params.list[['R2.2']] <- rep(0.4, M)
+    model.params.list[['R2.3']] <- rep(0.4, M)
     
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.3_m3rc2rc", q = q, overwrite)
     gc()
@@ -241,12 +249,19 @@ if(run.wy)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
     
     # for reasonable power and runtime
-    model.params.list[['nbar']] <- 30
-    model.params.list[['J']] <- 15
-    model.params.list[['K']] <- 15
+    model.params.list[['nbar']] <- 100
+    model.params.list[['J']] <- 5
+    model.params.list[['K']] <- 5
     model.params.list[['MDES']] <- rep(0.25, M)
+    model.params.list[['ICC.3']] <- rep(0.1, M)
+    model.params.list[['ICC.2']] <- rep(0.1, M)
+    model.params.list[['R2.1']] <- rep(0.4, M)
+    model.params.list[['R2.2']] <- rep(0.4, M)
+    model.params.list[['R2.3']] <- rep(0.4, M)
     
-    model.params.list[['omega.3']] <- model.params.default[['omega.3']]
+    sim.params.list[['S']] <- 100
+    sim.params.list[['B']] <- 100
+    model.params.list[['omega.3']] <- rep(0.05, M)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
     gc()
   }
