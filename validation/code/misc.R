@@ -128,7 +128,7 @@ gen_params_file_base <- function(user.params.list, sim.params.list, d_m)
 #'
 #' @return results_plot
 
-gen.power.results.plot <- function(params.file.base, d_m)
+gen.power.results.plot <- function(params.file.base, d_m, small.font = FALSE)
 {
   power.file <- find_file(params.file.base, type = 'power')
   if(length(power.file) == 0)
@@ -146,6 +146,11 @@ gen.power.results.plot <- function(params.file.base, d_m)
         c("pum" = "PUMP", "pup" = "PowerUp", "sim" = "Simulation")
     )
     
+    power.results$MTP = plyr::revalue(power.results$MTP,
+       c("None" = "N", "Bonferroni" = "BF", "Holm" = "HO",
+         "WY-SS" = "WYSS", "WY-SD" = "WYSD")
+    )
+    
     power.results$method = factor(power.results$method, labels = )
     
     results.plot <- ggplot(power.results, aes(x = MTP, y = value, color = Method)) +
@@ -157,7 +162,7 @@ gen.power.results.plot <- function(params.file.base, d_m)
       ylab('Power') +
       ggtitle(paste('d_m:', d_m)) +
       ylim(0, 1) +
-      theme(axis.text.x = element_text(size = 7))
+      theme(axis.text.x = element_text(size = ifelse(small.font, 5, 7)))
   }
 
   return(results.plot)

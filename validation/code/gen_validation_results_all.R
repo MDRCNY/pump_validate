@@ -179,8 +179,7 @@ if(run.wy)
   if(run.d3.1)
   {
     model.params.list <- model.params.default
-    sim.params.list[['S']] <- 100
-    sim.params.list[['B']] <- 100
+    sim.params.list[['S']] <- 10
     
     # assumptions
     model.params.list[['numCovar.3']] <- 0
@@ -208,8 +207,7 @@ if(run.wy)
   if(run.d3.3)
   {
     model.params.list <- model.params.default
-    sim.params.list[['S']] <- 100
-    sim.params.list[['B']] <- 100
+    sim.params.list[['S']] <- 10
     
     # assumptions
     model.params.list[['omega.2']] <- NULL
@@ -236,7 +234,9 @@ if(run.wy)
   
   if(run.d3.2)
   {
+    # constant effects
     model.params.list <- model.params.default
+    sim.params.list[['S']] <- 10
     
     # assumptions
     model.params.list[['numCovar.3']] <- 0
@@ -254,11 +254,17 @@ if(run.wy)
     model.params.list[['R2.2']] <- rep(0.4, M)
     model.params.list[['R2.3']] <- rep(0.4, M)
     
-    sim.params.list[['S']] <- 100
-    sim.params.list[['B']] <- 100
     
     model.params.list[['omega.3']] <- NULL
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
+    
+    # random effects
+    model.params.list <- model.params.default
+    sim.params.list[['S']] <- 10
+    
+    model.params.list[['numCovar.3']] <- 0
+    model.params.list[['R2.3']] <- NULL
+    model.params.list[['omega.2']] <- NULL
     
     # for reasonable power and runtime
     model.params.list[['nbar']] <- 100
@@ -271,8 +277,7 @@ if(run.wy)
     model.params.list[['R2.2']] <- rep(0.4, M)
     model.params.list[['R2.3']] <- rep(0.4, M)
     
-    sim.params.list[['S']] <- 100
-    sim.params.list[['B']] <- 100
+    
     model.params.list[['omega.3']] <- rep(0.05, M)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
     gc()

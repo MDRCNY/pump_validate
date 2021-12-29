@@ -7,10 +7,7 @@ Updated: Dec 28 by KH
 
 # Manuscript
 
-- add discussion of shiny (KP)
-- is it plagiarism to be too close to previous Porter paper?
-- update appendix with validation (KH)
-- explanation of min power when numZero > 0 (KP and shiny)
+- explanation of min power when numZero > 0 (KP, shiny)
 
 *Waiting*
 
@@ -22,12 +19,9 @@ Updated: Dec 28 by KH
 *Medium priority*
 
 - write simulation correlation tool (KH)
-- make plots prettier (KH or LM)
 
 *Low priority*
 
-- plotting code (LM)
-  - clean up and condense data wrangling
 - messaging (KH or LM)
   - collect errors from grid and only print out unique errors
   - give user estimate of runtime for WY for MDES and SS
