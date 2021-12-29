@@ -8,7 +8,11 @@ bibliography: refs.bib
 header-includes:
   - \usepackage{setspace}
   - \usepackage{color}
+editor_options: 
+  chunk_output_type: console
 ---
+
+\doublespacing
 
 ```{r setup, include = FALSE}
 library( kableExtra )
@@ -138,15 +142,12 @@ The authors of the MDRC report pre-identified three of these outcomes as *primar
 We, by contrast, use this example to illustrate what could be done if there was uncertainty as to what should be the primary outcome.
 In particular, we illustrate how to conduct a power analysis to plan a study where one uses multiple testing adjustment, rather than predesignation, to account for the multiple outcome problem.
 
-\textcolor{red}{KH: this paragraph feels a bit disjointed to me, and possibly unnecessary? I'm struggling with what the main message is.}
-Due to the grouped nature of the outcomes, we elect to do a power analysis separately for each outcome group (mimicking the three chosen outcomes of the original study)  to control family-wise error rather than overall error.
-We would then adjust for the number of outcomes within each group independently.
-We note that there are different guidelines for when to adjust for multiple outcomes in education studies.\footnote{For example, Schochet (2008) recommends organizing primary outcomes into domains, conducting tests on composite domain outcomes, and applying multiplicity corrections to composites across domains. The What Works Clearinghouse applies multiplicity corrections to findings within the same domain rather than across different domains.}
-\textcolor{red}{This paper would apply to either case.
-In this paper, the word “outcome” refers to either a single outcome or an outcome domain, and the paper focuses on any situation in which an analyst would apply adjustments to account for multiple outcomes. KH: what are the two cases? Also, it seems like some formatting got messed up, should this be a footnote, and if so, where?}
-We do not provide recommendations for which guidelines to follow when investigating impacts on multiple outcomes. 
-Rather, we address the fact that researchers across many domains are increasingly applying MTPs and therefore need to correctly estimate power, MDES and sample size requirements accounting for this choice.
-For illustration purposes, we focus on an alternative approach in the Diplomas Now study involving assessing impacts on all 12 outcomes and applying MTPs to protect against the potential for spurious findings. 
+Researchers might elect to do multiple testing corrections within groups of outcomes or across all outcomes.
+For example, in our context, we might elect to adjust for the number of outcomes within each group independently to control family-wise error within group (mimicking the three chosen outcomes of the original study) rather than overall error across all twelve outcomes.
+In general, there are different guidelines for how and when to adjust for multiple outcomes in education studies.\footnote{For example, Schochet (2008) recommends organizing primary outcomes into domains, conducting tests on composite domain outcomes, and applying multiplicity corrections to composites across domains. The What Works Clearinghouse applies multiplicity corrections to findings within the same domain rather than across different domains.}
+We do not provide recommendations for which guidelines to follow as this paper applies regardless of overall approach; one can conduct a power analysis for whatever set of outcomes is desired.
+<!--We seek to we address the fact that researchers across many domains are increasingly applying MTPs and therefore need to correctly estimate power, MDES and sample size requirements accounting for this choice.-->
+For illustration purposes in our running example, however, we assume we are attempting to control error rate for a single outcome group (attendance) in the Diplomas Now study.
 
 \section{Overview of multiple testing}
 \label{sec:mtp_overview}
@@ -482,30 +483,30 @@ The method then conducts a stochastic optimization problem to determine a value 
 We discuss the algorithm for MDES, although the approach for determining sample size is the same.
 
 The algorithm first determines an initial range of MDES values that likely contain the target MDES.
-The lower bound is determined by the MDES for an analysis with no adjustment, and the upper bound is determined by the MDES for an analysis with a Bonferroni adjustment, as these provide conservative bounds and can be found using closed-form solutions.
-
-The initial range is calculated using formulae based on the standard errors and degrees of freedom.
-In particular, from @RN4473, in general the MDES can be estimated as
+This initial range is calculated using formulae for unadjusted power based on the standard errors and degrees of freedom.
+In particular, from @RN4473, in general the MDES for a single outcome can be estimated as
 $$ MDES = MT_{df} \times SE / \sigma_{m} $$
-where $MT_{df}$ is known as the multiplier and is the sum of two $t$ statistics with degrees of freedom $df$.
+where $MT_{df}$, the "multiplier," is the sum of two $t$ statistics with degrees of freedom $df$.
 For one-tailed tests, $MT_{df} = t_{\alpha}^\star + t_{1-\beta}^\star$ where $\alpha$ is the Type I error rate and $\beta$ is the desired power.
 For two-tailed tests, $MT_{df} = t_{\alpha/2}^\star + t_{1-\beta}^\star$.
 We do not explain the details of the derivations of the multiplier here; for more details and understanding, see @RN4473 or @RN27978.
-These expressions can be further manipulated to obtain sample size formulae; see the technical appendix for all formula in the package.
+These expressions can be further manipulated to obtain sample size formulae; see our technical appendix for all formulae used in the package.
 
-Using these formulae we can calculate bounds by manipulating the $\alpha$ and $\beta$ values.
-To calculate the lower bound, we apply the formula above as given; to calculate the upper bound, we apply the formula using $\alpha/M$ to correspond to a Bonferroni correction.
-We use the $\beta$ to adjust for the desired power and definition.
-For example, if we are interested in complete power, we need a larger upper bound than for individual power; in order to have a complete power of $0.8$, we would need each outcome to have an individual power of $\text{0.8}^{(1/M)}$, assuming independence.
-If we are interested in minimal power, we must have a smaller lower bound; in order to have $1-$minimal power of $0.8$, each outcome needs to have individual power of $1 - (1 - \text{0.8})^{(1/M)}$.
+We can calculate our initial bounds by manipulating the $\alpha$ and $\beta$ values in the above.
+First, to calculate the preliminary lower bound, we apply the formula above as given, assuming individual unadjusted power will give the smallest MDES; to calculate the preliminary upper bound, we apply the formula using $\alpha/M$ to correspond to a Bonferroni correction.
+We also adjust $\beta$ to account for different power types.
+For example, if we are interested in complete power, we need a larger upper bound than for individual power; in order to have a complete power of $80\%$, we would need each outcome to have an individual power of $\text{0.8}^{(1/M)}$, assuming independence.
+If we are interested in minimal power, we must have a smaller lower bound; in order to have $1-$minimal power of $80\%$, each outcome would only need to have individual power of $1 - (1 - \text{0.8})^{(1/M)}$.
 We ignore correlation in the setting of the initial bounds; the bounds do not need to be strict, given the adaptive nature of the subsequent search.
 
-Once the initial range is established, we use `pump_power()` with the complete array of design parameters including the correlation between test statistics to obtain rough (using a small `tnum`, or number of simulation trials) estimates of power for five initial values across this range.
+Once the initial range is established, we use `pump_power()` with the complete array of design parameters, including the correlation between test statistics, to obtain rough (using a small `tnum`, or number of simulation trials) estimates of power for five initial values across this range.
 We then fit a scaled logistic curve to these five points, and identify where the curve crosses the desired power level.
 After fitting an initial curve, we iterate, repeatedly calculating power for the targeted point and using the result to update the logistic curve model.
+At any point, if the current fitted curve's range does not contain the target power, the algorithm extrapolates beyond the initial bounds for the next step.
 With each iteration we increase `tnum` to increase precision as we narrow in on the final answer; with each update to our estimated power curve, we weigh the collection of observations by their precisions (determined by  corresponding `tnum` value).
-If a test point achieves the target power to within tolerance, we conduct an additional simulation check using a high number of replicates to verify the proposed answer is within a specified tolerance of the target power; if it is not, we continue the iterative search.
+Once a test point achieves the target power to within tolerance, we conduct an additional simulation check using a high number of replicates to verify the proposed answer is within a specified tolerance of the target power; if it is not, we continue the iterative search.
 The default tolerance is $1\%$, so given a target power of $80\%$, we stop when we find a MDES that gives an estimated power between $79\%$ and $81\%$.
+
 In practice, due to the monotonic nature of the logistic functional form, our algorithm generally converges fairly rapidly.
 However, in certain corner cases the algorithm may fail to converge on a value within tolerance.
 For more information on applying the search algorithm, see the sample size vignette on CRAN.
@@ -523,7 +524,7 @@ Then, we validated that the PUMP estimates fall within these confidence interval
 A more detailed explanation of the validation procedure can be found in the Appendix, and full validation code and results are in a supplementary github repository [pump_validate](https://github.com/MDRCNY/pump_validate).
 For some scenarios, we have some apparent discrepancies from PowerUp, but these result from different modeling choices.
 For example, for certain models PowerUp assumes the intraclass correlation is zero, while we allow for nonzero values.
-When there are discrepancies, these are noted in the appendix.
+These discrepancies are noted in the appendix.
 
 \section{User choices}
 \label{sec:choices}
@@ -543,7 +544,7 @@ For the same experimental design, the analyst can sometimes choose from a variet
 For example, a design with two levels and randomization at level one is a blocked design (or equivalently a multisite experiment), where level two forms the blocks (blocks being groups of units, some of which are treated and some not).
 Ideally, the blocks in a trial will be groups of relatively homogenous units, but frequently they are a consequence of the units being studied (e.g., evaluations of college supports, with students, the units, nested in colleges, the blocks).
 A design with two levels and randomization at level two is commonly called a cluster design (e.g., a collection of schools, with treatment applied to a subset of the schools, with outcomes at the student level); here the schools are the clusters, with a cluster being a collection of units which is entirely treated or entirely not.
-We can have both blocking and clustering; for example if we have a series of cluster-randomized experiments within different school districts, \textcolor{red}{we have district at level three}; this would be a blocked (by district), cluster-randomized experiment.
+We can also have both blocking and clustering: randomizing schools within districts, creating a series of cluster-randomized experiments, would be a blocked (by district), cluster-randomized experiment, with randomization at level two.
 
 *The model.* Given a design, the researcher can select a model via a few modeling choices.
 In particular the researcher has to decide about the intercepts and the treatment impacts:
@@ -631,28 +632,31 @@ In addition to design parameters, there are additional parameters that control t
 \section{Using the PUMP package}
 \label{sec:vignette}
 
-In this section, we illustrate how to use the PUMP package, using our example motivated by the Diplomas Now study. Given the study’s design, we ask a natural initial question: What size of impact could we reasonably detect after using an MTP to adjust $p$-values to account for our multiple outcomes?
+We illustrate how to use the PUMP package, using our example motivated by the Diplomas Now study. Given the study's design, we ask a natural initial question: What size of impact could we reasonably detect after using an MTP to adjust $p$-values to account for our multiple outcomes?
 
 We mimic the planning process one might use for planning a study similar to Diplomas Now (e.g., if we were planning a replication trial in a slightly different context).
 To answer this question we therefore first have to decide on our experimental design and modeling approach.
 We also have to determine values for the associated design parameters that accompany these choices, as listed on Table <<CITE EARLIER TABLE>>.
-In the following sections we walk through these parameters (sample size, control variables, intraclass correlation coefficients, impact variation, and correlation of outcomes).
-We next calculate MDES for the resulting context and then determine how necessary sample sizes change depending on what kind of power we desire.
+In the following sections we walk through selecting these parameters (sample size, control variables, intraclass correlation coefficients, impact variation, and correlation of outcomes).
+We calculate MDES for the resulting context and determine how necessary sample sizes change depending on what kind of power we desire.
 We finally illustrate some sensitivity checks, looking at how MDES changes as a function of rho, the correlation of the test statistics.
+
 
 
 \subsection{Establishing needed design parameters}
 
-To conduct power, MDES, and sample size calculations, we first must specify the design, model, and level of statistical significance.
-We must also must specify parameters of the data generating distribution (e.g., expected relationships between covariates, outcomes, and units in the study) that match the design and model.
+To conduct power, MDES, and sample size calculations, we first specify the design, sample sizes, analytic model, and level of statistical significance.
+We also must specify parameters of the data generating distribution that match the selected design and model.
 All of these numbers have to be determined given resource limitations, or estimated using prior knowledge, pilot studies, or other sources of information.
-We also must specify the sample sizes at each level.
-Our experiment has students nested in schools nested in randomization blocks that are a function of school type and district.
-We next discuss selection of all needed design parameters and modeling choices.
-For further discussion of selecting these parameters see, for example, see @RN27978, @RN4473 and @Porter2018.
 
-*Analytic model.* We first need to specify how we will analyze our data; this choice can also determine which design parameters we will need to specify.
-\textcolor{red}{KH comment: feels out of place to motivate using a multi-level model this far into the text.}
+We next discuss selection of all needed design parameters and modeling choices.
+For further discussion of selecting these parameters see, for example @RN27978 and @RN4473.
+For discussion in the multiple testing context, especially with regards to the overall power measures such as $1-$minimal or complete power, see @Porter2018; the findings there are general, as they are a function of the final distribution of test statistics.
+The key insight is that power is a function of only a few summarizing elements: the individual-level standard errors, the degrees of freedom, and the correlation structure of the test statistics.
+Once we have these elements, regardless of the design, we can proceed.
+
+
+*Analytic model.* We first need to specify how we will analyze our data; this choice also determines which design parameters we will need to specify.
 Following the original Diplomas Now report, we plan on using a multi-level model (a common choice for cluster randomized experiments, and especially common in education) with fixed effects at level three, a random intercept at level two, and a single treatment coefficient.
 We represent this model as "m3fc2rc."
 The "3fc" means we are including block fixed effects, and not modeling any treatment impact variation at level three.
@@ -671,14 +675,15 @@ We assume 50% of the schools are treated; our calculations will be approximate h
 The report does not provide these quantities, but it does mention covariate adjustment in the presentation of the model.
 Given the types of outcomes we are working with, it is unlikely that there are highly predictive individual-level covariates, but our prior year school-average attendance measures are likely to be highly predictive of corresponding school-average outcomes.
 We thus set $R^2_1 = 0.1$ and $R^2_2 = 0.5$.
-We assume five covariates at level one and three at level two; this decision, especially for level one, usually does not matter much in practice, unless sample sizes are very small (these with sample size determine the degrees of freedom for our planned tests).
+We assume five covariates at level one and three at level two; this decision, especially for level one, usually does not matter much in practice, unless sample sizes are very small (the number of covariates along with sample size determine the degrees of freedom for our planned tests).
 
 *ICCs.* We also need a measure of where variation occurs: the individual, the school, or the randomization block level.
 We capture this with Intraclass Correlation Coefficients (ICCs), one for level two and one for level three.
 ICC measures specify overall variation in outcome across levels: e.g., do we see relatively homogeneous students within schools that are quite different, or are the schools generally the same with substantial variation within them?
 We typically would obtain ICCs from pilot data or external reports on similar data.
 We here specify a level-two ICC of 0.05, and a level-three ICC of 0.40.
-\textcolor{red}{KH comment: I find this sentence a bit confusing/dense.} We set a relatively high level three ICC to capture the hoped-for purpose of blocking as a means of isolating variation; in particular we might imagine attendance changes markedly between middle and high school as well as across schools.
+\textcolor{red}{KH comment: I find this sentence a bit confusing/dense.} 
+We set a relatively high level three ICC as we expect our school type by district blocks to isolate variation; in particular we might believe middle and high school attendance rates would be markedly different.
 
 *Impact variation.* We next need to specify the assumed degree of treatment impact variation.
 We allow treatment variation across school type and district by setting omega.3 to 0.50 (a substantial amount).
@@ -707,9 +712,9 @@ To answer this question we calculate the minimal detectable effect size (MDES), 
 
 To identify the MDES of a given setting we use the `pump_mdes` method, which conducts a search for a MDES that achieves a target level of power.
 The MDES depends on all the design and model parameters discussed above, but also depends on the type of power and target level of power we are interested in.
-For example, we can ask what size effect can we reliably detect on our first outcome, after multiplicity adjustment?
-Or, we might ask what size effects would we need across our five outcomes to reliably detect an impact on at least one of them?
-We do this by specifying the type (`power.definition`) and desired power (`target.power`).
+For example, we could determine what size effect we can reliably detect on our first outcome, after multiplicity adjustment.
+Or, we could determine what size effects we would need across our five outcomes to reliably detect an impact on at least one of them.
+We set our goal by specifying the type (`power.definition`) and desired power (`target.power`).
 
 Here, for example, we find the MDES if we want an 80% chance of detecting an impact on our first outcome when using the Holm procedure:
 
@@ -738,7 +743,7 @@ kable(m, digits = 2)
 ```
 
 The answers `pump_mdes()` gives are approximate as we are calculating them via monte carlo simulation.
-To control accuracy, we can specify a tolerance (`tol`) of how close the estimated power needs to be to the desired target along with the number of iterations in the search sequence (via `start.tnum`, `max.tnum`, and `final.tnum`).
+To control accuracy, we can specify a tolerance (`tol`) of how close the estimated power needs to be to the desired target along with the number of iterations in the search sequence (via `start.tnum`, `tnum`, and `final.tnum`).
 The search will stop when the estimated power is within `tol` of `target.power`, as estimated by `final.tnum` iterations.
 Lower tolerance and higher `tnum` values will give more exact results (and take more computational time).
 
@@ -750,17 +755,18 @@ kable(m2, digits = 2)
 ```
 
 The `update()` method can replace any number of arguments of the prior call with new ones, making exploration of different scenarios very straightforward.\footnote{The $`update()`$ method re-runs the underlying call of $`pump_mdes()`$, $`pump_sample()`$, or $`pump_power()`$ with the revised set of design parameters. You can even change which call to use via the `type` parameter.}
-Our results show that if we just want to detect at least one outcome with 80% power, we can reliably detect an effect of size $0.08$ (assuming all three outcomes have effects of at least that size).
+Our results show that if we just want to detect at least one outcome with 80% power, we can reliably detect an effect of size $0.08$ (assuming all five outcomes have effects of at least that size).
 
 When estimating power for multiple outcomes, it is important to consider cases where some of the outcomes in fact have null, or very small, effects, to hedge against circumstances such as one of the outcomes not being well measured.
-One way to to do this here is to assume two of our outcomes have no effect; the `numZero` parameter allows for this as follows:
+One way to do this is to set two of our outcomes to no effect with the `numZero` parameter:
 
 ```{r MDESwithNumZero, echo=TRUE}
 m3 <- update( m2, numZero = 2 )
 kable(m3, digits = 2)
 ```
 
-The MDES goes up, as expected. \textcolor{red}{KH: add one sentence explaining why this is expected? KP suggestion: When there are not effects on all outcomes, the probability of detecting the effects that do actually exist is diminished. Therefore, an increased MDES is required to achieve the same level of desired power (80 percent). Below we provide a deeper dive into the extent to which numZero can effect power estimates.}
+The MDES goes up, as expected: when there are not effects on some outcomes, there are fewer good chances for detecting an effect.
+Therefore, an increased MDES (for the nonzero outcomes) is required to achieve the same level of desired power (80 percent). Below we provide a deeper dive into the extent to which numZero can effect power estimates.}
 
 
 
@@ -768,10 +774,14 @@ The MDES goes up, as expected. \textcolor{red}{KH: add one sentence explaining w
 
 The MDES calculator tells us what we can detect given a specific design.
 We might instead want to ask how much larger our design would need to be in order to achieve a desired MDES.
-In particular, we might want to determine the needed number of students per school, the number of schools, or the number of blocks needed to detect an effect of a given size.
-The `pump_sample` method will search over any one of these, as requested.
+In particular, we might want to determine the needed number of students per school, the number of schools, or the number of blocks to detect an effect of a given size.
+The `pump_sample` method will search over any one of these.
 
-Assuming we have three schools per block, we first calculate how many blocks we would need to achieve a MDES of 0.10 for $1-$minimal power (this answer the question of how big of an experiment do we need in order to have an 80% chance of finding at least one outcome significant, if all outcomes had a true effect size of 0.10).
+Assuming we have three schools per block, we first calculate how many blocks we would need to achieve a MDES of 0.10 for $1-$minimal power (this answers the question of how big of an experiment do we need in order to have an 80% chance of finding at least one outcome significant, if all outcomes had a true effect size of 0.10).
+
+```{r setseedsamp, include = FALSE}
+set.seed( 0440044 )
+```
 
 ```{r samplesizecalc}
 smp <- pump_sample(
@@ -784,56 +794,47 @@ smp <- pump_sample(
   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.40, rho = 0.4 )
 ```
 
-```{r echo = FALSE}
+```{r samplesizecalckableecho = FALSE}
 kable(smp)
 ```
 
-We would need 16 blocks, rather than the originally specified 21, giving 48 total schools in our study, to achieve 80% $1-$minimal power.
+We would need 15 blocks, rather than the originally specified 21, giving 45 total schools in our study, to achieve 80% $1-$minimal power.
 
 We recommend checking MDES and sample-size calculators, as the estimation error combined with the stochastic search can give results a bit off the target in some cases.
 A check is easy to do; simply run the found design through `pump_power()`, which directly calculates power for a given scenario, to see if we recover our originally targeted power (we can use `update()` and set the type to `power` to pass all the design parameters automatically).
 When we do this, we can also increase the number of iterations to get more precise estimates of power, as well:
 
 ```{r samplesizeverify}
-p_check <- update( smp, type = "power", tnum = 100000 )
-print(p_check)
+p_check <- update( smp, type = "power", tnum = 100000,
+                   long.table = TRUE)
+knitr::kable(p_check, row.names = FALSE)
 ```
 
 When calculating power directly, we get power for all the implemented definitions of power applicable to the design.
-In the above, the first five columns are the powers for rejecting each of the five outcomes---they are (up to simulation error) the same since we are assuming the same MDES and other design parameters for each.
-The `indiv.mean` is the mean individual power across all outcomes.
-The first row is power without adjustment, and the second row has our power with the listed $p$-value adjustment.
+In the above, the first five rows are the powers for rejecting each of the five outcomes---they are (up to simulation error) the same since we are assuming the same MDES and other design parameters for each.
+The "mean individual" is the mean individual power across all outcomes.
+The first column is power without adjustment, and the second has our power with the listed $p$-value adjustment.
 
-The next columns show different multi-outcome definitions of power.
-In particular, `min1` and `min2` show the chance of rejecting at least one or two hypotheses, respectively.
-The `complete` column shows the power to reject all hypotheses; it is only defined if all outcomes are specified to have a non-zero effect.\footnote{The package does not show power for these without adjustment for multiple testing, as that power would be grossly inflated and meaningless.}
+The next rows show different multi-outcome definitions of power.
+In particular, `1-minimum` shows the chance of rejecting at least one hypotheses.
+The `complete` row shows the power to reject all hypotheses; it is only defined if all outcomes are specified to have a non-zero effect.\footnote{The package does not show power for these without adjustment for multiple testing, as that power would be grossly inflated and meaningless.}
 
-We can also plot the resulting power object, comparing the different MTPs and definitions of power.
+We can look at a power curve of our `pump_sample()` call to assess how sensitive power is to our level two sample size:\footnote{The points on the plots show the evaluated simulation trials, with larger points corresponding to more iterations and greater precision.}
 
-```{r}
-plot( p_check )
-```
-
-We can look at a power curve to assess how sensitive power is to our level two sample size:\footnote{The points on the plots show the evaluated simulation trials, with larger points corresponding to more iterations and greater precision.}
-
-```{r, fig.height = 3.5, fig.width=5, echo=TRUE}
+```{r plotsamplepowercurve, fig.height = 3.5, fig.width=5, echo=TRUE}
 plot_power_curve( smp )
 ```
 
-\subsection{Comparing alternate approaches}
-
-The package works with a range of multiple testing procedures and a range of modeling options. In the next two sections we show how to compare these within a given experimental design.
-
-\subsubsection{Comparing adjustment procedures}
+\subsection{Comparing adjustment procedures}
 
 It is easy to rerun the above using the Westfall-Young Stepdown procedure (this procedure is much more computationally intensive to run), or other procedures of interest.
 Alternatively, simply provide a list of procedures you wish to compare.
 If you provide a list, the package will re-run the power calculator for each item on the list; this can make the overall call computationally intensive.
-Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young adjustments:
+Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young adjustments, and plot the results using the default `plot()` method:
 
 ```{r othercorrections}
 p2 <- update( p_check, MTP = c("Bonferroni", "Holm", "WY-SD"), tnum = 10000 )
-print( p2 )
+plot( p2 )
 ```
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
@@ -842,39 +843,16 @@ Accounting for the correlation of the test statistics when adjusting $p$-values 
 See @Porter2018 for further discussion; while the paper focuses on the multisite randomized trial context, the lessons learned there apply to all designs as the only substantive differences between different design and modeling choices is in how we calculate the unadjusted distribution of their test statistics.
 
 
-\subsubsection{Comparing modeling choices}
-
-There are usually a range of modeling choices one might bring to a given experimental design.
-For example, for multisite experiments ("d2.1" designs), @MiratrixWeiss2020 identify 15 different estimation strategies.
-Different choices can imply different targeted estimands, which in turn can impact power.
-In particular, methods that target superpopulation averages versus finite sample averages will generally have lower power if there is treatment impact variation.
-
-In `PUMP` these choices are specified by different `design` arguments.
-For our context, for example, we could use a random effects model at level three instead of a fixed effects model, setting `design = "d3.2_m3rr2rc"` instead of `"d3.2_m3fc2rc"`; this would target a superpopulation average, viewing the blocks as a random sample, versus a finite population where the blocks are considered fixed.
-
-Random effects models allow for level three covariates, which we would need to specify via `numCovar.3` and `R2.3` to capture how many there are and how predictive they are:
-
-```{r}
-p3 <- update( p_check, design = "d3.2_m3rr2rc", numCovar.3 = 3, R2.3 = 0.40 )
-print( p3 )
-```
-
 
 \subsection{Exploring sensitivity to design parameters}
 
-Given the above, we might wonder how power shifts if we change our design parameters.
-For some discussion of what parameters will affect power more generally, see @RN4473.
-\textcolor{red}{KH comment: this sentence is repetitive from above
-For discussion of how design parameters can affect the overall power in the multiple testing context, especially with regards to the overall power measures such as $1-$minimal or complete power, see @Porter2018; the findings there are general, as they are a function of the final distribution of test statistics.}
-The key insight is that power is a function of only a few summarizing elements: the individual-level standard errors, the degrees of freedom, and the correlation structure of the test statistics.
-Once we have these elements, regardless of the design, we can proceed.
 
 Within the pump package we have two general ways of exploring design sensitivity.
 The first is with `update()`, which allows for quickly generating a single alternate scenario.
 To explore sensitivity to different design parameters more systematically, use the `grid()` functions, which calculate power, mdes, and sample size for all combinations of a set of passed parameter values.
-The main difference between the two approaches is the `update()` approach allows for different values of a parameter for the different outcomes.
-The `grid` approach is more limited in this regard, and assumes the same parameter value across different outcomes.
-However, the `grid` function powerful tool for systematically exploring many possible combinations, while `update()` only allows the user to explore one value at a time.
+There are two main differences between the two approaches.
+First, `update()` allows for different values of a parameter for the different outcomes; the `grid` approach, by contrast, is more limited in this regard, and assumes the same parameter value across different outcomes.
+Second, the `grid` functions are a powerful tool for systematically exploring many possible combinations, while `update()` only allows the user to explore one value at a time.
 
 We first illustrate the `update()` approach, and then turn to illustrating `grid()` across three common areas of exploration: Intraclass Correlation Coefficients (ICCs), the correlation of test statistics, and the assumed number of non-zero effects.
 The last two are particularly important for multiple outcome contexts.
@@ -929,7 +907,8 @@ grid$ICC.3 = as.factor( grid$ICC.3 )
 grid = filter( grid, MTP == "Holm" )
 ggplot( grid, aes( ICC.2, min1, group = ICC.3, col = ICC.3 ) ) +
 	geom_line() + geom_point() +
-	labs( y = "Min-1 Power" )
+	labs( y = "Min-1 Power" ) +
+  coord_cartesian( ylim=c(0,1) )
 ```
 
 \textcolor{red}{KH comment: maybe also demonstrate grid alone, in addition to update\_grid?}
@@ -943,11 +922,11 @@ SE( \hat{\tau} ) = \sqrt{
 \frac{(1-\text{ICC}_{2} - \text{ICC}_{3})(1-R^2_{1})}{\bar{T}(1 - \bar{T}) J K\bar{n}} } .
 \end{aligned}
 $$
-In the above, the $\bar{n} = 258$ students per group makes the second term very small compared to the first regardless of the ICC.3 value.
+In the above, the $\bar{n} = 258$ students per group makes the second term very small compared to the first, regardless of the ICC.3 value.
 The first term, however, is a direct scaling of ICC.2; changing it will change the standard error, and therefore power, a lot.
 All provided designs and models implemented in the package are discussed, along with corresponding formula such as these, in our technical supplement accompanying this paper and package.
 
-For grid searches we recommend reducing the number of permutations (here to 5000 via `tnum`) to speed up computation.
+For grid searches we recommend reducing the number of permutations, via `tnum`, to speed up computation.
 As `tnum` shrinks, we will get increasingly rough estimates of power, but even these rough estimates can help us determine trends.
 
 The `grid()` functions provide easy and direct ways of exploring how power changes as a function of the design parameters.
@@ -963,17 +942,21 @@ For example, with Westfall-Young, we saw that the correlation can improve our in
 We might not know what will happen to $2-$minimal power, however: on one hand, correlated statistics make individual adjustment less severe, and on the other correlation means we succeed or fail all together.
 We can explore this question relatively easily by letting `rho` vary as so:
 
+```{r include=FALSE}
+set.seed( 4040440 )
+```
+
 ```{r, fig.height=3, fig.width=7}
-grid <- update_grid( p_check,
-        	MTP = c( "Bonferroni", "WY-SS" ),
-        	rho = c( 0, 0.15, 0.3, 0.45, 0.6 ),
+gridRho <- update_grid( p_check,
+        	MTP = c( "Bonferroni", "WY-SD" ),
+        	rho = seq( 0, 0.9, by=0.15 ),
         	tnum = 500,
         	B = 10000 )
 ```
 
 We then plot our results.
 ```{r, fig.height=3, fig.width=7}
-gridL = filter( grid, MTP != "None" ) %>%
+gridL = filter( gridRho, MTP != "None" ) %>%
   pivot_longer( cols = c(indiv.mean, min1, min2, complete),
             	names_to = "definition", values_to = "power" ) %>%
   mutate( definition = factor( definition,
@@ -982,7 +965,9 @@ gridL = filter( grid, MTP != "None" ) %>%
 ggplot( gridL, aes( rho, power, col=MTP ) ) +
   facet_grid( . ~ definition ) +
   geom_line() + geom_point() +
-  geom_hline( yintercept =0.80 ) + theme_minimal()
+  geom_hline( yintercept = c( 0, 0.80 ) ) + 
+  theme_minimal() +
+  coord_cartesian( ylim=c(0,1) )
 ```
 
 First, we see the benefit of the Westfall-Young single-step procedure is minimal, as compared to Bonferroni.
@@ -997,24 +982,29 @@ We finally explore varying the number of outcomes with no effects.
 This exploration is an important way to hedge a design against the possibility that some number of the identified outcomes are measured poorly, or are simply not impacted by treatment.
 We use a grid search, varying the number of outcomes that have no treatment impact via the `numZero` design parameter:
 
+```{r include=FALSE}
+set.seed( 402440411 )
+```
+
 ```{r, fig.width = 7, fig.height = 2.5 }
-grid <- update_grid( p_check,
+gridZero <- update_grid( p_check,
         	numZero = 0:4,
         	M = 5 )
 ```
 
 We then can make a plot as we did above:
-```{r, echo=FALSE, fig.width = 7, fig.height = 2.5, warnings=FALSE }
-gridL = filter( grid, MTP != "None" ) %>%
-  pivot_longer( cols = c(indiv.mean, min1, min2, complete),
+```{r, echo=FALSE, fig.width = 7, fig.height = 2.25, warnings=FALSE }
+gridL = filter( gridZero, MTP != "None" ) %>%
+  pivot_longer( cols = c(indiv.mean, min1, min2, min3, min4 ),
             	names_to = "definition", values_to = "power" ) %>%
-  mutate( definition = factor( definition,
-                           	levels = c("indiv.mean", "min1", "min2", "complete" ) ) )
+  mutate( definition = as.factor( definition ) )
 
 ggplot( gridL, aes( numZero, power ) ) +
   facet_grid( . ~ definition ) +
-  geom_line() + geom_point() +
-  geom_hline( yintercept =0.80 ) + theme_minimal()
+  geom_line( ) + geom_point() +
+  geom_hline( yintercept = 0.80, col="darkgrey" ) +
+  coord_cartesian( ylim = c(0,1) ) +
+  theme_minimal()
 ```
 
 There are other ways of exploring the impact of weak or null effects on some outcomes.
