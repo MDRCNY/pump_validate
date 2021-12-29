@@ -34,16 +34,16 @@ set.seed( 1010203 )
 
 \section*{Abstract}
 
-Researchers in the social sciences and other fields frequently use randomized controlled trials (RCTs) to determine the impact of an intervention of interest.
-We introduce the power under multiplicity project (`PUMP`) `R` package as a tool for analysts to estimate statistical power, minimum detectable effect size, and sample size requirements for multi-level RCTs.
-`PUMP` fills a gap in existing software tools by estimating power when applying a multiple testing procedure to adjust for measuring the impact of a single intervention on multiple outcomes.
-Current power estimation software does not take into account the use of multiple testing procedures, which can result in inaccurate estimate of power, and limits the different notions of power an analyst may want to consider.
-The `PUMP` package supports a variety of commonly-used RCT designs and models and multiple testing procedures.
+For randomized controlled trials (RCTs) with a single intervention being measured on multiple outcomes, researchers typically apply a multiple testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust $p$-values.
+Such an adjustment reduces the likelihood of spurious findings, but also changes the statistical power, sometimes substantially, which reduces the probability of detecting effects when they do exist.
+However, this consideration is frequently ignored in typical power analyses, as existing tools do not easily accommodate the use of multiple testing procedures.
+We introduce the `PUMP` `R` package as a tool for analysts to estimate statistical power, minimum detectable effect size, and sample size requirements for multi-level RCTs with multiple outcomes.
+Multiple outcomes are accounted for in two ways.
+First, power estimates from `PUMP` properly account for the adjustment in $p$-values from applying a multiple testing procedure.
+Second, as researchers change their focus from one outcome to multiple outcomes, different definitions of statistical power emerge.
+`PUMP` allows researchers to consider a variety of definitions of power, as some may be more appropriate for the goals of their study.
+The package estimates power for frequentist multi-level mixed effects models, and supports a variety of commonly-used RCT designs and models and multiple testing procedures.
 In addition to the main functionality of estimating power, minimum detectable effect size, and sample size requirements, the package allows the user to easily explore sensitivity of these quantities to changes in underlying assumptions.
-In this paper, we first introduce the package, and motivate the problem of multiple testing.
-Next, we introduce a specific educational experiment as a running example throughout the paper.
-We then introduce the package functionality, and the simulation-based approach to power estimation employed by the package.
-Finally, we demonstrate applying `PUMP` to the educational experiment to inform an analyst's choices.
 
 \section{Introduction}
 \label{sec:intro}
