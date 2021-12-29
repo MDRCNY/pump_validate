@@ -1,4 +1,5 @@
 library(ggplot2)
+library(plyr)
 
 #' Copy arguments into env and re-bind any function's lexical scope to bindTargetEnv .
 #'
@@ -141,11 +142,17 @@ gen.power.results.plot <- function(params.file.base, d_m)
     power.results$compare = TRUE
     power.results$compare[power.results$method == 'sim'] = FALSE
     
+    power.results$Method = plyr::revalue(power.results$method,
+        c("pum" = "PUMP", "pup" = "PowerUp", "sim" = "Simulation")
+    )
+    
+    power.results$method = factor(power.results$method, labels = )
+    
     results.plot <- ggplot(power.results, aes(x = MTP, y = value, color = method)) +
       geom_point(aes(size = compare)) +
       geom_line() +
       scale_size_manual(values = c('TRUE' = 1.5, 'FALSE' = 0)) +
-      guides(size = FALSE) +
+      guides(size = "none") +
       facet_wrap(~power_type, labeller = label_both) +
       ylab('Power') +
       ggtitle(paste('d_m:', d_m)) +
