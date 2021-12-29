@@ -1775,7 +1775,10 @@ adjustments:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check, }\AttributeTok{MTP =} \FunctionTok{c}\NormalTok{(}\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"Holm"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{), }\AttributeTok{tnum =} \DecValTok{10000}\NormalTok{ )}
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check,}
+              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{(}\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"Holm"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{),}
+              \AttributeTok{tnum =} \DecValTok{10000}\NormalTok{,}
+              \AttributeTok{parallel.WY.clusters =} \DecValTok{3}\NormalTok{ )}
 \FunctionTok{print}\NormalTok{( p2 )}
 \CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
 \CommentTok{\#\textgreater{}         MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean   min1   min2}
@@ -1791,6 +1794,10 @@ adjustments:
 \CommentTok{\#\textgreater{}  0.001 \textless{}= SE \textless{}= 0.002}
 \end{Highlighting}
 \end{Shaded}
+
+To speed up computation, we set \texttt{parallel.WY.clusters\ =\ 3} to
+parallelize the computation. We also reduce \texttt{tnum} to decrease
+computation time.
 
 The more sophisticated (and less conservative) adjustment exploits the
 correlation in our outcomes (\texttt{rho\ =\ 0.4}) to provide higher

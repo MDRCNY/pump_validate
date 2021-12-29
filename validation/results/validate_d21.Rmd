@@ -308,7 +308,7 @@ print(d2.1_m2fc_ICC2.0_power_plot)
 ```
 
 ```{r}
-png(file = here::here('validation/results', 'example_validation_plot.png'))
+png(file = here::here('validation/results', 'example_validation_plot.png'), width = 500, height = 500)
 print(d2.1_m2fc_ICC2.0_power_plot)
 dev.off()
 ```
@@ -408,10 +408,6 @@ if(length(mdes.file) == 0)
 ```
 
 
-```{r, include = FALSE}
-library(knitr)
-kable(d2.1_m2ff_mdes_D1_results, format = 'latex', digits = 3)
-```
 
 ```{r 2f_mdes_D1}
 d_m <- "d2.1_m2ff"
@@ -430,6 +426,11 @@ if(length(mdes.file) == 0)
     caption = d_m
   )    
 }
+```
+
+```{r, include = FALSE}
+library(knitr)
+kable(d2.1_m2ff_mdes_D1_results, format = 'latex', digits = 3)
 ```
 
 ```{r 2r_mdes_D1}

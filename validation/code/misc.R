@@ -148,7 +148,7 @@ gen.power.results.plot <- function(params.file.base, d_m)
     
     power.results$method = factor(power.results$method, labels = )
     
-    results.plot <- ggplot(power.results, aes(x = MTP, y = value, color = method)) +
+    results.plot <- ggplot(power.results, aes(x = MTP, y = value, color = Method)) +
       geom_point(aes(size = compare)) +
       geom_line() +
       scale_size_manual(values = c('TRUE' = 1.5, 'FALSE' = 0)) +
@@ -156,7 +156,8 @@ gen.power.results.plot <- function(params.file.base, d_m)
       facet_wrap(~power_type, labeller = label_both) +
       ylab('Power') +
       ggtitle(paste('d_m:', d_m)) +
-      ylim(0, 1)
+      ylim(0, 1) +
+      theme(axis.text.x = element_text(size = 7))
   }
 
   return(results.plot)

@@ -855,9 +855,15 @@ If you provide a list, the package will re-run the power calculator for each ite
 Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young adjustments:
 
 ```{r othercorrections}
-p2 <- update( p_check, MTP = c("Bonferroni", "Holm", "WY-SD"), tnum = 10000 )
+p2 <- update( p_check,
+              MTP = c("Bonferroni", "Holm", "WY-SD"),
+              tnum = 10000,
+              parallel.WY.clusters = 3 )
 print( p2 )
 ```
+
+To speed up computation, we set `parallel.WY.clusters = 3` to parallelize the computation.
+We also reduce `tnum` to decrease computation time.
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
 Note, however, that we do not see elevated rates for $1-$minimal power.

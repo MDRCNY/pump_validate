@@ -7,8 +7,6 @@ Updated: Dec 28 by KH
 
 # Manuscript
 
-- rewrite abstract
-- add discussion of parallel computing for WY (KH)
 - add discussion of shiny (KP)
 - is it plagiarism to be too close to previous Porter paper?
 - update appendix with validation (KH)
@@ -32,7 +30,6 @@ Updated: Dec 28 by KH
   - clean up and condense data wrangling
 - messaging (KH or LM)
   - collect errors from grid and only print out unique errors
-  - better error messaging for flat power curves (both shiny and non-shiny)
   - give user estimate of runtime for WY for MDES and SS
 
 # Validation
