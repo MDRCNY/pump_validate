@@ -647,9 +647,9 @@ For precise formulae of these expressions, see the Supplementary Materials, whic
 
 In addition to design parameters, there are additional parameters that control the precision of the power estimates themselves:
 
-- $tnum$ is the number of test statistics generated in order to estimate power. A larger number of test statistics results in greater computation time, but also a more precise estimate of power.  (Note that the `pump_mdes()` and `pump_sample()` have multiple `tnum` parameters controlling the precision of the search).
-- $B$ is the number of Westfall-Young permutations. Again, there is a tradeoff between precision and computation time.
-
+- `tnum` is the number of test statistics generated in order to estimate power. A larger number of test statistics results in greater computation time, but also a more precise estimate of power. Note that the `pump_mdes()` and `pump_sample()` have multiple `tnum` parameters controlling the precision of the search.
+- `B` is the number of Westfall-Young permutations. Again, there is a tradeoff between precision and computation time.
+- `parallel.WY.cores` specifies the number of cores to use for parallel computation of the Westfall-Young Step-Down procedure, which is the most computationally intensive. The default of `1` does not result in parallel computation. Parallelization is done using `parApply` from the `parallel` package.
 
 \section{Using the PUMP package}
 \label{sec:vignette}
@@ -1068,131 +1068,91 @@ We would like to thank members of the Harvard CARES lab for their feedback on th
 
 \section{Appendix: Validation}
 
-This appendix discusses our work to validate that the power estimation methods work as intended.
-
-We compare three different methods of estimating power:
+In order to validate that our power estimates are working as intended, we compared three different methods of estimating power:
   
 * `PUMP`
-* `PowerUpR` (only comparable for D1individual, unadjusted power)
-* Monte Carlo Simulations
+* `PowerUpR`
+* Monte Carlo simulations
 
-We compare point estimates of power from `PUMP` and `PowerUpR` for D1 individual, unadjusted power estimates.
+We compute values from `PowerUpR` for individual, unadjusted power, as `PowerUpR` only provides power estimates in that setting.
 For all other types of power definitions and adjustments, we are only able to compare `PUMP` to the estimated power from Monte Carlo simulations.
-The simulations produce a 95\% confidence interval for power, and we check that the `PUMP` estimate is within the confidence interval.
+We follow the simulation approach outlined in detail in Section~\ref{sec:est_power}.
+After repeatedly simulating data and calculating $p$-values, we calculate power and a 95\% confidence interval, assuming a conservative standard error estimate of $\sqrt{0.25/S}$.
 
-\subsection{Monte Carlo Simulations}
-
-The main work of this validation step was to design monte carlo simulations in order to estimate power.
-In order to estimate power by simulation, we follow the following steps.
-
-For iteration $s = 1, \dots S$:
-  
-1. Generate simulated data according to the assumed data generating process (DGP)
-2. Generate simulated treatment assignment
-3. Calculate $p$-value given simulated data, treatment assignment, and assumed model
-
-At the end, a 95\% confidence interval for power is calculated, assuming a conservative standard error estimate of $\sqrt{0.25/S}$.
+To validate the estimates, we first check that the `PUMP` and `PowerUpR` estimates match.
+In some settings we expect some discrepancies between these values because `PUMP` has different assumptions than `PowerUpR` for certain models.
+For details about differences between `PUMP` and `PowerUpR` assumptions, see the Supplementary Materials.
+Second, we check that the `PUMP` estimate is within the Monte Carlo confidence interval.
 
 We also validate MDES and sample size calculations.
-For MDES, we choose one default scenario for each design and model, then input the already-calculated D1 individual power and see if the output MDES is the same as the original input MDES.
-Similarly, for sample size validation, we input the already-calculated D1 individual power and see if the output sample size (either $J$ or $K$ depending on design) is the same as the original sample size.
+For MDES, we choose one default scenario for each design and model, then input the already-calculated individual power and see if the output MDES is the same as the original input MDES.
+Similarly, for sample size validation, we input the already-calculated individual power and see if the output sample size (`nbar`, `J`, and `K` depending on design) is the same as the original input sample size.
 
-\subsection{Simulation parameters}
+\textbf{Simulation parameters}
 
 In order to validate that the method works in a wide range of scenarios, which vary the following parameters.
 
 Parameters that vary:
-  
-  | Parameter               | Default                | Comparison values |
-  ---                       | ---                    | ---
-  | school size $\bar{n}$   | 50                     | 75, 100           |
-  | $R^2$                   | 0                      | 0.6               |
-  | $\rho$                  | 0.5                    | 0.2, 0.8          |
-  | ATE (ES) true positives | (0.125, 0.125, 0.125)  | (0.125, 0, 0)     |
-  | ICC                     | 0.2                    | 0.7               |
-  | $\omega$                | 0.1                    | 0.8               |
-  
+\begin{tabular}{l l l}
+Parameter               & Default                & Comparison values \\ \hline
+school size $\bar{n}$   & 50                     & 75, 100           \\
+$R^2$                   & 0                      & 0.6               \\
+$\rho$                  & 0.5                    & 0.2, 0.8          \\
+MDES                    & (0.125, 0.125, 0.125)  & (0.125, 0, 0)     \\
+ICC                     & 0.2                    & 0.7               \\
+$\omega$                & 0.1                    & 0.8               \\
+\end{tabular}
+
 We do not vary:
 
-* $M = 3$
-* $J$ and $K$ are fixed for each scenario
-* Scalar grand mean $\Xi_0$
-* Correlations between school random effects and impacts $\kappa$
-* $\rho$ informs all correlations; we keep the same correlation between covariates, residuals, impacts, random effects for all levels and across all outcomes
+* `M = 3`
+* `J` and `K` are fixed for each scenario
+* Scalar grand mean of control outcomes
+* Correlations between school random effects and impacts
+* `rho` informs all correlations; we keep the same correlation between covariates, residuals, impacts, random effects for all levels and across all outcomes
 
-\subsection{Validation results}
+\textbf{Validation results}
 
 Below is an example of a graph we use for validation.
-The red dot is the PUM estimate of power, the green dot is the `PowerUpR` estimate of power, and the 95% confidence intervals based on the monte carlo simulations are shown in blue.
+The green dots are `PUMP` estimate of power, the red dot is the `PowerUpR` estimate of power, and the 95\% confidence intervals based on the Monte Carlo simulations are shown in blue.
 To validate that `PUMP` produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals.
-The plot shows the results across different types of power and different MTPs.
-We repeat this graph for each set of parameters for each design.
+Figure~\ref{fig:validate} shows the results across different types of power and different MTPs.
+We repeat this plot for a variety of different parameter values for each design and model.
 
 \begin{figure}
   \includegraphics[width=\linewidth]{example_validation_plot.png}
+  \label{fig:validate}
 \end{figure}
 
 Next, we validate MDES and sample size calculations.
 We put in our found power, and then see if the `pump_mdes()` function returns the MDES we originally plugged in to achieve this power.
-The first column shows the calculated MDES, the middle column is the power we plugged into the calculation, and the last column shows the MDES that we are targeting.
+In Table~\ref{tab:mdes}, the first column shows the calculated MDES, the middle column is the power we plugged into the calculation, and the last column shows the MDES that we are targeting.
 Thus, ideally we want the first and last columns to match.
 
-\begin{tabular}{l|r|r|r}
-\hline
+\begin{table}
+\centering
+\begin{tabular}{lrrr}
 MTP & Adjusted MDES & D1indiv Power & Target MDES\\
 \hline
 Bonferroni & 0.122 & 0.447 & 0.125\\
-\hline
 BH & 0.127 & 0.578 & 0.125\\
-\hline
-Holm & 0.125 & 0.540 & 0.125\\
-\hline
+Holm & 0.125 & 0.540 & 0.125
 \end{tabular}
+\label{tab:mdes}
+\end{table}
 
 Similarly, we validate our sample size calculations.
 Using our found power, we see if `pump_sample()` returns the original sample size.
-Below, we are targeting a sample size of $J = 20$.
+In Table~\ref{tab:ss}, we are targeting a sample size of $J = 20$.
 
-\begin{tabular}{l|l|r|r}
-\hline
+\begin{table}
+\centering
+\begin{tabular}{llrr}
 MTP & Sample.type & Sample.size & D1indiv.power\\
 \hline
 Bonferroni & J & 21 & 0.500\\
-\hline
 BH & J & 21 & 0.580\\
-\hline
-Holm & J & 20 & 0.544\\
-\hline
+Holm & J & 20 & 0.544
 \end{tabular}
-
-## Westfall-Young procedures
-
-The Westfall-Young procedure was validated separately due to its unique complications and computational burden.
-
-First, we wrote a series of careful unit tests ensuring that our code worked as expected for each step of the WY procedure. One of these tests compared results from our procedure to the WY procedure in the multtest package, and found it matched quite well.
-
-Second, we also tested the WY procedures using the same simulation procedure described above.
-For constant effect and fixed effect models, the power estimation matches between PUM and the simulations.
-However, for random effects models, the two methods diverge in some cases.
-We find that the simulated power matches the `PUMP`-calculated power only when (1) there is a large number of blocks/clusters, and (2) the user has a large number of WY permutations.
-Below, we discuss the single-step procedure because it is simpler, although the same concepts hold for the step-down procedure.
-Although it is difficult to verify why this discrepancy occurs, our hypothesis is that this behavior occurs due to the combination of the sensitivity of the WY procedure, and the instability of the random effects model.
-
-The goal of the WY procedure is to estimate the adjusted $p$-value for outcome $i$
-$$\tilde{p}_i = Pr\left(\min_{1 \leq j \leq k} P_j \leq p_i \mid H_0^C\right).$$
-where $P_j$ is a random variable representing a $p$-value for outcome $j$, and lowercase $p_i$ is the observed realization for outcome $i$.
-We assume a set of $k$ tests with corresponding null hypotheses $H_{0i}$ for $i = 1, \cdots, k$.
-The complete null hypothesis is the setting where all the null hypotheses are true: $H_0^C = \cap_{i=1}^{k} H_{0i} = \{\text{all } H_i \text{are true}\}$.
-In order to estimate this $p$-value, the $p$-value is calculated across $B$ permutations
-$$\tilde{p}_i = \frac{1}{B}\sum_{b = 1}^{B} \mathbb{1}(\min_{1 \leq j \leq k} p_{b,j}^\star \leq p_i).$$
-
-In order for the procedure to be correct, we should be generating the $p$-values $P_j$ from the the true distribution of $p$-values under the null hypothesis.
-We generally are testing outcomes that are truly significant, so the observed $p$-values are small.
-Thus, looking at these expressions, we are concerned about tail behavior; we are testing whether a small observed $p$-value is less than the minimum of of the generated $p$-values of our multiple outcomes.
-This combination of factors means that a small discrepancy in the tails between the generated null distribution and the true distribution could have a large impact on the adjusted $p$-value.
-
-Given that we are relying on tail behavior, this explains why we need both a large number of permutations, and a large number of blocks/clusters.
-The large number of permutations is required because we are trying to estimate a rare event.
-With a significant outcome, it is rare that the observed $p$-value will be less than the minimum of $p$-values generated from the null distribution.
-The large number of blocks/clusters is required to accurately estimate the tail behavior for random effects models.
-With a small number of blocks/clusters, we may not properly estimate the spread of the distribution, resulting in a poor estimate of the tail behavior.
+\label{tab:ss}
+\end{table}
