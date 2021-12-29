@@ -123,23 +123,24 @@ In particular we have:
 \begin{itemize}
 \item Whether the level 2 and level 3 intercepts are:
 \begin{itemize}
-\item fixed ($u_{0,jkm}$ and $w_{0,jkm}$ are fixed effects constrained to have mean 0)
+\item fixed ($u_{0,jkm}$ and $w_{0,jkm}$ are fixed effects)
 \item random ($u_{0,jkm}$ and $w_{0,jkm}$ are considered to be Normally distributed, allowing for partial pooling)
 \end{itemize}
 \item Whether the level 2 and level 3 treatment effects are:
 \begin{itemize}
 \item constant, e.g. all units are modeled as having a single average impact ($u_{1,jkm}= 0$ and $w_{1,km} = 0$)
-\item fixed, e.g. each unit has an individual estimated impact ($u_{1,jkm}$ are fixed values constrained to have mean 0), with an additional mean impact.
+\item fixed, e.g. each unit has an individual estimated impact ($u_{1,jkm}$ are fixed effects constrained to have mean 0), with an additional mean impact.
 \item random ($u_{1,jkm}$ and $w_{1,km}$ are Normally distributed around a mean impact)
 \end{itemize}
 \end{itemize}
 
 
-In addition, the user has choices for whether to include certain covariates in the intercept models.
-We allow for covariates to be included wherever it makes sense for the model.
-Note that in some models, PowerUp incorporates covariates into the slope, allowing for, in principle, heterogeneous treatment effects correlated to said covariates.
-However, we never make this assumption, as it is unlikely to help with an evaluating targeting an overall average impact.
-Including covariates in the slope terms allows for modeling treatment effect heterogeneity in principle, but this can add complexity with estimation. When this difference occurs, it is noted.
+In addition, for each level the user can plan to adjust for baseline covariates, unless there are fixed effects at that level or below.
+Note that in some models, PowerUp! includes treatment by covariate interactions, allowing for, in principle, heterogeneous treatment effects correlated with said covariates.
+We do not allow for this, as including treatment by covariate interactions adds complexity with estimation of average treatment effects, and is unlikely to help with the precision of an overall average impact estimate.
+We view covariate by treatment interactions as primarily for modeling treatment effect heterogeneity, which is not the goal of this package or project.
+When this difference between PowerUp! and our approach occurs, it is noted.
+
 
 For users familiar with PowerUP, Table~\ref{tab:powerup} provides a reference for translating notation between this document and PowerUpR!
 
@@ -221,7 +222,7 @@ bcra3\_2r 			& d3.2\_m3rr2rc \\
 
 To calculate power, a user must choose assumed values for some of the latent parameters.
 However, for certain parameters, the user may instead have more intuition about likely values of functions of these parameters, rather than the parameters themselves.
-For example, rather than choosing the value of the coefficient for a level 3 covariate ($\xi_m$), the user sets $R_{3,m}^2$, the amount of variation explained by level 3 covariates. 
+For example, rather than choosing the value of the coefficient for a level 3 covariate ($\xi_m$), the user sets $R_{3,m}^2$, the amount of level three variation explained by covariates. 
 These derived parameters, which are functions of unobserved parameters, are listed in Table~\ref{tab:derived_param}.
 
 \begin{table}[h]
@@ -243,22 +244,29 @@ $R_{1,m}^2$			& percent of individual variation explained by level 1 (individual
 We now provide further clarification on these derived parameters.
 For a more detailed discussion of these expressions, see Section~\ref{sec:tune}.
 
+To keep the formula for intraclass correlation coefficients (ICCs) and $R^2$ terms simple and clear, we assume all covariates are unit variance and group-mean centered.
+In particular, group-mean centering means covariates only explain variation at their level; in practice, raw lower level covariates can explain variation in higher levels, if they systematically differ by group.
+For using the formula, however, researchers are welcome to input total $R^2$ values that include the full explanatory power of all covariates for a given level.
 
-The quantity $\text{ICC}$ is the Intraclass Correlation for the unconditional model. The following expressions include the variation, therefore, due to covariates.  All covariates are assumed to be group-mean centered and have unit variance.  (This creates the pairing of terms in the equations below.)
+
+The $\text{ICC}$s are unconditional Intraclass Correlations, meaning they include the variation explained by covariates.
+Because we assume all covariates are group-mean centered and have unit variance, we get the pairing structure of terms in the equations below.
 
 \begin{align}
 \text{ICC}_{3,m} &= \frac{Var(\mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\xi^2_m + \eta_{0,m}^2}{\left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}\\
 \text{ICC}_{2,m} &= \frac{Var(\theta_{0,jkm} \mid \mu_{0,km})}{ Var(Y_{ijkm}(0))} = \frac{\delta_m^2  + \tau_{0,m}^2}{ \left(\xi_m^2 +  \eta^2_{0,m}\right) + \left(\delta_m^2  + \tau^2_{0,m}\right) + \left(\gamma_m^2 + \sigma^2_m\right)}
 \end{align}
 
-The quantity $\omega$ is the ratio between impact variation and mean variation.
+The quantity $\omega$ is the ratio between the variation in average impact of a unit and the variation in the control-side mean of a unit.
 
 \begin{align}
 \omega_{3,m} &=  \frac{Var(\mu_{1,jkm})}{Var(\mu_{0,km})} = \frac{\eta^2_{1,m}}{\xi^2_m + \eta_{0,m}^2}\\
 \omega_{2,m} &=  \frac{Var(\psi_{1,jkm} \mid \mu_{1,km})}{Var(\theta_{0,jkm} \mid \mu_{0,km})} = \frac{\tau^2_{1,m}}{\delta_m^2 + \tau^2_{0,m}}
 \end{align}
 
-The $R^2$ expressions are the percent of variation at a particular level predicted by covariates specific to that level.
+The $R^2$ expressions are the percent of variation at a particular level predicted by covariates.
+The group-mean centering makes these formula only involve covariates at the same level as the $R^2$; this is a simplification of convenience.
+The standard error formula for the models in the remainder of the document are general, however, and a user would not need to group-mean center or rescale any covariate in practice.
 
 \begin{align}
 R_{3,m}^2 &= 1 - \frac{Var(w_{0,km})}{Var(\mu_{0,km})} = 1 - \frac{\eta^2_{0,m}}{\xi_m^2 + \eta^2_{0,m}} \\
@@ -328,7 +336,16 @@ To make the formula more directly comparable, we do not take this route, but one
 \newpage
 \section{Scenarios}
 
-\subsection{Design: 1 level, randomization at level 1}
+\subsection{d1.1 designs: 1 level, randomization at level 1}
+
+This is the classic individually randomized experiment where we allocate some fraction of a single set of units to treatment.
+
+The randomization scheme is simple random sampling:
+
+\begin{verbatim}
+T.x <- randomizr::simple_ra(N = nbar, prob = Tbar)
+\end{verbatim}
+
 
 \subsubsection{Constant effects (d1.1\_m1c)}
 
@@ -336,7 +353,7 @@ To make the formula more directly comparable, we do not take this route, but one
 
 \textbf{Design:} 1-level design, randomization at level 1.
 
-\textbf{Model:} constant intercepts, constant treatment effects, no school covariates.
+\textbf{Model:} constant intercepts, constant treatment effects, no school or district covariates.
 
 The model for estimating impacts on outcome $m$ is given by:
 \begin{align}
@@ -350,10 +367,9 @@ The degrees of freedom are:
 \begin{align}\text{df}_m = J \bar{n} - g_{1,m} - 1.\end{align}
 
 \paragraph{Sample size formula.} 
-The sample size formulas are:
+The sample size formulas is:
 \begin{align}
-J &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\frac{1-R^2_{1,m}}{\bar{n} \bar{T} (1 - \bar{T})} \right)\\
-\bar{n} &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\frac{1-R^2_{1,m}}{J \bar{T} (1 - \bar{T})} \right) .
+\bar{n} &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\frac{1-R^2_{1,m}}{ \bar{T} (1 - \bar{T})} \right) .
 \end{align}
 
 \paragraph{Code syntax.}
@@ -362,12 +378,6 @@ The R model is
 Yobs ~ 1 + T.x + C.ijk
 \end{verbatim}
 
-The randomization scheme is: simple random sampling.
-\begin{verbatim}
-T.x <- randomizr::simple_ra(N = nbar, prob = Tbar)
-\end{verbatim}
-
-The overall treatment effect is then the average of the \texttt{T.x} terms.
 
 
 
@@ -376,12 +386,13 @@ The overall treatment effect is then the average of the \texttt{T.x} terms.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage
-\subsection{Design: 2 levels, randomization at level 1}
+\subsection{d2.1 designs: 2 levels, randomization at level 1}
 
 This section of designs comprise what are usually referred to as \emph{multisite experiments}.
 In a multisite experiment, we have a collection of sites (here, schools) and are able to randomize the individuals within each site into treatment and control.
 This allows for estimating an average impact for each site, in principle.
 That being said, we are usually interested in estimating some overall summary of impacts across all our sites.
+These are also called blocked experiments, especially if the sites are viewed as fixed.
 
 Critically, there are four different estimands we might consider: the average impact for persons vs. impact for sites, and the average impact of the sample we have vs. the average impact of the population where the sample came from.
 When sites are equal sized, a common assumption for power calculations, the site and person average will be the same.
@@ -392,7 +403,7 @@ In this document, the ones that do are blocked\_i1\_2c and blocked\_i1\_2f.
 The blocked\_i1\_2c estimation strategy does because it assumes a constant treatment impact; given this assumption, there is no uncertainty due to the sample itself as all samples have the same average impact by assumption.
 The blocked\_i1\_2f estimation strategy allows each school to have an individually estimated impact, but due to using fixed effects rather than random, it is evaluating the sample at hand.
 See \citet{Miratrix2020} for further, in-depth, discussion.
-Those estimators that target the super-population need to take any uncertainty of the sample being representative of the super-population into account.
+Estimators that target the super-population need to take any uncertainty of the sample being representative of the super-population into account.
 Here, the one that does this is blocked\_i1\_2r, with a model of each school having an average impact drawn from some random distribution.
 
 
@@ -434,38 +445,17 @@ and distributions:
 r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
 \end{align}
 
-PowerUp! gives that the standard error of the treatment effect estimate \emph{not} in effect size units is:
-\begin{align}SE( \hat{\psi}_m ) = \sqrt{\frac{1}{\bar{T}(1 - \bar{T}) J \bar{n}}} \cdot \sigma_m .\end{align}
+
+The standard error formula we use is
+
+\begin{align} Q_m = \sqrt{\frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}}} . \end{align}
+
+See below for important details on this specific formula, and how it differs from PowerUp!
 
 The degrees of freedom for our impact estimate are
 \begin{align}\text{df}_m = J \bar{n} - g_{1,m} - J - 1.\end{align}
 
 
-\paragraph{Converting to effect size.}
-To convert the above to an effect size, we need to scale by overall variation.
-Unfortunately, under a fixed effect model, there is no natural way to express this as we have not parameterized how the individual site intercepts, the $\delta_{0,jkm}$, vary.
-PowerUp! therefore indexes by within group variation, which is
-\begin{align*}
-Var( Y_{ijkm}(0) | S_{id} ) &= \frac{ \sigma^2_m }{ 1 - R^2_{1,m} } \end{align*}
-using the formula for $R^2_{1,m}$, capturing the predictive power of our individual-level covariates on the outcomes within a given school, of
-\[ R^2_{1,m} = 1 - \frac{ \sigma^2_m }{ Var( Y_{ijkm}(0) |  S_{id} )} . \]
-If we divide the above $SE(\hat{\psi}_m)$ formula by $\sigma^2_m/(1 - R^2_{1,m})$ we get  the reported MDES formula for $Q_m$ of
-\[ 
-\tilde{Q}_m = \sqrt{\frac{1-R^2_{1,m}}{\bar{T}(1 - \bar{T}) J \bar{n}}} ,
-\]
-with the tilde denoting that these effect size units are in terms of within-school variation, which is not often done.
-Equivalently, this is assuming the blocks are all homogeneous, which both goes counter to the design principles of blocking and also is known to generally not hold when evaluating schools.
-If we want the more classic effect size indexed by cross-site variation, we need to go further.
-
-Assume we have an $\text{ICC}_{2,m}$, an assumed measure of how much overall (control-side) variation is at the school level:
-\[ \text{ICC}_{2,m} = 1 - \frac{ Var( Y_{ijkm}(0) |  S_{id} ) ) }{ Var( Y_{ijkm}(0)) } . \]
-This ICC is even defined for a finite sample, if we view the above as comparing the emperical (pooled) within-group variation to full variation.
-Rearranging this gives $Var( Y_{ijkm}(0) ) = Var(  Y_{ijkm}(0) |  S_{id} ) /(1 - \text{ICC}_{2,m})$.
-
-We can then plug this and the $R^2_{1,m}$ formula together to get
-\[ Var( Y_{ijkm}(0) ) = \frac{ \sigma^2_m }{ 1 - R^2_{1,m} } \cdot \frac{1}{1- \text{ICC}_{2,m}} .\]
-If we use this expression to scale our SE formula, we finally obtain
-\begin{align} Q_m = \sqrt{\frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}}} . \end{align}
 
 \paragraph{Sample size formula.} 
 The sample size formulas are:
@@ -481,10 +471,11 @@ The constant effects model means that we assume no treatment variation across ou
 
 \paragraph{Difference from PowerUP.}
 
-Note that the PowerUp formula assumes
+The PowerUp formula in effect assumes
 \begin{itemize}
-\item $\text{ICC}_{2,m} = 0$
+\item $\text{ICC}_{2,m} = 0$,
 \end{itemize}
+although this can be motivated differently; see below.
 
 \paragraph{Code syntax.}
 The R model is
@@ -496,6 +487,39 @@ Yobs ~ 1 + T.x + C.ijk + S.id
 \paragraph{PowerUp! Differences.}
 PowerUp assumes there is no $\text{ICC}_{2,m}$ term while we allow for it.
 This can be viewed as within (PowerUp!) vs. overall (this work) effect size metrics.
+
+
+
+
+\paragraph{Remark on effect sizes.}
+The standard error of the treatment effect estimate \emph{not} in effect size units is (this taken from the PowerUp! documentation):
+\begin{align}SE( \hat{\psi}_m ) = \sqrt{\frac{1}{\bar{T}(1 - \bar{T}) J \bar{n}}} \cdot \sigma_m .\end{align}
+
+To convert this to an effect size, we need to scale by overall variation.
+Unfortunately, under a fixed effect model, there is no natural way to express this as we have not parameterized how the individual site intercepts, the $\delta_{0,jkm}$, vary.
+PowerUp! therefore indexes by within group variation, which is
+\begin{align*}
+Var( Y_{ijkm}(0) | S_{id} ) &= \frac{ \sigma^2_m }{ 1 - R^2_{1,m} } \end{align*}
+using the formula for $R^2_{1,m}$, capturing the predictive power of our individual-level covariates on the outcomes within a given school, of
+\[ R^2_{1,m} = 1 - \frac{ \sigma^2_m }{ Var( Y_{ijkm}(0) |  S_{id} )} . \]
+If we divide the above $SE(\hat{\psi}_m)$ formula by $\sigma^2_m/(1 - R^2_{1,m})$ we get  the reported standard error formula for $Q_m$ of
+\[ 
+\tilde{Q}_m = \sqrt{\frac{1-R^2_{1,m}}{\bar{T}(1 - \bar{T}) J \bar{n}}} ,
+\]
+with the tilde denoting that these effect size units are in terms of within-school variation, which is not often done.
+Equivalently, this is assuming the blocks are all homogeneous, which both goes counter to the design principles of blocking and also is known to generally not hold when evaluating schools.
+If we want the more classic effect size indexed by cross-site variation, we need to go further.
+
+Assume we have an $\text{ICC}_{2,m}$, an assumed measure of how much overall (control-side) variation is at the school level:
+\[ \text{ICC}_{2,m} = 1 - \frac{ Var( Y_{ijkm}(0) |  S_{id} ) ) }{ Var( Y_{ijkm}(0)) } . \]
+This ICC is even defined for a finite sample, if we view the above as comparing the emperical (pooled) within-group variation to full variation.
+Rearranging this gives $Var( Y_{ijkm}(0) ) = Var(  Y_{ijkm}(0) |  S_{id} ) /(1 - \text{ICC}_{2,m})$.
+
+We can then plug this and the $R^2_{1,m}$ formula together to get
+\[ Var( Y_{ijkm}(0) ) = \frac{ \sigma^2_m }{ 1 - R^2_{1,m} } \cdot \frac{1}{1- \text{ICC}_{2,m}} .\]
+If we use this expression to scale our SE formula, we finally obtain our formula listed above.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Blocked individual randomization 2 level designs, fixed effects
@@ -572,22 +596,25 @@ This can be viewed as within (PowerUp!) vs. overall (this work) effect size metr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\subsubsection{Random effects (d2.1\_m2fr)}
+\subsubsection{Random effects (d2.1\_m2fr or d2.1\_m2rr)}
 
 \textbf{PowerUp name:} bira2\_1r
 
 \textbf{Design:} 2-level design, randomization at level 1 (blocked).
 
-\textbf{Model:} random intercepts, random treatment effect, school covariates for intercept. Powerup also has school covariates for treatment effects to allow for modeling treatment effect heterogeneity; we do not include this.
+\textbf{Model:} random intercepts, random treatment effect, school covariates for intercept. PowerUp! also includes interaction terms of treatment and school covariates to allow for modeling treatment effect heterogeneity; we do not include this.
 
 If we are interested in generalizing from our sample to a superpopulation, we may wish to view the sample of schools themselves as representative of something larger.
 Then, if some schools have different average impacts than other schools, we have to account for the possibility that our sample of schools has an overall average impact different from the target population.
-We can account for this additional uncertainty with a random effects model that has a random effect for the school-level average impact.
+We can account for this additional uncertainty with a random effects model that has a random effect for the school-level average impacts.
 
-The class random effects model gives each school both a random intercept for the control outcome, and  a random coefficient for the treatment effect.
+The classic random effects model gives each school both a random intercept for the control average outcome (the intercept), and  a random coefficient for the treatment effect.
 This is also known as the RIRC model: random intercept, random coefficient.
+Recently, researchers also use a variant of this model, the Fixed Intercept, Random Coefficient (FIRC) model to account for concerns such as varying proportions of units treated in different schools.
+For power calculations, they have the same performance (they are also similar in practice; see \cite{Miratrix2020}).
 
-The model for estimating impacts on outcome $m$ is given by:
+
+For RIRC, the model for estimating impacts on outcome $m$ is given by:
 \begin{align}
 Y_{ijkm} &= \psi_{1,jkm} T_{ijk} + \theta_{0,jkm} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp} + r_{ijkm}\\
 \nonumber \theta_{0,jkm} &= \mu_{0,km} + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + u_{0,jkm}\\
@@ -598,27 +625,28 @@ with reduced form:
 Y_{ijkm} &= \left(\mu_{1,km} + u_{1,jkm}\right) T_{ijk} + \mu_{0,km} \\
 \nonumber & + \sum_{r=1}^{g_{2,m}} \delta_{mr} X_{jkmr} + \sum_{p=1}^{g_{1,m}} \gamma_{mp} C_{ijkmp} + u_{0,jkm} + r_{ijkm}
 \end{align}
-and distributions:
+and random effect and residual distributions of:
 \begin{align}
 \begin{pmatrix} u_{0, jkm} \\ u_{1,jkm}\\ \end{pmatrix} &\sim
 N\left(\begin{pmatrix} 0 \\ 0\\ \end{pmatrix}, \begin{pmatrix} \tau^2_{0,m} & \kappa^u_{mm} \tau_{0,m} \tau_{1,m} \\ \kappa^u_{mm} \tau_{1,m} \tau_{0,m} & \tau^2_{1,m} \\ \end{pmatrix}\right) \\
 \nonumber r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
 \end{align}
 
-In the fixed effects model, we set $u_{0,jkm}$ and $u_{1,jkm}$ to be fixed but constrained to have mean 0.
-In the random effects model, we impose Normally distributed effects with variances $\tau_{0,m}^2$ and $\tau_{1,m}^2$ and correlation $\kappa_{mm}^u$. We note that the correlation structure $\kappa_{mm}^u$ does not heavily impact the distribution of the final test statistic.
+For FIRC, we only have the random effects model on the $u_{1,jkm}$, and have fixed effects for the $u_{0,jkm}$.
+For RIRC, we assume bivariate Normal effects with variances $\tau_{0,m}^2$ and $\tau_{1,m}^2$ and correlation $\kappa_{mm}^u$.
+The correlation structure $\kappa_{mm}^u$ does not heavily impact the distribution of the final test statistic.
 
 We make an important note. In PowerUp!, they assume that school and district covariates also influence the treatment impact:
 $$ \psi_{1,jkm} = \mu_{1,km} + \sum_{r=1}^{g_{2,m}} \phi_{mr} X_{jkmr} u_{1,jkm}$$
 
 but we do not make this assumption.
-The result of this is that we assume, in their notation, $R_{2T}^2=0$, which is the percent of treatment variation explained by level 2 covariates; we are exploiting none of the cross-site impact heterogeneity.
-This assumption affects the first term in the standard error below.
+The result of this is that we assume, in their notation, that $R_{2T}^2=0$, where $R_{2T}^2$ is the percent of treatment variation explained by level 2 covariates; we are exploiting none of the cross-site impact heterogeneity.
+This assumption affects the first term in the standard error formula below.
 
 The standard error of the treatment effect estimate is given by:
 \begin{align}Q_m = \sqrt{\frac{\text{ICC}_{2,m} \omega_{2,m}}{J} + \frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}}}.\end{align}
 
-Note that this formula is simply the prior formula with an additional term of $\text{ICC}_{2,m} \omega_{2,m} / J$.
+Note that this formula is simply the formula for d2.1\_m2fc with an additional term of $\text{ICC}_{2,m} \omega_{2,m} / J$.
 This term captures the additional uncertainty from extrapolating from our sample to the super-population.
 $Q_m$ with this model, therefore, will be larger than the prior models to the extent that the schools differ in terms of their impact variation (the $\text{ICC}_{2,m} \omega_{2,m}$ term is simply the variation in the random impact terms scaled by our overall variation).
 
@@ -633,10 +661,16 @@ J &= \left(\frac{MT_{df}}{MDES}\right)^2 \left(\text{ICC}_{2,m} \omega_{2,m} + \
 \end{align}
 
 \paragraph{Code syntax.}
-The R model is
+The R model is, for RIRC,
 \begin{verbatim}
 Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)
 \end{verbatim}
+
+For FIRC it is 
+\begin{verbatim}
+Yobs ~ 0 + T.x + X.jk + C.ijk + S.id + (0 + T.x | S.id)
+\end{verbatim}
+
 
 \paragraph{PowerUp! Differences.}
 PowerUp allows for school covariates to influence the treatment impact, while we do not allow for this. In PowerUp terms, we assume $R^2_{2T} = 0$.
@@ -647,7 +681,16 @@ PowerUp allows for school covariates to influence the treatment impact, while we
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\subsection{Design: 2 levels, randomization at level 2}
+\subsection{d2.2 designs: 2 levels, randomization at level 2}
+
+These are commonly called cluster randomized experiments, with the schools being the clusters.
+
+The randomization scheme is a simple random sample of $J\bar{T}$ schools are assigned to treatment:
+
+\begin{verbatim}
+T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
+\end{verbatim}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simple cluster randomization, 2 level design, random effects 
@@ -702,10 +745,6 @@ The R model is
 Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)
 \end{verbatim}
 
-The randomization scheme is: simple random sampling occurs across schools, with $J\bar{T}$ schools assigned to treatment.
-\begin{verbatim}
-T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
-\end{verbatim}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -713,14 +752,21 @@ T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\subsection{Design: 3 levels, randomization at level 1}
+\subsection{d3.1 designs: 3 levels, randomization at level 1}
 
-In these designs we have schools nested in districts, and students in schools.
-The only difference here, as compared to blocked individual randomization with 2 levels, is the third level of district.
-Since we are randomizing at the school level, this will only impact how we think about where variation is in terms of our effect size units.
+In these designs we have schools nested in districts, and students nested in schools.
+The only difference here, as compared to blocked individual randomization with two levels, is the third level of district.
+Since we are randomizing at the student level, this will only impact how we think about where variation is in terms of our effect size units.
 
 In this context, if we are interested in the finite-sample impacts, other than for calculating our reference variation for effect sizes, the districts do not matter.
-We can simply use the prior 2 level designs if we lump district variation into the $\text{ICC}_{2,m}$ terms.
+We can simply use the prior two level fixed effect designs if we lump district variation into the $\text{ICC}_{2,m}$ terms.
+In particular, one could use d2.1\_m2ff or d2.1\_m2fc for the three level case by just entering $\text{ICC}_{2,m} + \text{ICC}_{3,m}$ in for $\text{ICC}_{2,m}$.
+In fact, we cannot have district random or fixed effects given school-level fixed effects due to collinearity.
+
+The randomization scheme is: simple random sampling occurs within each school, with proportion $\bar{T}$ units assigned to treatment in each school.
+\begin{verbatim}
+T.x <- randomizr::block_ra( S.id, prob = Tbar )
+\end{verbatim}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -791,10 +837,7 @@ J &= \frac{(1-\text{ICC}_{2,m}-\text{ICC}_{3,m})(1-R^2_{1,m}) + \bar{T}(1 - \bar
 Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id) 
 \end{verbatim}
 
-The randomization scheme is: simple random sampling occurs within each school, with $\bar{n}\bar{T}$ units assigned to treatment in each school.
-\begin{verbatim}
-T.x <- randomizr::block_ra( S.id, prob = Tbar )
-\end{verbatim}
+
 
 \paragraph{PowerUp! Differences.}
 PowerUp allows for school and district covariates to influence the treatment impact, while we do not allow for this. In PowerUp terms, we assume $R^2_{3T} = 0$ and $R^2_{2T} = 0$. This also impacts our degrees of freedom formula, which is $\text{df}_m = K - 1$ instead of $\text{df}_m = K - g_{3,m} - 1$.
@@ -805,7 +848,17 @@ PowerUp allows for school and district covariates to influence the treatment imp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\subsection{Design: 3 levels, randomization at level 2}
+\subsection{d3.2 designs: 3 levels, randomization at level 2}
+
+These are commonly called blocked, cluster-randomized experiments.
+You find these if, for example, schools are randomized within a set of districts, or teachers are randomized within a set of schools (with students as outcomes in both cases).
+
+The randomization scheme is: simple random sampling occurs within each district, with $J \bar{T}$ schools assigned to treatment in each district. In R we have:
+
+\begin{verbatim}
+T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
+\end{verbatim}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Blocked cluster randomization, 3 level design, fixed effects 
@@ -876,10 +929,6 @@ Yobs ~ 0 + T.x * D.id - T.x + X.jk + C.ijk + (1 | S.id)
 \end{verbatim}
 The overall treatment effect is then the average of the T.x interaction terms.
 
-The randomization scheme is: simple random sampling occurs within each district, with $\bar{J} \bar{T}$ schools assigned to treatment in each district, where $\bar{J}$ is the average number of schools in each district.
-\begin{verbatim}
-T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
-\end{verbatim}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Blocked cluster randomization, 3 level design, random effects 
@@ -952,10 +1001,6 @@ The R model is
 Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)
 \end{verbatim}
 
-The randomization scheme is: simple random sampling occurs within each district, with $\bar{J} \bar{T}$ schools assigned to treatment in each district, where $\bar{J}$ is the average number of schools in each district.
-\begin{verbatim}
-T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
-\end{verbatim}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -963,7 +1008,19 @@ T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = T
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage 
-\subsection{Design: 3 levels, randomization at level 3}
+\subsection{d3.3 designs: 3 levels, randomization at level 3}
+
+
+These designs have randomization at the top level.
+They are cluster randomized, but we can model the nesting structure within cluster.
+
+
+The randomization scheme is: simple random sampling occurs across districts, with $K\bar{T}$ districts assigned to treatment.
+\begin{verbatim}
+T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
+\end{verbatim}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simple cluster randomization, 3 level design, random effects 
@@ -1026,11 +1083,6 @@ The R model is
 Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)
 \end{verbatim}
 
-The randomization scheme is: simple random sampling occurs across districts, with $K\bar{T}$ districts assigned to treatment.
-\begin{verbatim}
-T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
-\end{verbatim}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1038,7 +1090,7 @@ T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage
-\section{Data generating process}
+\section{The data generating process}
 
 We now discuss the assumed data generating process (DGP), indexed by parameters directly tied to the structural equations we use.
 Let $\boldsymbol{x}_{ijk\cdot}$ be the vector collecting all outcomes $m$.
