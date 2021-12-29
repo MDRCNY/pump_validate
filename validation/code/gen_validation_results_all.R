@@ -8,16 +8,16 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = FALSE
 # whether or not to run power, mdes and sample size
-run.power = FALSE
+run.power = TRUE
 run.mdes.ss = FALSE
 # whether to run limited westfall young validations
-run.wy = TRUE
+run.wy = FALSE
 # which d_ms to run
 run.d2.1 = TRUE
-run.d2.2 = TRUE
-run.d3.1 = TRUE
-run.d3.3 = TRUE
-run.d3.2 = TRUE
+run.d2.2 = FALSE
+run.d3.1 = FALSE
+run.d3.3 = FALSE
+run.d3.2 = FALSE
 
 # for parallel processing
 q <- as.numeric(as.character(Sys.getenv("q")))
@@ -37,7 +37,7 @@ source(here::here("validation/code", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 10                      # Number of samples for Monte Carlo Simulation
+  S = 250                      # Number of samples for Monte Carlo Simulation
   , Q = 20                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
@@ -316,8 +316,8 @@ if(run.d2.1 & run.power)
   model.params.list[['nbar']] <- 50
   model.params.list[['omega.2']] <- NULL
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
-  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
+  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   
   #------------------------------------------------------------------#
@@ -326,8 +326,8 @@ if(run.d2.1 & run.power)
   model.params.list[['nbar']] <- 100
   model.params.list[['omega.2']] <- NULL
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
-  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
+  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   
   print('-----------------------------------------------------------------------------')
@@ -337,8 +337,8 @@ if(run.d2.1 & run.power)
   model.params.list[['nbar']] <- 75
   model.params.list[['omega.2']] <- NULL
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
-  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
+  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   
   print('-----------------------------------------------------------------------------')
@@ -386,8 +386,8 @@ if(run.d2.1 & run.power)
   
   model.params.list[['omega.2']] <- NULL
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
-  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
+  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   
   rho.default <- 0.2
@@ -439,15 +439,15 @@ if(run.d2.1 & run.power)
   
   model.params.list[['omega.2']] <- NULL
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
-  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
+  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   
   model.params.list[['ICC.2']] <- rep(0, M)
   model.params.list[['omega.2']] <- NULL
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
-  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
+  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   
   # reset
@@ -483,8 +483,8 @@ if(run.d2.1 & run.power)
   model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- kappa.matrix
   model.params.list[['omega.2']] <- NULL
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
-  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
+  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   model.params.list[['kappa.w']] <- model.params.list[['kappa.u']] <- model.params.default[['kappa.w']]
   
