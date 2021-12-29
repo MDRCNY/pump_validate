@@ -81,7 +81,7 @@ We introduce the `PUMP` package to allow for directly answering questions that t
 The methods in the PUMP package build on those introduced in @Porter2018.
 This earlier paper focused only on a single RCT design and model --- a multisite RCT with the blocked randomization of individuals, in which effects are estimated using a model with block-specific intercepts and with the assumption of constant effects across all units.
 This earlier paper also did not produce software to assist researchers in implementing its methods.
-With this current paper and with the introduction of the PUMP package, we extend the methodology to eight additional multi-level RCT designs and models.
+With this current paper and with the introduction of the PUMP package, we extend the methodology to nine additional multi-level RCT designs and models.
 Also, while @Porter2018 focused on estimates of power, PUMP goes further to also estimate MDES and sample size requirements that take multiplicity adjustments into account.
 
 `PUMP` extends functionality of the popular PowerUp! `R` package (and related tools in the form of a spreadsheet and Shiny application), which compute power or MDES for multi-level RCTs with a single outcome (@RN4473).
@@ -116,6 +116,8 @@ These additional functions include:
 - `pump_power_grid()`, `pump_mdes_grid()`, and `pump_sample_grid()` for calculating the given output over a range of possible parameter values.
 - `update()` to re-run an existing calculation with a small number of parameters updated.
 - `plot()` on any `PUMP`-generated object to generate plots (including grid outputs).
+
+The authors of the `PUMP` package have also created a web application built with R Shiny. This web application calls the `PUMP` package and allows users to conduct calculations with a user-friendly interface, but it is less flexible than the package, with a focus on simpler scenarios (e.g., 10 or fewer outcomes). The app can be found at www.pumpmdrc.io.  
 
 The remainder of this paper is organized as follows.
 In Section \ref{sec:diplomas}, we introduce Diplomas Now, an educational experiment, to be used as a running example throughout the paper.
@@ -1057,14 +1059,14 @@ We introduce the power under multiplicity project (`PUMP`) `R` package, which es
 `PUMP` allows users to estimate power, MDES, and sample size requirements for a wide variety of commonly used RCT designs and models across different definitions of power and applying different MTPs.
 The functionality of `PUMP` fills an important gap, as existing tools do not allow researchers to conduct power, MDES or sample size calculations when applying a MTP.
 
-The main advantage of the `PUMP` package is to provide easily accessible estimation procedures so that users can properly account for power when making adjustments for multiple hypothesis testing.
+The main advantage of the `PUMP` package is to provide easily accessible estimation procedures so that users can properly account for power when making adjustments for multiple hypothesis testing. Users can also take advantage of the `PUMP` in an online interface at www.mdrcpump.io.
 However, one of the additional strengths of the package is the ease with which a user can explore the impact of different designs, models, and assumptions on power, MDES or sample size.
 Even if a user is only interested in a single outcome, `PUMP` provides useful functionality for more robust power calculations.
 A user can and should try a range of parameter values to determine the sensitivity of the power of their study to different assumptions; this package simplifies that process.
 
 \section*{Acknowledgements}
 
-We acknowledge the Diplomas Now team.
+We acknowledge the Diplomas Now team at MDRC.
 Development of this package was supported by a grant from the Institute for Education Sciences (R305D170030).
 We would like to thank members of the Harvard CARES lab for their feedback on the manuscript.
 
