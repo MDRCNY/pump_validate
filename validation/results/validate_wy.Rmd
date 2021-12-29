@@ -1,317 +1,280 @@
 ---
 title: "Validate Power: Westfall-Young"
-author: "Kristin Porter, Zarni Htet, Kristen Hunter"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
-output:
-  html_document:
-    df_print: paged
-    fig_caption: yes
-    fig_height: 8
-    fig_width: 10
-    highlight: monochrome
-    theme: spacelab
-    toc: yes
-    toc_depth: 5
-    toc_float: yes
-  github_document:
-    df_print: paged
-    fig_caption: yes
-    fig_height: 8
-    fig_width: 10
-    toc: yes
+output: pdf_document
 ---
 
 ```{r knit.options, echo = FALSE}
-# by default, all code chunks will cache their results
-knitr::opts_chunk$set(cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE)
+knitr::opts_chunk$set(
+  cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE,
+  fig.height = 6.5
+)
 ```
 
 ```{r setup}
 library(here)
-library(pander)    # For good table format
-
+library(PUMP)
+library(pander)
 # default tables to round to 3 digits
 panderOptions('round', 3)
+source(here::here("validation/code", "misc.R"))
+```
 
-# simulation and user parameters
-source(here::here("Validation/Simulations", "params.R"))
-
-sim.params.list[['procs']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
-
-# defaults
-sim.params.list[['S']] <- 500
-sim.params.list[['Q']] <- 1
-sim.params.list[['B']] <- 3000
-
-user.params.list[['ATE_ES']] <- rep(0.125, M)
-user.params.list[['nbar']] <- 50
-user.params.list[['J']] <- 20
-user.params.list[['K']] <- 10
-
-user.params.default <- user.params.list
+```{r sim.params}
+sim.params.list <- list(
+  S = 2000                     # Number of samples for Monte Carlo Simulation
+  , Q = 1
+  , B = 1000
+  , MTP = c("Bonferroni", "BH", "Holm", "WY-SS")
+)
 sim.params.default <- sim.params.list
 ```
 
-# Blocked 2 level models
+```{r model.params}
+M <- 3
+model.params.list <- list(
+  M = 3                                   # number of outcomes
+  , J = 30                                # number of schools
+  , K = 10                                # number of districts (for two-level model, set K = 1)
+  , nbar = 50                             # number of individuals per school
+  , rho.default = 0.5                     # default rho value
+  # , S.id = NULL                         # N-length vector of indiv school assignments (optional)
+  # , D.id = NULL                         # N-length vector of indiv district assignments (optional)
+  ################################################## grand mean outcome and impact
+  # , Xi0 = 0                             # scalar grand mean outcome under no treatment
+  , MDES = rep(0.125, M)                  # minimum detectable effect size      
+  ################################################## level 3: districts
+  , numCovar.3 = 1                        # number of district covariates
+  , R2.3 = rep(0.1, M)                    # percent of district variation explained by district covariates
+  # , rho.V = default.rho.matrix          # MxM correlation matrix of district covariates
+  , ICC.3 = rep(0.2, M)                   # district intraclass correlation
+  , omega.3 = rep(0.1, M)                 # ratio of district effect size variability to random effects variability
+  # , rho.w0 = default.rho.matrix         # MxM matrix of correlations for district random effects
+  # , rho.w1 = default.rho.matrix         # MxM matrix of correlations for district impacts
+  , kappa.w = matrix(0, M, M)             # MxM matrix of correlations between district random effects and impacts
+  ################################################## level 2: schools
+  , numCovar.2 = 1                        # number of school covariates
+  , R2.2 = rep(0.1, M)                    # percent of school variation explained by school covariates
+  # , rho.X = default.rho.matrix          # MxM correlation matrix of school covariates
+  , ICC.2 = rep(0.2, M)                   # school intraclass correlation	
+  , omega.2 = rep(0.1, M)                 # ratio of school effect size variability to random effects variability
+  # , rho.u0 = default.rho.matrix         # MxM matrix of correlations for school random effects
+  # , rho.u1 = default.rho.matrix         # MxM matrix of correlations for school impacts
+  , kappa.u = matrix(0, M, M)             # MxM matrix of correlations between school random effects and impacts
+  ################################################## level 1: individuals
+  , numCovar.1 = 1                        # number of individual covariates
+  , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
+  # , rho.C = default.rho.matrix          # MxM correlation matrix of individual covariates
+  # , rho.r = default.rho.matrix          # MxM matrix of correlations for individual residuals 
+)
+model.params.default <- model.params.list
+```
 
-```{r blocked.2}
-user.params.list <- user.params.default
+# Explanation
+
+## Westfall-Young procedures
+
+The Westfall-Young procedure was validated separately due to its unique complications and computational burden.
+
+First, we wrote a series of careful unit tests ensuring that our code worked as expected for each step of the WY procedure. One of these tests compared results from our procedure to the WY procedure in the multtest package, and found it matched quite well.
+
+Second, we also tested the WY procedures using the same simulation procedure described above.
+For constant effect and fixed effect models, the power estimation matches between PUM and the simulations.
+However, for random effects models, the two methods diverge in some cases.
+We find that the simulated power matches the `PUMP`-calculated power only when (1) there is a large number of blocks/clusters, and (2) the user has a large number of WY permutations.
+Below, we discuss the single-step procedure because it is simpler, although the same concepts hold for the step-down procedure.
+Although it is difficult to verify why this discrepancy occurs, our hypothesis is that this behavior occurs due to the combination of the sensitivity of the WY procedure, and the instability of the random effects model.
+
+The goal of the WY procedure is to estimate the adjusted $p$-value for outcome $i$
+$$\tilde{p}_i = Pr\left(\min_{1 \leq j \leq k} P_j \leq p_i \mid H_0^C\right).$$
+where $P_j$ is a random variable representing a $p$-value for outcome $j$, and lowercase $p_i$ is the observed realization for outcome $i$.
+We assume a set of $k$ tests with corresponding null hypotheses $H_{0i}$ for $i = 1, \cdots, k$.
+The complete null hypothesis is the setting where all the null hypotheses are true: $H_0^C = \cap_{i=1}^{k} H_{0i} = \{\text{all } H_i \text{are true}\}$.
+In order to estimate this $p$-value, the $p$-value is calculated across $B$ permutations
+$$\tilde{p}_i = \frac{1}{B}\sum_{b = 1}^{B} \mathbb{1}(\min_{1 \leq j \leq k} p_{b,j}^\star \leq p_i).$$
+
+In order for the procedure to be correct, we should be generating the $p$-values $P_j$ from the the true distribution of $p$-values under the null hypothesis.
+We generally are testing outcomes that are truly significant, so the observed $p$-values are small.
+Thus, looking at these expressions, we are concerned about tail behavior; we are testing whether a small observed $p$-value is less than the minimum of of the generated $p$-values of our multiple outcomes.
+This combination of factors means that a small discrepancy in the tails between the generated null distribution and the true distribution could have a large impact on the adjusted $p$-value.
+
+Given that we are relying on tail behavior, this explains why we need both a large number of permutations, and a large number of blocks/clusters.
+The large number of permutations is required because we are trying to estimate a rare event.
+With a significant outcome, it is rare that the observed $p$-value will be less than the minimum of $p$-values generated from the null distribution.
+The large number of blocks/clusters is required to accurately estimate the tail behavior for random effects models.
+With a small number of blocks/clusters, we may not properly estimate the spread of the distribution, resulting in a poor estimate of the tail behavior.
+
+
+# d2.1 models
+
+```{r}
+model.params.list <- model.params.default
 sim.params.list <- sim.params.default
-user.params.list[['nbar']] <- 50
-user.params.list[['K']] <- 1
-user.params.list[['ICC.3']] <- NULL
-user.params.list[['omega.3']] <- NULL
-user.params.list[['R2.3']] <- NULL
-user.params.list[['nbar']] <- 50
+sim.params.list[['B']] <- 1000
 
-# to get good WY results
-user.params.list[['J']] <- 60
+model.params.list[['K']] <- 1
+model.params.list[['ICC.3']] <- NULL
+model.params.list[['omega.3']] <- NULL
+model.params.list[['numCovar.3']] <- 0
+model.params.list[['R2.3']] <- NULL
+model.params.list[['numCovar.2']] <- 0
+model.params.list[['R2.2']] <- NULL
+
+model.params.list[['J']] <- 60    
 
 # so power isn't too high
-user.params.list[['ATE_ES']] <- rep(0.1, M)
+model.params.list[['MDES']] <- rep(0.05, M)
+model.params.list[['nbar']] <- 30
 ```
 
 Constant effects
 
-```{r blocked.2c}
-d_m <- "blocked_i1_2c"
-user.params.list[['omega.2']] <- 0
-user.params.list[['ICC.2']] <- rep(0, M)
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2c_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2c_power_plot)
+```{r}
+d_m <- "d2.1_m2fc"
+model.params.list[['omega.2']] <- NULL
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d2.1_m2fc_power_plot <- gen.power.results.plot(params.file.base, d_m)
+print(d2.1_m2fc_power_plot)
 ```
-
+\newpage
 Fixed effects
 
-```{r blocked.2f}
-d_m <- "blocked_i1_2f"
-user.params.list[['omega.2']] <- user.params.default[['omega.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2f_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2f_power_plot)
+```{r}
+d_m <- "d2.1_m2ff"
+model.params.list[['omega.2']] <- model.params.default[['omega.2']]
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d2.1_m2ff_power_plot <- gen.power.results.plot(params.file.base, d_m)
+print(d2.1_m2ff_power_plot)
 ```
-
+\newpage
 Random effects
 
-```{r blocked.2r}
-d_m <- "blocked_i1_2r"
-user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2r_power_plot)
+```{r}
+d_m <- "d2.1_m2fr"
+model.params.list[['omega.2']] <- model.params.default[['omega.2']]
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d2.1_m2fr_power_plot <- gen.power.results.plot(params.file.base, d_m)
+print(d2.1_m2fr_power_plot)
 ```
 
-## No discrepancy
+\newpage
+# d2.2 models
 
-Large $B = 10000$ and large $J = 100$
-
-```{r largeB}
-sim.params.list[['B']] <- 10000
-user.params.list[['J']] <- 100
-```
-
-Constant effects
-
-```{r blocked.2c.largeB}
-d_m <- "blocked_i1_2c"
-user.params.list[['omega.2']] <- 0
-user.params.list[['ICC.2']] <- rep(0, M)
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2c_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2c_power_plot)
-```
-
-Fixed effects
-
-```{r blocked.2f.largeB}
-d_m <- "blocked_i1_2f"
-user.params.list[['omega.2']] <- user.params.default[['omega.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2f_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2f_power_plot)
-```
-
-Random effects
-
-```{r blocked.2r.largeB}
-d_m <- "blocked_i1_2r"
-user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2r_power_plot)
-```
-
-Random effects with large $B = 10000$ and large $J = 100$ with lower power
-
-```{r blocked.2r.largeB.lowpower}
-d_m <- "blocked_i1_2r"
-user.params.list[['nbar']] <- 100
-user.params.list[['ATE_ES']] <- rep(0.05, M)
-
-user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2r_power_plot)
-```
-
-## Different combinations of $B$ and $J$
-
-Random effects with small $J = 15$ and medium $B = 3000$
-
-```{r blocked.2r.smallJ}
-d_m <- "blocked_i1_2r"
-user.params.list[['J']] <- 15
-sim.params.list[['B']] <- 3000
-user.params.list[['ATE_ES']] <- rep(0.1, M)
-user.params.list[['nbar']] <- 50
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2r_power_plot)
-```
-
-Random effects with small $B = 200$ and large $J = 60$
-
-```{r blocked.2r.smallB}
-d_m <- "blocked_i1_2r"
-user.params.list[['J']] <- 60
-sim.params.list[['B']] <- 200
-user.params.list[['ATE_ES']] <- rep(0.1, M)
-user.params.list[['nbar']] <- 50
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2r_power_plot)
-```
-
-
-Random effects with large $B = 10000$ and small $J = 20$
-
-```{r blocked.2r.largeB.smallJ}
-d_m <- "blocked_i1_2r"
-sim.params.list[['B']] <- 10000
-user.params.list[['J']] <- 20
-user.params.list[['nbar']] <- 50
-user.params.list[['ATE_ES']] <- rep(0.125, M)
-user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2r_power_plot)
-```
-
-Random effects with large $B = 10000$ and medium $J = 30$
-
-```{r blocked.2r.largeB.medJ}
-d_m <- "blocked_i1_2r"
-sim.params.list[['B']] <- 10000
-user.params.list[['J']] <- 30
-user.params.list[['nbar']] <- 50
-user.params.list[['ATE_ES']] <- rep(0.125, M)
-user.params.list[['ICC.2']] <- user.params.default[['ICC.2']]
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_2r_power_plot)
-```
-
-# Cluster 2 level
-
-```{r cluster.2c}
-user.params.list <- user.params.default
+```{r}
+model.params.list <- model.params.default
 sim.params.list <- sim.params.default
-user.params.list[['nbar']] <- 50
+sim.params.list[['B']] <- 1000
 
-user.params.list[['K']] <- 1
-user.params.list[['ICC.3']] <- NULL
-user.params.list[['omega.3']] <- NULL
-user.params.list[['R2.3']] <- NULL
-user.params.list[['omega.2']] <- 0
+model.params.list[['K']] <- 1
+model.params.list[['ICC.3']] <- NULL
+model.params.list[['omega.3']] <- NULL
+model.params.list[['numCovar.3']] <- 0
+model.params.list[['R2.3']] <- NULL
+model.params.list[['omega.2']] <- NULL
 
 # params to help have a decent power
-user.params.list[['ICC.2']] <- rep(0.1, M)
-user.params.list[['J']] <- 60
-user.params.list[['ATE_ES']] <- rep(0.25, M)
-
-d_m <- "simple_c2_2r"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-simple_c2_2r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(simple_c2_2r_power_plot)
+model.params.list[['ICC.2']] <- rep(0.1, M)
+model.params.list[['J']] <- 60
+model.params.list[['MDES']] <- rep(0.25, M)
 ```
 
-# Blocked 3 level
-
-```{r blocked.3r}
-user.params.list <- user.params.default
-sim.params.list <- sim.params.default
-
-# for a reasonable runtime
-user.params.list[['J']] <- 20
-user.params.list[['K']] <- 20
-user.params.list[['nbar']] <- 20
-    
-d_m <- "blocked_i1_3r"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_i1_3r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_i1_3r_power_plot)
+```{r}
+d_m <- "d2.2_m2rc"
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d2.2_m2rc_power_plot <- gen.power.results.plot(params.file.base, d_m)
+print(d2.2_m2rc_power_plot)
 ```
 
-# Cluster 3 level
+\newpage
+# d3.1 models
 
-```{r cluster.3r}
-user.params.list <- user.params.default
+```{r}
+model.params.list <- model.params.default
 sim.params.list <- sim.params.default
-user.params.list[['nbar']] <- 50
+sim.params.list[['B']] <- 100
 
 # assumptions
-user.params.list[['omega.2']] <- 0
-user.params.list[['omega.3']] <- 0
+model.params.list[['numCovar.3']] <- 0
+model.params.list[['R2.3']] <- NULL
+model.params.list[['numCovar.2']] <- 0
+model.params.list[['R2.2']] <- NULL
 
 # for a reasonable runtime and power
-user.params.list[['J']] <- 40
-user.params.list[['K']] <- 20
-user.params.list[['ATE_ES']] <- rep(0.25, M)
-user.params.list[['ICC.3']] <- rep(0.1, M)
-user.params.list[['ICC.2']] <- rep(0.1, M)
-
-d_m <- "simple_c3_3r"
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-simple_c3_3r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(simple_c3_3r_power_plot)
+model.params.list[['nbar']] <- 20
+model.params.list[['J']] <- 20
+model.params.list[['K']] <- 20
 ```
 
-# Blocked cluster
-
-```{r blocked.cluster}
-user.params.list <- user.params.default
-user.params.list[['omega.2']] <- 0
+```{r}
+d_m <- "d3.1_m3rr2rr"
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d3.1_m3rr2rr_power_plot <- gen.power.results.plot(params.file.base, d_m)
+print(d3.1_m3rr2rr_power_plot)
 ```
 
-Blocked cluster, fixed effects
+\newpage
+# d3.3 models
 
-```{r blocked.cluster.3f}
-d_m <- "blocked_c2_3f"
-user.params.list[['R2.3']] <- rep(0, M)
-user.params.list[['ICC.3']] <- rep(0, M)
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_c2_3f_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_c2_3f_power_plot)
+```{r}
+model.params.list <- model.params.default
+sim.params.list <- sim.params.default
+sim.params.list[['B']] <- 1000
+
+# assumptions
+model.params.list[['omega.2']] <- NULL
+model.params.list[['omega.3']] <- NULL
+
+# for a reasonable power
+model.params.list[['J']] <- 40
+model.params.list[['K']] <- 20
+model.params.list[['MDES']] <- rep(0.25, M)
+model.params.list[['ICC.3']] <- rep(0.1, M)
+model.params.list[['ICC.2']] <- rep(0.1, M)
 ```
 
-Blocked cluster, random effects
-
-```{r blocked.cluster.3r}
-d_m <- "blocked_c2_3r"
-user.params.list[['R2.3']] <- user.params.default[['R2.3']]
-user.params.list[['ICC.3']] <- user.params.default[['ICC.3']]
-
-# for a reasonable runtime and power
-user.params.list[['J']] <- 15
-user.params.list[['K']] <- 15
-user.params.list[['nbar']] <- 30
-user.params.list[['ATE_ES']] <- rep(0.25, M)
-# user.params.list[['ICC.3']] <- rep(0.1, M)
-# user.params.list[['ICC.2']] <- rep(0.1, M)
-
-params.file.base <- gen_params_file_base(user.params.list, sim.params.list, d_m)
-blocked_c2_3r_power_plot <- gen.power.results.plot(params.file.base, d_m)
-print(blocked_c2_3r_power_plot)
+```{r}
+d_m <- "d3.3_m3rc2rc"
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d3.3_m3rc2rc_power_plot <- gen.power.results.plot(params.file.base, d_m)
+print(d3.3_m3rc2rc_power_plot)
 ```
 
+# d3.2 models
+
+```{r}
+model.params.list <- model.params.default
+sim.params.list <- sim.params.default
+sim.params.list[['B']] <- 1000
+
+# assumptions
+model.params.list[['numCovar.3']] <- 0
+model.params.list[['R2.3']] <- NULL
+model.params.list[['omega.2']] <- NULL
+```
+
+Constant effects
+
+```{r}
+d_m <- "d3.2_m3ff2rc"
+model.params.list[['omega.3']] <- NULL
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d3.2_m3ff2rc_power_plot <- gen.power.results.plot(params.file.base, d_m)
+print(d3.2_m3ff2rc_power_plot)
+```
+
+\newpage
+Random effects
+
+```{r}
+# for reasonable power and runtime
+model.params.list[['nbar']] <- 30
+model.params.list[['J']] <- 15
+model.params.list[['K']] <- 15
+model.params.list[['MDES']] <- rep(0.25, M)
+
+d_m <- "d3.2_m3rr2rc"
+model.params.list[['omega.3']] <- model.params.default[['omega.3']]
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d3.2_m3rr2rc_power_plot <- gen.power.results.plot(params.file.base, d_m)
+print(d3.2_m3rr2rc_power_plot)
+```

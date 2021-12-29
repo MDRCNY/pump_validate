@@ -1,17 +1,16 @@
 
-Updated: Dec 27 by KH
+Updated: Dec 28 by KH
 
 # R package
 
-- Silence ROxygen documentation for non-exported functions (Zarni?)
+- Silence ROxygen documentation for non-exported functions (ZH? LM?)
 
 # Manuscript
 
-- add discussion of parallel computing for WY (KH)
 - add discussion of shiny (KP)
-- pre-submission inquiry (LM)
 - is it plagiarism to be too close to previous Porter paper?
 - update appendix with validation (KH)
+- explanation of min power when numZero > 0 (KP and shiny)
 
 *Waiting*
 
@@ -23,16 +22,15 @@ Updated: Dec 27 by KH
 *Medium priority*
 
 - write simulation correlation tool (KH)
+- make plots prettier (KH or LM)
 
 *Low priority*
 
 - plotting code (LM)
   - clean up and condense data wrangling
-  - make plots prettier
-- error/other messaging (KH or LM)
+- messaging (KH or LM)
   - collect errors from grid and only print out unique errors
-  - better error messaging for flat power curves (both shiny and non-shiny)
-  - give user estimate of runtime for WY (MDES and SS will require extra work)
+  - give user estimate of runtime for WY for MDES and SS
 
 # Validation
 

@@ -307,6 +307,12 @@ d2.1_m2fc_ICC2.0_power_plot <-
 print(d2.1_m2fc_ICC2.0_power_plot)
 ```
 
+```{r}
+png(file = here::here('validation/results', 'example_validation_plot.png'), width = 500, height = 500)
+print(d2.1_m2fc_ICC2.0_power_plot)
+dev.off()
+```
+
 ```{r 2f_ICC20}
 d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
@@ -324,7 +330,6 @@ print(d2.1_m2fr_ICC2.0_power_plot)
 model.params.list[['ICC.2']] <- params.default[['ICC.2']]
 ```
 
-\newpage
 \newpage
 ## Varying Omega
 
@@ -402,6 +407,8 @@ if(length(mdes.file) == 0)
 }
 ```
 
+
+
 ```{r 2f_mdes_D1}
 d_m <- "d2.1_m2ff"
 model.params.list[['omega.2']] <- params.default[['omega.2']]
@@ -419,6 +426,11 @@ if(length(mdes.file) == 0)
     caption = d_m
   )    
 }
+```
+
+```{r, include = FALSE}
+library(knitr)
+kable(d2.1_m2ff_mdes_D1_results, format = 'latex', digits = 3)
 ```
 
 ```{r 2r_mdes_D1}
@@ -464,6 +476,10 @@ if(length(sample.file) == 0)
     caption = d_m
   )
 }
+```
+
+```{r, include = FALSE}
+kable(d2.1_m2fc_sample_D1_J_results, format = 'latex', digits = 3)
 ```
 
 ```{r 2c_sampleD1_nbar}

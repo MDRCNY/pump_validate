@@ -299,6 +299,7 @@ model.params.list[['ICC.2']] <- rep(0.7, M)
 ```
 
 $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
+$\text{ICC}_3$ = `r model.params.list[['ICC.3']]`
 
 ```{r 3f_ICC207}
 d_m <- "d3.2_m3ff2rc"
@@ -322,6 +323,7 @@ model.params.list[['ICC.2']] <- params.default[['ICC.2']]
 model.params.list[['ICC.3']] <- rep(0.7, M)
 ```
 \newpage
+$\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
 $\text{ICC}_3$ = `r model.params.list[['ICC.3']]`
 
 ```{r 3r_ICC307}
@@ -339,7 +341,9 @@ model.params.list[['ICC.3']] <- params.default[['ICC.3']]
 model.params.list[['ICC.2']] <- rep(0, M)
 ```
 
+\newpage
 $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
+$\text{ICC}_3$ = `r model.params.list[['ICC.3']]`
 
 ```{r 3f_ICC20}
 d_m <- "d3.2_m3ff2rc"
@@ -364,6 +368,7 @@ model.params.list[['ICC.3']] <- rep(0, M)
 ```
 \newpage
 $\text{ICC}_2$ = `r model.params.list[['ICC.2']]`
+$\text{ICC}_3$ = `r model.params.list[['ICC.3']]`
 
 ```{r 3f_ICC30}
 d_m <- "d3.2_m3ff2rc"
