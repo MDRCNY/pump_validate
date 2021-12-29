@@ -78,7 +78,12 @@ We introduce the `PUMP` package to allow for directly answering questions that t
   - What size effect can I reliably detect on each outcome, given a planned MTP across all my outcomes?
   - How would the power to detect a given effect change if only half my outcomes truly had impact?
 
-`PUMP` implements new, rigorously validated methods developed by the authors to estimate statistical power for multiple definitions of power across a wide range of common experimental designs.
+The methods in the PUMP package build on those introduced in @Porter2018.
+This earlier paper focused only on a single RCT design and model --- a multisite RCT with the blocked randomization of individuals, in which effects are estimated using a model with block-specific intercepts and with the assumption of constant effects across all units.
+This earlier paper also did not produce software to assist researchers in implementing its methods.
+With this current paper and with the introduction of the PUMP package, we extend the methodology to eight additional multi-level RCT designs and models.
+Also, while @Porter2018 focused on estimates of power, PUMP goes further to also estimate MDES and sample size requirements that take multiplicity adjustments into account.
+
 `PUMP` extends functionality of the popular PowerUp! `R` package (and related tools in the form of a spreadsheet and Shiny application), which compute power or MDES for multi-level RCTs with a single outcome (@RN4473).
 For a wide variety of RCT designs with a single outcome, researchers can take advantage of closed-form solutions and numerous power estimation tools.
 For example, in education and social policy research, see @RN4473; @RN30153; @RN23884; @RN24179.

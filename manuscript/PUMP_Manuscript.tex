@@ -166,7 +166,7 @@ For randomized controlled trials (RCTs) with a single intervention being
 measured on multiple outcomes, researchers typically apply a multiple
 testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust
 \(p\)-values. Such an adjustment reduces the likelihood of spurious
-findings, but also results in a change in statistical power, sometimes
+findings, but also changes the statistical power, sometimes
 substantially, which reduces the probability of detecting effects when
 they do exist. However, this consideration is frequently ignored in
 typical power analyses, as existing tools do not easily accommodate the
@@ -270,20 +270,31 @@ outcomes into account, such as:
   outcomes truly had impact?
 \end{itemize}
 
-\texttt{PUMP} implements new, rigorously validated methods developed by
-the authors to estimate statistical power for multiple definitions of
-power across a wide range of common experimental designs. \texttt{PUMP}
-extends functionality of the popular PowerUp! \texttt{R} package (and
-related tools in the form of a spreadsheet and Shiny application), which
-compute power or MDES for multi-level RCTs with a single outcome (Dong
-and Maynard (2013)). For a wide variety of RCT designs with a single
-outcome, researchers can take advantage of closed-form solutions and
-numerous power estimation tools. For example, in education and social
-policy research, see Dong and Maynard (2013); Hedges and Rhoads (2010);
-Raudenbush et al. (2011); Spybrook et al. (2011). However, closed-form
-solutions are difficult or impossible to derive when an MTP is applied
-to a setting with multiple outcomes. Instead, we use a simulation-based
-approach to achieve estimates of power.
+The methods in the PUMP package build on those introduced in Porter
+(2018). This earlier paper focused only on a single RCT design and model
+--- a multisite RCT with the blocked randomization of individuals, in
+which effects are estimated using a model with block-specific intercepts
+and with the assumption of constant effects across all units. This
+earlier paper also did not produce software to assist researchers in
+implementing its methods. With this current paper and with the
+introduction of the PUMP package, we extend the methodology to eight
+additional multi-level RCT designs and models. Also, while Porter (2018)
+focused on estimates of power, PUMP goes further to also estimate MDES
+and sample size requirements that take multiplicity adjustments into
+account.
+
+\texttt{PUMP} extends functionality of the popular PowerUp! \texttt{R}
+package (and related tools in the form of a spreadsheet and Shiny
+application), which compute power or MDES for multi-level RCTs with a
+single outcome (Dong and Maynard (2013)). For a wide variety of RCT
+designs with a single outcome, researchers can take advantage of
+closed-form solutions and numerous power estimation tools. For example,
+in education and social policy research, see Dong and Maynard (2013);
+Hedges and Rhoads (2010); Raudenbush et al. (2011); Spybrook et al.
+(2011). However, closed-form solutions are difficult or impossible to
+derive when an MTP is applied to a setting with multiple outcomes.
+Instead, we use a simulation-based approach to achieve estimates of
+power.
 
 In order to calculate power, the researcher specifies information about
 the sample size at each level, the minimum detectable effect size for
