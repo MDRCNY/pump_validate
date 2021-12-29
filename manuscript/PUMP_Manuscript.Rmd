@@ -38,7 +38,7 @@ set.seed( 1010203 )
 
 \section*{Abstract}
 
-For randomized controlled trials (RCTs) with a single intervention being measured on multiple outcomes, researchers typically apply a multiple testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust $p$-values.
+For randomized controlled trials (RCTs) with a single intervention being measured on multiple outcomes, researchers often apply a multiple testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust $p$-values.
 Such an adjustment reduces the likelihood of spurious findings, but also changes the statistical power, sometimes substantially, which reduces the probability of detecting effects when they do exist.
 However, this consideration is frequently ignored in typical power analyses, as existing tools do not easily accommodate the use of multiple testing procedures.
 We introduce the `PUMP` `R` package as a tool for analysts to estimate statistical power, minimum detectable effect size, and sample size requirements for multi-level RCTs with multiple outcomes.
