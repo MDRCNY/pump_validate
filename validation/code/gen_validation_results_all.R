@@ -15,7 +15,7 @@ run.wy = TRUE
 # which d_ms to run
 run.d2.1 = FALSE
 run.d2.2 = FALSE
-run.d3.1 = TRUE
+run.d3.1 = FALSE
 run.d3.3 = TRUE
 run.d3.2 = TRUE
 
@@ -179,7 +179,7 @@ if(run.wy)
   if(run.d3.1)
   {
     model.params.list <- model.params.default
-    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+    # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
     sim.params.list[['S']] <- 30
     sim.params.list[['B']] <- 2000
     
@@ -240,7 +240,8 @@ if(run.wy)
   {
     # constant effects
     model.params.list <- model.params.default
-    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
+    # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
     sim.params.list[['S']] <- 50
     sim.params.list[['B']] <- 2000
     
