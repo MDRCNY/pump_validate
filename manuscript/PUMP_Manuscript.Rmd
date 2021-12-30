@@ -121,7 +121,7 @@ These additional functions include:
 
 The authors of the `PUMP` package have also created a web application built with R Shiny.
 This web application calls the `PUMP` package and allows users to conduct calculations with a user-friendly interface, but it is less flexible than the package, with a focus on simpler scenarios (e.g., 10 or fewer outcomes).
-The app can be found at \url{www.pumpmdrc.io}.  
+The app can be found at \url{https://mdrcpump.shinyapps.io/pump_shiny/}.  
 
 The remainder of this paper is organized as follows.
 In Section~\ref{sec:diplomas}, we introduce Diplomas Now, an educational experiment, to be used as a running example throughout the paper.
@@ -1059,7 +1059,7 @@ The `grid()` functions, by contrast, take a single MDES value for the non-null o
 We introduce the power under multiplicity project (`PUMP`) `R` package, which estimates power for multi-level randomized control trials with multiple outcomes.
 `PUMP` allows users to estimate power, MDES, and sample size requirements for a wide variety of commonly used RCT designs and models across different definitions of power and applying different MTPs.
 The functionality of `PUMP` fills an important gap, as existing tools do not allow researchers to conduct power, MDES or sample size calculations when applying a MTP.
-An online interface is also available at \url{www.mdrcpump.io}.
+An online interface is also available at \url{https://mdrcpump.shinyapps.io/pump_shiny/}.
 
 The main advantage of the `PUMP` package is to provide easily accessible estimation procedures so that users can properly account for power when making adjustments for multiple hypothesis testing.
 However, one of the additional strengths of the package is the ease with which a user can explore the impact of different designs, models, and assumptions on power, MDES or sample size.
