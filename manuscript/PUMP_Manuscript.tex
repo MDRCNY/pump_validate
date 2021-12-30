@@ -5,10 +5,12 @@
 \documentclass[
 ]{article}
 \title{Power Under Multiplicity Project (PUMP): Estimating Power,
-Minimum Detectable Effect Size and Sample Size When Adjusting for
+Minimum Detectable Effect Size, and Sample Size When Adjusting for
 Multiple Outcomes}
-\author{}
-\date{\vspace{-2.5em}}
+\author{Kristen Hunter\footnote{Harvard University Department of
+  Statistics} \and Luke Miratrix\footnote{Harvard Graduate School of
+  Education} \and Kristin Porter\footnote{MDRC}}
+\date{}
 
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
@@ -42,7 +44,8 @@ Multiple Outcomes}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Power Under Multiplicity Project (PUMP): Estimating Power, Minimum Detectable Effect Size and Sample Size When Adjusting for Multiple Outcomes},
+  pdftitle={Power Under Multiplicity Project (PUMP): Estimating Power, Minimum Detectable Effect Size, and Sample Size When Adjusting for Multiple Outcomes},
+  pdfauthor={Kristen Hunter; Luke Miratrix; Kristin Porter},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
@@ -191,8 +194,10 @@ statistical power is calculated for estimating the impact of a single
 intervention on multiple outcomes. The package uses a frequentist
 framework of mixed effects regression models, which is currently the
 prevailing framework for estimating impacts from experiments in
-education and other social policy
-research.\footnote{Other options include nonparametric or Bayesian methods, but these are less prevalent in applied research (for example, see @GELMANETAL2012, @GelmanHill2007).}
+education and other social policy research.\footnote{Other options
+  include nonparametric or Bayesian methods, but these are less
+  prevalent in applied research (for example, see Gelman A. (2012),
+  Gelman A. (2007)).}
 
 To our knowledge, none of the existing software tools for power
 calculations allow researchers to account for multiple hypothesis tests
@@ -357,7 +362,7 @@ application built with R Shiny. This web application calls the
 \texttt{PUMP} package and allows users to conduct calculations with a
 user-friendly interface, but it is less flexible than the package, with
 a focus on simpler scenarios (e.g., 10 or fewer outcomes). The app can
-be found at \url{www.pumpmdrc.io}.
+be found at \url{https://mdrcpump.shinyapps.io/pump_shiny/}.
 
 The remainder of this paper is organized as follows. In
 Section\textasciitilde{}\ref{sec:diplomas}, we introduce Diplomas Now,
@@ -461,15 +466,18 @@ five separate outcomes.
 Our motivating example illustrates that researchers are often interested
 in testing the effectiveness of a single intervention on multiple
 outcomes. The resulting multiplicity of statistical hypothesis tests can
-lead to spurious findings of
-effects.\footnote{Testing the effectiveness of an intervention for multiple subgroups, at multiple points in time, or across multiple treatment groups also results in a multiplicity of statistical hypotheses and can also lead to spurious findings of effects, but this is beyond the scope of this paper.}
-Multiple testing procedures counteract this problem by adjusting
-\(p\)-values for effect estimates; generally, \(p\)-values are adjusted
-upward to require a higher burden of proof. When not using a MTP, the
-probability of finding false positives increases, sometimes
-dramatically, with the number of tests. When using a MTP, this
-probability is reduced. Much of the proceeding explanation is borrowed
-from or parallels discussion found in Porter (2018).
+lead to spurious findings of effects.\footnote{Testing the effectiveness
+  of an intervention for multiple subgroups, at multiple points in time,
+  or across multiple treatment groups also results in a multiplicity of
+  statistical hypotheses and can also lead to spurious findings of
+  effects, but this is beyond the scope of this paper.} Multiple testing
+procedures counteract this problem by adjusting \(p\)-values for effect
+estimates; generally, \(p\)-values are adjusted upward to require a
+higher burden of proof. When not using a MTP, the probability of finding
+false positives increases, sometimes dramatically, with the number of
+tests. When using a MTP, this probability is reduced. Much of the
+proceeding explanation is borrowed from or parallels discussion found in
+Porter (2018).
 
 We first remind the reader of how raw, or unadjusted, \(p\)-values are
 calculated in this setting, before introducing adjustments due to
@@ -492,8 +500,10 @@ The term ``raw'' is used to denote unadjusted \(p\)-values, in contrast
 to values that have been adjusted using a MTP. For a two-sided test, the
 raw \(p\)-value for test \(m\) is \(p_m=2*Pr(T_m \geq |t_m|)\). The
 \texttt{PUMP} package allows for either one-sided or two-sided tests,
-but we proceed assuming two-sided tests going
-forward.\footnote{For a one-sided test, depending on the direction of our alternative hypothesis, the raw $p$-value for test $m$ is computed as $p_m=Pr(T_m \leq t_m)$ or $p_m=Pr(T_m \geq t_m)$.}
+but we proceed assuming two-sided tests going forward.\footnote{For a
+  one-sided test, depending on the direction of our alternative
+  hypothesis, the raw \(p\)-value for test \(m\) is computed as
+  \(p_m=Pr(T_m \leq t_m)\) or \(p_m=Pr(T_m \geq t_m)\).}
 
 When testing a \emph{single} hypothesis under this framework,
 ``researchers typically specify \(\alpha\), the maximum acceptable
@@ -527,9 +537,11 @@ size'' (Porter (2018)).
 \label{sec:mtp_use}
 
 As introduced above, multiple testing procedures adjust \(p\)-values to
-counteract the multiple testing
-problem.\footnote{Alternatively, MTPs can decrease the critical values for rejecting hypothesis tests. For ease of presentation, this paper focuses only on the approach of adjusting $p$-values.}
-We next describe how using a MTP protects against false positives.
+counteract the multiple testing problem.\footnote{Alternatively, MTPs
+  can decrease the critical values for rejecting hypothesis tests. For
+  ease of presentation, this paper focuses only on the approach of
+  adjusting \(p\)-values.} We next describe how using a MTP protects
+against false positives.
 
 Considering multiple outcomes presents both challenges and
 opportunities. First, we discuss the impact of MTPs on individual power.
@@ -657,9 +669,18 @@ effects on all outcomes are zero. A MTP provides strong control of the
 FWER or FDR at level \(\alpha\) if the control is guaranteed when some
 null hypotheses are true and some are false, e.g.~when there may be
 effects on at least some outcomes. Of course, strong control is
-preferred'' (Porter (2018)).
-\footnote{The single-step and step-down Westfall Young MTPs (which we discuss below) always provide at least weak control of the FWER. In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (@RN33093).The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null.
-A consequence of this assumption is that the permutation of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (@RN33093).}
+preferred'' (Porter (2018)).\footnote{The single-step and step-down
+  Westfall Young MTPs (which we discuss below) always provide at least
+  weak control of the FWER. In order for these procedures to provide
+  strong control of the FWER, they require the assumption of subset
+  pivotality (Ge (2003)).The distribution of the unadjusted test
+  statistics or \(p\)-values is said to have subset pivotality if for
+  any subset of null hypotheses, the joint distribution of the test
+  statistics or of the \(p-\)values for the subset is identical to the
+  distribution under the complete null. A consequence of this assumption
+  is that the permutation of test statistics or \(p\)-values can be done
+  under the complete null hypothesis rather than under the unknown
+  partial hypothesis (Ge (2003)).}
 
 \subsection{Single-step vs. stepwise procedures}
 \label{sec:stepwise}
@@ -727,31 +748,32 @@ to be false nulls --- if any outcomes are assumed to be true nulls, then
 complete power is undefined.
 
 There is an additional technical note about the calculation of complete
-power.\footnote{Complete power has also been referred to as “conjunctive power” (@RN33091) and “all pairs power” (@RN33097).}
-To calculate complete power, we do not need to adjust the \(p\)-values,
-and can instead reject each individual test based on the unadjusted
-\(p\)-values. Complete power is the power of the omnibus test
-constructed by whether or not we reject all the null hypotheses. This
-test was originally introduced as the intersection-union test because
-the null hypothesis is expressed as a union and the alternative
-hypothesis is expressed as an intersection (Berger (1982), Berger and
-Hsu (1996)). Berger (1982) showed that if all the individual tests are
-level \(\alpha\), the intersection-union test is also a level \(\alpha\)
-test. To provide some intuition, we do not need to adjust \(p\)-values
-for complete power because it is a special case where we must reject
-\emph{all} the hypothesis tests. Thus, there is no way for the omnibus
-test to be rejected by chance because of a favorable configuration (Chen
-(2011)). For example, consider if we have four tests, with two false
-nulls and two true nulls. If we consider \(3-\)minimal power, we just
-need one of the two true nulls to be rejected by chance alone, and there
-are two ways for this to occur. For complete power, there is only one
-way for us to reject all of the nulls. The downside of an
-intersection-union test is that it is conservative: the FWER is
-generally less than \(\alpha\). For example, if we have two independent
-tests with Type I error \(\alpha\), then if both of are true nulls, the
-probability of a Type I error for the omnibus test (the probability of
-rejecting both null hypotheses) is \(\alpha^2\) (Deng, Xu, and Wang
-(2008)).
+power.\footnote{Complete power has also been referred to as
+  ``conjunctive power'' (Bretz and Westfall (2011)) and ``all pairs
+  power'' (Ramsey (1978)).} To calculate complete power, we do not need
+to adjust the \(p\)-values, and can instead reject each individual test
+based on the unadjusted \(p\)-values. Complete power is the power of the
+omnibus test constructed by whether or not we reject all the null
+hypotheses. This test was originally introduced as the
+intersection-union test because the null hypothesis is expressed as a
+union and the alternative hypothesis is expressed as an intersection
+(Berger (1982), Berger and Hsu (1996)). Berger (1982) showed that if all
+the individual tests are level \(\alpha\), the intersection-union test
+is also a level \(\alpha\) test. To provide some intuition, we do not
+need to adjust \(p\)-values for complete power because it is a special
+case where we must reject \emph{all} the hypothesis tests. Thus, there
+is no way for the omnibus test to be rejected by chance because of a
+favorable configuration (Chen (2011)). For example, consider if we have
+four tests, with two false nulls and two true nulls. If we consider
+\(3-\)minimal power, we just need one of the two true nulls to be
+rejected by chance alone, and there are two ways for this to occur. For
+complete power, there is only one way for us to reject all of the nulls.
+The downside of an intersection-union test is that it is conservative:
+the FWER is generally less than \(\alpha\). For example, if we have two
+independent tests with Type I error \(\alpha\), then if both of are true
+nulls, the probability of a Type I error for the omnibus test (the
+probability of rejecting both null hypotheses) is \(\alpha^2\) (Deng,
+Xu, and Wang (2008)).
 
 \subsection{Correlation between test statistics}
 \label{sec:corr}
@@ -762,22 +784,26 @@ or not it takes into account the correlation between test statistics.
 cases, even when the test statistics are correlated, but they adjust
 \(p\)-values more than is necessary in that case. Along with the
 Bonferroni and Holm MTPs, the Benjamin-Hochberg MTP also does not take
-correlations into
-account.\footnote{The Benjamini-Hochberg procedure was originally shown to control the FDR for independent test statistics. However, @BenjaminiYekutieli2001 showed that it also controls the FDR for true null hypotheses with “positive regression dependence.” This condition is satisfied
-for most applications in practice.} In contrast, both of the
-Westfall-Young MTPs rely on the estimation of the joint distribution of
-test statistics when the complete null hypothesis (that there are not
-effects on any of the outcomes) is true. This joint distribution of the
-test statistics is estimated from the study's data'' (Porter (2018)).
-For example, random permutations of the treatment indicator break the
-association between treatment status and outcome. Repeating these
-permutations a large number of times results in a distribution of test
-statistics under the complete null. ``Because the actual data are used
-to generate this null distribution, correlations among the test
-statistics are captured. Then observed test statistics can be compared
-with the distribution of test statistics under the complete null
-hypothesis'' (Porter
-(2018)).\footnote{Instead of using test statistics, the Westfall-Young MTPs can alternatively compare raw $p$-values with the estimated joint null distribution of $p$-values.}
+correlations into account.\footnote{The Benjamini-Hochberg procedure was
+  originally shown to control the FDR for independent test statistics.
+  However, Benjamin (2001) showed that it also controls the FDR for true
+  null hypotheses with ``positive regression dependence.'' This
+  condition is satisfied for most applications in practice.} In
+contrast, both of the Westfall-Young MTPs rely on the estimation of the
+joint distribution of test statistics when the complete null hypothesis
+(that there are not effects on any of the outcomes) is true. This joint
+distribution of the test statistics is estimated from the study's data''
+(Porter (2018)). For example, random permutations of the treatment
+indicator break the association between treatment status and outcome.
+Repeating these permutations a large number of times results in a
+distribution of test statistics under the complete null. ``Because the
+actual data are used to generate this null distribution, correlations
+among the test statistics are captured. Then observed test statistics
+can be compared with the distribution of test statistics under the
+complete null hypothesis'' (Porter (2018)).\footnote{Instead of using
+  test statistics, the Westfall-Young MTPs can alternatively compare raw
+  \(p\)-values with the estimated joint null distribution of
+  \(p\)-values.}
 
 The correlation between test statistics is a parameter a researcher must
 specify in order to estimate power, MDES or sample size requirements
@@ -790,17 +816,17 @@ covariates are equivalent in all impact models, then the correlations
 between the test statistics are equal to the correlations between the
 outcomes. However, having different \(R^2\)'s across the impact models
 reduces the correlations between the residuals and therefore between
-test
-statistics.\footnote{For example, one of the multiple outcomes may have a baseline covariate with a high $R^2$ while another may have a baseline covariate with
-a smaller $R^2$. Also, block dummies may explain more variation in some outcomes than in others.}
-Models of outcomes that are highly correlated are more likely to have
-residuals that are highly correlated because baseline covariates will
-tend to have similar \(R^2\)'s. The gaps between the correlations
-between outcomes and the correlations between residuals --- and
-therefore the test statistics --- may be wider for moderately or weakly
-correlated outcomes. In any case, the upper bounds of correlations
-between the test statistics are the correlations between the outcomes''
-(Porter (2018)).
+test statistics.\footnote{For example, one of the multiple outcomes may
+  have a baseline covariate with a high \(R^2\) while another may have a
+  baseline covariate with a smaller \(R^2\). Also, block dummies may
+  explain more variation in some outcomes than in others.} Models of
+outcomes that are highly correlated are more likely to have residuals
+that are highly correlated because baseline covariates will tend to have
+similar \(R^2\)'s. The gaps between the correlations between outcomes
+and the correlations between residuals --- and therefore the test
+statistics --- may be wider for moderately or weakly correlated
+outcomes. In any case, the upper bounds of correlations between the test
+statistics are the correlations between the outcomes'' (Porter (2018)).
 
 \section{Estimating power, MDES and sample size in studies with multiple outcomes}
 \label{sec:est}
@@ -866,10 +892,11 @@ below.
   by \texttt{PUMP}, the relevant functions would be \texttt{lm()},
   \texttt{lmer()} from the \texttt{lme4} library (Bates et al. (2015)),
   and \texttt{interacted\_linear\_estimators()} from the \texttt{blkvar}
-  library.\footnote{This package is currently under development on GitHub; see \url{https://github.com/lmiratrix/blkvar}}
-  From the model output we extract the test statistics \(t_m\) for the
-  estimated impacts, one statistic for each outcome, along with
-  estimated standard errors.
+  library.\footnote{This package is currently under development on
+    GitHub; see \url{https://github.com/lmiratrix/blkvar}} From the
+  model output we extract the test statistics \(t_m\) for the estimated
+  impacts, one statistic for each outcome, along with estimated standard
+  errors.
 \item
   \emph{Calculate unadjusted \(p\)-values.} The test statistics and
   standard errors would in turn give raw (unadjusted) \(p\)-values. We
@@ -921,10 +948,14 @@ below.
   each outcome of interest.
 \item
   \emph{\(d\)-minimal power} is the proportion of the \(tnum\) rows in
-  which at least \(d\) of the \(M\) hypotheses were
-  rejected.\footnote{Note that others refer to $1-$minimal power simply as “minimal power” (e.g., @RN33095; @RN23882; @MTSAS), “disjunctive power” (e.g., @RN33091), or “any pair” power (@RN33097). @RN23882 use the terminology of “r-power” for what is referred to here as $d-$minimal power for d>1.}
-  For Diplomas Now, we could consider \(1\)-minimal power through
-  \(4\)-minimal power.
+  which at least \(d\) of the \(M\) hypotheses were rejected.\footnote{Note
+    that others refer to \(1-\)minimal power simply as ``minimal power''
+    (e.g., Maurer and Mellein (1988); Chen (2011); T. Westfall Peter H
+    and Wolfinger (2011)), ``disjunctive power'' (e.g., Bretz and
+    Westfall (2011)), or ``any pair'' power (Ramsey (1978)). Chen (2011)
+    use the terminology of ``r-power'' for what is referred to here as
+    \(d-\)minimal power for \(d>1\).} For Diplomas Now, we could
+  consider \(1\)-minimal power through \(4\)-minimal power.
 \item
   \emph{Complete power} is the proportion of the \(tnum\) rows in which
   all of the null hypotheses were rejected based on the raw \(p\)-values
@@ -1646,10 +1677,13 @@ Holm & 0.08 & 0.8\\
 
 The \texttt{update()} method can replace any number of arguments of the
 prior call with new ones, making exploration of different scenarios very
-straightforward.\footnote{The $`update()`$ method re-runs the underlying call of $`pump_mdes()`$, $`pump_sample()`$, or $`pump_power()`$ with the revised set of design parameters. You can even change which call to use via the `type` parameter.}
-Our results show that if we just want to detect at least one outcome
-with 80\% power, we can reliably detect an effect of size \(0.08\)
-(assuming all five outcomes have effects of at least that size).
+straightforward.\footnote{The update() method re-runs the underlying
+  call of pump\_mdes(), pump\_sample(), or pump\_power() with the
+  revised set of design parameters. You can even change which call to
+  use via the type parameter.} Our results show that if we just want to
+detect at least one outcome with 80\% power, we can reliably detect an
+effect of size \(0.08\) (assuming all five outcomes have effects of at
+least that size).
 
 When estimating power for multiple outcomes, it is important to consider
 cases where some of the outcomes in fact have null, or very small,
@@ -1784,12 +1818,14 @@ The next rows show different multi-outcome definitions of power. In
 particular, \texttt{1-minimum} shows the chance of rejecting at least
 one hypotheses. The \texttt{complete} row shows the power to reject all
 hypotheses; it is only defined if all outcomes are specified to have a
-non-zero
-effect.\footnote{The package does not show power for these without adjustment for multiple testing, as that power would be grossly inflated and meaningless.}
+non-zero effect.\footnote{The package does not show power for these
+  without adjustment for multiple testing, as that power would be
+  grossly inflated and meaningless.}
 
 We can look at a power curve of our \texttt{pump\_sample()} call to
-assess how sensitive power is to our level two sample
-size:\footnote{The points on the plots show the evaluated simulation trials, with larger points corresponding to more iterations and greater precision.}
+assess how sensitive power is to our level two sample size:\footnote{The
+  points on the plots show the evaluated simulation trials, with larger
+  points corresponding to more iterations and greater precision.}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2107,7 +2143,8 @@ commonly used RCT designs and models across different definitions of
 power and applying different MTPs. The functionality of \texttt{PUMP}
 fills an important gap, as existing tools do not allow researchers to
 conduct power, MDES or sample size calculations when applying a MTP. An
-online interface is also available at \url{www.mdrcpump.io}.
+online interface is also available at
+\url{https://mdrcpump.shinyapps.io/pump_shiny/}.
 
 The main advantage of the \texttt{PUMP} package is to provide easily
 accessible estimation procedures so that users can properly account for
@@ -2168,6 +2205,11 @@ Bates, Douglas, Martin Mächler, Ben Bolker, and Steve Walker. 2015.
 Statistical Software} 67 (1): 1--48.
 \url{https://doi.org/10.18637/jss.v067.i01}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-BenjaminiYekutieli2001}{}}%
+Benjamin, \& Yekutieli. D., Y. 2001. {``The Control of the False
+Discovery Rate: A Practical and Powerful Approach to Multiple Testing
+Under Dependency.''} \emph{Annals of Statistics} 29: 1165--88.
+
 \leavevmode\vadjust pre{\hypertarget{ref-BenjaminiHochberg1995}{}}%
 Benjamini, \& Hochberg, Y. 1995. {``Controlling the False Discovery
 Rate: A Practical and Powerful Approach to Multiple Testing.''}
@@ -2186,6 +2228,10 @@ Article. \emph{Statistical Science} 11 (4): 283--319.
 \leavevmode\vadjust pre{\hypertarget{ref-RN27978}{}}%
 Bloom, Howard S. 2006. {``The Core Analytics of Randomized Experiments
 for Social Research.''} Government Document. MDRC.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN33091}{}}%
+Bretz. Hothorn, F, and P. Westfall. 2011. {``Multiple Comparisons Using
+r.''} Report.
 
 \leavevmode\vadjust pre{\hypertarget{ref-RN23882}{}}%
 Chen, Luo, J. 2011. {``On Power and Sample Size Computation for Multiple
@@ -2224,6 +2270,19 @@ Variables.''} Journal Article, 192--97.
 Article. \emph{Journal of the American Statistical Association} 56
 (293): 52--64. \url{https://doi.org/10.1080/01621459.1961.10482090}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-RN33093}{}}%
+Ge, Dudoit, Y. 2003. {``Resampling-Based Multiple Testing for Microarray
+Data Analsysis.''} Journal Article. \emph{Test} 12: 1--77.
+
+\leavevmode\vadjust pre{\hypertarget{ref-GelmanHill2007}{}}%
+Gelman A., Yajima M., Hill J. 2007. \emph{Data Analysis Using Regression
+and Multilevel/Hierarchical Models}. Cambridge University Press.
+
+\leavevmode\vadjust pre{\hypertarget{ref-GELMANETAL2012}{}}%
+---------. 2012. {``Why We (Usually) Don't Have to Worry about Multiple
+Comparisons.''} Journal Article. \emph{Journal of Research on
+Educational Effectiveness} 5: 189--211.
+
 \leavevmode\vadjust pre{\hypertarget{ref-RN30153}{}}%
 Hedges, Larry V., and Christopher Rhoads. 2010. {``Statistical Power
 Analysis in Education Research.''} Report. National Center for Special
@@ -2234,11 +2293,22 @@ Education Research.
 Holm, S. 1979. {``A Simple Sequentially Rejective Multiple Test
 Procedure.''} Journal Article. \emph{Scand. J. Statist.} 6 (2): 65--70.
 
+\leavevmode\vadjust pre{\hypertarget{ref-RN33095}{}}%
+Maurer, W., and B. Mellein. 1988. {``On New Multiple Test Procedures
+Based on Independent p-Values and the Assessment of Their Powers.''}
+Book Section. In \emph{Multiple Hypotheses Testing}, edited by G. Hommel
+P. bauer and E. Sonnermann, 48--66. Heidelberg, Springer.
+
 \leavevmode\vadjust pre{\hypertarget{ref-Porter2018}{}}%
 Porter, Kristin E. 2018. {``Statistical Power in Evaluations That
 Investigate Effects on Multiple Outcomes: A Guide for Researchers.''}
 Journal Article. \emph{Journal of Research on Educational Effectiveness}
 11: 267--95.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN33097}{}}%
+Ramsey, P. H. 1978. {``Power Differences Between Pairwise Multiple
+Comparisons.''} Journal Article. \emph{Journal of American Statistical
+Association} 75: 479--87.
 
 \leavevmode\vadjust pre{\hypertarget{ref-RN23884}{}}%
 Raudenbush, S. W., J. Spybrook, R. Congdon, X. Liu, A. Martinez, H.
