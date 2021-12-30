@@ -60,8 +60,8 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
     rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
     
     # track how many failures occur
-    num.singular.raw <- num.singular.raw + rawp.out[['num.singular']]
-    num.failed.converge.raw <- num.failed.converge.raw + rawp.out[['num.failed.converge']]
+    num.singular.raw <- num.singular.raw + rawpt.out[['num.singular']]
+    num.failed.converge.raw <- num.failed.converge.raw + rawpt.out[['num.failed.converge']]
     
     # loop through adjustment procedures (adding 'None' as default in all cases)
     for (p in 1:(length(MTP) + 1)) {
