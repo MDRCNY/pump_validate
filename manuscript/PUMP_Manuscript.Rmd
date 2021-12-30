@@ -134,14 +134,6 @@ Section~\ref{sec:choices} discusses the various choices a user must make when us
 Section~\ref{sec:vignette} provides a detailed presentation of the `PUMP` package with multiple examples of using the packages functions to conduct calculations for our education RCT example.
 Section~\ref{sec:conclusion} is a brief conclusion. 
 
-In addition to this paper, there is a variety of supporting information.
-
-  - The code is available on github, \url{https://github.com/MDRCNY/PUMP}.
-  - The Technical Appendix contains detailed information about each design and model, the assumed data generating process, and understanding parameters such as $ICC$ and $\omega$. It is a useful reference not just for users of the package, but also as a general summary of multi-level models.
-  - The package has an additional vignette on understanding sample size calculations, which present unique challenges.
-  - The package has supplementary functions that allow a user to simulate data from multi-level models. Although these functions are not directly related to the power calculations, we provide them as a potentially useful tool. A short vignette explains these functions.
-  - The code and results for validating the package are in a separate repository, \url{https://github.com/MDRCNY/pump_validate}.
-
 \section{Diplomas Now}
 \label{sec:diplomas}
 
@@ -185,7 +177,7 @@ For illustration purposes, we focus on one outcome group, attendance, which we w
 
 Our motivating example illustrates that researchers are often interested in testing the effectiveness of a single intervention on multiple outcomes.
 The resulting multiplicity of statistical hypothesis tests can lead to spurious findings of effects.\footnote{Testing the effectiveness of an intervention for multiple subgroups, at multiple points in time, or across multiple treatment groups also results in a multiplicity of statistical hypotheses and can also lead to spurious findings of effects, but this is beyond the scope of this paper.}
-Multiple testing procedures (MTPs) counteract this problem by adjusting $p$-values for effect estimates; generally, $p$-values are adjusted upward to require a higher burden of proof.
+Multiple testing procedures counteract this problem by adjusting $p$-values for effect estimates; generally, $p$-values are adjusted upward to require a higher burden of proof.
 When not using a MTP, the probability of finding false positives increases, sometimes dramatically, with the number of tests.
 When using a MTP, this probability is reduced.
 Much of the proceeding explanation is borrowed from or parallels discussion found in @Porter2018.
@@ -195,7 +187,6 @@ Consider that a researcher is interested in testing the impact of an interventio
 In our running example of the Diplomas Now study, if we had five outcomes in the attendance group, we would have $M = 5$.
 We apply a frequentist hypothesis testing framework, and frame impacts in terms of effect sizes ($ES$).
 For outcome $m$, we can test a null hypothesis of no effect, $H_{0_m}: ES_m = 0$, against an alternative hypothesis $H_{1_m}: ES_m \neq 0$ for a two-sided tests or $H_{1_m}: ES_m > 0$ or $H_{1_m}: ES_m < 0$ for a one-sided test.
-We can also conduct a hypothesis test of a certain assumed effect size $\gamma$, where the null hypothesis is $H_{0_m}: ES_m < \gamma$  and the alternative hypothesis is $H_{1_m}: ES_m >= \gamma$. 
 A significance test, such as a two- or one-sided $t$-test, would then typically be driven by a test statistic given by
 \begin{equation}
 t_m = \frac{\widehat{ES}_m}{SE(\hat{ES}_m)},
@@ -224,7 +215,7 @@ Nonetheless, any error inflation can still make it problematic to draw reliable 
 \subsection{Using MTPs to protect against spurious impact findings}
 \label{sec:mtp_use}
 
-As introduced above, multiple testing procedures (MTPs) adjust $p$-values to counteract the multiple testing problem.\footnote{Alternatively, MTPs can decrease the critical values for rejecting hypothesis tests. For ease of presentation, this paper focuses only on the approach of adjusting $p$-values.}
+As introduced above, multiple testing procedures adjust $p$-values to counteract the multiple testing problem.\footnote{Alternatively, MTPs can decrease the critical values for rejecting hypothesis tests. For ease of presentation, this paper focuses only on the approach of adjusting $p$-values.}
 We next describe how using a MTP protects against false positives.
 
 Considering multiple outcomes presents both challenges and opportunities.
@@ -583,7 +574,7 @@ A design with two levels and randomization at level two is commonly called a clu
 We can also have both blocking and clustering: randomizing schools within districts, creating a series of cluster-randomized experiments, would be a blocked (by district), cluster-randomized experiment, with randomization at level two.
 
 *The model.* Given a design, the researcher can select a model via a few modeling choices.
-In particular the researcher has to decide about the intercepts and the treatment impacts:
+In particular the researcher has to decide, for each level beyond the first, about the intercepts and the treatment impacts:
 
 - Whether level two and level three intercepts are:
   - fixed: we have a separate intercept for each unit.
@@ -1068,11 +1059,20 @@ The `grid()` functions, by contrast, take a single MDES value for the non-null o
 We introduce the power under multiplicity project (`PUMP`) `R` package, which estimates power for multi-level randomized control trials with multiple outcomes.
 `PUMP` allows users to estimate power, MDES, and sample size requirements for a wide variety of commonly used RCT designs and models across different definitions of power and applying different MTPs.
 The functionality of `PUMP` fills an important gap, as existing tools do not allow researchers to conduct power, MDES or sample size calculations when applying a MTP.
+An online interface is also available at \url{www.mdrcpump.io}.
 
-The main advantage of the `PUMP` package is to provide easily accessible estimation procedures so that users can properly account for power when making adjustments for multiple hypothesis testing. Users can also take advantage of the `PUMP` in an online interface at \url{www.mdrcpump.io}.
+The main advantage of the `PUMP` package is to provide easily accessible estimation procedures so that users can properly account for power when making adjustments for multiple hypothesis testing.
 However, one of the additional strengths of the package is the ease with which a user can explore the impact of different designs, models, and assumptions on power, MDES or sample size.
 Even if a user is only interested in a single outcome, `PUMP` provides useful functionality for more robust power calculations.
 A user can and should try a range of parameter values to determine the sensitivity of the power of their study to different assumptions; this package simplifies that process.
+
+In addition to this paper, there is a variety of supporting information.
+
+  - The code is available on github, \url{https://github.com/MDRCNY/PUMP}.
+  - The Technical Appendix contains detailed information about each design and model, the assumed data generating process, and understanding parameters such as $ICC$ and $\omega$. It is a useful reference not just for users of the package, but also as a general summary of multi-level models.
+  - The package has an additional vignette on understanding sample size calculations, which present unique challenges.
+  - The package has supplementary functions that allow a user to simulate data from multi-level models. Although these functions are not directly related to the power calculations, we provide them as a potentially useful tool. A short vignette explains these functions.
+  - The code and results for validating the package are in a separate repository, \url{https://github.com/MDRCNY/pump_validate}.
 
 \section*{Acknowledgements}
 
