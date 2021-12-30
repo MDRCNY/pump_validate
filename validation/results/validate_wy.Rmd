@@ -190,6 +190,17 @@ d2.2_m2rc_power_plot <- gen.power.results.plot(params.file.base, d_m, small.font
 print(d2.2_m2rc_power_plot)
 ```
 
+
+```{r, results='hide'}
+ggsave(
+  here::here('validation/results', 'example_validation_plot.png'),
+  d2.2_m2rc_power_plot,
+  width = 6,
+  height = 6,
+  dpi = 1200
+)
+```
+
 \newpage
 # d3.1 models
 
