@@ -4,10 +4,16 @@
 %
 \documentclass[
 ]{article}
+\title{Power Under Multiplicity Project (PUMP): Estimating Power,
+Minimum Detectable Effect Size and Sample Size When Adjusting for
+Multiple Outcomes}
+\author{}
+\date{\vspace{-2.5em}}
+
+\usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -98,8 +104,31 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
-\usepackage{setspace}
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \usepackage{color}
+\usepackage{hyperref}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -114,23 +143,12 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
-\newlength{\cslhangindent}
-\setlength{\cslhangindent}{1.5em}
-\newenvironment{cslreferences}%
-  {\setlength{\parindent}{0pt}%
-  \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces}%
-  {\par}
-
-\title{Power Under Multiplicity Project (PUMP): Estimating Power,
-Minimum Detectable Effect Size and Sample Size When Adjusting for
-Multiple Outcomes}
-\author{}
-\date{\vspace{-2.5em}}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 
 \begin{document}
 \maketitle
-
-\doublespacing
 
 \section*{Abstract}
 
@@ -190,10 +208,10 @@ the power implications of the MTPs.
 
 Also, as researchers change their focus from one outcome to multiple
 outcomes, multiple definitions of statistical power emerge (Chen (2011);
-Dudoit (2003); Senn and Bretz (2007); Westfall and Wolfinger (2011)).
-The \texttt{PUMP} package allows researchers to consider multiple
-definitions of power, as some may be most suited for the goals of their
-study. The definitions of power include:
+Dudoit (2003); Senn and Bretz (2007); T. Westfall Peter H and Wolfinger
+(2011)). The \texttt{PUMP} package allows researchers to consider
+multiple definitions of power, as some may be most suited for the goals
+of their study. The definitions of power include:
 
 \begin{itemize}
 \tightlist
@@ -213,21 +231,22 @@ study. The definitions of power include:
   particular size on \emph{all} outcomes.
 \end{itemize}
 
-The prevailing default in many studies---individual power---may or may
-not be the most appropriate type of power. If the researcher's goal is
-to find statistically significant estimates of effects on most or all
-primary outcomes of interest, then their power may be much lower than
-anticipated when multiplicity adjustments are taken into account. On the
-other hand, if the researcher's goal is to find statistically
-significant estimates of effects on at least one or a small proportion
-of outcomes, their power may be much better than anticipated. In both of
-these cases, by not accounting for both the challenges and opportunities
-arising from multiple outcomes, a researcher may find they have wasted
-resources, either by designing an underpowered study that cannot detect
-the desired effect sizes, or by designing an overpowered study that had
-a larger sample size than necessary. We introduce the \texttt{PUMP}
-package to allow for directly answering questions that take multiple
-outcomes into account, such as:
+As noted in Porter (2018), the prevailing default in many
+studies---individual power---may or may not be the most appropriate type
+of power. If the researcher's goal is to find statistically significant
+estimates of effects on most or all primary outcomes of interest, then
+their power may be much lower than anticipated when multiplicity
+adjustments are taken into account. On the other hand, if the
+researcher's goal is to find statistically significant estimates of
+effects on at least one or a small proportion of outcomes, their power
+may be much better than anticipated. In both of these cases, by not
+accounting for both the challenges and opportunities arising from
+multiple outcomes, a researcher may find they have wasted resources,
+either by designing an underpowered study that cannot detect the desired
+effect sizes, or by designing an overpowered study that had a larger
+sample size than necessary. We introduce the \texttt{PUMP} package to
+allow for directly answering questions that take multiple outcomes into
+account, such as:
 
 \begin{itemize}
 \tightlist
@@ -338,7 +357,7 @@ application built with R Shiny. This web application calls the
 \texttt{PUMP} package and allows users to conduct calculations with a
 user-friendly interface, but it is less flexible than the package, with
 a focus on simpler scenarios (e.g., 10 or fewer outcomes). The app can
-be found at www.pumpmdrc.io.
+be found at \url{www.pumpmdrc.io}.
 
 The remainder of this paper is organized as follows. In Section
 \ref{sec:diplomas}, we introduce Diplomas Now, an educational
@@ -400,7 +419,7 @@ business-as-usual, resulting in 32 schools in the treatment group, and
 30 schools in the control group.
 
 The evaluation focused on three categories of outcomes: Attendance,
-Behavior, and Course performance, called the ``ABC's'', with multiple
+Behavior, and Course performance, called the ``ABC's,'' with multiple
 measures for each category. In addition, the evaluation measured an
 overall ABC composite measures of whether a student is above given
 thresholds on all three categories. This grouping constitutes 12 total
@@ -559,13 +578,13 @@ e.g., \(\alpha\). MTPs that control the FWER at \(5\%\) adjust
 \(p\)-values in a way that ensures that the probability of at least one
 Type I error across the entire set of hypothesis tests is no more than
 \(5\%\). The MTPs introduced by Bonferroni (Dunn (1959), Dunn (1961)),
-Holm (1979), and Westfall and Young (1993) control the FWER.
+Holm (1979), and P. H. Westfall and Young (1993) control the FWER.
 
 MTPs that control false discovery rate (FDR) take an entirely different
-approach to the multiple testing problem. FDR is a less stringent
-criteria than FWER. Introduced by Benjamini (1995), the FDR is the
-expected proportion of all rejected hypotheses that are erroneously
-rejected. The two-by-two representation in
+approach to the multiple testing problem. FDR, introduced by Benjamini
+(1995), is a less stringent criteria than FWER. It is the expected
+proportion of all rejected hypotheses that are erroneously rejected. As
+laid out in Porter (2018), the two-by-two representation in
 Table\textasciitilde{}\ref{tab:twobytwo} is often found in articles on
 multiple hypothesis testing, and helps to illustrate the difference
 between FWER and FDR. Let \(M\) be the total number of tests. Therefore,
@@ -592,7 +611,7 @@ Total                                 & $M-R$                   & $R$           
   \label{tab:twobytwo}
 \end{table}
 
-In Table\textasciitilde{}\ref{tab:twobytwo}, \(V\) is the number of
+``In Table\textasciitilde{}\ref{tab:twobytwo}, \(V\) is the number of
 erroneously rejected null hypotheses, or the number of false positive
 findings. Therefore, the FWER is equivalent to \(Pr(V > 0)\), the
 probability of at least one false positive finding. Recall that Type I
@@ -628,22 +647,22 @@ FWER and FDR, in the case where there is at least one false null
 hypothesis (at least one true effect), an MTP that controls the FDR at
 \(5\%\) will have a Type I error rate that is greater than \(5\%\).
 
-MTPs may provide either ``weak'' or ``strong'' control of the error rate
-they target. An MTP provides ``weak control'' of the FWER or the FDR at
-level \(\alpha\) if the control can only be guaranteed when all null
-hypotheses are true, e.g.~when the effects on all outcomes are zero. An
-MTP provides ``strong control'' of the FWER or FDR at level \(\alpha\)
-if the control is guaranteed when some null hypotheses are true and some
-are false, e.g.~when there may be effects on at least some outcomes. Of
-course, strong control is
-preferred.\footnote{The single-step and step-down Westfall Young MTPs (which we discuss below) always provide at least weak control of the FWER. In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (@RN33093).The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null.
+Note that MTPs may provide either ``weak'' or ``strong'' control of the
+error rate they target. An MTP provides ``weak control'' of the FWER or
+the FDR at level \(\alpha\) if the control can only be guaranteed when
+all null hypotheses are true, e.g.~when the effects on all outcomes are
+zero. An MTP provides ``strong control'' of the FWER or FDR at level
+\(\alpha\) if the control is guaranteed when some null hypotheses are
+true and some are false, e.g.~when there may be effects on at least some
+outcomes. Of course, strong control is preferred'' Porter
+(2018).\footnote{The single-step and step-down Westfall Young MTPs (which we discuss below) always provide at least weak control of the FWER. In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (@RN33093).The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null.
 A consequence of this assumption is that the permutation of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (@RN33093).}
 
 \subsection{Single-step vs. stepwise procedures}
 \label{sec:stepwise}
 
-A second feature of a MTP that affects its statistical power is whether
-it is a ``single-step'' or ``stepwise'' procedure. Single-step
+``A second feature of a MTP that affects its statistical power is
+whether it is a ``single-step'' or ``stepwise'' procedure. Single-step
 procedures adjust each \(p\)-value independently of the other
 \(p\)-values. For example, the Bonferroni MTP multiplies all raw
 \(p\)-values by \(M\). Therefore, one \(p\)-value adjustment does not
@@ -665,41 +684,42 @@ are single-step; the Holm and Benjamini-Hochberg MTPs and the
 Westfall-Young step-down procedure are stepwise. Note that stepwise
 procedures may be ``step-down'' or ``step-up,'' referring to whether a
 procedure begins with the smallest \(p\)-value, and thus the largest
-effect size (step-down) or the largest \(p\)-value (step-up).
+effect size (step-down) or the largest \(p\)-value (step-up)'' Porter
+(2018).
 
 Due to the dependencies of adjustments in stepwise MTPs, a new
 assumption must be considered when estimating power under multiplicity:
 the proportion of outcomes on which there are truly impacts, or,
-equivalently, the number of false null hypotheses. Researchers may be
+equivalently, the number of false null hypotheses. ``Researchers may be
 inclined to assume that there will be effects on all outcomes, as
 hypotheses of effects probably drive the selection of outcomes in the
-first place. However, if the researchers are incorrect, the probability
-of detecting the extant effects can be diminished, sometimes
-substantially.
+first place.(\ldots) However, if the researchers are incorrect, the
+probability of detecting the extant effects can be diminished, sometimes
+substantially'' Porter (2018).
 
 \textcolor{red}{Evan found this paragraph a little confusing.  I tried to do some re-working, but would also be happy for someone to tackle a rewrite.}
-It is important to point out that under the assumption that some effects
-are truly null, we must change our notion of power for \(d-\)minimal
-powers (e.g., \(1-\)minimal power, \(1/3-\)minimal power, etc.) and
-complete power. While individual power is defined based on the
-probability of correctly rejecting false nulls, the definition is
-loosened here and includes the probability of erroneous rejections of
-true nulls. For example, \(1/3-\)minimal power is defined as the
-probability of detecting effects on at least \(1/3\) of the \emph{total
-outcomes \(M\)}, regardless of the number of outcomes with true effects.
-That is, \(1/3-\)minimal power is not defined as the probability of
-detecting effects among the \(M\) outcomes on which the effects truly
-exist. This reframing of power is necessary for power to be consistent.
-If \(d-\)minimal power were defined based on false nulls, then the value
-and interpretation would change depending on what assumption the
-researcher is making about the number of false nulls, which is an
-unknown quantity. For example, with \(M = 5\) outcomes, the probability
-of detecting at least one effect would be very different depending on if
-we assume all five outcomes are false nulls, or if we assume only two of
-them are false nulls. Complete power, which is the probability of
-detecting effects on all outcomes, has similar issues. We define
-complete power only in the context where all effects are assumed to be
-false nulls --- if any outcomes are assumed to be true nulls, then
+As noted in Porter (2018), it is important to point out that under the
+assumption that some effects are truly null, we must change our notion
+of power for \(d-\)minimal powers (e.g., \(1-\)minimal power,
+\(1/3-\)minimal power, etc.) and complete power. While individual power
+is defined based on the probability of correctly rejecting false nulls,
+the definition is loosened here and includes the probability of
+erroneous rejections of true nulls. For example, \(1/3-\)minimal power
+is defined as the probability of detecting effects on at least \(1/3\)
+of the \emph{total outcomes \(M\)}, regardless of the number of outcomes
+with true effects. That is, \(1/3-\)minimal power is not defined as the
+probability of detecting effects among the \(M\) outcomes on which the
+effects truly exist. This reframing of power is necessary for power to
+be consistent. If \(d-\)minimal power were defined based on false nulls,
+then the value and interpretation would change depending on what
+assumption the researcher is making about the number of false nulls,
+which is an unknown quantity. For example, with \(M = 5\) outcomes, the
+probability of detecting at least one effect would be very different
+depending on if we assume all five outcomes are false nulls, or if we
+assume only two of them are false nulls. Complete power, which is the
+probability of detecting effects on all outcomes, has similar issues. We
+define complete power only in the context where all effects are assumed
+to be false nulls --- if any outcomes are assumed to be true nulls, then
 complete power is undefined.
 
 There is an additional technical note about the calculation of complete
@@ -721,8 +741,8 @@ For example, if we have two independent tests with Type I error $\alpha$, then i
 \subsection{Correlation between test statistics}
 \label{sec:corr}
 
-Finally, a third feature of an MTP that affects its statistical power is
-whether or not it takes into account the correlation between test
+``Finally, a third feature of an MTP that affects its statistical power
+is whether or not it takes into account the correlation between test
 statistics. The Bonferroni and Holm procedures strongly control the FWER
 in all cases, even when the test statistics are correlated, but they
 adjust \(p\)-values more than is necessary in that case. Along with the
@@ -740,20 +760,21 @@ number of times, results in a distribution of test statistics under the
 complete null. Because the actual data are used to generate this null
 distribution, correlations among the test statistics are captured. Then
 observed test statistics can be compared with the distribution of test
-statistics under the complete null
-hypothesis.\footnote{Instead of using test statistics, the Westfall-Young MTPs can alternatively compare raw $p$-values with the estimated joint null distribution of $p$-values.}
+statistics under the complete null hypothesis'' Porter
+(2018).\footnote{Instead of using test statistics, the Westfall-Young MTPs can alternatively compare raw $p$-values with the estimated joint null distribution of $p$-values.}
 
-\textcolor{red}{KH Note: I am not editing this paragraph in case we rewrite it with correlation tool.}
 The correlation between test statistics is a parameter a researcher must
 specify in order to estimate power, MDES or sample size requirements
-when using an MTP. The \(M\) pairwise correlations are equal to the
-\(M\) pairwise correlations between the residuals in the \(M\) impact
-models. If there are no covariates in the impact models or if the
-\(R^2\)'s of the covariates are equivalent in all impact models, then
-the correlations between the test statistics are equal to the
-correlations between the outcomes. However, having different \(R^2\)'s
-across the impact models reduces the correlations between the residuals
-and therefore between test
+when using an MTP. When fitting a separate regression model for the
+impact on each outcome, the \({M \choose 2}\) pairwise correlations
+between test statistics are equal to the ``pairwise correlations between
+the residuals in the \(M\) impact models'' Porter (2018). Then, ``if
+there are no covariates in the impact models or if the \(R^2\)'s of the
+covariates are equivalent in all impact models, then the correlations
+between the test statistics are equal to the correlations between the
+outcomes. However, having different \(R^2\)'s across the impact models
+reduces the correlations between the residuals and therefore between
+test
 statistics.\footnote{For example, one of the multiple outcomes may have a baseline covariate with a high $R^2$ while another may have a baseline covariate with
 a smaller $R^2$. Also, block dummies may explain more variation in some outcomes than in others.}
 Models of outcomes that are highly correlated are more likely to have
@@ -762,7 +783,8 @@ tend to have similar \(R^2\)'s. The gaps between the correlations
 between outcomes and the correlations between residuals --- and
 therefore the test statistics --- may be wider for moderately or weakly
 correlated outcomes. In any case, the upper bounds of correlations
-between the test statistics are the correlations between the outcomes.
+between the test statistics are the correlations between the outcomes''
+Porter (2018).
 
 \section{Estimating power, MDES and sample size in studies with multiple outcomes}
 \label{sec:est}
@@ -828,7 +850,7 @@ below.
   by \texttt{PUMP}, the relevant functions would be \texttt{lm()},
   \texttt{lmer()} from the \texttt{lme4} library (Bates et al. (2015)),
   and \texttt{interacted\_linear\_estimators()} from the \texttt{blkvar}
-  library.\footnote{This package is currently under development on GitHub; see https://github.com/lmiratrix/blkvar}
+  library.\footnote{This package is currently under development on GitHub; see \url{https://github.com/lmiratrix/blkvar}}
   From the model output we extract the test statistics \(t_m\) for the
   estimated impacts, one statistic for each outcome, along with
   estimated standard errors.
@@ -1287,8 +1309,8 @@ of the list of multiple testing procedures supported by the
 For a more detailed explanation of each MTP, see Appendix A of Porter
 (2018).
 
-The following table summarizes the important features for each of the
-MTPs supported by \texttt{PUMP}.
+The following table from Porter (2018) summarizes the important features
+for each of the MTPs supported by \texttt{PUMP}.
 
 \begin{table}[h!]
 \centering
@@ -1549,26 +1571,26 @@ detecting an impact on our first outcome when using the Holm procedure:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{m \textless{}{-}}\StringTok{ }\KeywordTok{pump\_mdes}\NormalTok{(}
-            \DataTypeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{, }\CommentTok{\# choice of design and analysis strategy}
-            \DataTypeTok{MTP =} \StringTok{"Holm"}\NormalTok{, }\CommentTok{\# multiple testing procedure}
-            \DataTypeTok{target.power =} \FloatTok{0.80}\NormalTok{, }\CommentTok{\# desired power}
-            \DataTypeTok{power.definition =} \StringTok{"D1indiv"}\NormalTok{, }\CommentTok{\# power type}
-            \DataTypeTok{M =} \DecValTok{5}\NormalTok{, }\CommentTok{\# number of outcomes}
-            \DataTypeTok{J =} \DecValTok{3}\NormalTok{, }\CommentTok{\# number of schools/block}
-            \DataTypeTok{K =} \DecValTok{21}\NormalTok{, }\CommentTok{\# number RA blocks}
-            \DataTypeTok{nbar =} \DecValTok{258}\NormalTok{, }\CommentTok{\# average number of students per school}
-            \DataTypeTok{Tbar =} \FloatTok{0.50}\NormalTok{, }\CommentTok{\# prop Tx}
-            \DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\CommentTok{\# significance level}
-            \DataTypeTok{numCovar.1 =} \DecValTok{5}\NormalTok{, }\DataTypeTok{numCovar.2 =} \DecValTok{3}\NormalTok{, }\CommentTok{\# number of covariates per level}
-            \DataTypeTok{R2.1 =} \FloatTok{0.1}\NormalTok{, }\DataTypeTok{R2.2 =} \FloatTok{0.7}\NormalTok{, }\CommentTok{\# Explanatory power of covariates for each level}
-            \DataTypeTok{ICC.2 =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{ICC.3 =} \FloatTok{0.4}\NormalTok{, }\CommentTok{\# Intraclass correlation coefficients}
-            \DataTypeTok{omega.3 =} \FloatTok{0.50}\NormalTok{, }\CommentTok{\# Amount of treatment variation at level 3.}
-            \DataTypeTok{rho =} \FloatTok{0.4}\NormalTok{ ) }\CommentTok{\# how correlated outcomes are}
+\NormalTok{m }\OtherTok{\textless{}{-}} \FunctionTok{pump\_mdes}\NormalTok{(}
+            \AttributeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{, }\CommentTok{\# choice of design and analysis strategy}
+            \AttributeTok{MTP =} \StringTok{"Holm"}\NormalTok{, }\CommentTok{\# multiple testing procedure}
+            \AttributeTok{target.power =} \FloatTok{0.80}\NormalTok{, }\CommentTok{\# desired power}
+            \AttributeTok{power.definition =} \StringTok{"D1indiv"}\NormalTok{, }\CommentTok{\# power type}
+            \AttributeTok{M =} \DecValTok{5}\NormalTok{, }\CommentTok{\# number of outcomes}
+            \AttributeTok{J =} \DecValTok{3}\NormalTok{, }\CommentTok{\# number of schools/block}
+            \AttributeTok{K =} \DecValTok{21}\NormalTok{, }\CommentTok{\# number RA blocks}
+            \AttributeTok{nbar =} \DecValTok{258}\NormalTok{, }\CommentTok{\# average number of students per school}
+            \AttributeTok{Tbar =} \FloatTok{0.50}\NormalTok{, }\CommentTok{\# prop Tx}
+            \AttributeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\CommentTok{\# significance level}
+            \AttributeTok{numCovar.1 =} \DecValTok{5}\NormalTok{, }\AttributeTok{numCovar.2 =} \DecValTok{3}\NormalTok{, }\CommentTok{\# number of covariates per level}
+            \AttributeTok{R2.1 =} \FloatTok{0.1}\NormalTok{, }\AttributeTok{R2.2 =} \FloatTok{0.7}\NormalTok{, }\CommentTok{\# Explanatory power of covariates for each level}
+            \AttributeTok{ICC.2 =} \FloatTok{0.05}\NormalTok{, }\AttributeTok{ICC.3 =} \FloatTok{0.4}\NormalTok{, }\CommentTok{\# Intraclass correlation coefficients}
+            \AttributeTok{omega.3 =} \FloatTok{0.50}\NormalTok{, }\CommentTok{\# Amount of treatment variation at level 3.}
+            \AttributeTok{rho =} \FloatTok{0.4}\NormalTok{ ) }\CommentTok{\# how correlated outcomes are}
 \end{Highlighting}
 \end{Shaded}
 
-The results are easily made into a nice table via \texttt{knitr}'s
+The results are easily made into a nice table via the \texttt{knitr}
 \texttt{kable()} command:
 
 \begin{tabular}{l|r|r}
@@ -1597,8 +1619,8 @@ definition:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{m2 \textless{}{-}}\StringTok{ }\KeywordTok{update}\NormalTok{( m, }\DataTypeTok{power.definition =} \StringTok{"min1"}\NormalTok{ )}
-\KeywordTok{kable}\NormalTok{(m2, }\DataTypeTok{digits =} \DecValTok{2}\NormalTok{)}
+\NormalTok{m2 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( m, }\AttributeTok{power.definition =} \StringTok{"min1"}\NormalTok{ )}
+\FunctionTok{kable}\NormalTok{(m2, }\AttributeTok{digits =} \DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1625,8 +1647,8 @@ no effect with the \texttt{numZero} parameter:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{m3 \textless{}{-}}\StringTok{ }\KeywordTok{update}\NormalTok{( m2, }\DataTypeTok{numZero =} \DecValTok{2}\NormalTok{ )}
-\KeywordTok{kable}\NormalTok{(m3, }\DataTypeTok{digits =} \DecValTok{2}\NormalTok{)}
+\NormalTok{m3 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( m2, }\AttributeTok{numZero =} \DecValTok{2}\NormalTok{ )}
+\FunctionTok{kable}\NormalTok{(m3, }\AttributeTok{digits =} \DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1661,20 +1683,20 @@ significant, if all outcomes had a true effect size of 0.10).
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{smp \textless{}{-}}\StringTok{ }\KeywordTok{pump\_sample}\NormalTok{(}
-  \DataTypeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{,}
-  \DataTypeTok{MTP =} \StringTok{"Holm"}\NormalTok{,}
-  \DataTypeTok{typesample =} \StringTok{"K"}\NormalTok{,}
-  \DataTypeTok{target.power =} \FloatTok{0.80}\NormalTok{, }\DataTypeTok{power.definition =} \StringTok{"min1"}\NormalTok{, }\DataTypeTok{tol =} \FloatTok{0.01}\NormalTok{,}
-  \DataTypeTok{MDES =} \FloatTok{0.10}\NormalTok{, }\DataTypeTok{M =} \DecValTok{5}\NormalTok{, }\DataTypeTok{nbar =} \DecValTok{258}\NormalTok{, }\DataTypeTok{J =} \DecValTok{3}\NormalTok{,}
-  \DataTypeTok{Tbar =} \FloatTok{0.50}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{numCovar.1 =} \DecValTok{5}\NormalTok{, }\DataTypeTok{numCovar.2 =} \DecValTok{3}\NormalTok{,}
-  \DataTypeTok{R2.1 =} \FloatTok{0.1}\NormalTok{, }\DataTypeTok{R2.2 =} \FloatTok{0.7}\NormalTok{, }\DataTypeTok{ICC.2 =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{ICC.3 =} \FloatTok{0.40}\NormalTok{, }\DataTypeTok{rho =} \FloatTok{0.4}\NormalTok{ )}
+\NormalTok{smp }\OtherTok{\textless{}{-}} \FunctionTok{pump\_sample}\NormalTok{(}
+  \AttributeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{,}
+  \AttributeTok{MTP =} \StringTok{"Holm"}\NormalTok{,}
+  \AttributeTok{typesample =} \StringTok{"K"}\NormalTok{,}
+  \AttributeTok{target.power =} \FloatTok{0.80}\NormalTok{, }\AttributeTok{power.definition =} \StringTok{"min1"}\NormalTok{, }\AttributeTok{tol =} \FloatTok{0.01}\NormalTok{,}
+  \AttributeTok{MDES =} \FloatTok{0.10}\NormalTok{, }\AttributeTok{M =} \DecValTok{5}\NormalTok{, }\AttributeTok{nbar =} \DecValTok{258}\NormalTok{, }\AttributeTok{J =} \DecValTok{3}\NormalTok{,}
+  \AttributeTok{Tbar =} \FloatTok{0.50}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\AttributeTok{numCovar.1 =} \DecValTok{5}\NormalTok{, }\AttributeTok{numCovar.2 =} \DecValTok{3}\NormalTok{,}
+  \AttributeTok{R2.1 =} \FloatTok{0.1}\NormalTok{, }\AttributeTok{R2.2 =} \FloatTok{0.7}\NormalTok{, }\AttributeTok{ICC.2 =} \FloatTok{0.05}\NormalTok{, }\AttributeTok{ICC.3 =} \FloatTok{0.40}\NormalTok{, }\AttributeTok{rho =} \FloatTok{0.4}\NormalTok{ )}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{kable}\NormalTok{(smp)}
+\FunctionTok{kable}\NormalTok{(smp)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1701,9 +1723,9 @@ of power, as well:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p\_check \textless{}{-}}\StringTok{ }\KeywordTok{update}\NormalTok{( smp, }\DataTypeTok{type =} \StringTok{"power"}\NormalTok{, }\DataTypeTok{tnum =} \DecValTok{100000}\NormalTok{,}
-                   \DataTypeTok{long.table =} \OtherTok{TRUE}\NormalTok{)}
-\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(p\_check, }\DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{)}
+\NormalTok{p\_check }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( smp, }\AttributeTok{type =} \StringTok{"power"}\NormalTok{, }\AttributeTok{tnum =} \DecValTok{100000}\NormalTok{,}
+                   \AttributeTok{long.table =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(p\_check, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1758,7 +1780,7 @@ size:\footnote{The points on the plots show the evaluated simulation trials, wit
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{plot\_power\_curve}\NormalTok{( smp )}
+\FunctionTok{plot\_power\_curve}\NormalTok{( smp )}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1778,11 +1800,11 @@ method:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p2 \textless{}{-}}\StringTok{ }\KeywordTok{update}\NormalTok{( p\_check,}
-              \DataTypeTok{MTP =} \KeywordTok{c}\NormalTok{(}\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"Holm"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{),}
-              \DataTypeTok{tnum =} \DecValTok{10000}\NormalTok{,}
-              \DataTypeTok{parallel.WY.clusters =} \DecValTok{3}\NormalTok{ )}
-\KeywordTok{plot}\NormalTok{( p2 )}
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check,}
+              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{(}\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"Holm"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{),}
+              \AttributeTok{tnum =} \DecValTok{10000}\NormalTok{,}
+              \AttributeTok{parallel.WY.clusters =} \DecValTok{3}\NormalTok{ )}
+\FunctionTok{plot}\NormalTok{( p2 )}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1836,8 +1858,8 @@ equally split across levels two and three:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p\_b \textless{}{-}}\StringTok{ }\KeywordTok{update}\NormalTok{( p\_check, }\DataTypeTok{ICC.2 =} \FloatTok{0.20}\NormalTok{, }\DataTypeTok{ICC.3 =} \FloatTok{0.25}\NormalTok{ )}
-\KeywordTok{print}\NormalTok{( p\_b )}
+\NormalTok{p\_b }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check, }\AttributeTok{ICC.2 =} \FloatTok{0.20}\NormalTok{, }\AttributeTok{ICC.3 =} \FloatTok{0.25}\NormalTok{ )}
+\FunctionTok{print}\NormalTok{( p\_b )}
 \CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
 \CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
 \CommentTok{\#\textgreater{}  None 0.24513 0.24236 0.24333 0.24256 0.24491   0.243658      NA      NA}
@@ -1858,11 +1880,11 @@ had better predictive covariates for our second outcome, we might try:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{p\_d =}\StringTok{ }\KeywordTok{update}\NormalTok{( p\_check,}
-            \DataTypeTok{R2.1 =} \KeywordTok{c}\NormalTok{( }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ),}
-            \DataTypeTok{R2.2 =} \KeywordTok{c}\NormalTok{( }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ),}
-            \DataTypeTok{omega.3 =} \KeywordTok{c}\NormalTok{( }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ) )}
-\KeywordTok{print}\NormalTok{( p\_d )}
+\NormalTok{p\_d }\OtherTok{=} \FunctionTok{update}\NormalTok{( p\_check,}
+            \AttributeTok{R2.1 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ),}
+            \AttributeTok{R2.2 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ),}
+            \AttributeTok{omega.3 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ) )}
+\FunctionTok{print}\NormalTok{( p\_d )}
 \CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
 \CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
 \CommentTok{\#\textgreater{}  None 0.43265 0.85325 0.38075 0.34358 0.34337   0.470720      NA      NA}
@@ -1886,7 +1908,7 @@ find out, we can always check details with \texttt{print\_design()} or
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{summary}\NormalTok{(p\_d)}
+\FunctionTok{summary}\NormalTok{(p\_d)}
 \CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
 \CommentTok{\#\textgreater{}   MDES vector: 0.1, 0.1, 0.1, 0.1, 0.1}
 \CommentTok{\#\textgreater{}   nbar: 258  J: 3    K: 15   Tbar: 0.5}
@@ -1922,17 +1944,17 @@ parameters to additionally explore:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{grid \textless{}{-}}\StringTok{ }\KeywordTok{update\_grid}\NormalTok{( p\_check,}
-            \DataTypeTok{ICC.2 =} \KeywordTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.05}\NormalTok{ ),}
-            \DataTypeTok{ICC.3 =} \KeywordTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.60}\NormalTok{, }\FloatTok{0.20}\NormalTok{ ),}
-            \DataTypeTok{tnum =} \DecValTok{5000}\NormalTok{ )}
+\NormalTok{grid }\OtherTok{\textless{}{-}} \FunctionTok{update\_grid}\NormalTok{( p\_check,}
+            \AttributeTok{ICC.2 =} \FunctionTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.05}\NormalTok{ ),}
+            \AttributeTok{ICC.3 =} \FunctionTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.60}\NormalTok{, }\FloatTok{0.20}\NormalTok{ ),}
+            \AttributeTok{tnum =} \DecValTok{5000}\NormalTok{ )}
 
-\NormalTok{grid}\OperatorTok{$}\NormalTok{ICC}\FloatTok{.3}\NormalTok{ =}\StringTok{ }\KeywordTok{as.factor}\NormalTok{( grid}\OperatorTok{$}\NormalTok{ICC}\FloatTok{.3}\NormalTok{ )}
-\NormalTok{grid =}\StringTok{ }\KeywordTok{filter}\NormalTok{( grid, MTP }\OperatorTok{==}\StringTok{ "Holm"}\NormalTok{ )}
-\KeywordTok{ggplot}\NormalTok{( grid, }\KeywordTok{aes}\NormalTok{( ICC}\FloatTok{.2}\NormalTok{, min1, }\DataTypeTok{group =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{, }\DataTypeTok{col =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{ ) ) }\OperatorTok{+}
-\StringTok{    }\KeywordTok{geom\_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom\_point}\NormalTok{() }\OperatorTok{+}
-\StringTok{    }\KeywordTok{labs}\NormalTok{( }\DataTypeTok{y =} \StringTok{"Min{-}1 Power"}\NormalTok{ ) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{coord\_cartesian}\NormalTok{( }\DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{) )}
+\NormalTok{grid}\SpecialCharTok{$}\NormalTok{ICC}\FloatTok{.3} \OtherTok{=} \FunctionTok{as.factor}\NormalTok{( grid}\SpecialCharTok{$}\NormalTok{ICC}\FloatTok{.3}\NormalTok{ )}
+\NormalTok{grid }\OtherTok{=} \FunctionTok{filter}\NormalTok{( grid, MTP }\SpecialCharTok{==} \StringTok{"Holm"}\NormalTok{ )}
+\FunctionTok{ggplot}\NormalTok{( grid, }\FunctionTok{aes}\NormalTok{( ICC}\FloatTok{.2}\NormalTok{, min1, }\AttributeTok{group =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{, }\AttributeTok{col =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{ ) ) }\SpecialCharTok{+}
+    \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+    \FunctionTok{labs}\NormalTok{( }\AttributeTok{y =} \StringTok{"Min{-}1 Power"}\NormalTok{ ) }\SpecialCharTok{+}
+  \FunctionTok{coord\_cartesian}\NormalTok{( }\AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{) )}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1983,11 +2005,11 @@ easily by letting \texttt{rho} vary as so:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{gridRho \textless{}{-}}\StringTok{ }\KeywordTok{update\_grid}\NormalTok{( p\_check,}
-            \DataTypeTok{MTP =} \KeywordTok{c}\NormalTok{( }\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
-            \DataTypeTok{rho =} \KeywordTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.9}\NormalTok{, }\DataTypeTok{by=}\FloatTok{0.15}\NormalTok{ ),}
-            \DataTypeTok{tnum =} \DecValTok{500}\NormalTok{,}
-            \DataTypeTok{B =} \DecValTok{10000}\NormalTok{ )}
+\NormalTok{gridRho }\OtherTok{\textless{}{-}} \FunctionTok{update\_grid}\NormalTok{( p\_check,}
+            \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
+            \AttributeTok{rho =} \FunctionTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.9}\NormalTok{, }\AttributeTok{by=}\FloatTok{0.15}\NormalTok{ ),}
+            \AttributeTok{tnum =} \DecValTok{500}\NormalTok{,}
+            \AttributeTok{B =} \DecValTok{10000}\NormalTok{ )}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1995,18 +2017,18 @@ We then plot our results.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{gridL =}\StringTok{ }\KeywordTok{filter}\NormalTok{( gridRho, MTP }\OperatorTok{!=}\StringTok{ "None"}\NormalTok{ ) }\OperatorTok{\%\textgreater{}\%}
-\StringTok{  }\KeywordTok{pivot\_longer}\NormalTok{( }\DataTypeTok{cols =} \KeywordTok{c}\NormalTok{(indiv.mean, min1, min2, complete),}
-                \DataTypeTok{names\_to =} \StringTok{"definition"}\NormalTok{, }\DataTypeTok{values\_to =} \StringTok{"power"}\NormalTok{ ) }\OperatorTok{\%\textgreater{}\%}
-\StringTok{  }\KeywordTok{mutate}\NormalTok{( }\DataTypeTok{definition =} \KeywordTok{factor}\NormalTok{( definition,}
-                            \DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"indiv.mean"}\NormalTok{, }\StringTok{"min1"}\NormalTok{, }\StringTok{"min2"}\NormalTok{, }\StringTok{"complete"}\NormalTok{ ) ) )}
+\NormalTok{gridL }\OtherTok{=} \FunctionTok{filter}\NormalTok{( gridRho, MTP }\SpecialCharTok{!=} \StringTok{"None"}\NormalTok{ ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{( }\AttributeTok{cols =} \FunctionTok{c}\NormalTok{(indiv.mean, min1, min2, complete),}
+                \AttributeTok{names\_to =} \StringTok{"definition"}\NormalTok{, }\AttributeTok{values\_to =} \StringTok{"power"}\NormalTok{ ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{( }\AttributeTok{definition =} \FunctionTok{factor}\NormalTok{( definition,}
+                            \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"indiv.mean"}\NormalTok{, }\StringTok{"min1"}\NormalTok{, }\StringTok{"min2"}\NormalTok{, }\StringTok{"complete"}\NormalTok{ ) ) )}
 
-\KeywordTok{ggplot}\NormalTok{( gridL, }\KeywordTok{aes}\NormalTok{( rho, power, }\DataTypeTok{col=}\NormalTok{MTP ) ) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{facet\_grid}\NormalTok{( . }\OperatorTok{\textasciitilde{}}\StringTok{ }\NormalTok{definition ) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom\_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom\_point}\NormalTok{() }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom\_hline}\NormalTok{( }\DataTypeTok{yintercept =} \KeywordTok{c}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.80}\NormalTok{ ) ) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{theme\_minimal}\NormalTok{() }\OperatorTok{+}
-\StringTok{  }\KeywordTok{coord\_cartesian}\NormalTok{( }\DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{) )}
+\FunctionTok{ggplot}\NormalTok{( gridL, }\FunctionTok{aes}\NormalTok{( rho, power, }\AttributeTok{col=}\NormalTok{MTP ) ) }\SpecialCharTok{+}
+  \FunctionTok{facet\_grid}\NormalTok{( . }\SpecialCharTok{\textasciitilde{}}\NormalTok{ definition ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{( }\AttributeTok{yintercept =} \FunctionTok{c}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.80}\NormalTok{ ) ) }\SpecialCharTok{+} 
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{coord\_cartesian}\NormalTok{( }\AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{) )}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2029,9 +2051,9 @@ varying the number of outcomes that have no treatment impact via the
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{gridZero \textless{}{-}}\StringTok{ }\KeywordTok{update\_grid}\NormalTok{( p\_check,}
-            \DataTypeTok{numZero =} \DecValTok{0}\OperatorTok{:}\DecValTok{4}\NormalTok{,}
-            \DataTypeTok{M =} \DecValTok{5}\NormalTok{ )}
+\NormalTok{gridZero }\OtherTok{\textless{}{-}} \FunctionTok{update\_grid}\NormalTok{( p\_check,}
+            \AttributeTok{numZero =} \DecValTok{0}\SpecialCharTok{:}\DecValTok{4}\NormalTok{,}
+            \AttributeTok{M =} \DecValTok{5}\NormalTok{ )}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2064,14 +2086,14 @@ The main advantage of the \texttt{PUMP} package is to provide easily
 accessible estimation procedures so that users can properly account for
 power when making adjustments for multiple hypothesis testing. Users can
 also take advantage of the \texttt{PUMP} in an online interface at
-www.mdrcpump.io. However, one of the additional strengths of the package
-is the ease with which a user can explore the impact of different
-designs, models, and assumptions on power, MDES or sample size. Even if
-a user is only interested in a single outcome, \texttt{PUMP} provides
-useful functionality for more robust power calculations. A user can and
-should try a range of parameter values to determine the sensitivity of
-the power of their study to different assumptions; this package
-simplifies that process.
+\url{www.mdrcpump.io}. However, one of the additional strengths of the
+package is the ease with which a user can explore the impact of
+different designs, models, and assumptions on power, MDES or sample
+size. Even if a user is only interested in a single outcome,
+\texttt{PUMP} provides useful functionality for more robust power
+calculations. A user can and should try a range of parameter values to
+determine the sensitivity of the power of their study to different
+assumptions; this package simplifies that process.
 
 \section*{Acknowledgements}
 
@@ -2083,118 +2105,119 @@ CARES lab for their feedback on the manuscript.
 \section{References}
 
 \hypertarget{refs}{}
-\begin{cslreferences}
-\leavevmode\hypertarget{ref-RN33089}{}%
-Bang, Jung, H. 2005. ``Sample Size Calculation for Simulation-Based
-Mulitple-Testing Procedures.'' Journal Article. \emph{Journal of
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-RN33089}{}}%
+Bang, Jung, H. 2005. {``Sample Size Calculation for Simulation-Based
+Mulitple-Testing Procedures.''} Journal Article. \emph{Journal of
 Biopharmaceutical Statistics} 15: 957--67.
 
-\leavevmode\hypertarget{ref-lme4}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-lme4}{}}%
 Bates, Douglas, Martin Mächler, Ben Bolker, and Steve Walker. 2015.
-``Fitting Linear Mixed-Effects Models Using lme4.'' \emph{Journal of
+{``Fitting Linear Mixed-Effects Models Using {lme4}.''} \emph{Journal of
 Statistical Software} 67 (1): 1--48.
 \url{https://doi.org/10.18637/jss.v067.i01}.
 
-\leavevmode\hypertarget{ref-BenjaminiHochberg1995}{}%
-Benjamini, \& Hochberg, Y. 1995. ``Controlling the False Discovery Rate:
-A Practical and Powerful Approach to Multiple Testing.'' \emph{Journal
-of the Royal Statistical Society: Series B} 57 (1): 289--300.
+\leavevmode\vadjust pre{\hypertarget{ref-BenjaminiHochberg1995}{}}%
+Benjamini, \& Hochberg, Y. 1995. {``Controlling the False Discovery
+Rate: A Practical and Powerful Approach to Multiple Testing.''}
+\emph{Journal of the Royal Statistical Society: Series B} 57: 289--300.
 
-\leavevmode\hypertarget{ref-RN27978}{}%
-Bloom, Howard S. 2006. ``The Core Analytics of Randomized Experiments
-for Social Research.'' Government Document. MDRC.
+\leavevmode\vadjust pre{\hypertarget{ref-RN27978}{}}%
+Bloom, Howard S. 2006. {``The Core Analytics of Randomized Experiments
+for Social Research.''} Government Document. MDRC.
 
-\leavevmode\hypertarget{ref-RN23882}{}%
-Chen, Luo, J. 2011. ``On Power and Sample Size Computation for Multiple
-Testing Procedures.'' Journal Article. \emph{Computational Statistics
+\leavevmode\vadjust pre{\hypertarget{ref-RN23882}{}}%
+Chen, Luo, J. 2011. {``On Power and Sample Size Computation for Multiple
+Testing Procedures.''} Journal Article. \emph{Computational Statistics
 and Data Analysis} 55: 110--22.
 
-\leavevmode\hypertarget{ref-DNREPORT}{}%
-Corrin W., Rosen, Sepanik S. 2016. ``Addressing Early Warning
+\leavevmode\vadjust pre{\hypertarget{ref-DNREPORT}{}}%
+Corrin W., Rosen, Sepanik S. 2016. {``Addressing Early Warning
 Indicators: Interim Impact Findings from the Investing in Innovation
-(I3) Evaluation of Diplomas Now.'' Government Document. MDRC.
+(I3) Evaluation of Diplomas Now.''} Government Document. MDRC.
 
-\leavevmode\hypertarget{ref-RN4473}{}%
-Dong, Nianbo, and Rebecca Maynard. 2013. ``PowerUP!: A Tool for
+\leavevmode\vadjust pre{\hypertarget{ref-RN4473}{}}%
+Dong, Nianbo, and Rebecca Maynard. 2013. {``PowerUP!: A Tool for
 Calculating Minimum Detectable Effect Sizes and Minimum Required Sample
-Sizes for Experimental and Quasi-Experimental Design Studies.'' Journal
+Sizes for Experimental and Quasi-Experimental Design Studies.''} Journal
 Article. \emph{Journal of Research on Educational Effectiveness} 6 (1):
 24--67.
 
-\leavevmode\hypertarget{ref-RN23878}{}%
-Dudoit, Shaffer, S. 2003. ``Multiple Hypothesis Testing in Microarray
-Experiments.'' Journal Article. \emph{Statistical Science} 18 (1):
+\leavevmode\vadjust pre{\hypertarget{ref-RN23878}{}}%
+Dudoit, Shaffer, S. 2003. {``Multiple Hypothesis Testing in Microarray
+Experiments.''} Journal Article. \emph{Statistical Science} 18 (1):
 71--103.
 
-\leavevmode\hypertarget{ref-RN24280}{}%
-Dunn, Olive Jean. 1959. ``Estimation of the Medians for Dependent
-Variables.'' Journal Article, 192--97.
+\leavevmode\vadjust pre{\hypertarget{ref-RN24280}{}}%
+Dunn, Olive Jean. 1959. {``Estimation of the Medians for Dependent
+Variables.''} Journal Article, 192--97.
 \url{https://doi.org/10.1214/aoms/1177706374}.
 
-\leavevmode\hypertarget{ref-RN24281}{}%
----------. 1961. ``Multiple Comparisons Among Means.'' Journal Article.
-\emph{Journal of the American Statistical Association} 56 (293): 52--64.
-\url{https://doi.org/10.1080/01621459.1961.10482090}.
+\leavevmode\vadjust pre{\hypertarget{ref-RN24281}{}}%
+---------. 1961. {``Multiple Comparisons Among Means.''} Journal
+Article. \emph{Journal of the American Statistical Association} 56
+(293): 52--64. \url{https://doi.org/10.1080/01621459.1961.10482090}.
 
-\leavevmode\hypertarget{ref-RN30153}{}%
-Hedges, Larry V., and Christopher Rhoads. 2010. ``Statistical Power
-Analysis in Education Research.'' Report. National Center for Special
+\leavevmode\vadjust pre{\hypertarget{ref-RN30153}{}}%
+Hedges, Larry V., and Christopher Rhoads. 2010. {``Statistical Power
+Analysis in Education Research.''} Report. National Center for Special
 Education Research.
 \url{http://www.eric.ed.gov/ERICWebPortal/detail?accno=ED509387}.
 
-\leavevmode\hypertarget{ref-RN24282}{}%
-Holm, S. 1979. ``A Simple Sequentially Rejective Multiple Test
-Procedure.'' Journal Article. \emph{Scand. J. Statist.} 6 (2): 65--70.
+\leavevmode\vadjust pre{\hypertarget{ref-RN24282}{}}%
+Holm, S. 1979. {``A Simple Sequentially Rejective Multiple Test
+Procedure.''} Journal Article. \emph{Scand. J. Statist.} 6 (2): 65--70.
 
-\leavevmode\hypertarget{ref-Porter2018}{}%
-Porter, Kristin E. 2018. ``Statistical Power in Evaluations That
-Investigate Effects on Multiple Outcomes: A Guide for Researchers.''
+\leavevmode\vadjust pre{\hypertarget{ref-Porter2018}{}}%
+Porter, Kristin E. 2018. {``Statistical Power in Evaluations That
+Investigate Effects on Multiple Outcomes: A Guide for Researchers.''}
 Journal Article. \emph{Journal of Research on Educational Effectiveness}
-11 (2): 267--95.
+11: 267--95.
 
-\leavevmode\hypertarget{ref-RN23884}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-RN23884}{}}%
 Raudenbush, S. W., J. Spybrook, R. Congdon, X. Liu, A. Martinez, H.
-Bloom, and C Hill. 2011. ``Optimal Design Plus Empirical Evidence
-(Version 3.0).'' Report.
+Bloom, and C Hill. 2011. {``Optimal Design Plus Empirical Evidence
+(Version 3.0).''} Report.
 \url{http://wtgrantfoundation.org/resource/optimal-design-with-empirical-information-od}.
 
-\leavevmode\hypertarget{ref-RN23748}{}%
-Schochet, Peter Z. 2008. ``Guidelines for Multiple Testing in Impact
-Evaluations of Educational Interventions. Final Report.'' Report.
+\leavevmode\vadjust pre{\hypertarget{ref-RN23748}{}}%
+Schochet, Peter Z. 2008. {``Guidelines for Multiple Testing in Impact
+Evaluations of Educational Interventions. Final Report.''} Report.
 Mathematica Policy Research, Inc. P.O. Box 2393, Princeton, NJ
 08543-2393.
 \url{http://www.eric.ed.gov/ERICWebPortal/contentdelivery/servlet/ERICServlet?accno=ED502199}.
 
-\leavevmode\hypertarget{ref-RN23881}{}%
-Senn, Stephen, and Frank Bretz. 2007. ``Power and Sample Size When
-Multiple Endpoints Are Considered.'' Journal Article.
+\leavevmode\vadjust pre{\hypertarget{ref-RN23881}{}}%
+Senn, Stephen, and Frank Bretz. 2007. {``Power and Sample Size When
+Multiple Endpoints Are Considered.''} Journal Article.
 \emph{Pharmaceutical Statistics} 6: 161--70.
 \url{https://doi.org/10.1002/pst.301}.
 
-\leavevmode\hypertarget{ref-RN352}{}%
-Shaffer, Juliet Popper. 1995. ``Multiple Hypothesis Testing.'' Journal
+\leavevmode\vadjust pre{\hypertarget{ref-RN352}{}}%
+Shaffer, Juliet Popper. 1995. {``Multiple Hypothesis Testing.''} Journal
 Article. \emph{Annual Review of Psychology} 46 (1): 561--84.
 
-\leavevmode\hypertarget{ref-RN24179}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-RN24179}{}}%
 Spybrook, Jessica, H. S. Bloom, Richard Congdon, Carolyn J. Hill, Andres
-Martinez, and Stephen W. Raudenbush. 2011. ``Optimal Design Plus
-Empirical Evidence: Documentation for the `Optimal Design' Software
-Version 3.0.'' Report.
+Martinez, and Stephen W. Raudenbush. 2011. {``Optimal Design Plus
+Empirical Evidence: Documentation for the {`Optimal Design'} Software
+Version 3.0.''} Report.
 \url{http://wtgrantfoundation.org/resource/optimal-design-with-empirical-information-od}.
 
-\leavevmode\hypertarget{ref-RN33098}{}%
-Tukey, J. W. 1953. ``The Problem of Multiple Comparisions.'' Report.
+\leavevmode\vadjust pre{\hypertarget{ref-RN33098}{}}%
+Tukey, J. W. 1953. {``The Problem of Multiple Comparisions.''} Report.
 Princeton University.
 
-\leavevmode\hypertarget{ref-RN28696}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-RN28696}{}}%
 Westfall, Peter H, and S Stanley Young. 1993. \emph{Resampling-Based
-Multiple Testing: Examples and Methods for P-Value Adjustment}. Book.
+Multiple Testing: Examples and Methods for p-Value Adjustment}. Book.
 Vol. 279. John Wiley \& Sons.
 
-\leavevmode\hypertarget{ref-MTSAS}{}%
+\leavevmode\vadjust pre{\hypertarget{ref-MTSAS}{}}%
 Westfall, Tobias, Peter H, and R. D. Wolfinger. 2011. \emph{Multiple
-Comparisons and Multiple Tests Using Sas}. Book. The SAS Institute.
-\end{cslreferences}
+Comparisons and Multiple Tests Using SAS}. Book. The SAS Institute.
+
+\end{CSLReferences}
 
 \section{Appendix: Validation}
 

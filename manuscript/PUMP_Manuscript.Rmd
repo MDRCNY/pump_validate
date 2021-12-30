@@ -14,8 +14,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-\doublespacing
-
 ```{r setup, include = FALSE}
 library( kableExtra )
 library( knitr )
