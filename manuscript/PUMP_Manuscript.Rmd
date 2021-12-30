@@ -105,7 +105,7 @@ The package includes three core functions:
 For any of these core functions, the user begins with two main choices.
 First, the user chooses the assumed design and model of the RCT.
 The `PUMP` package covers a range of multi-level designs, up to three levels of hierarchy, that researchers typically use in practice, in which research units are nested in hierarchical groups.
-Our power calculations assume the user will be analyzing these RCTs using frequentist mixed-effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels, as we explain in detail in Section~\ref{sec:est_power} and in the technical Appendix. 
+Our power calculations assume the user will be analyzing these RCTs using frequentist mixed-effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels, as we explain in detail in Section~\ref{sec:est_power} and in the Technical Appendix. 
 Second, the user chooses the MTP to be applied.
 `PUMP` supports five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg.
 After these two main choices, the user must also make a variety of decisions about parameters of the data generating distribution.
@@ -137,7 +137,7 @@ Section~\ref{sec:conclusion} is a brief conclusion.
 In addition to this paper, there is a variety of supporting information.
 
   - The code is available on github, \url{https://github.com/MDRCNY/PUMP}.
-  - The technical Appendix contains detailed information about each design and model, the assumed data generating process, and understanding parameters such as $ICC$ and $\omega$. It is a useful reference not just for users of the package, but also as a general summary of multi-level models.
+  - The Technical Appendix contains detailed information about each design and model, the assumed data generating process, and understanding parameters such as $ICC$ and $\omega$. It is a useful reference not just for users of the package, but also as a general summary of multi-level models.
   - The package has an additional vignette on understanding sample size calculations, which present unique challenges.
   - The package has supplementary functions that allow a user to simulate data from multi-level models. Although these functions are not directly related to the power calculations, we provide them as a potentially useful tool. A short vignette explains these functions.
   - The code and results for validating the package are in a separate repository, \url{https://github.com/MDRCNY/pump_validate}.
@@ -404,7 +404,7 @@ If we have $M = 5$ outcomes, as in the Diplomas Now study, one possible joint al
 Another possible joint alternative hypothesis is one where only the first two outcomes have effects above the desired sizes: $H_A: \psi_1 > 0.125, \psi_2 > 0.2, \psi_3 = \psi_4 = \psi_5 = 0$.
 Once our joint alternative hypothesis is specified, we would generate simulated data under this hypothesis.
 To simulate data, we need to specify the full set of parameters as mentioned in Section~\ref{sec:params} that allow for data generation.
-The technical Appendix contains more details about the assumed data-generating process.
+The Technical Appendix contains more details about the assumed data-generating process.
 For example, for the Diplomas Now experiment, we would assume a specific data generating process to allow us to simulate synthetic students, schools, and districts, including covariates, outcomes, and treatment assignment.
 This process would involve specifying parameter values such as $R^2$, the amount of outcome variation explained by covariates at a particular level, and translating these parameter choices into data-generating parameters, such as the coefficient values for covariates in a linear model.
 
@@ -602,7 +602,7 @@ The Diplomas Now model, for example, is `d3.2_m3fc2rc`.
 The full list of supported design and model combinations is below.
 The user can see the list by calling `pump_info()`, which provides the designs and models, MTPs, and model parameters.
 We also include the corresponding names from the PowerUP! package where appropriate.
-For more details about each combination of design and model, see the technical Appendix.
+For more details about each combination of design and model, see the Technical Appendix.
 
 ```{r, echo = FALSE}
 info <- pump_info()
@@ -657,7 +657,7 @@ The ICC includes the variation due to covariates.
 
 - The $R^2$ expressions are the percent of variation at a particular level predicted by covariates specific to that level. For simplicity we assume covariates at a level are group mean centered, so only covariates at a particular level explain variance at that level.
 
-For precise formulae of these expressions, see the technical Appendix, which outlines the assumed data-generating process, and the resulting expressions for $\text{ICC}$, $\omega$, and $R^2$.
+For precise formulae of these expressions, see the Technical Appendix, which outlines the assumed data-generating process, and the resulting expressions for $\text{ICC}$, $\omega$, and $R^2$.
 
 In addition to design parameters, there are additional parameters that control the precision of the power estimates themselves:
 
@@ -1099,7 +1099,7 @@ After repeatedly simulating data and calculating $p$-values, we calculate power 
 
 To validate the estimates, we first check that the `PUMP` and `PowerUpR` estimates match.
 In some settings we expect some discrepancies between these values because `PUMP` has different assumptions than `PowerUpR` for certain models.
-For details about differences between `PUMP` and `PowerUpR` assumptions, see the technical Appendixs.
+For details about differences between `PUMP` and `PowerUpR` assumptions, see the Technical Appendixs.
 Second, we check that the `PUMP` estimate is within the Monte Carlo confidence interval.
 
 We also validate MDES and sample size calculations.

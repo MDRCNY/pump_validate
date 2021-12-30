@@ -325,7 +325,7 @@ calculations assume the user will be analyzing these RCTs using
 frequentist mixed-effects regression models, containing a combination of
 fixed or random intercepts and treatment impacts at different levels, as
 we explain in detail in Section\textasciitilde{}\ref{sec:est_power} and
-in the technical Appendix. Second, the user chooses the MTP to be
+in the Technical Appendix. Second, the user chooses the MTP to be
 applied. \texttt{PUMP} supports five common MTPs --- Bonferroni, Holm,
 single-step and step-down versions of Westfall-Young, and
 Benjamini-Hochberg. After these two main choices, the user must also
@@ -388,7 +388,7 @@ In addition to this paper, there is a variety of supporting information.
 \item
   The code is available on github, \url{https://github.com/MDRCNY/PUMP}.
 \item
-  The technical Appendix contains detailed information about each design
+  The Technical Appendix contains detailed information about each design
   and model, the assumed data generating process, and understanding
   parameters such as \(ICC\) and \(\omega\). It is a useful reference
   not just for users of the package, but also as a general summary of
@@ -877,7 +877,7 @@ below.
   simulated data under this hypothesis. To simulate data, we need to
   specify the full set of parameters as mentioned in
   Section\textasciitilde{}\ref{sec:params} that allow for data
-  generation. The technical Appendix contains more details about the
+  generation. The Technical Appendix contains more details about the
   assumed data-generating process. For example, for the Diplomas Now
   experiment, we would assume a specific data generating process to
   allow us to simulate synthetic students, schools, and districts,
@@ -1278,7 +1278,7 @@ user can see the list by calling \texttt{pump\_info()}, which provides
 the designs and models, MTPs, and model parameters. We also include the
 corresponding names from the PowerUP! package where appropriate. For
 more details about each combination of design and model, see the
-technical Appendix.
+Technical Appendix.
 
 \begin{tabular}{l|l|l|l}
 \hline
@@ -1429,7 +1429,7 @@ A few parameters warrant more explanation.
   covariates at a particular level explain variance at that level.
 \end{itemize}
 
-For precise formulae of these expressions, see the technical Appendix,
+For precise formulae of these expressions, see the Technical Appendix,
 which outlines the assumed data-generating process, and the resulting
 expressions for \(\text{ICC}\), \(\omega\), and \(R^2\).
 
@@ -2317,7 +2317,7 @@ To validate the estimates, we first check that the \texttt{PUMP} and
 discrepancies between these values because \texttt{PUMP} has different
 assumptions than \texttt{PowerUpR} for certain models. For details about
 differences between \texttt{PUMP} and \texttt{PowerUpR} assumptions, see
-the technical Appendixs. Second, we check that the \texttt{PUMP}
+the Technical Appendixs. Second, we check that the \texttt{PUMP}
 estimate is within the Monte Carlo confidence interval.
 
 We also validate MDES and sample size calculations. For MDES, we choose

@@ -1,5 +1,5 @@
 
-Updated: Dec 28 by KH
+Updated: Dec 30 by KH
 
 # R package
 
@@ -8,7 +8,6 @@ Updated: Dec 28 by KH
 # Manuscript
 
 - explanation of min power when numZero > 0 (KP, shiny)
-- add reference to sample size vignette (KH)
 
 *Waiting*
 
@@ -17,17 +16,11 @@ Updated: Dec 28 by KH
 
 # Package updates
 
-*Medium priority*
-
 - write simulation correlation tool (KH)
-
-*Low priority*
-
-
 
 # Validation
 
-- re-run WY validation (KH)
+- WY validation finish run and writeup (KH in progress)
   
 # Stretch goals
 

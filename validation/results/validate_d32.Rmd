@@ -71,6 +71,13 @@ Parameters by model type:
 
 * Omega3: $\omega_3$ = 0 for fixed effects, $\text{omega}_3$ = `r model.params.list[['omega.3']]` for random effects
 
+*Remark*.
+For some of the scenarios, the PUMP estimate is slightly outside the range of the monte carlo intervals. This occurs for the `d3.2_m3rr2rc` model when either $\omega_3 = 0$ or $ICC.3 = 0$.
+In general, we find that this model is difficult to fit.
+Across all scenarios, many of the simulated datasets result in either models that do not converge, or have a singular fit.
+We believe that the poor-fitting model is exacerbated when there is no truly variation at level 3 (due to $\omega_3 = 0$ or $ICC.3 = 0$), but the model is attempting to fit random effects to the treatment impacts.
+The poor-fitting models may result in the simulations not achieve accurate estimates of power.
+
 # Power Validation
 
 ## Base case
