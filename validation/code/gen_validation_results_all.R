@@ -8,8 +8,8 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = FALSE
 # whether or not to run power, mdes and sample size
-run.power = TRUE
-run.mdes.ss = FALSE
+run.power = FALSE
+run.mdes.ss = TRUE
 # whether to run limited westfall young validations
 run.wy = FALSE
 # which d_ms to run
@@ -51,9 +51,9 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , MTP = c("Bonferroni", "BH", "Holm") # Multiple testing procedures
-  , runSim = TRUE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = FALSE           # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = FALSE       # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
+  , runSim = FALSE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = TRUE         # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPowerUp = TRUE      # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
 #------------------------------------------------------------------#
@@ -179,6 +179,7 @@ if(run.wy)
   if(run.d3.1)
   {
     model.params.list <- model.params.default
+    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
     sim.params.list[['S']] <- 10
     
     # assumptions
@@ -207,6 +208,7 @@ if(run.wy)
   if(run.d3.3)
   {
     model.params.list <- model.params.default
+    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
     sim.params.list[['S']] <- 10
     
     # assumptions
@@ -236,6 +238,7 @@ if(run.wy)
   {
     # constant effects
     model.params.list <- model.params.default
+    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
     sim.params.list[['S']] <- 10
     
     # assumptions
@@ -540,7 +543,7 @@ if(run.d2.1 & run.mdes.ss)
   print(paste('Completed constant, 3 out of', scenarios))
   print('-----------------------------------------------------------------------------')
   
-  model.params.list[['omega.2']] <- model.params.default[['omega.2']]
+  model.params.list[['omega.2']] <- NULL
   mdes.results <- validate_mdes(
     model.params.list, sim.params.list,
     d_m = "d2.1_m2ff", 
