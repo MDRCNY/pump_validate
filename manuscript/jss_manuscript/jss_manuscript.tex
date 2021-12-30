@@ -1,0 +1,348 @@
+\documentclass[
+]{jss}
+
+\usepackage[utf8]{inputenc}
+
+\author{
+Kristen Hunter\\Harvard University\\
+Department of Statistics \And Luke Miratrix\\Harvard Graduate\\
+School of Education \And Kristin Porter\\MDRC
+}
+\title{Power Under Multiplicity Project (\pkg{PUMP}): Estimating Power,
+Minimum Detectable Effect Size, and Sample Size When Adjusting for
+Multiple Outcomes}
+
+\Plainauthor{Kristen Hunter, Luke Miratrix, Kristin Porter}
+\Plaintitle{Power Under Multiplicity Project (\pkg{PUMP}): Estimating
+Power, Minimum Detectable Effect Size, and Sample Size When Adjusting
+for Multiple Outcomes}
+\Shorttitle{\pkg{PUMP}: Power Under Multiplicity Project}
+
+
+\Abstract{
+For randomized controlled trials (RCTs) with a single intervention being
+measured on multiple outcomes, researchers often apply a multiple
+testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust
+\(p\)-values. Such an adjustment reduces the likelihood of spurious
+findings, but also changes the statistical power, sometimes
+substantially, which reduces the probability of detecting effects when
+they do exist. However, this consideration is frequently ignored in
+typical power analyses, as existing tools do not easily accommodate the
+use of multiple testing procedures. We introduce the \texttt{PUMP}
+\texttt{R} package as a tool for analysts to estimate statistical power,
+minimum detectable effect size, and sample size requirements for
+multi-level RCTs with multiple outcomes. Multiple outcomes are accounted
+for in two ways. First, power estimates from \texttt{PUMP} properly
+account for the adjustment in \(p\)-values from applying a multiple
+testing procedure. Second, as researchers change their focus from one
+outcome to multiple outcomes, different definitions of statistical power
+emerge. \texttt{PUMP} allows researchers to consider a variety of
+definitions of power, as some may be more appropriate for the goals of
+their study. The package estimates power for frequentist multi-level
+mixed effects models, and supports a variety of commonly-used RCT
+designs and models and multiple testing procedures. In addition to the
+main functionality of estimating power, minimum detectable effect size,
+and sample size requirements, the package allows the user to easily
+explore sensitivity of these quantities to changes in underlying
+assumptions.
+}
+
+\Keywords{power, multiple testing, multi-level models, randomized
+controlled trials, \proglang{R}}
+\Plainkeywords{power, multiple testing, multi-level models, randomized
+controlled trials, R}
+
+%% publication information
+%% \Volume{50}
+%% \Issue{9}
+%% \Month{June}
+%% \Year{2012}
+%% \Submitdate{}
+%% \Acceptdate{2012-06-04}
+
+\Address{
+        Kristin Porter\\
+    Universitat Autònoma de Barcelona\\
+    MDRC\\
+475 14th Street\\
+Suite 750\\
+Oakland, CA 94612-1900\\
+  
+  
+  }
+
+
+% tightlist command for lists without linebreak
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+
+\usepackage{amsmath}
+
+\begin{document}
+
+
+
+\section{Introduction}
+\label{sec:intro}
+
+The \texttt{PUMP} \texttt{R} package fills in an important gap in
+open-source software tools to design multi-level randomized controlled
+trials (RCTs) with adequate statistical power. With this package,
+researchers can estimate statistical power, minimum detectable effect
+size (MDES), and needed sample size for multi-level experimental
+designs, in which units are nested within hierarchical structures such
+as students nested within schools nested within school districts. The
+statistical power is calculated for estimating the impact of a single
+intervention on multiple outcomes. The package uses a frequentist
+framework of mixed effects regression models, which is currently the
+prevailing framework for estimating impacts from experiments in
+education and other social policy research.\footnote{Other options
+  include nonparametric or Bayesian methods, but these are less
+  prevalent in applied research (for example, see
+  \citet{GELMANETAL2012}, \citet{GelmanHill2007}).}
+
+To our knowledge, none of the existing software tools for power
+calculations allow researchers to account for multiple hypothesis tests
+and the use of a multiple testing procedure (MTP). MTPs adjust
+\(p\)-values to reduce the likelihood of spurious findings when
+researchers are testing for effects on multiple outcomes. This
+adjustment can result in a substantial change in statistical power,
+greatly reducing the probability of detecting effects when they do
+exist. Unfortunately, when designing studies, researchers who plan to
+test for effects on multiple outcomes and employ MTPs frequently ignore
+the power implications of the MTPs.
+
+Also, as researchers change their focus from one outcome to multiple
+outcomes, multiple definitions of statistical power emerge
+(\citet{RN23882}; \citet{RN23878}; \citet{RN23881}; \citet{MTSAS}). The
+\texttt{PUMP} package allows researchers to consider multiple
+definitions of power, selecting those most suited to the goals of their
+study. The definitions of power include:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{individual power}: the probability of detecting an effect of a
+  particular size (specified by the researcher) or larger for each
+  hypothesis test. Individual power corresponds to how power is defined
+  when there is focus on a single outcome.
+\item
+  \textbf{\(1-\)minimal power}: the probability of detecting effects of
+  at least a particular size on at least one outcome. Similarly, the
+  researcher can consider \textbf{\(d-\)minimal power} for any \(d\)
+  less than the number of outcomes, or fractional powers, such as
+  \(1/2-\)minimal power.
+\item
+  \textbf{complete power}: the power to detect effects of at least a
+  particular size on \emph{all} outcomes.
+\end{itemize}
+
+As noted in \citet{Porter2018}, the prevailing default in many
+studies---individual power---may or may not be the most appropriate type
+of power. If the researcher's goal is to find statistically significant
+estimates of effects on most or all primary outcomes of interest, then
+their power may be much lower than anticipated when multiplicity
+adjustments are taken into account. On the other hand, if the
+researcher's goal is to find statistically significant estimates of
+effects on at least one or a small proportion of outcomes, their power
+may be much better than anticipated. In both of these cases, by not
+accounting for both the challenges and opportunities arising from
+multiple outcomes, a researcher may find they have wasted resources,
+either by designing an underpowered study that cannot detect the desired
+effect sizes, or by designing an overpowered study that had a larger
+sample size than necessary. We introduce the \texttt{PUMP} package to
+allow for directly answering questions that take multiple outcomes into
+account, such as:
+
+\begin{itemize}
+\tightlist
+\item
+  How many schools would I need to detect a given effect on at least
+  three of my five outcomes?
+\item
+  What size effect can I reliably detect on each outcome, given a
+  planned MTP across all my outcomes?
+\item
+  How would the power to detect a given effect change if only half my
+  outcomes truly had impact?
+\end{itemize}
+
+The methods in the PUMP package build on those introduced in
+\citet{Porter2018}. This earlier paper focused only on a single RCT
+design and model --- a multisite RCT with the blocked randomization of
+individuals, in which effects are estimated using a model with
+block-specific intercepts and with the assumption of constant effects
+across all units. This earlier paper also did not produce software to
+assist researchers in implementing its methods. With this current paper
+and with the introduction of the PUMP package, we extend the methodology
+to nine additional multi-level RCT designs and models. Also, while
+\citet{Porter2018} focused on estimates of power, PUMP goes further to
+also estimate MDES and sample size requirements that take multiplicity
+adjustments into account.
+
+\texttt{PUMP} extends functionality of the popular PowerUp! \texttt{R}
+package (and its related tools in the form of a spreadsheet and Shiny
+application), which compute power or MDES for multi-level RCTs with a
+single outcome (\citet{RN4473}). For a wide variety of RCT designs with
+a single outcome, researchers can take advantage of closed-form
+solutions and numerous power estimation tools. For example, in education
+and social policy research, see \citet{RN4473}; \citet{RN30153};
+\citet{RN23884}; \citet{RN24179}. However, closed-form solutions are
+difficult or impossible to derive when a MTP is applied to a setting
+with multiple outcomes. Instead, we use a simulation-based approach to
+achieve estimates of power.
+
+In order to calculate power, the researcher specifies information about
+the sample size at each level, the minimum detectable effect size for
+each outcome, the level of statistical significance, and parameters of
+the data generating distribution. The minimum detectable effect size is
+the smallest true effect size the study can detect with the desired
+statistical significance level, in units of standard deviations. An
+``effect size'' generally refers to the standardized mean difference
+effect size, which ``equals the difference in mean outcomes for the
+treatment group and control group, divided by the standard deviation of
+outcomes across subjects within experimental groups'' (\citet{RN27978}).
+Researchers often use effect sizes to standardize outcomes so that
+outcomes with different scales can be directly compared.
+
+The package includes three core functions:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{pump\_power()} for calculating power given a experimental
+  design and assumed model, parameters, and minimum detectable effect
+  size.
+\item
+  \texttt{pump\_mdes()} for calculating minimum detectable effect size
+  given a target power and sample sizes.
+\item
+  \texttt{pump\_sample()} for calculating the required sample size for
+  achieving a given target power for a given minimum detectable effect
+  size.
+\end{itemize}
+
+For any of these core functions, the user begins with two main choices.
+First, the user chooses the assumed design and model of the RCT. The
+\texttt{PUMP} package covers a range of multi-level designs, up to three
+levels of hierarchy, that researchers typically use in practice, in
+which research units are nested in hierarchical groups. Our power
+calculations assume the user will be analyzing these RCTs using
+frequentist mixed-effects regression models, containing a combination of
+fixed or random intercepts and treatment impacts at different levels, as
+we explain in detail in Section\textasciitilde{}\ref{sec:est_power} and
+in the Technical Appendix. Second, the user chooses the MTP to be
+applied. \texttt{PUMP} supports five common MTPs --- Bonferroni, Holm,
+single-step and step-down versions of Westfall-Young, and
+Benjamini-Hochberg. After these two main choices, the user must also
+make a variety of decisions about parameters of the data generating
+distribution.
+
+The package also includes functions that allow users to easily explore
+power over a range of possible values of parameters. This exploration
+encourages the user to determine the sensitivity of estimates to
+different assumptions. \texttt{PUMP} also visually displays results.
+These additional functions include:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{pump\_power\_grid()}, \texttt{pump\_mdes\_grid()}, and
+  \texttt{pump\_sample\_grid()} for calculating the given output over a
+  range of possible parameter values.
+\item
+  \texttt{update()} to re-run an existing calculation with a small
+  number of parameters updated.
+\item
+  \texttt{plot()} on \texttt{PUMP}-generated objects to generate plots
+  (including grid outputs).
+\end{itemize}
+
+The authors of the \texttt{PUMP} package have also created a web
+application built with R Shiny. This web application calls the
+\texttt{PUMP} package and allows users to conduct calculations with a
+user-friendly interface, but it is less flexible than the package, with
+a focus on simpler scenarios (e.g., 10 or fewer outcomes). The app can
+be found at \url{https://mdrcpump.shinyapps.io/pump_shiny/}.
+
+The remainder of this paper is organized as follows. In
+Section\textasciitilde{}\ref{sec:diplomas}, we introduce Diplomas Now,
+an educational experiment, to be used as a running example throughout
+the paper. We note, however, that the problem of power estimation for
+multi-level RCTs is not exclusive to the educational setting. In
+Section\textasciitilde{}\ref{sec:mtp_overview}, we provide a summary of
+the multiple testing problem. Also in
+Section\textasciitilde{}\ref{sec:mtp_overview}, we present an overview
+of the statistical challenges introduced by multiple hypothesis testing
+and how MTPs protect against spurious impact findings. In
+Section\textasciitilde{}\ref{sec:est}, we introduce our methodology for
+estimating power when taking the use of MTPs into account. This section
+also briefly discusses our validation process.
+Section\textasciitilde{}\ref{sec:choices} discusses the various choices
+a user must make when using the package, including the designs and
+models, MTPs, and key design and model parameters.
+Section\textasciitilde{}\ref{sec:vignette} provides a detailed
+presentation of the \texttt{PUMP} package with multiple examples of
+using the packages functions to conduct calculations for our education
+RCT example. Section\textasciitilde{}\ref{sec:conclusion} is a brief
+conclusion.
+
+\hypertarget{code-formatting}{%
+\subsection{Code formatting}\label{code-formatting}}
+
+In general, don't use Markdown, but use the more precise LaTeX commands
+instead:
+
+\begin{itemize}
+\item
+  \proglang{Java}
+\item
+  \pkg{plyr}
+\end{itemize}
+
+One exception is inline code, which can be written inside a pair of
+backticks (i.e., using the Markdown syntax).
+
+If you want to use LaTeX commands in headers, you need to provide a
+\texttt{short-title} attribute. You can also provide a custom identifier
+if necessary. See the header of Section \ref{r-code} for example.
+
+\section[R code]{\proglang{R} code}\label{r-code}
+
+Can be inserted in regular R markdown blocks.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> x <- 1:10
+R> x
+\end{CodeInput}
+\begin{CodeOutput}
+ [1]  1  2  3  4  5  6  7  8  9 10
+\end{CodeOutput}
+\end{CodeChunk}
+
+\subsection[Features specific to rticles]{Features specific to
+\pkg{rticles}}\label{features-specific-to}
+
+\begin{itemize}
+\tightlist
+\item
+  Adding short titles to section headers is a feature specific to
+  \pkg{rticles} (implemented via a Pandoc Lua filter). This feature is
+  currently not supported by Pandoc and we will update this template if
+  \href{https://github.com/jgm/pandoc/issues/4409}{it is officially
+  supported in the future}.
+\item
+  Using the \texttt{\textbackslash{}AND} syntax in the \texttt{author}
+  field to add authors on a new line. This is a specific to the
+  \texttt{rticles::jss\_article} format.
+\end{itemize}
+
+\bibliography{refs}
+
+
+
+\end{document}
