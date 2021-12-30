@@ -1,8 +1,7 @@
 # to install blkvar package:
 # install.packages("remotes")
 # remotes::install_github("lmiratrix/blkvar")
-
-library(blkvar)
+# library(blkvar)
 library(lme4)
 
 #'  Function: est_power_sim				                                       
@@ -56,13 +55,12 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
     samp.obs$Yobs <- PUMP::gen_Yobs(samp.full, T.x)
     
     dat.all <- makelist.samp(samp.obs, T.x) # list length M
-    rawpt.out <- get.rawpt(dat.all, d_m = d_m, model.params.list = model.params.list)
-    rawp <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['pval']])})
-    rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
+    rawp.out <- get.rawp(dat.all, d_m = d_m, model.params.list = model.params.list)
+    rawp <- unlist(rawp.out[['rawp']])
     
     # track how many failures occur
-    num.singular.raw <- num.singular.raw + rawpt.out[['num.singular']]
-    num.failed.converge.raw <- num.failed.converge.raw + rawpt.out[['num.failed.converge']]
+    num.singular.raw <- num.singular.raw + rawp.out[['num.singular']]
+    num.failed.converge.raw <- num.failed.converge.raw + rawp.out[['num.failed.converge']]
     
     # loop through adjustment procedures (adding 'None' as default in all cases)
     for (p in 1:(length(MTP) + 1)) {
@@ -74,7 +72,7 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
         
         proc <- MTP[p-1]
         pvals <- get.adjp(
-          proc = proc, rawp = rawp, rawt = rawt,
+          proc = proc, rawp = rawp,
           dat.all = dat.all, S.id = S.id, D.id = S.id,
           sim.params.list = sim.params.list, dgp.params.list = dgp.params.list,
           d_m = d_m, cl = cl
@@ -174,37 +172,6 @@ make.model <- function(dat.m, d_m) {
   return(list(mod = mod, singular = singular, failed.converge = failed.converge))
 }
 
-# --------------------------------------------------------------------- #
-#	Function: make.dummies		Inputs:	dat, clusterby, nbar, J
-#		a dataset (dat),
-#		a column name as a string to make dummy variables for   
-#		nbar, and J 									                                                     
-#	Outputs: dummies (column names), lmedat.fixed (data.frame)		                    
-# --------------------------------------------------------------------- #
-
-make.dummies <- function(dat, dummy.vars, nbar, J){
-
-  # dat = mdat[[1]]; dummy.vars = c("D.id","S.id"); var = dummy.vars[1]
-
-  all.dum <- NULL
-  for(i in 1:length(dummy.vars))
-  {
-    block.rep <- matrix(
-      data = rep(dat[,var], nbar),
-      nrow = length(dat[,var]), ncol = J
-    )
-    colnum <- seq(1:J)
-    block.dum <- t(apply(block.rep, 1, function(x) { 1*(x==colnum) }))
-    colnames(block.dum) <- paste("dummy", i, ".", 1:J, sep = "")
-    all.dum <- cbind(all.dum, block.dum)
-  }
-
-  lmedat.fixed <- cbind(dat, all.dum)
-  dummies <- paste(colnames(all.dum[,-1]), collapse = "+")
-
-  return(list("dnames" = dummies, "fixdat" = lmedat.fixed))
-}
-
 
 # --------------------------------------------------------------------- #
 #	Function: get.pval 	Inputs: mod						                              #
@@ -212,14 +179,26 @@ make.dummies <- function(dat, dummy.vars, nbar, J){
 #	Outputs: pvalue 									                                      #
 # --------------------------------------------------------------------- #
 
-get.pval.tstat <- function(mod, d_m, model.params.list) {
+get.pval <- function(mod, d_m, model.params.list) {
 
   if(class(mod) == "lm") {
-    tstat <- summary(mod)$coefficients["T.x","t value"]
-    pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
+    if(any(grepl("^T.x$", rownames(summary(mod)$coefficients))))
+    {
+      pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
+    } else
+    {
+      est <- mean(summary(mod)$coefficients[grepl("T.x", rownames(summary(mod)$coefficients)),"Estimate"])
+      se <- sqrt(mean(summary(mod)$coefficients[grepl("T.x", rownames(summary(mod)$coefficients)),"Std. Error"]^2))
+      tstat <- est / se
+      df <- PUMP::calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
+                          model.params.list[['nbar']],
+                          numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
+      pval <- 2*pt(abs(tstat), df = df, lower.tail = FALSE)
+    }
   } else if(class(mod) == "lmerMod") {
     df <- PUMP::calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
-                  model.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
+                        model.params.list[['nbar']],
+                        numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- (1 - pt(abs(tstat), df = df))*2
   } else if (class(mod) == "fastLm") {
@@ -229,12 +208,12 @@ get.pval.tstat <- function(mod, d_m, model.params.list) {
     df <- PUMP::calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
                   model.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- mod$ATE_hat[1]/mod$SE[1]
-    pval <- (1 - pt(abs(tstat), df = df))*2
+    pval <- 2*(1 - pt(abs(tstat), df = df))
   } else
   {
     stop('Unknown model type')
   }
-  return(list(tstat = tstat, pval = pval))
+  return(pval = pval)
 }
 
 # --------------------------------------------------------------------- #
@@ -246,13 +225,13 @@ get.pval.tstat <- function(mod, d_m, model.params.list) {
 #	Notes: gets raw p-vals for a single dataset and funct at a time	        #
 # --------------------------------------------------------------------- #
 
-get.rawpt <- function(dat.all, d_m, model.params.list) {
+get.rawp <- function(dat.all, d_m, model.params.list) {
   mods.out <- lapply(dat.all, function(m) make.model(m, d_m))
   mods <- lapply(mods.out, function(m){ return(m[['mod']]) })
   singular <- sapply(mods.out, function(m){ return(m[['singular']]) })
   failed.converge <- sapply(mods.out, function(m){ return(m[['failed.converge']]) })
-  rawpt <- lapply(mods, function(x) get.pval.tstat(x, d_m, model.params.list))
-  return(list(rawpt = rawpt, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
+  rawp <- lapply(mods, function(x) get.pval(x, d_m, model.params.list))
+  return(list(rawp = rawp, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
 }
 
 # --------------------------------------------------------------------- #
@@ -308,7 +287,7 @@ makelist.samp <-function(samp.obs, T.x) {
 #	Outputs: MxS matrix of adjusted p-values for a single proc 	            #
 # --------------------------------------------------------------------- #
 
-get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id,
+get.adjp <- function(proc, rawp, dat.all, S.id, D.id,
                      sim.params.list, dgp.params.list, d_m, cl = NULL) {
 
   if(proc == "WY-SD" | proc == "WY-SS"){
@@ -339,20 +318,6 @@ get.adjp <- function(proc, rawp, rawt, dat.all, S.id, D.id,
   return(adjp.proc)
 }
 
-# --------------------------------------------------------------------- #
-#  Function: get.rejects   Inputs: adjp, alpha  				                  #
-#		a matrix nrow=S ncol=M of adjusted p-values, from get.adjp			      #
-#  	a number, alpha, should be 0.05 in most cases	 			                  #
-#	Outputs: MxS matrix of 1 and 0 indicating rejecting the null            #
-# --------------------------------------------------------------------- #
-
-get.rejects <- function(adjp, alpha) {
-  # return a matrix of 1 and 0 (for true/false <alpha)
-  rejects <- as.matrix(1*(adjp < alpha), nrow = nrow(adjp), ncol = ncol(adjp))
-}
-
-
-
 #' Interacted linear regression models
 #' https://github.com/lmiratrix/blkvar/blob_master/R/linear_model_method.R
 #'
@@ -376,10 +341,10 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
   # siteID = NULL;
   # Yobs = dat.m$Yobs; Z = dat.m$T.x; B = dat.m$D.id; data = dat.m; control_formula = "X.jk + C.ijk + (1 | S.id)"; use.lmer = TRUE
   # Yobs = dat.m$Yobs; Z = dat.m$T.x; B = dat.m$S.id; data = dat.m; control_formula = "C.ijk"; use.lmer = FALSE
-  
+
   # keep track of singularity
   singular <- FALSE
-  
+
   # This code block takes the parameters of
   # Yobs, Z, B, siteID = NULL, data=NULL, ...
   # and makes a dataframe with canonical Yobs, Z, B, and siteID columns.
@@ -394,9 +359,9 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
   J <- length(unique(data$B))
   nj <- table(data$B)
   n <- nrow(data)
-  
+
   formula <- as.formula(sprintf( "%s ~ 0 + %s * %s - %s + %s", "Yobs", "Z", "B", "Z", control_formula))
-  
+
   if(use.lmer)
   {
     M0.int <- lmer(formula, data = data)
@@ -413,11 +378,11 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
     singular <- TRUE
     J <- length(ids)
   }
-  
+
   VC <- as.matrix(vcov(M0.int))
   ATE_hats <- summary(M0.int)$coefficients[ids,1]
   wts <- rep(1 / J, J)
-  
+
   # the block SEs from our linear model
   SE_hat <- diag(VC)[ids]
 
