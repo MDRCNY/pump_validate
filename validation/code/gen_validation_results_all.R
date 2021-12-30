@@ -13,8 +13,8 @@ run.mdes.ss = FALSE
 # whether to run limited westfall young validations
 run.wy = TRUE
 # which d_ms to run
-run.d2.1 = TRUE
-run.d2.2 = TRUE
+run.d2.1 = FALSE
+run.d2.2 = FALSE
 run.d3.1 = TRUE
 run.d3.3 = TRUE
 run.d3.2 = TRUE
@@ -179,8 +179,8 @@ if(run.wy)
   if(run.d3.1)
   {
     model.params.list <- model.params.default
-    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
-    sim.params.list[['S']] <- 10
+    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+    sim.params.list[['S']] <- 30
     sim.params.list[['B']] <- 2000
     
     # assumptions
@@ -211,15 +211,15 @@ if(run.wy)
     model.params.list <- model.params.default
     sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
     sim.params.list[['S']] <- 30
-    sim.params.list[['B']] <- 2000
+    sim.params.list[['B']] <- 3000
     
     # assumptions
     model.params.list[['omega.2']] <- NULL
     model.params.list[['omega.3']] <- NULL
     
     # for a reasonable runtime and power
-    model.params.list[['J']] <- 10
-    model.params.list[['K']] <- 10
+    model.params.list[['J']] <- 20
+    model.params.list[['K']] <- 20
     model.params.list[['nbar']] <- 100
     model.params.list[['MDES']] <- rep(0.3, M)
     model.params.list[['ICC.3']] <- rep(0.05, M)
@@ -240,9 +240,9 @@ if(run.wy)
   {
     # constant effects
     model.params.list <- model.params.default
-    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
+    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
     sim.params.list[['S']] <- 50
-    # sim.params.list[['B']] <- 2000
+    sim.params.list[['B']] <- 2000
     
     # assumptions
     model.params.list[['numCovar.3']] <- 0
@@ -267,7 +267,7 @@ if(run.wy)
     # random effects
     model.params.list <- model.params.default
     sim.params.list[['S']] <- 30
-    sim.params.list[['B']] <- 2000
+    sim.params.list[['B']] <- 3000
     
     model.params.list[['numCovar.3']] <- 0
     model.params.list[['R2.3']] <- NULL
@@ -275,8 +275,8 @@ if(run.wy)
     
     # for reasonable power and runtime
     model.params.list[['nbar']] <- 100
-    model.params.list[['J']] <- 5
-    model.params.list[['K']] <- 5
+    model.params.list[['J']] <- 10
+    model.params.list[['K']] <- 10
     model.params.list[['MDES']] <- rep(0.3, M)
     model.params.list[['ICC.3']] <- rep(0.1, M)
     model.params.list[['ICC.2']] <- rep(0.1, M)

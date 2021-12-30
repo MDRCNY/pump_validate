@@ -8,6 +8,7 @@ Updated: Dec 28 by KH
 # Manuscript
 
 - explanation of min power when numZero > 0 (KP, shiny)
+- add reference to sample size vignette (KH)
 
 *Waiting*
 
@@ -22,9 +23,7 @@ Updated: Dec 28 by KH
 
 *Low priority*
 
-- messaging (KH or LM)
-  - collect errors from grid and only print out unique errors
-  - give user estimate of runtime for WY for MDES and SS
+
 
 # Validation
 
@@ -32,6 +31,9 @@ Updated: Dec 28 by KH
   
 # Stretch goals
 
+- messaging (KH or LM)
+  - collect errors from grid and only print out unique errors
+  - give user estimate of runtime for WY for MDES and SS
 - vary multiple factors in plots (LM)
 - surface WY functions to user with good documentation (KH)
 - tool that helps user build a block matrix of correlations based on a list of correlations between outcomes (KH)
@@ -41,10 +43,3 @@ Updated: Dec 28 by KH
 - speed up everything
 - binary outcomes
 - discussion of Benjamini-Hochberg
-
-# Shiny app
-- in separate document
-
-# Video
-- review script
-

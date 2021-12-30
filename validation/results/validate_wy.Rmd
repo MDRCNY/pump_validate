@@ -104,13 +104,17 @@ With a significant outcome, it is rare that the observed $p$-value will be less 
 The large number of blocks/clusters is required to accurately estimate the tail behavior for random effects models.
 With a small number of blocks/clusters, we may not properly estimate the spread of the distribution, resulting in a poor estimate of the tail behavior.
 
+```{r}
+Q <- 20
+```
+
 
 # d2.1 models
 
 ```{r}
 model.params.list <- model.params.default
 sim.params.list[['B']] <- 1000
-sim.params.list[['S']] <- 2000
+sim.params.list[['S']] <- 100 * Q
 
 model.params.list[['K']] <- 1
 model.params.list[['ICC.3']] <- NULL
@@ -164,7 +168,7 @@ print(d2.1_m2fr_power_plot)
 model.params.list <- model.params.default
 sim.params.list <- sim.params.default
 sim.params.list[['B']] <- 1000
-sim.params.list[['S']] <- 2000
+sim.params.list[['S']] <- 100 * Q
 
 model.params.list[['K']] <- 1
 model.params.list[['ICC.3']] <- NULL
@@ -191,8 +195,8 @@ print(d2.2_m2rc_power_plot)
 
 ```{r}
 model.params.list <- model.params.default
-# sim.params.list[['B']] <- 100
-sim.params.list[['S']] <- 200
+sim.params.list[['B']] <- 2000
+sim.params.list[['S']] <- 10 * Q
 
 # assumptions
 model.params.list[['numCovar.3']] <- 0
@@ -202,8 +206,8 @@ model.params.list[['R2.2']] <- NULL
 
 # for a reasonable runtime and power
 model.params.list[['nbar']] <- 100
-model.params.list[['J']] <- 5
-model.params.list[['K']] <- 5
+model.params.list[['J']] <- 10
+model.params.list[['K']] <- 10
 model.params.list[['ICC.2']] <- rep(0.1, M)
 model.params.list[['ICC.3']] <- rep(0.1, M)
 model.params.list[['omega.2']] <- rep(0.05, M)
@@ -222,8 +226,8 @@ print(d3.1_m3rr2rr_power_plot)
 
 ```{r}
 model.params.list <- model.params.default
-#sim.params.list[['B']] <- 100
-sim.params.list[['S']] <- 200
+sim.params.list[['B']] <- 2000
+sim.params.list[['S']] <- 30 * Q
 
 # assumptions
 model.params.list[['omega.2']] <- NULL
@@ -253,8 +257,8 @@ print(d3.3_m3rc2rc_power_plot)
 
 ```{r}
 model.params.list <- model.params.default
-#sim.params.list[['B']] <- 100
-sim.params.list[['S']] <- 200
+sim.params.list[['B']] <- 2000
+sim.params.list[['S']] <- 50 * Q
 
 # assumptions
 model.params.list[['numCovar.3']] <- 0
@@ -288,13 +292,13 @@ Random effects
 
 ```{r}
 # for reasonable power and runtime
-#sim.params.list[['B']] <- 100
-sim.params.list[['S']] <- 200
+sim.params.list[['B']] <- 2000
+sim.params.list[['S']] <- 30 * Q
 
 model.params.list[['nbar']] <- 100
 model.params.list[['J']] <- 5
 model.params.list[['K']] <- 5
-model.params.list[['MDES']] <- rep(0.25, M)
+model.params.list[['MDES']] <- rep(0.3, M)
 model.params.list[['ICC.3']] <- rep(0.1, M)
 model.params.list[['ICC.2']] <- rep(0.1, M)
 model.params.list[['R2.1']] <- rep(0.4, M)
