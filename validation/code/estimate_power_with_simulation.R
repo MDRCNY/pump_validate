@@ -55,8 +55,9 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
     samp.obs$Yobs <- PUMP::gen_Yobs(samp.full, T.x)
     
     dat.all <- makelist.samp(samp.obs, T.x) # list length M
-    rawp.out <- get.rawp(dat.all, d_m = d_m, model.params.list = model.params.list)
-    rawp <- unlist(rawp.out[['rawp']])
+    rawpt.out <- get.rawpt(dat.all, d_m = d_m, model.params.list = model.params.list)
+    rawp <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['pval']])})
+    rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
     
     # track how many failures occur
     num.singular.raw <- num.singular.raw + rawp.out[['num.singular']]
@@ -179,30 +180,16 @@ make.model <- function(dat.m, d_m) {
 #	Outputs: pvalue 									                                      #
 # --------------------------------------------------------------------- #
 
-get.pval <- function(mod, d_m, model.params.list) {
-
+get.pval.tstat <- function(mod, d_m, model.params.list) {
   if(class(mod) == "lm") {
-    if(any(grepl("^T.x$", rownames(summary(mod)$coefficients))))
-    {
-      pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
-    } else
-    {
-      est <- mean(summary(mod)$coefficients[grepl("T.x", rownames(summary(mod)$coefficients)),"Estimate"])
-      se <- sqrt(mean(summary(mod)$coefficients[grepl("T.x", rownames(summary(mod)$coefficients)),"Std. Error"]^2))
-      tstat <- est / se
-      df <- PUMP::calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
-                          model.params.list[['nbar']],
-                          numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
-      pval <- 2*pt(abs(tstat), df = df, lower.tail = FALSE)
-    }
+    tstat <- summary(mod)$coefficients["T.x","t value"]
+    pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
   } else if(class(mod) == "lmerMod") {
     df <- PUMP::calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
                         model.params.list[['nbar']],
                         numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- (1 - pt(abs(tstat), df = df))*2
-  } else if (class(mod) == "fastLm") {
-    pval <- summary(mod)$coef["T.x", "Pr(>|t|)"]
   } else if (class(mod) == "data.frame") {
     # fixed effects models
     df <- PUMP::calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
@@ -213,7 +200,7 @@ get.pval <- function(mod, d_m, model.params.list) {
   {
     stop('Unknown model type')
   }
-  return(pval = pval)
+  return(list(tstat = tstat, pval = pval))
 }
 
 # --------------------------------------------------------------------- #
@@ -225,13 +212,13 @@ get.pval <- function(mod, d_m, model.params.list) {
 #	Notes: gets raw p-vals for a single dataset and funct at a time	        #
 # --------------------------------------------------------------------- #
 
-get.rawp <- function(dat.all, d_m, model.params.list) {
+get.rawpt <- function(dat.all, d_m, model.params.list) {
   mods.out <- lapply(dat.all, function(m) make.model(m, d_m))
   mods <- lapply(mods.out, function(m){ return(m[['mod']]) })
   singular <- sapply(mods.out, function(m){ return(m[['singular']]) })
   failed.converge <- sapply(mods.out, function(m){ return(m[['failed.converge']]) })
-  rawp <- lapply(mods, function(x) get.pval(x, d_m, model.params.list))
-  return(list(rawp = rawp, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
+  rawpt <- lapply(mods, function(x) get.pval.tstat(x, d_m, model.params.list))
+  return(list(rawpt = rawpt, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
 }
 
 # --------------------------------------------------------------------- #

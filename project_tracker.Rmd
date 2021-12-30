@@ -16,10 +16,6 @@ Updated: Dec 28 by KH
 
 # Package updates
 
-*High priority*
-
-- fix plot for D1indiv power for grid (KH)
-
 *Medium priority*
 
 - write simulation correlation tool (KH)
@@ -32,7 +28,6 @@ Updated: Dec 28 by KH
 
 # Validation
 
-- remaining issues with validation results (KH)
 - re-run WY validation (KH)
   
 # Stretch goals

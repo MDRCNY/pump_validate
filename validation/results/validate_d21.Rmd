@@ -86,7 +86,7 @@ print(d2.1_m2fc_nbar50_power_plot)
 
 ```{r 2f_nbar50}
 d_m <- "d2.1_m2ff"
-model.params.list[['omega.2']] <- params.default[['omega.2']]
+model.params.list[['omega.2']] <- NULL
 d2.1_m2ff_nbar50_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2ff_nbar50_power_plot)
 ```
@@ -118,7 +118,7 @@ print(d2.1_m2fc_nbar100_power_plot)
 
 ```{r 2f_nbar100}
 d_m <- "d2.1_m2ff"
-model.params.list[['omega.2']] <- params.default[['omega.2']]
+model.params.list[['omega.2']] <- NULL
 params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 d2.1_m2ff_nbar100_power_plot <- gen.power.results.plot(params.file.base, d_m)
 print(d2.1_m2ff_nbar100_power_plot)
@@ -148,7 +148,7 @@ print(d2.1_m2fc_nbar75_power_plot)
 
 ```{r 2f_nbar75}
 d_m <- "d2.1_m2ff"
-model.params.list[['omega.2']] <- params.default[['omega.2']]
+model.params.list[['omega.2']] <- NULL
 d2.1_m2fc_nbar75_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2fc_nbar75_power_plot)
 ```
@@ -277,7 +277,7 @@ print(d2.1_m2fc_ICC2.0.7_power_plot)
 
 ```{r 2f_ICC207}
 d_m <- "d2.1_m2ff"
-model.params.list[['omega.2']] <- params.default[['omega.2']]
+model.params.list[['omega.2']] <- NULL
 d2.1_m2ff_ICC2.0.7_power_plot <-
   gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2ff_ICC2.0.7_power_plot)
@@ -307,7 +307,7 @@ d2.1_m2fc_ICC2.0_power_plot <-
 print(d2.1_m2fc_ICC2.0_power_plot)
 ```
 
-```{r}
+```{r, results='hide'}
 png(file = here::here('validation/results', 'example_validation_plot.png'), width = 500, height = 500)
 print(d2.1_m2fc_ICC2.0_power_plot)
 dev.off()
@@ -315,7 +315,7 @@ dev.off()
 
 ```{r 2f_ICC20}
 d_m <- "d2.1_m2ff"
-model.params.list[['omega.2']] <- params.default[['omega.2']]
+model.params.list[['omega.2']] <- NULL
 d2.1_m2ff_ICC2.0_power_plot <-
   gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d2.1_m2ff_ICC2.0_power_plot)
@@ -339,13 +339,6 @@ model.params.list[['omega.2']] <- rep(0.8, M)
 
 $\omega_2$ = `r model.params.list[['omega.2']]`
 
-```{r 2f_omega208}
-d_m <- "d2.1_m2ff"
-d2.1_m2ff_omega20.8_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
-print(d2.1_m2ff_omega20.8_power_plot)
-```
-
 ```{r 2r_omega08}
 d_m <- "d2.1_m2fr"
 d2.1_m2fr_omega20.8_power_plot <-
@@ -359,13 +352,6 @@ model.params.list[['omega.2']] <- rep(0, M)
 ```
 \newpage
 $\omega_2$ = `r model.params.list[['omega.2']]`
-
-```{r 2f_omega20}
-d_m <- "d2.1_m2ff"
-d2.1_m2ff_omega20_power_plot <-
-  gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
-print(d2.1_m2ff_omega20_power_plot)
-```
 
 ```{r 2r_omega0}
 d_m <- "d2.1_m2fr"
@@ -411,7 +397,7 @@ if(length(mdes.file) == 0)
 
 ```{r 2f_mdes_D1}
 d_m <- "d2.1_m2ff"
-model.params.list[['omega.2']] <- params.default[['omega.2']]
+model.params.list[['omega.2']] <- NULL
 params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 mdes.file <- find_file(params.file.base, type = 'mdes_D1indiv')
 if(length(mdes.file) == 0)
@@ -503,7 +489,7 @@ if(length(sample.file) == 0)
 
 ```{r 2f_sampleD1_J}
 d_m <- "d2.1_m2ff"
-model.params.list[['omega.2']] <- params.default[['omega.2']]
+model.params.list[['omega.2']] <- NULL
 params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
 sample.file <- find_file(params.file.base, type = 'sample_J_D1indiv')
 if(length(sample.file) == 0)
