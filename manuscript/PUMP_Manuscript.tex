@@ -1262,14 +1262,14 @@ the intercepts and the treatment impacts:
 \end{itemize}
 
 We denote the research design by \(d\), followed by the number of levels
-and randomization level, so \texttt{d3.1} is a \(3\)-level design with
-randomization at level \(1\). The model is denoted by \(m\), followed by
+and randomization level, so \texttt{d3.1} is a three level design with
+randomization at level one. The model is denoted by \(m\), followed by
 the level and the assumption for the intercepts, either \(f\) or \(r\)
 and then the assumption for the treatment impacts, \(c\), \(f\), or
 \(r\). For example, \texttt{m3ff2rc} means at level \(3\), we assume
-fixed intercepts and fixed treatment impacts, and at level \(2\) we
-assume random intercepts and constant treatment impacts. The full design
-and model are specified by concatenating these together,
+fixed intercepts and fixed treatment impacts, and at level two we assume
+random intercepts and constant treatment impacts. The full design and
+model are specified by concatenating these together,
 e.g.~\texttt{d2.1\_m3fc}. The Diplomas Now model, for example, is
 \texttt{d3.2\_m3fc2rc}.
 
@@ -1512,7 +1512,7 @@ that the Diplomas Now report authors call their model a ``two-level''
 model, but this is not quite aligned with the language of this package.
 In particular, fixed effects included at level two are actually
 accounting for variation at level three; we therefore identify their
-model as a three-level model with fixed effects at level three.
+model as a three level model with fixed effects at level three.
 
 \emph{Sample sizes.} We assume equal size randomization blocks and
 schools, as is typical of most power analysis packages. For our context,

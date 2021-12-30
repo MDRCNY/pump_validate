@@ -593,9 +593,9 @@ In particular the researcher has to decide about the intercepts and the treatmen
   - fixed: we allow each block or cluster within a level to have its own individual estimated impact (we can only do this if we have treated and control units within said block or cluster).
   - random: we allow variation as with fixed, but model the collection of treatment impacts as Normally distributed around a grand mean mean impact.  This is implicitly allowing for the sample as being representative of a larger super-population, in terms of treatment impact estimation.
   
-We denote the research design by $d$, followed by the number of levels and randomization level, so `d3.1` is a $3$-level design with randomization at level $1$.
+We denote the research design by $d$, followed by the number of levels and randomization level, so `d3.1` is a three level design with randomization at level one.
 The model is denoted by $m$, followed by the level and the assumption for the intercepts, either $f$ or $r$ and then the assumption for the treatment impacts, $c$, $f$, or $r$.
-For example, `m3ff2rc` means at level $3$, we assume fixed intercepts and fixed treatment impacts, and at level $2$ we assume random intercepts and constant treatment impacts.
+For example, `m3ff2rc` means at level $3$, we assume fixed intercepts and fixed treatment impacts, and at level two we assume random intercepts and constant treatment impacts.
 The full design and model are specified by concatenating these together, e.g. `d2.1_m3fc`.
 The Diplomas Now model, for example, is `d3.2_m3fc2rc`. 
 
@@ -697,7 +697,7 @@ We represent this model as "m3fc2rc."
 The "3fc" means we are including block fixed effects, and not modeling any treatment impact variation at level three.
 The "2rc" means random intercept and no modeled variation of treatment within each block (the "c" is for "constant").
 We note that the Diplomas Now report authors call their model a "two-level" model, but this is not quite aligned with the language of this package.
-In particular, fixed effects included at level two are actually accounting for variation at level three; we therefore identify their model as a three-level model with fixed effects at level three.
+In particular, fixed effects included at level two are actually accounting for variation at level three; we therefore identify their model as a three level model with fixed effects at level three.
 
 *Sample sizes.* We assume equal size randomization blocks and schools, as is typical of most power analysis packages.
 For our context, this gives about three schools per randomization block; we can later do a sensitivity check where we increase and decrease this to see how power changes.

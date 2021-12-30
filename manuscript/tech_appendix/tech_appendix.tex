@@ -24,7 +24,7 @@
 
 \begin{document}
 
-\title{Supplementary materials: PUMP Package}
+\title{PUMP Package: Technical Appendix}
 
 \maketitle
 
@@ -80,7 +80,7 @@ $D_{id}$										& Categorical variable indicating the membership of individual
 $Y_{ijmk}(0)$									& Potential outcome for unit $i$ in level 2 group $j$ in level 3 group $k$ for outcome $m$ given no treatment\\
 $Y_{ijmk}(1)$									& Potential outcome for unit $i$ in level 2 group $j$ in level 3 group$k$ for outcome $m$ given treatment\\ \hline
 $V_{km}$										& Level 3 covariates \\
-$g_{1,m}$										& Number of level 3 covariates for outcome $m$\\
+$g_{3,m}$										& Number of level 3 covariates for outcome $m$\\
 $X_{jkm}$										& Level 2 covariates \\
 $g_{2,m}$										& Number of level 2 covariates for outcome $m$\\
 $C_{ijkm}$										& Level 1 covariates \\
@@ -119,7 +119,7 @@ $\gamma_{m}$									& Coefficient of individual/level 1 covariates $C_{ijkm}$ \
 \end{table}
 
 Now, we can create a model taxonomy, based on modeling choices for intercepts and impacts.
-In particular we have:
+In particular we determine for each level:
 \begin{itemize}
 \item Whether the level 2 and level 3 intercepts are:
 \begin{itemize}
@@ -128,7 +128,7 @@ In particular we have:
 \end{itemize}
 \item Whether the level 2 and level 3 treatment effects are:
 \begin{itemize}
-\item constant, e.g. all units are modeled as having a single average impact ($u_{1,jkm}= 0$ and $w_{1,km} = 0$)
+\item constant, e.g. all units are modeled as having a single average impact ($u_{1,jkm}= 0$ or $w_{1,km} = 0$)
 \item fixed, e.g. each unit has an individual estimated impact ($u_{1,jkm}$ are fixed effects constrained to have mean 0), with an additional mean impact.
 \item random ($u_{1,jkm}$ and $w_{1,km}$ are Normally distributed around a mean impact)
 \end{itemize}
@@ -150,11 +150,11 @@ PowerUp				& PUMP							& Description \\ \hline
 $\beta_{0j}$		& $\theta_{0,jkm}$				& Mean outcome under no treatment for school $j$ in district $k$\\
 $\beta_{1j}$		& $\psi_{1,jkm}$					& Mean impact for school $j$ in district $k$ \\ \hline
 $X_{ij}$			& $C_{ijkm}$					& Individual covariates \\ 
-$\beta_{2j}$		& $\gamma_{m}$					& Coefficient of individual covariates $C_{ijkm}$ \\ \hline
+$\beta_{2j}$		& $\gamma_{m}$					& Coefficient vector for individual covariates $C_{ijkm}$ \\ \hline
 $\gamma_{00}$		& $\mu_{0,km}$					& Grand mean outcome under no treatment across schools in district $k$ \\
 $\gamma_{10}$		& $\mu_{1,km}$					& Grand mean impact across schools in district $k$\\
 $W_{jk}$			& $X_{jkm}$						& School covariates \\
-$\gamma_{01k}$		& $\delta_{m}$					& Coefficient of school covariates $X_{jkm}$ \\
+$\gamma_{01k}$		& $\delta_{m}$					& Coefficient vector for school covariates $X_{jkm}$ \\
 $\mu_{0j}$			& $u_{0,jkm}$					& School intercepts\\
 $\mu_{1j}$			& $u_{1,jkm}$					& School impacts\\
 $\tau^2_{2|W}$		& $\tau^2_{0,m}$					& Variance of school random effects \\
@@ -166,7 +166,7 @@ $\tau_{2T2}$		& $\boldsymbol{\kappa}^{w}$ 		& Correlations between school random
 $\xi_{000}$			& $\Xi_{0,m}$ 					& Grand mean outcome under no treatment across districts \\
 $\xi_{100}$			& $\Xi_{1,m}$ 					& Grand mean impact across districts\\
 $V_{k}$				& $V_{km}$						& District covariates \\
-$\xi_{001}$			& $\xi_{m}$						& Coefficient of district covariates $V_{km}$ \\
+$\xi_{001}$			& $\xi_{m}$						& Coefficient vector for district covariates $V_{km}$ \\
 $\zeta_{00}$		& $w_{0,km}$					& District intercepts\\
 $\zeta_{10}$		& $w_{1,km}$					& District impacts\\
 $\tau^2_{3|V}$		& $\eta^2_{0,m}$					& Variance of district random effects \\
@@ -180,12 +180,10 @@ $\tau_{3T3}$		& $\boldsymbol{\kappa}^{w}$ 		& Correlations between district rand
 
 \subsection{Scenario naming convention}
 
-The package naming convention for scenarios follows:
-d[parameters]\_m[parameters]
-
-For design parameters, the first number is the number of levels, and the second is the level at which treatment is assigned.
-
-For model parameters, each set corresponds to the level, how the intercepts are modeled, and how the effects are modeled.
+We denote the research design by $d$, followed by the number of levels and randomization level, so `d3.1` is a $3$-level design with randomization at level $1$.
+The model is denoted by $m$, followed by the level and the assumption for the intercepts, either $f$ or $r$ and then the assumption for the treatment impacts, $c$, $f$, or $r$.
+For example, m3ff2rc means at level $3$, we assume fixed intercepts and fixed treatment impacts, and at level $2$ we assume random intercepts and constant treatment impacts.
+The full design and model are specified by concatenating these together, e.g. d2.1\_m3fc.
 
 Examples:
 \begin{itemize}
@@ -228,14 +226,14 @@ These derived parameters, which are functions of unobserved parameters, are list
 \begin{table}[h]
 \begin{tabular}{l | l}
 Param				& Description																				\\ \hline
-$ES_{m}$			& effect size																				\\
+$ES_{m}$			& treatment impact in effect size units														\\
 $\text{ICC}_{3,m}$	& level 3 (district) intraclass correlation													\\
-$\omega_{3,m}$		& ratio of variation of district impacts to district residuals								\\
+$\omega_{3,m}$		& ratio of variation of district impacts to district intercepts								\\
 $\text{ICC}_{2,m}$	& level 2 (school) intraclass correlation													\\
-$\omega_{2,m}$		& ratio of variation of school impacts to school residuals									\\
-$R_{3,m}^2$			& percent of district variation explained by level 3 (district) covariate	$V_{km}$			\\
-$R_{2,m}^2$			& percent of school variation explained by level 2 (school) covariate	$X_{jkm}$			\\
-$R_{1,m}^2$			& percent of individual variation explained by level 1 (individual covariate) $C_{ijkm}$		\\
+$\omega_{2,m}$		& ratio of variation of school impacts to school intercepts									\\
+$R_{3,m}^2$			& percent of district variation explained by level 3 (district) covariates	$V_{km}$			\\
+$R_{2,m}^2$			& percent of school variation explained by level 2 (school) covariates	$X_{jkm}$			\\
+$R_{1,m}^2$			& percent of individual variation explained by level 1 (individual) covariates $C_{ijkm}$	\\
 \end{tabular}
 \caption{Derived parameters\label{tab:derived_param}}
 \end{table}
@@ -283,7 +281,7 @@ R^2_{1,m} &= 1 - \frac{Var(r_{ijkm})}{Var( Y_{ijkm}(0) \mid S_{id}, D_{id})} = 1
 
 The same strategy is followed for all designs.
 First, we lay out a model for our outcomes, $Y_{ijkm}$.
-Next, we calculate the standard error of the treatment effect estimate, $\hat{\psi}_m$.
+Next, we calculate the standard error of the average treatment effect estimate, $\hat{\psi}_m$.
 When expressing the estimated treatment effect as an effect size, the standard error is given by:
 \begin{align}\label{eqn:qm}
 Q_m \equiv \text{SE}\left(\hat{\text{ES}}_m\right) &= \text{SE}\left(\frac{\hat{\psi}_m}{\mbox{VAR}}\right) = \frac{1}{VAR} \text{SE}\left(\hat{\psi}_m\right),
@@ -294,16 +292,17 @@ When analyzing actual data, we would, to estimate $Q_m$, plug in known values fo
 Any other parameters are replaced by sample estimates.
 Then, when testing the $m^{\text{th}}$ null hypothesis, $\text{ES}_m = 0$, the test statistic for a $t$-test is given by
 \begin{align}t_m \equiv \frac{\hat{\text{ES}}_m}{\hat{Q}_m}.\end{align}
-When the null is true, $t_m$ follows a $t$ distribution with mean $0$ and degrees of freedom $\text{df}_m$, depending on the design.
+When the null is true, $t_m$ follows a $t$ distribution with mean $0$ and degrees of freedom $\text{df}_m$, which depends on the design and model.
 
-For power calculations we need to know, giving our assumptions on the design, a reasonable value for $Q_m$; with that, we can then calculate the power to detect an impact expressed in effect size units.
+For power calculations we calculate, given our assumptions on the design and selected model, a reasonable value for $Q_m$.
+We can then calculate the power to detect an impact expressed in effect size units.
 
-From the power formulas, we can then arrive at MDES and sample size calculations.
+From the power formulas, we can also calculate MDES and sample size requirements.
 From \citet{Dong2013}, in general the MDES can be estimated as
 
 $$ MDES = MT_{df} \times \text{SE} / \text{VAR} $$
 
-where $MT_{df}$ is the multiplier and is the sum of two t statistics based on degrees of freedom $df$.
+where $MT_{df}$ is known as the multiplier and is the sum of two t statistics based on degrees of freedom $df$.
 For one-tailed tests, $MT_{df} = t_{\alpha} + t_{1-\beta}$ where $\alpha$ is the type I error rate and $\beta$ is the desired power.  For two-tailed tests, $MT_{df} = t_{\alpha/2} + t_{1-\beta}$.
 For more details, see \citet[page 31]{Dong2013} or \citet[page 22]{Bloom2006}.
 Manipulating this expression then results in sample size formulae.
@@ -321,9 +320,9 @@ We argue that overall variation is more natural.
 We also believe all the formula should use the same definition of effect size.
 
 Where this is most obviously a concern is with fixed effect regression.
-In particular, with overall variation if we increase the ICC at level 2 or level 3, then there is less variation (relative to the reference variation) in level 1; thus an increased ICC will increase power for fixed effect regression.
+In particular, with overall variation, if we increase the ICC at level 2 or level 3, then there is less variation (relative to the reference variation) in level 1; thus an increased ICC will increase power for fixed effect regression.
 This is simply the realized the gains of a blocked experiment.
-If the effect size is calculated relative to within-group variation, this gain is not seen.
+If the effect size is calculated relative to within-group variation, however, this gain is not seen.
 We will note how this plays out explicitly in the following sections.
 An alternate approach is to have the $R^2$ measure include variance explained by the fixed effects.
 To make the formula more directly comparable, we do not take this route, but one can obtain the same results by selecting an appropriate $R^2$ and then setting the ICC to 0.
@@ -408,7 +407,7 @@ Here, the one that does this is blocked\_i1\_2r, with a model of each school hav
 
 
 Regardless of the model used to analyze these data, the randomization scheme is the same.
-It is simple random sampling within each school, with proportion $\bar{n}\bar{T}$ units assigned to treatment in each school.
+It is simple random sampling within each school, with proportion $\bar{T}$ units assigned to treatment in each school.
 In R, we could randomize this way as so:
 \begin{verbatim}
 T.x <- randomizr::block_ra( S.id, prob = Tbar )
@@ -535,7 +534,7 @@ If we use this expression to scale our SE formula, we finally obtain our formula
 \textbf{Model:} fixed intercepts, fixed treatment effects, no school covariates.
 
 The constant effects model assumes treatment is the same for each block.
-If it is not, and the blocks are different sizes or have different proportions of units treated, that estimator is precision-weighted and can thus be biased.
+If it is not, and the blocks are different sizes or have different proportions of units treated, the constant effects estimator is precision-weighted and can thus be biased.
 Some may instead choose to allow each school to have its own estimated impact, with a second averaging step where we calculate an overall site-average of the site specific impact estimates.
 
 We do this by interacting our site fixed effects with treatment.
@@ -558,7 +557,7 @@ and distributions:
 \begin{align}
 r_{ijkm} &\sim N\left(0, \sigma^2_m\right).
 \end{align}
-The standard error of the treatment effect estimate (and therefore the sample size formula) are all the same as in the constant effects model:
+The standard error of the treatment effect estimate (and therefore the sample size formula) are all the same as in the constant effects model, i.e. for SE we have:
 
 \begin{align} Q_m = \sqrt{\frac{(1-\text{ICC}_{2,m})(1-R^2_{1,m})}{\bar{T}(1 - \bar{T}) J \bar{n}}} . \end{align}
 
@@ -587,7 +586,7 @@ Yobs ~ 0 + T.x:S.id - T.x + C.ijk
 The overall treatment effect is then the average of the \texttt{T.x:S.id} interaction terms.
 
 \paragraph{PowerUp! Differences.}
-Just as the constant model, PowerUp assumes there is no $\text{ICC}_{2,m}$ term while we allow for it.
+Just as with the constant model, PowerUp assumes there is no $\text{ICC}_{2,m}$ term while we allow for it.
 This can be viewed as within (PowerUp!) vs. overall (this work) effect size metrics.
 
 
@@ -903,8 +902,6 @@ The degrees of freedom are
 This model assumes: no variation of impacts within schools, and no variation at the district level.
 \begin{itemize}
 \item $\omega_{2,m} = 0$
-\item $R^2_3 = 0$
-%\item $\text{ICC}_3 = 0$
 \end{itemize}
 
 \paragraph{Difference from PowerUP.}
@@ -1093,15 +1090,13 @@ Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)
 \section{The data generating process}
 
 We now discuss the assumed data generating process (DGP), indexed by parameters directly tied to the structural equations we use.
-Let $\boldsymbol{x}_{ijk\cdot}$ be the vector collecting all outcomes $m$.
-
 The data generating process is done in the following stages, outlined below.
 
 \subsection{Determine DGP parameters}
 \label{sec:dgp_param}
 
 We have already discussed most of the required parameters in Section~\ref{sec:intro}.
-However, there are a few additional parameters required to generate data that do not directly feed into our equations for power or MDES, related to correlations, show in Table~\ref{tab:corr_param}.
+However, there are a few additional parameters required to generate data that do not directly feed into our equations for single-outcome power or MDES, related to correlations, show in Table~\ref{tab:corr_param}.
 
 The parameters used in this section need to be picked based on desired aggregate relationships of the full data.
 See the next section for how to translate parameters such as ICC to the DGP parameters
@@ -1132,9 +1127,9 @@ $\mb{\rho}^r$									& Correlation matrix of individual residuals $\mb{r}_{ijk\
 
 \subsubsection{Level 3 covariates}
 
-Each outcome has its own district-level covariate, $V_{km}$ with $k = 1, \ldots, K$ and $m = 1, \ldots, M$.
+Each outcome has its own district-level covariates, $V_{km}$ with $k = 1, \ldots, K$ and $m = 1, \ldots, M$.
 We have $E(V_{km}) = 0$ and $Var(V_{km}) = 1$.
-We assume a correlation between outcomes, so we define $\mb{\rho}^V$ is a $M \times M$ symmetric correlation matrix, with $\rho^V_{ij}$ is the value in row $i$ and column $j$ of the matrix $\mb{\rho}^V$.
+We assume a correlation between covariates, so we define $\mb{\rho}^V$ is a $M \times M$ symmetric correlation matrix, with $\rho^V_{ij}$ is the value in row $i$ and column $j$ of the matrix $\mb{\rho}^V$.
 
 \[ \left(
 \begin{array}{c}
@@ -1150,9 +1145,9 @@ N\left[\left(
 0
 \end{array}\right),\left(
 \begin{array}{ccc}
-1 				& \cdots	& \rho^D_{1M}	\\
+1 				& \cdots	& \rho^V_{1M}	\\
 \vdots 			& 1			& \vdots 	\\
-\rho^D_{M1}  	& \cdots	& 1
+\rho^V_{M1}  	& \cdots	& 1
 \end{array}
 \right)\right].\]
 
@@ -1170,13 +1165,13 @@ Let $\Xi_{0,m}$ be the grand mean outcome under no treatment across all district
 Without loss of generality, we will set $\Xi_{0,m} = 0$ for all $m$.
 $\Xi_{1,km}$ is the grand mean impact across districts.
 
-We now consider the distributions of random effects and impacts $w_{0,km}$ and $w_{1,km}$, starting with the marginal distributions.
-We have $E(w_{0,km}) = 0$, $Var(w_{0,km}) = \eta_{0,m}^2$, and correlation between outcomes $M \times M$ matrix $\mb{\rho}^w$.
+We now consider the distributions of random effects and impacts $w_{0,km}$ and $w_{1,km}$.
+First, we have $E(w_{0,km}) = 0$, $Var(w_{0,km}) = \eta_{0,m}^2$, and correlation between outcomes $M \times M$ matrix $\mb{\rho}^{w_0}$.
 \[ \left(
 \begin{array}{c}
-w_{k1}	\\
+w_{0,k1}	\\
 \vdots 	\\
-w_{kM}
+w_{0,kM}
 \end{array}\right)
 \sim
 N\left[\left(
@@ -1193,10 +1188,10 @@ N\left[\left(
 \right)\right].\]
 
 
-Similarly, we have $E(w_{1,km}) = 0$, $Var(w_{1,km}) = \eta_{1,m}^2$, and correlation between outcomes $M \times M$ matrix $\mb{\rho}^{u_1}$.
+Similarly, we have $E(w_{1,km}) = 0$, $Var(w_{1,km}) = \eta_{1,m}^2$, and correlation between outcomes $M \times M$ matrix $\mb{\rho}^{w_1}$.
 
 
-We now consider the joint distribution, $(w_{0,km}, w_{1,km})$ are bivariate normal on the margin with correlation $\kappa^{w}_{mm}$:
+We now consider the joint distribution, $(w_{0,km}, w_{1,km})$ as bivariate normal on the margin with correlation $\kappa^{w}_{mm}$:
 \begin{equation}
 \left(
 \begin{array}{c}
@@ -1362,13 +1357,13 @@ Y_{ijkm}(1) &= Y_{ijkm}(0) + \Xi_{1,m} + z_{km} + u_{1,jkm}
 	\begin{enumerate}
 		\item Generate district covariates $V_{km}$.
 		\item Generate district residuals $w_{0,km}$ and $w_{1,km}$.
-		\item Calculate grand means $\mu_{0,km}$ and $\mu_{1,km}$.
+		\item Calculate district grand means $\mu_{0,km}$ and $\mu_{1,km}$.
 	\end{enumerate}
 	\item For $j = 1, \ldots J$, and $m = 1, \ldots M$:
 	\begin{enumerate}
 		\item Generate school covariates $X_{jkm}$.
 		\item Generate school residuals $u_{0,jkm}$ and $u_{1,jkm}$.
-		\item Calculate grand means $\theta_{0,jkm}$ and $\psi_{1,jkm}$.
+		\item Calculate school grand means $\theta_{0,jkm}$ and $\psi_{1,jkm}$.
 	\end{enumerate}
 	\item For $i = 1, \ldots N$ and for $m = 1, \ldots M$:
 	\begin{enumerate}
@@ -1400,8 +1395,8 @@ We can assign at the district, school, or individual level depending on the desi
 \begin{itemize}
 \item Blocked individual randomization: simple random sampling occurs within each school, with $\bar{n}\bar{T}$ units assigned to treatment in each school.
 \item Cluster 2-level randomization: simple random sampling occurs across schools, with $J \bar{T}$ schools assigned to treatment.
+\item Blocked cluster 2-level randomization: school level occurs within each district, with $J\bar{T}$ schools assigned to treatment in each district.
 \item Cluster 3-level randomization: simple random sampling occurs across districts, with $K \bar{T}$ districts assigned to treatment.
-\item Blocked cluster 3-level randomization: simple random sampling occurs within each district, with $J\bar{T}$ schools assigned to treatment in each district.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1414,13 +1409,13 @@ We can assign at the district, school, or individual level depending on the desi
 We define two main types of parameters.
 First, model parameters are those defined in Tables~\ref{tab:latent_param} and \ref{tab:corr_param}, and define the DGP.
 Second, control or derived parameters, defined in Table~\ref{tab:derived_param}, indirectly tune model parameters.
-Control parameters are set by the user, which then influence model parameters which are fed into the DGP.
+Control parameters are set by the user, which then given the model parameters fed into the DGP.
 The mapping of control parameters to model parameters is in Table~\ref{tab:derived_param}.
 
 We break our model parameters into sets:
 \begin{itemize}
 \item Set 1: $\{M, J, K, n_{jk}, \Xi_{0,m}, \mb{\rho}^D, \mb{\rho}^w, \mb{\rho}^z, \mb{\rho}^X, \mb{\rho}^u, \mb{\rho}^v, \mb{\rho}^C, \boldsymbol{\kappa}^{wz}, \boldsymbol{\kappa}^{uv}, p_j\}$ are set directly.
-\item Set 2: $\{N, \mu_{0,m}, \mu_{1,m}, \theta_{0,jkm}, \psi_{1,jkm}, Y_{ijkm}(0), Y_{ijkm}(1) \}$ are functions of the parameters above that are set directly.
+\item Set 2: $\{N, \mu_{0,m}, \mu_{1,m}, \theta_{0,jkm}, \psi_{1,jkm}, Y_{ijkm}(0), Y_{ijkm}(1) \}$ are functions of parameters that are set directly.
 \item Set 3: $\{\Xi_{1,m}, \eta^2_{0,m}, \eta^2_{1,m}, \tau^2_{0,m}, \tau^2_{1,m}, \xi_m, \delta_m, \gamma_m\}$ are tuned through control parameters.
 \end{itemize}
 
@@ -1567,7 +1562,7 @@ And finally we set:
 % Appendix
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Appendix: Algebra}
+\section{Appendix: Derivations of parameter formulae}
 \label{sec:alg}
 
 Let's start off with expressions we will later use:
