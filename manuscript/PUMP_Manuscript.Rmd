@@ -72,7 +72,7 @@ Individual power corresponds to how power is defined when there is focus on a si
 Similarly, the researcher can consider **$d-$minimal power** for any $d$ less than the number of outcomes, or fractional powers, such as $1/2-$minimal power.
   - **complete power**: the power to detect effects of at least a particular size on *all* outcomes. 
 
-The prevailing default in many studies–-individual power–-may or may not be the most appropriate type of power.
+As noted in @Porter2018, the prevailing default in many studies–-individual power–-may or may not be the most appropriate type of power.
 If the researcher’s goal is to find statistically significant estimates of effects on most or all primary outcomes of interest, then their power may be much lower than anticipated when multiplicity adjustments are taken into account.
 On the other hand, if the researcher’s goal is to find statistically significant estimates of effects on at least one or a small proportion of outcomes, their power may be much better than anticipated.
 In both of these cases, by not accounting for both the challenges and opportunities arising from multiple outcomes, a researcher may find they have wasted resources, either by designing an underpowered study that cannot detect the desired effect sizes, or by designing an overpowered study that had a larger sample size than necessary.
@@ -246,9 +246,9 @@ MTPs that control the FWER at $5\%$ adjust $p$-values in a way that ensures that
 The MTPs introduced by Bonferroni (@RN24280, @RN24281), @RN24282, and @RN28696 control the FWER.
 
 MTPs that control false discovery rate (FDR) take an entirely different approach to the multiple testing problem.
-FDR is a less stringent criteria than FWER.
-Introduced by @BenjaminiHochberg1995, the FDR is the expected proportion of all rejected hypotheses that are erroneously rejected.
-The two-by-two representation in Table~\ref{tab:twobytwo} is often found in articles on multiple hypothesis testing, and helps to illustrate the difference between FWER and FDR.
+FDR, introduced by @BenjaminiHochberg1995, is a less stringent criteria than FWER.
+It is the expected proportion of all rejected hypotheses that are erroneously rejected.
+As laid out in @Porter2018, the two-by-two representation in Table~\ref{tab:twobytwo} is often found in articles on multiple hypothesis testing, and helps to illustrate the difference between FWER and FDR.
 Let $M$ be the total number of tests.
 Therefore, we have $M$ unobserved truths: whether or not each null hypothesis is true or false.
 We also have $M$ observed decisions: whether or not the null hypotheses were rejected, because the $p$-values were less than $\alpha$.
@@ -270,7 +270,7 @@ Total                                 & $M-R$                   & $R$           
   \label{tab:twobytwo}
 \end{table}
 
-In Table~\ref{tab:twobytwo}, $V$ is the number of erroneously rejected null hypotheses, or the number of false positive findings.
+"In Table~\ref{tab:twobytwo}, $V$ is the number of erroneously rejected null hypotheses, or the number of false positive findings.
 Therefore, the FWER is equivalent to $Pr(V > 0)$, the probability of at least one false positive finding.
 Recall that Type I error is inflated when testing for effects when no MTPs are applied.
 Consider the setting when all the outcomes are independent of each other.
@@ -294,16 +294,16 @@ FDR &= E\left(\frac{V}{R}\right)\\
 However, if any effects truly exist, then $FWER \geq FDR$.
 As a result of the difference in objective between FWER and FDR, in the case where there is at least one false null hypothesis (at least one true effect), an MTP that controls the FDR at $5\%$ will have a Type I error rate that is greater than $5\%$.
 
-MTPs may provide either "weak" or "strong" control of the error rate they target.
+Note that MTPs may provide either "weak" or "strong" control of the error rate they target.
 An MTP provides "weak control" of the FWER or the FDR at level $\alpha$ if the control can only be guaranteed when all null hypotheses are true, e.g. when the effects on all outcomes are zero.
 An MTP provides "strong control" of the FWER or FDR at level $\alpha$ if the control is guaranteed when some null hypotheses are true and some are false, e.g. when there may be effects on at least some outcomes.
-Of course, strong control is preferred.\footnote{The single-step and step-down Westfall Young MTPs (which we discuss below) always provide at least weak control of the FWER. In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (@RN33093).The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null.
+Of course, strong control is preferred" @Porter2018.\footnote{The single-step and step-down Westfall Young MTPs (which we discuss below) always provide at least weak control of the FWER. In order for these procedures to provide strong control of the FWER, they require the assumption of subset pivotality (@RN33093).The distribution of the unadjusted test statistics or $p$-values is said to have subset pivotality if for any subset of null hypotheses, the joint distribution of the test statistics or of the $p-$values for the subset is identical to the distribution under the complete null.
 A consequence of this assumption is that the permutation of test statistics or $p$-values can be done under the complete null hypothesis rather than under the unknown partial hypothesis (@RN33093).}
 
 \subsection{Single-step vs. stepwise procedures}
 \label{sec:stepwise}
 
-A second feature of a MTP that affects its statistical power is whether it is a “single-step” or “stepwise” procedure.
+"A second feature of a MTP that affects its statistical power is whether it is a “single-step” or “stepwise” procedure.
 Single-step procedures adjust each $p$-value independently of the other $p$-values.
 For example, the Bonferroni MTP multiplies all raw $p$-values by $M$.
 Therefore, one $p$-value adjustment does not depend on other $p$-value adjustments, only on the number of tests.
@@ -314,14 +314,14 @@ The procedure then multiplies the smallest $p$-value by $M$, the second smallest
 The Holm MTP, like most other stepwise procedures, also enforces monotonicity: each adjusted $p$-value is greater than or equal to the previous adjusted $p$-value, and enforces that any $p$-values is not greater than one.
 Overall, stepwise MTPs allow for less adjustment than single-step MTPs in later steps, and therefore preserve more power (for outcomes in the later steps).
 The Bonferroni and Westfall-Young single-step procedure are single-step; the Holm and Benjamini-Hochberg MTPs and the Westfall-Young step-down procedure are stepwise.
-Note that stepwise procedures may be “step-down” or “step-up,” referring to whether a procedure begins with the smallest $p$-value, and thus the largest effect size (step-down) or the largest $p$-value (step-up).
+Note that stepwise procedures may be “step-down” or “step-up,” referring to whether a procedure begins with the smallest $p$-value, and thus the largest effect size (step-down) or the largest $p$-value (step-up)" @Porter2018.
 
 Due to the dependencies of adjustments in stepwise MTPs, a new assumption must be considered when estimating power under multiplicity: the proportion of outcomes on which there are truly impacts, or, equivalently, the number of false null hypotheses.
-Researchers may be inclined to assume that there will be effects on all outcomes, as hypotheses of effects probably drive the selection of outcomes in the first place.
-However, if the researchers are incorrect, the probability of detecting the extant effects can be diminished, sometimes substantially.
+"Researchers may be inclined to assume that there will be effects on all outcomes, as hypotheses of effects probably drive the selection of outcomes in the first place.(...)
+However, if the researchers are incorrect, the probability of detecting the extant effects can be diminished, sometimes substantially" @Porter2018.
 
 \textcolor{red}{Evan found this paragraph a little confusing.  I tried to do some re-working, but would also be happy for someone to tackle a rewrite.}
-It is important to point out that under the assumption that some effects are truly null, we must change our notion of power for $d-$minimal powers (e.g., $1-$minimal power, $1/3-$minimal power, etc.) and complete power.
+As noted in @Porter2018, it is important to point out that under the assumption that some effects are truly null, we must change our notion of power for $d-$minimal powers (e.g., $1-$minimal power, $1/3-$minimal power, etc.) and complete power.
 While individual power is defined based on the probability of correctly rejecting false nulls, the definition is loosened here and includes the probability of erroneous rejections of true nulls.
 For example, $1/3-$minimal power is defined as the probability of detecting effects on at least $1/3$ of the *total outcomes $M$*, regardless of the number of outcomes with true effects.
 That is, $1/3-$minimal power is not defined as the probability of detecting effects among the $M$ outcomes on which the effects truly exist.
@@ -348,7 +348,7 @@ For example, if we have two independent tests with Type I error $\alpha$, then i
 \subsection{Correlation between test statistics}
 \label{sec:corr}
 
-Finally, a third feature of an MTP that affects its statistical power is whether or not it takes into account the correlation between test statistics.
+"Finally, a third feature of an MTP that affects its statistical power is whether or not it takes into account the correlation between test statistics.
 The Bonferroni and Holm procedures strongly control the FWER in all cases, even when the test statistics are correlated, but they adjust $p$-values more than is necessary in that case.
 Along with the Bonferroni and Holm MTPs, the Benjamin-Hochberg MTP also does not take correlations into account.\footnote{The Benjamini-Hochberg procedure was originally shown to control the FDR for independent test statistics. However, @BenjaminiYekutieli2001 showed that it also controls the FDR for true null hypotheses with “positive regression dependence.” This condition is satisfied
 for most applications in practice.}
@@ -357,16 +357,16 @@ This joint distribution of the test statistics is estimated from the study’s d
 For example, random permutations of the treatment indicator break the association between treatment status and outcome.
 Repeating these permutations a large number of times, results in a distribution of test statistics under the complete null.
 Because the actual data are used to generate this null distribution, correlations among the test statistics are captured.
-Then observed test statistics can be compared with the distribution of test statistics under the complete null hypothesis.\footnote{Instead of using test statistics, the Westfall-Young MTPs can alternatively compare raw $p$-values with the estimated joint null distribution of $p$-values.}
+Then observed test statistics can be compared with the distribution of test statistics under the complete null hypothesis" @Porter2018.\footnote{Instead of using test statistics, the Westfall-Young MTPs can alternatively compare raw $p$-values with the estimated joint null distribution of $p$-values.}
 
 The correlation between test statistics is a parameter a researcher must specify in order to estimate power, MDES or sample size requirements when using an MTP.
-The ${M \choose 2}$ pairwise correlations between test statistics are equal to the $M$ pairwise correlations between the residuals in the $M$ regression models.
-If there are no covariates in the regression models or if the $R^2$’s of the covariates are equivalent in all regression models, then the correlations between the test statistics are equal to the correlations between the outcomes.
-However, having different $R^2$’s across the regression models reduces the correlations between the residuals and therefore between test statistics.\footnote{For example, one of the multiple outcomes may have a baseline covariate with a high $R^2$ while another may have a baseline covariate with
+When fitting a separate regression model for the impact on each outcome, the ${M \choose 2}$ pairwise correlations between test statistics are equal to the "pairwise correlations between the residuals in the $M$ impact models" @Porter2018.
+Then, "if there are no covariates in the impact models or if the $R^2$’s of the covariates are equivalent in all impact models, then the correlations between the test statistics are equal to the correlations between the outcomes.
+However, having different $R^2$’s across the impact models reduces the correlations between the residuals and therefore between test statistics.\footnote{For example, one of the multiple outcomes may have a baseline covariate with a high $R^2$ while another may have a baseline covariate with
 a smaller $R^2$. Also, block dummies may explain more variation in some outcomes than in others.}
 Models of outcomes that are highly correlated are more likely to have residuals that are highly correlated because baseline covariates will tend to have similar $R^2$’s.
 The gaps between the correlations between outcomes and the correlations between residuals --- and therefore the test statistics --- may be wider for moderately or weakly correlated outcomes.
-In any case, the upper bounds of correlations between the test statistics are the correlations between the outcomes.
+In any case, the upper bounds of correlations between the test statistics are the correlations between the outcomes" @Porter2018.
 
 \section{Estimating power, MDES and sample size in studies with multiple outcomes}
 \label{sec:est}
@@ -614,7 +614,7 @@ Here we provide a review of the list of multiple testing procedures supported by
 
 For a more detailed explanation of each MTP, see Appendix A of @Porter2018.
 
-The following table summarizes the important features for each of the MTPs supported by `PUMP`.
+The following table from @Porter2018 summarizes the important features for each of the MTPs supported by `PUMP`.
 
 \begin{table}[h!]
 \centering
@@ -766,7 +766,7 @@ m <- pump_mdes(
         	rho = 0.4 ) # how correlated outcomes are
 ```
 
-The results are easily made into a nice table via `knitr`'s `kable()` command:
+The results are easily made into a nice table via the `knitr` `kable()` command:
 ```{r echo = FALSE}
 kable(m, digits = 2)
 ```
