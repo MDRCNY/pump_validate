@@ -15,8 +15,8 @@ run.wy = TRUE
 # which d_ms to run
 run.d2.1 = FALSE
 run.d2.2 = FALSE
-run.d3.1 = FALSE
-run.d3.3 = TRUE
+run.d3.1 = TRUE
+run.d3.3 = FALSE
 run.d3.2 = TRUE
 
 # for parallel processing
@@ -38,7 +38,7 @@ source(here::here("validation/code", "misc.R"))
 
 sim.params.list <- list(
   S = 3                     # Number of samples for Monte Carlo Simulation
-  , Q = 1                    # Number of times entire simulation is repeated, so total iterations = S * Q
+  , Q = 20                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
   , tol = 0.01               # tolerance for MDES and sample  size calculations
@@ -51,9 +51,9 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , MTP = c("Bonferroni", "BH", "Holm") # Multiple testing procedures
-  , runSim = TRUE           # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = FALSE        # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = FALSE      # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
+  , runSim = TRUE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = FALSE       # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPowerUp = FALSE     # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
 #------------------------------------------------------------------#
@@ -278,7 +278,7 @@ if(run.wy)
     model.params.list[['nbar']] <- 100
     model.params.list[['J']] <- 10
     model.params.list[['K']] <- 10
-    model.params.list[['MDES']] <- rep(0.3, M)
+    model.params.list[['MDES']] <- rep(0.125, M)
     model.params.list[['ICC.3']] <- rep(0.1, M)
     model.params.list[['ICC.2']] <- rep(0.1, M)
     model.params.list[['R2.1']] <- rep(0.4, M)

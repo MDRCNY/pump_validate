@@ -1,25 +1,140 @@
-\documentclass[
-]{jss}
+\documentclass{article}
 
-\usepackage[utf8]{inputenc}
+\usepackage{arxiv}
 
-\author{
-Kristen Hunter\\Harvard University\\
-Department of Statistics \And Luke Miratrix\\Harvard Graduate\\
-School of Education \And Kristin Porter\\MDRC
-}
-\title{Power Under Multiplicity Project (\pkg{PUMP}): Estimating Power,
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{lmodern}        % https://github.com/rstudio/rticles/issues/343
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{graphicx}
+
+\title{Power Under Multiplicity Project (PUMP): Estimating Power,
 Minimum Detectable Effect Size, and Sample Size When Adjusting for
 Multiple Outcomes}
 
-\Plainauthor{Kristen Hunter, Luke Miratrix, Kristin Porter}
-\Plaintitle{Power Under Multiplicity Project (\pkg{PUMP}): Estimating
-Power, Minimum Detectable Effect Size, and Sample Size When Adjusting
-for Multiple Outcomes}
-\Shorttitle{\pkg{PUMP}: Power Under Multiplicity Project}
+\author{
+    Kristen Hunter
+   \\
+    Department of Statistics \\
+    Harvard University \\
+   \\
+  \texttt{\href{mailto:kristenbhunter@gmail.com}{\nolinkurl{kristenbhunter@gmail.com}}} \\
+   \And
+    Luke Miratrix
+   \\
+    Harvard Graduate School of Education \\
+   \\
+  \texttt{\href{mailto:lmiratrix@g.harvard.edu}{\nolinkurl{lmiratrix@g.harvard.edu}}} \\
+   \And
+    Kristin Porter
+   \\
+    MDRC \\
+   \\
+  \texttt{\href{mailto:kristin.porter@mdrc.org}{\nolinkurl{kristin.porter@mdrc.org}}} \\
+  }
+
+% Pandoc syntax highlighting
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+
+% tightlist command for lists without linebreak
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 
-\Abstract{
+% Pandoc citation processing
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+% for Pandoc 2.8 to 2.10.1
+\newenvironment{cslreferences}%
+  {}%
+  {\par}
+% For Pandoc 2.11+
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % set entry spacing
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\begin{document}
+\maketitle
+
+
+\begin{abstract}
 For randomized controlled trials (RCTs) with a single intervention being
 measured on multiple outcomes, researchers often apply a multiple
 testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust
@@ -28,65 +143,30 @@ findings, but also changes the statistical power, sometimes
 substantially, which reduces the probability of detecting effects when
 they do exist. However, this consideration is frequently ignored in
 typical power analyses, as existing tools do not easily accommodate the
-use of multiple testing procedures. We introduce the \pkg{PUMP}
-\proglang{R} package as a tool for analysts to estimate statistical
-power, minimum detectable effect size, and sample size requirements for
+use of multiple testing procedures. We introduce the \texttt{PUMP}
+\texttt{R} package as a tool for analysts to estimate statistical power,
+minimum detectable effect size, and sample size requirements for
 multi-level RCTs with multiple outcomes. Multiple outcomes are accounted
-for in two ways. First, power estimates from \pkg{PUMP} properly account
-for the adjustment in \(p\)-values from applying a multiple testing
-procedure. Second, as researchers change their focus from one outcome to
-multiple outcomes, different definitions of statistical power emerge.
-\pkg{PUMP} allows researchers to consider a variety of definitions of
-power, as some may be more appropriate for the goals of their study. The
-package estimates power for frequentist multi-level mixed effects
-models, and supports a variety of commonly-used RCT designs and models
-and multiple testing procedures. In addition to the main functionality
-of estimating power, minimum detectable effect size, and sample size
-requirements, the package allows the user to easily explore sensitivity
-of these quantities to changes in underlying assumptions.
-}
-
-\Keywords{power, multiple testing, multi-level models, randomized
-controlled trials, \proglang{R}}
-\Plainkeywords{power, multiple testing, multi-level models, randomized
-controlled trials, R}
-
-%% publication information
-%% \Volume{50}
-%% \Issue{9}
-%% \Month{June}
-%% \Year{2012}
-%% \Submitdate{}
-%% \Acceptdate{2012-06-04}
-
-\Address{
-        Kristin Porter\\
-    MDRC\\
-    475 14th Street\\
-Suite 750\\
-Oakland, CA 94612-1900\\
-  E-mail: \email{kristin.porter@mdrc.org}\\
-  
-  }
-
-
-% tightlist command for lists without linebreak
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-
-
-
-
-\usepackage{amsmath}
-
-\begin{document}
-
+for in two ways. First, power estimates from \texttt{PUMP} properly
+account for the adjustment in \(p\)-values from applying a multiple
+testing procedure. Second, as researchers change their focus from one
+outcome to multiple outcomes, different definitions of statistical power
+emerge. \texttt{PUMP} allows researchers to consider a variety of
+definitions of power, as some may be more appropriate for the goals of
+their study. The package estimates power for frequentist multi-level
+mixed effects models, and supports a variety of commonly-used RCT
+designs and models and multiple testing procedures. In addition to the
+main functionality of estimating power, minimum detectable effect size,
+and sample size requirements, the package allows the user to easily
+explore sensitivity of these quantities to changes in underlying
+assumptions.
+\end{abstract}
 
 
 \section{Introduction}
 \label{sec:intro}
 
-The \pkg{PUMP} \proglang{R} package fills in an important gap in
+The \texttt{PUMP} \texttt{R} package fills in an important gap in
 open-source software tools to design multi-level randomized controlled
 trials (RCTs) with adequate statistical power. With this package,
 researchers can estimate statistical power, minimum detectable effect
@@ -99,8 +179,8 @@ framework of mixed effects regression models, which is currently the
 prevailing framework for estimating impacts from experiments in
 education and other social policy research.\footnote{Other options
   include nonparametric or Bayesian methods, but these are less
-  prevalent in applied research (for example, see
-  \citet{GELMANETAL2012}, \citet{GelmanHill2007}).}
+  prevalent in applied research (for example, see Gelman, Hill, and
+  Yajima (2012), Gelman, Hill, and Yajima (2007)).}
 
 To our knowledge, none of the existing software tools for power
 calculations allow researchers to account for multiple hypothesis tests
@@ -114,11 +194,12 @@ test for effects on multiple outcomes and employ MTPs frequently ignore
 the power implications of the MTPs.
 
 Also, as researchers change their focus from one outcome to multiple
-outcomes, multiple definitions of statistical power emerge
-(\citet{RN23882}; \citet{RN23878}; \citet{RN23881}; \citet{MTSAS}). The
-\pkg{PUMP} package allows researchers to consider multiple definitions
-of power, selecting those most suited to the goals of their study. The
-definitions of power include:
+outcomes, multiple definitions of statistical power emerge (Chen et al.
+(2011); Dudoit, Shaffer, and Boldrick (2003); Senn and Bretz (2007);
+Westfall, Tobias, and Wolfinger (2011)). The \texttt{PUMP} package
+allows researchers to consider multiple definitions of power, selecting
+those most suited to the goals of their study. The definitions of power
+include:
 
 \begin{itemize}
 \tightlist
@@ -138,7 +219,7 @@ definitions of power include:
   particular size on \emph{all} outcomes.
 \end{itemize}
 
-As noted in \citet{Porter2018}, the prevailing default in many
+As noted in Porter (2018), the prevailing default in many
 studies---individual power---may or may not be the most appropriate type
 of power. If the researcher's goal is to find statistically significant
 estimates of effects on most or all primary outcomes of interest, then
@@ -151,8 +232,8 @@ accounting for both the challenges and opportunities arising from
 multiple outcomes, a researcher may find they have wasted resources,
 either by designing an underpowered study that cannot detect the desired
 effect sizes, or by designing an overpowered study that had a larger
-sample size than necessary. We introduce the \pkg{PUMP} package to allow
-for directly answering questions that take multiple outcomes into
+sample size than necessary. We introduce the \texttt{PUMP} package to
+allow for directly answering questions that take multiple outcomes into
 account, such as:
 
 \begin{itemize}
@@ -168,30 +249,31 @@ account, such as:
   outcomes truly had impact?
 \end{itemize}
 
-The methods in the PUMP package build on those introduced in
-\citet{Porter2018}. This earlier paper focused only on a single RCT
-design and model --- a multisite RCT with the blocked randomization of
-individuals, in which effects are estimated using a model with
-block-specific intercepts and with the assumption of constant effects
-across all units. This earlier paper also did not produce software to
-assist researchers in implementing its methods. With this current paper
-and with the introduction of the PUMP package, we extend the methodology
-to nine additional multi-level RCT designs and models. Also, while
-\citet{Porter2018} focused on estimates of power, PUMP goes further to
-also estimate MDES and sample size requirements that take multiplicity
-adjustments into account.
+The methods in the PUMP package build on those introduced in Porter
+(2018). This earlier paper focused only on a single RCT design and model
+--- a multisite RCT with the blocked randomization of individuals, in
+which effects are estimated using a model with block-specific intercepts
+and with the assumption of constant effects across all units. This
+earlier paper also did not produce software to assist researchers in
+implementing its methods. With this current paper and with the
+introduction of the PUMP package, we extend the methodology to nine
+additional multi-level RCT designs and models. Also, while Porter (2018)
+focused on estimates of power, PUMP goes further to also estimate MDES
+and sample size requirements that take multiplicity adjustments into
+account.
 
-\pkg{PUMP} extends functionality of the popular PowerUp! \proglang{R}
+\texttt{PUMP} extends functionality of the popular PowerUp! \texttt{R}
 package (and its related tools in the form of a spreadsheet and Shiny
 application), which compute power or MDES for multi-level RCTs with a
-single outcome (\citet{RN4473}). For a wide variety of RCT designs with
-a single outcome, researchers can take advantage of closed-form
-solutions and numerous power estimation tools. For example, in education
-and social policy research, see \citet{RN4473}; \citet{RN30153};
-\citet{RN23884}; \citet{RN24179}. However, closed-form solutions are
-difficult or impossible to derive when a MTP is applied to a setting
-with multiple outcomes. Instead, we use a simulation-based approach to
-achieve estimates of power.
+single outcome (Dong and Maynard (2013)). For a wide variety of RCT
+designs with a single outcome, researchers can take advantage of
+closed-form solutions and numerous power estimation tools. For example,
+in education and social policy research, see Dong and Maynard (2013);
+Hedges and Rhoads (2010); Raudenbush et al. (2011); Spybrook et al.
+(2011). However, closed-form solutions are difficult or impossible to
+derive when a MTP is applied to a setting with multiple outcomes.
+Instead, we use a simulation-based approach to achieve estimates of
+power.
 
 In order to calculate power, the researcher specifies information about
 the sample size at each level, the minimum detectable effect size for
@@ -202,7 +284,7 @@ statistical significance level, in units of standard deviations. An
 ``effect size'' generally refers to the standardized mean difference
 effect size, which ``equals the difference in mean outcomes for the
 treatment group and control group, divided by the standard deviation of
-outcomes across subjects within experimental groups'' (\citet{RN27978}).
+outcomes across subjects within experimental groups'' (Bloom (2006)).
 Researchers often use effect sizes to standardize outcomes so that
 outcomes with different scales can be directly compared.
 
@@ -225,14 +307,14 @@ The package includes three core functions:
 
 For any of these core functions, the user begins with two main choices.
 First, the user chooses the assumed design and model of the RCT. The
-\pkg{PUMP} package covers a range of multi-level designs, up to three
+\texttt{PUMP} package covers a range of multi-level designs, up to three
 levels of hierarchy, that researchers typically use in practice, in
 which research units are nested in hierarchical groups. Our power
 calculations assume the user will be analyzing these RCTs using
 frequentist mixed-effects regression models, containing a combination of
 fixed or random intercepts and treatment impacts at different levels, as
 we explain in detail in Section \ref{sec:est_power} and in the Technical
-Appendix. Second, the user chooses the MTP to be applied. \pkg{PUMP}
+Appendix. Second, the user chooses the MTP to be applied. \texttt{PUMP}
 supports five common MTPs --- Bonferroni, Holm, single-step and
 step-down versions of Westfall-Young, and Benjamini-Hochberg. After
 these two main choices, the user must also make a variety of decisions
@@ -241,8 +323,8 @@ about parameters of the data generating distribution.
 The package also includes functions that allow users to easily explore
 power over a range of possible values of parameters. This exploration
 encourages the user to determine the sensitivity of estimates to
-different assumptions. \pkg{PUMP} also visually displays results. These
-additional functions include:
+different assumptions. \texttt{PUMP} also visually displays results.
+These additional functions include:
 
 \begin{itemize}
 \tightlist
@@ -254,16 +336,16 @@ additional functions include:
   \texttt{update()} to re-run an existing calculation with a small
   number of parameters updated.
 \item
-  \texttt{plot()} on \pkg{PUMP}-generated objects to generate plots
+  \texttt{plot()} on \texttt{PUMP}-generated objects to generate plots
   (including grid outputs).
 \end{itemize}
 
-The authors of the \pkg{PUMP} package have also created a web
+The authors of the \texttt{PUMP} package have also created a web
 application built with R Shiny. This web application calls the
-\pkg{PUMP} package and allows users to conduct calculations with a
+\texttt{PUMP} package and allows users to conduct calculations with a
 user-friendly interface, but it is less flexible than the package, with
 a focus on simpler scenarios (e.g., 10 or fewer outcomes). The app can
-be found at \url{https://mdrcpump.shinyapps.io/pump}.
+be found at \url{https://mdrc.shinyapps.io/pump/}.
 
 The remainder of this paper is organized as follows. In Section
 \ref{sec:diplomas}, we introduce Diplomas Now, an educational
@@ -279,7 +361,7 @@ taking the use of MTPs into account. This section also briefly discusses
 our validation process. Section \ref{sec:choices} discusses the various
 choices a user must make when using the package, including the designs
 and models, MTPs, and key design and model parameters. Section
-\ref{sec:vignette} provides a detailed presentation of the \pkg{PUMP}
+\ref{sec:vignette} provides a detailed presentation of the \texttt{PUMP}
 package with multiple examples of using the packages functions to
 conduct calculations for our education RCT example. Section
 \ref{sec:conclusion} is a brief conclusion.
@@ -293,7 +375,7 @@ model is designed to increase high school graduation rates and
 post-secondary readiness. Evaluators conducted a RCT comparing schools
 who implemented the model to business-as-usual. We refer to this example
 throughout this paper to illustrate key concepts and to illustrate the
-application of the \pkg{PUMP} package.
+application of the \texttt{PUMP} package.
 
 The Diplomas Now model, created by three national organizations, Talent
 Development, City Year, and Communities In Schools, targets underfunded
@@ -315,7 +397,7 @@ high schools) in 11 school districts that agreed to participate. Schools
 in the active treatment group were assigned to implement the Diplomas
 Now model, while the schools in the control group continued their
 existing school programs or implemented other reform strategies of their
-choosing (\citet{DNREPORT}.) The MDRC researchers conducted
+choosing (Corrin et al. (2016).) The MDRC researchers conducted
 randomization of the schools within blocks defined by district, school
 type, and year of roll-out. After some schools were dropped from the
 study due to structural reasons, the researchers were left with 29 high
@@ -325,7 +407,7 @@ business-as-usual, resulting in 32 schools in the treatment group, and
 30 schools in the control group.
 
 The evaluation focused on three categories of outcomes: Attendance,
-Behavior, and Course performance, called the ``ABC's'', with multiple
+Behavior, and Course performance, called the ``ABC's,'' with multiple
 measures for each category. In addition, the evaluation measured an
 overall ABC composite measures of whether a student is above given
 thresholds on all three categories. This grouping constitutes 12 total
@@ -341,7 +423,7 @@ uses multiple testing adjustment, rather than predesignation, to account
 for the multiple outcome problem.
 
 There are different guidelines for how to adjust for groupings of
-multiple outcomes in education studies. For example, \citet{RN23748}
+multiple outcomes in education studies. For example, Schochet (2008)
 recommends organizing primary outcomes into domains, conducting tests on
 composite domain outcomes, and applying multiplicity corrections to
 composites across domains. The What Works Clearinghouse applies
@@ -375,7 +457,7 @@ higher burden of proof. When not using a MTP, the probability of finding
 false positives increases, sometimes dramatically, with the number of
 tests. When using a MTP, this probability is reduced. Much of the
 proceeding explanation is borrowed from or parallels discussion found in
-\citet{Porter2018}.
+Porter (2018).
 
 We first remind the reader of how raw, or unadjusted, \(p\)-values are
 calculated in this setting, before introducing adjustments due to
@@ -396,12 +478,12 @@ t_m = \frac{\widehat{ES}_m}{SE(\hat{ES}_m)},
 as extreme as the one observed, given that the null hypothesis is true.
 The term ``raw'' is used to denote unadjusted \(p\)-values, in contrast
 to values that have been adjusted using a MTP. For a two-sided test, the
-raw \(p\)-value for test \(m\) is \(p_m=2*\Prob(T_m \geq |t_m|)\). The
-\pkg{PUMP} package allows for either one-sided or two-sided tests, but
-we proceed assuming two-sided tests going forward.\footnote{For a
+raw \(p\)-value for test \(m\) is \(p_m=2*Pr(T_m \geq |t_m|)\). The
+\texttt{PUMP} package allows for either one-sided or two-sided tests,
+but we proceed assuming two-sided tests going forward.\footnote{For a
   one-sided test, depending on the direction of our alternative
   hypothesis, the raw \(p\)-value for test \(m\) is computed as
-  \(p_m=\Prob(T_m \leq t_m)\) or \(p_m=\Prob(T_m \geq t_m)\).}
+  \(p_m=Pr(T_m \leq t_m)\) or \(p_m=Pr(T_m \geq t_m)\).}
 
 When testing a \emph{single} hypothesis under this framework,
 ``researchers typically specify \(\alpha\), the maximum acceptable
@@ -409,7 +491,7 @@ probability of making a Type I error. A Type I error is the probability
 of erroneously rejecting the null hypothesis when it is true. The
 quantity \(\alpha\) is also referred to as the significance level. If
 \(\alpha=0.05\), then the null hypothesis is rejected if the \(p\)-value
-is less than \(0.05\)'' (\citet{Porter2018}).
+is less than \(0.05\)'' (Porter (2018)).
 
 In contrast, ``when one tests \emph{multiple} hypotheses under this
 framework (such that \(M>1\)) and one conducts a separate test for each
@@ -417,7 +499,7 @@ of the hypotheses with \(\alpha=0.05\), there is a \emph{greater} than
 \(5\%\) overall chance of a false positive finding in the study. If the
 multiple tests are independent, the probability that at least one of the
 null hypothesis tests will be erroneously rejected is
-\[1-\Prob(\text{none of the null hypotheses will be erroneously rejected}) = 1-(1-\alpha)^M.\]
+\[1-Pr(\text{none of the null hypotheses will be erroneously rejected}) = 1-(1-\alpha)^M.\]
 Therefore, if researchers are estimating effects on three outcomes (and
 if these outcomes are independent) the probability of at least one false
 positive finding is \(1-(1-0.05)^3=0.14\). If the researchers were
@@ -429,7 +511,7 @@ are usually at least somewhat correlated, which makes the test
 statistics correlated and reduces the extent of Type I error inflation.
 Nonetheless, any error inflation can still make it problematic to draw
 reliable conclusions about the existence of effects above a specified
-size'' (\citet{Porter2018}).
+size'' (Porter (2018)).
 
 \subsection{Using MTPs to protect against spurious impact findings}
 \label{sec:mtp_use}
@@ -455,9 +537,8 @@ upward, one is less likely to reject true nulls, which reduces the
 probability of Type I errors, or false positive findings. At the same
 time, MTPs increase the probability of a Type II error, or false
 negative findings, when the test fails to reject a false null.
-Individual power is \(1 - \Prob(\text{Type II error})\), so MTPs have
-the tradeoff of reducing Type I errors but also reducing individual
-power.
+Individual power is \(1 - Pr(\text{Type II error})\), so MTPs have the
+tradeoff of reducing Type I errors but also reducing individual power.
 
 Next, we consider the impact of multiple outcomes on other definitions
 of power. Applying a MTP reduces power according to all definitions of
@@ -483,26 +564,26 @@ when estimating power.
 
 Familywise procedures ``reframe Type I error as a rate across the entire
 set or ``family'' of multiple hypothesis tests. This rate is called the
-familywise error rate (FWER; \citet{RN33098}). The FWER is typically set
-to the same value as the probability of a Type I error for a single
-test, e.g., \(\alpha\). MTPs that control the FWER at \(5\%\) adjust
+familywise error rate (FWER; Tukey (1953)). The FWER is typically set to
+the same value as the probability of a Type I error for a single test,
+e.g., \(\alpha\). MTPs that control the FWER at \(5\%\) adjust
 \(p\)-values in a way that ensures that the probability of at least one
 Type I error across the entire set of hypothesis tests is no more than
-\(5\%\). The MTPs introduced by Bonferroni (\citet{RN24280},
-\citet{RN24281}), \citet{RN24282}, and \citet{RN28696} all control the
-FWER'' (\citet{Porter2018}).
+\(5\%\). The MTPs introduced by Bonferroni (Dunn (1959), Dunn (1961)),
+Holm (1979), and Westfall and Young (1993) all control the FWER''
+(Porter (2018)).
 
 MTPs that control false discovery rate (FDR) take an entirely different
-approach to the multiple testing problem. FDR, introduced by
-\citet{BenjaminiHochberg1995}, is a less stringent criteria than FWER.
-It is the expected proportion of all rejected hypotheses that are
-erroneously rejected. As laid out in \citet{Porter2018}, the two-by-two
-representation in Table \ref{tab:twobytwo} is often found in articles on
-multiple hypothesis testing, and helps to illustrate the difference
-between FWER and FDR. Let \(M\) be the total number of tests. Therefore,
-we have \(M\) unobserved truths: whether or not each null hypothesis is
-true or false. We also have \(M\) observed decisions: whether or not the
-null hypotheses were rejected, because the \(p\)-values were less than
+approach to the multiple testing problem. FDR, introduced by Benjamini
+and Hochberg (1995), is a less stringent criteria than FWER. It is the
+expected proportion of all rejected hypotheses that are erroneously
+rejected. As laid out in Porter (2018), the two-by-two representation in
+Table \ref{tab:twobytwo} is often found in articles on multiple
+hypothesis testing, and helps to illustrate the difference between FWER
+and FDR. Let \(M\) be the total number of tests. Therefore, we have
+\(M\) unobserved truths: whether or not each null hypothesis is true or
+false. We also have \(M\) observed decisions: whether or not the null
+hypotheses were rejected, because the \(p\)-values were less than
 \(\alpha\). In Table \ref{tab:twobytwo}, \(U\), \(V\), \(W\), and \(X\)
 are four possible scenarios: the numbers of true or false hypotheses not
 rejected or rejected. \(M_0\) and \(M_1\) are the unobservable numbers
@@ -512,12 +593,14 @@ hypotheses that were not rejected.
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{l l l l}
-                                      & \multicolumn{3}{c}{Observed decisions}\\ \hline
-Unobserved truths                     & Number not rejected     & Number rejected   & Total \\ \hline
+\begin{tabular}{l r r r}
+\toprule
+                                      & \multicolumn{3}{c}{Observed decisions}\\
+Unobserved truths                     & Number not rejected     & Number rejected   & Total \\ \midrule
 Number of true null hypotheses        & $U$                     & $V$               & $M_0$ \\
 Number of false null hypotheses       & $W$                     & $X$               & $M_1$ \\ \hline
-Total                                 & $M-R$                   & $R$               & $M$
+Total                                 & $M-R$                   & $R$               & $M$ \\
+\bottomrule
 \end{tabular}
 \caption{Numbers of hypothesis types and decisions.}
   \label{tab:twobytwo}
@@ -525,34 +608,34 @@ Total                                 & $M-R$                   & $R$           
 
 In Table \ref{tab:twobytwo}, \(V\) is the number of erroneously rejected
 null hypotheses, or the number of false positive findings. Therefore,
-the FWER is equivalent to \(\Prob(V > 0)\), the probability of at least
-one false positive finding. As noted in \citet{Porter2018}, ``recall
-that Type I error is inflated when testing for effects when no MTPs are
-applied. Consider the setting when all the outcomes are independent of
-each other. The Type I error is almost \(10\%\) when testing effects on
-two independent outcomes and \(23\%\) when testing effects on five
+the FWER is equivalent to \(Pr(V > 0)\), the probability of at least one
+false positive finding. As noted in Porter (2018), ``recall that Type I
+error is inflated when testing for effects when no MTPs are applied.
+Consider the setting when all the outcomes are independent of each
+other. The Type I error is almost \(10\%\) when testing effects on two
+independent outcomes and \(23\%\) when testing effects on five
 independent outcomes. These Type I error rates both correspond to the
 FWER. The goal of MTPs that control the FWER is to bring these
 percentages back down to \(5\%\).''
 
-Also in Table \ref{tab:twobytwo}, the FDR is equal to \(\E(V/R)\) but is
+Also in Table \ref{tab:twobytwo}, the FDR is equal to \(E(V/R)\) but is
 defined to be \(0\) when \(R=0\), or when no hypotheses are rejected.
-``As is frequently noted in the literature (e.g., \citet{RN352};
-\citet{RN23748}), the FWER and FDR have different objectives. Control of
+``As is frequently noted in the literature (e.g., Shaffer (1995);
+Schochet (2008)), the FWER and FDR have different objectives. Control of
 the FWER protects researchers from spurious findings and so may be
 preferred when even a single false positive could lead to the wrong
 conclusion about the effectiveness of an intervention. On the other
-hand, the FDR is more lenient with false positives''
-(\citet{Porter2018}). Researchers may be willing to accept a few false
-positives, \(V\), when the total number of rejected hypotheses, \(R\),
-is large. Note that under the complete null hypothesis that all \(M\)
-null hypotheses are true, the FDR is equal to the FWER. Referring back
-to Table \ref{tab:twobytwo}, under the complete null we have \(V = R\),
-so \begin{align*}
-FDR &= \E\left(\frac{V}{R}\right)\\
-&=  \E\left(\frac{V}{R}\mid R = 0\right) \Prob(R = 0) + \E\left(\frac{V}{R} \mid R > 0\right)\Prob(R > 0) \\
-&= 0 \times \Prob(R = 0) + 1 \times \Prob(R > 0) \\
-&= \Prob(R > 0) = FWER
+hand, the FDR is more lenient with false positives'' (Porter (2018)).
+Researchers may be willing to accept a few false positives, \(V\), when
+the total number of rejected hypotheses, \(R\), is large. Note that
+under the complete null hypothesis that all \(M\) null hypotheses are
+true, the FDR is equal to the FWER. Referring back to Table
+\ref{tab:twobytwo}, under the complete null we have \(V = R\), so
+\begin{align*}
+FDR &= E\left(\frac{V}{R}\right)\\
+&=  E\left(\frac{V}{R}\mid R = 0\right) Pr(R = 0) + E\left(\frac{V}{R} \mid R > 0\right)Pr(R > 0) \\
+&= 0 \times Pr(R = 0) + 1 \times Pr(R > 0) \\
+&= Pr(R > 0) = FWER
 \end{align*} However, if any effects truly exist, then FWER \(\geq\)
 FDR. As a result of the difference in objective between FWER and FDR, in
 the case where there is at least one false null hypothesis (at least one
@@ -567,18 +650,19 @@ effects on all outcomes are zero. A MTP provides strong control of the
 FWER or FDR at level \(\alpha\) if the control is guaranteed when some
 null hypotheses are true and some are false, e.g.~when there may be
 effects on at least some outcomes. Of course, strong control is
-preferred'' (\citet{Porter2018}).\footnote{The single-step and step-down
+preferred'' (Porter (2018)).\footnote{The single-step and step-down
   Westfall Young MTPs (which we discuss below) always provide at least
   weak control of the FWER. In order for these procedures to provide
   strong control of the FWER, they require the assumption of subset
-  pivotality (\citet{RN33093}).The distribution of the unadjusted test
-  statistics or \(p\)-values is said to have subset pivotality if for
-  any subset of null hypotheses, the joint distribution of the test
-  statistics or of the \(p-\)values for the subset is identical to the
-  distribution under the complete null. A consequence of this assumption
-  is that the permutation of test statistics or \(p\)-values can be done
-  under the complete null hypothesis rather than under the unknown
-  partial hypothesis (\citet{RN33093}).}
+  pivotality (Ge, Dudoit, and Speed (2003)).The distribution of the
+  unadjusted test statistics or \(p\)-values is said to have subset
+  pivotality if for any subset of null hypotheses, the joint
+  distribution of the test statistics or of the \(p-\)values for the
+  subset is identical to the distribution under the complete null. A
+  consequence of this assumption is that the permutation of test
+  statistics or \(p\)-values can be done under the complete null
+  hypothesis rather than under the unknown partial hypothesis (Ge,
+  Dudoit, and Speed (2003)).}
 
 \subsection{Single-step vs. stepwise procedures}
 \label{sec:stepwise}
@@ -589,7 +673,7 @@ procedures adjust each \(p\)-value independently of the other
 \(p\)-values. For example, the Bonferroni MTP multiplies all raw
 \(p\)-values by \(M\). Therefore, one \(p\)-value adjustment does not
 depend on other \(p\)-value adjustments, only on the number of tests''
-(\citet{Porter2018}).
+(Porter (2018)).
 
 In contrast, ``stepwise procedures first order raw \(p\)-values (or test
 statistics), and then adjust according to the order of the tests. The
@@ -605,10 +689,10 @@ Overall, stepwise MTPs allow for less adjustment than single-step MTPs
 in later steps, and therefore preserve more power (for outcomes in the
 later steps). The Bonferroni and Westfall-Young single-step procedure
 are single-step; the Holm and Benjamini-Hochberg MTPs and the
-Westfall-Young step-down procedure are stepwise'' (\citet{Porter2018}).
-Note that stepwise procedures may be ``step-down'' or ``step-up,''
-referring to whether a procedure begins with the smallest \(p\)-value,
-and thus the largest effect size (step-down) or the largest \(p\)-value
+Westfall-Young step-down procedure are stepwise'' (Porter (2018)). Note
+that stepwise procedures may be ``step-down'' or ``step-up,'' referring
+to whether a procedure begins with the smallest \(p\)-value, and thus
+the largest effect size (step-down) or the largest \(p\)-value
 (step-up)``.
 
 Due to the dependencies of adjustments in stepwise MTPs, a new
@@ -619,11 +703,11 @@ inclined to assume that there will be effects on all outcomes, as
 hypotheses of effects probably drive the selection of outcomes in the
 first place.(\ldots) However, if the researchers are incorrect, the
 probability of detecting the extant effects can be diminished, sometimes
-substantially'' (\citet{Porter2018}).
+substantially'' (Porter (2018)).
 
-As noted in \citet{Porter2018}, it is important to point out that under
-the assumption that some effects are truly null, we must change our
-notion of power for \(d-\)minimal powers (e.g., \(1-\)minimal power,
+As noted in Porter (2018), it is important to point out that under the
+assumption that some effects are truly null, we must change our notion
+of power for \(d-\)minimal powers (e.g., \(1-\)minimal power,
 \(1/3-\)minimal power, etc.) and complete power. While individual power
 is defined based on the probability of correctly rejecting false nulls,
 the definition is loosened here and includes the probability of
@@ -647,31 +731,31 @@ complete power is undefined.
 
 There is an additional technical note about the calculation of complete
 power.\footnote{Complete power has also been referred to as
-  ``conjunctive power'' (\citet{RN33091}) and ``all pairs power''
-  (\citet{RN33097}).} To calculate complete power, we do not need to
-adjust the \(p\)-values, and can instead reject each individual test
-based on the unadjusted \(p\)-values. Complete power is the power of the
-omnibus test constructed by whether or not we reject all the null
+  ``conjunctive power'' (Bretz, Hothorn, and Westfall (2010)) and ``all
+  pairs power'' (Ramsey (1978)).} To calculate complete power, we do not
+need to adjust the \(p\)-values, and can instead reject each individual
+test based on the unadjusted \(p\)-values. Complete power is the power
+of the omnibus test constructed by whether or not we reject all the null
 hypotheses. This test was originally introduced as the
 intersection-union test because the null hypothesis is expressed as a
 union and the alternative hypothesis is expressed as an intersection
-(\citet{Berger1982}, \citet{Berger1996}). \citet{Berger1982} showed that
-if all the individual tests are level \(\alpha\), the intersection-union
-test is also a level \(\alpha\) test. To provide some intuition, we do
-not need to adjust \(p\)-values for complete power because it is a
-special case where we must reject \emph{all} the hypothesis tests. Thus,
-there is no way for the omnibus test to be rejected by chance because of
-a favorable configuration (\citet{RN23882}). For example, consider if we
-have four tests, with two false nulls and two true nulls. If we consider
-\(3-\)minimal power, we just need one of the two true nulls to be
-rejected by chance alone, and there are two ways for this to occur. For
-complete power, there is only one way for us to reject all of the nulls.
-The downside of an intersection-union test is that it is conservative:
-the FWER is generally less than \(\alpha\). For example, if we have two
-independent tests with Type I error \(\alpha\), then if both of are true
-nulls, the probability of a Type I error for the omnibus test (the
-probability of rejecting both null hypotheses) is \(\alpha^2\)
-(\citet{Deng2008}).
+(Berger (1982), Berger and Hsu (1996)). Berger (1982) showed that if all
+the individual tests are level \(\alpha\), the intersection-union test
+is also a level \(\alpha\) test. To provide some intuition, we do not
+need to adjust \(p\)-values for complete power because it is a special
+case where we must reject \emph{all} the hypothesis tests. Thus, there
+is no way for the omnibus test to be rejected by chance because of a
+favorable configuration (Chen et al. (2011)). For example, consider if
+we have four tests, with two false nulls and two true nulls. If we
+consider \(3-\)minimal power, we just need one of the two true nulls to
+be rejected by chance alone, and there are two ways for this to occur.
+For complete power, there is only one way for us to reject all of the
+nulls. The downside of an intersection-union test is that it is
+conservative: the FWER is generally less than \(\alpha\). For example,
+if we have two independent tests with Type I error \(\alpha\), then if
+both of are true nulls, the probability of a Type I error for the
+omnibus test (the probability of rejecting both null hypotheses) is
+\(\alpha^2\) (Deng, Xu, and Wang (2008)).
 
 \subsection{Correlation between test statistics}
 \label{sec:corr}
@@ -684,32 +768,32 @@ cases, even when the test statistics are correlated, but they adjust
 Bonferroni and Holm MTPs, the Benjamin-Hochberg MTP also does not take
 correlations into account.\footnote{The Benjamini-Hochberg procedure was
   originally shown to control the FDR for independent test statistics.
-  However, \citet{BenjaminiYekutieli2001} showed that it also controls
+  However, Benjamini and Yekutieli (2001) showed that it also controls
   the FDR for true null hypotheses with ``positive regression
   dependence.'' This condition is satisfied for most applications in
   practice.} In contrast, both of the Westfall-Young MTPs rely on the
 estimation of the joint distribution of test statistics when the
 complete null hypothesis (that there are not effects on any of the
 outcomes) is true. This joint distribution of the test statistics is
-estimated from the study's data'' (\citet{Porter2018}). For example,
-random permutations of the treatment indicator break the association
-between treatment status and outcome. Repeating these permutations a
-large number of times results in a distribution of test statistics under
-the complete null. ``Because the actual data are used to generate this
-null distribution, correlations among the test statistics are captured.
-Then observed test statistics can be compared with the distribution of
-test statistics under the complete null hypothesis''
-(\citet{Porter2018}).\footnote{Instead of using test statistics, the
-  Westfall-Young MTPs can alternatively compare raw \(p\)-values with
-  the estimated joint null distribution of \(p\)-values.}
+estimated from the study's data'' (Porter (2018)). For example, random
+permutations of the treatment indicator break the association between
+treatment status and outcome. Repeating these permutations a large
+number of times results in a distribution of test statistics under the
+complete null. ``Because the actual data are used to generate this null
+distribution, correlations among the test statistics are captured. Then
+observed test statistics can be compared with the distribution of test
+statistics under the complete null hypothesis'' (Porter
+(2018)).\footnote{Instead of using test statistics, the Westfall-Young
+  MTPs can alternatively compare raw \(p\)-values with the estimated
+  joint null distribution of \(p\)-values.}
 
 The correlation between test statistics is a parameter a researcher must
 specify in order to estimate power, MDES or sample size requirements
 when using a MTP. When fitting a separate regression model for the
 impact on each outcome, the \(\binom{M}{2}\) correlations between test
 statistics are equal to the ``pairwise correlations between the
-residuals in the \(M\) impact models'' (\citet{Porter2018}). Then, ``if
-there are no covariates in the impact models or if the \(R^2\)'s of the
+residuals in the \(M\) impact models'' (Porter (2018)). Then, ``if there
+are no covariates in the impact models or if the \(R^2\)'s of the
 covariates are equivalent in all impact models, then the correlations
 between the test statistics are equal to the correlations between the
 outcomes. However, having different \(R^2\)'s across the impact models
@@ -724,8 +808,7 @@ similar \(R^2\)'s. The gaps between the correlations between outcomes
 and the correlations between residuals --- and therefore the test
 statistics --- may be wider for moderately or weakly correlated
 outcomes. In any case, the upper bounds of correlations between the test
-statistics are the correlations between the outcomes''
-(\citet{Porter2018}).
+statistics are the correlations between the outcomes'' (Porter (2018)).
 
 \section{Estimating power, MDES and sample size in studies with multiple outcomes}
 \label{sec:est}
@@ -734,7 +817,7 @@ statistics are the correlations between the outcomes''
 \label{sec:est_power}
 
 We take an innovative simulation-based approach to estimating power, as
-introduced in \citet{Porter2018}. This approach is then also applied to
+introduced in Porter (2018). This approach is then also applied to
 estimate MDES and sample size. In order to estimate power for a single
 outcome, we can often use closed-form algebraic expressions, which are
 derived from the assumed model. However, with multiple outcomes, finding
@@ -787,9 +870,9 @@ below.
   \emph{Estimate impacts on the simulated data.} Given simulated data,
   we could fit \(M\) regression models (specified to match the
   experimental design and model assumptions). For the models supported
-  by \pkg{PUMP}, the relevant functions would be \texttt{lm()},
-  \texttt{lmer()} from the \pkg{lme4} library (\citet{lme4}), and
-  \texttt{interacted\_linear\_estimators()} from the \pkg{blkvar}
+  by \texttt{PUMP}, the relevant functions would be \texttt{lm()},
+  \texttt{lmer()} from the \texttt{lme4} library (Bates et al. (2015)),
+  and \texttt{interacted\_linear\_estimators()} from the \texttt{blkvar}
   library.\footnote{This package is currently under development on
     GitHub; see \url{https://github.com/lmiratrix/blkvar}} From the
   model output we extract the test statistics \(t_m\) for the estimated
@@ -818,8 +901,8 @@ below.
   multiple testing procedure. This process generates a new matrix
   \(\mathbf{G}\) of adjusted \(p\)-values. For Bonferroni, Holm, and
   Benjamini-Hochberg adjustments, we use the function \texttt{p.adjust}
-  in \proglang{R} (found in the \texttt{stats} package). We developed
-  our own functions for implementing adjustment using the Westfall-Young
+  in \texttt{R} (found in the \texttt{stats} package). We developed our
+  own functions for implementing adjustment using the Westfall-Young
   procedures. One row corresponds to one set of simulated
   \emph{adjusted} \(p\)-values for the \(5\) attendance outcomes of
   interest for Diplomas Now.
@@ -848,12 +931,13 @@ below.
   \emph{\(d\)-minimal power} is the proportion of the \(tnum\) rows in
   which at least \(d\) of the \(M\) hypotheses were rejected.\footnote{Note
     that others refer to \(1-\)minimal power simply as ``minimal power''
-    (e.g., \citet{RN33095}; \citet{RN23882}; \citet{MTSAS}),
-    ``disjunctive power'' (e.g., \citet{RN33091}), or ``any pair'' power
-    (\citet{RN33097}). \citet{RN23882} use the terminology of
-    ``r-power'' for what is referred to here as \(d-\)minimal power for
-    \(d>1\).} For Diplomas Now, we could consider \(1\)-minimal power
-  through \(4\)-minimal power.
+    (e.g., Maurer and Mellein (1988); Chen et al. (2011); Westfall,
+    Tobias, and Wolfinger (2011)), ``disjunctive power'' (e.g., Bretz,
+    Hothorn, and Westfall (2010)), or ``any pair'' power (Ramsey
+    (1978)). Chen et al. (2011) use the terminology of ``r-power'' for
+    what is referred to here as \(d-\)minimal power for \(d>1\).} For
+  Diplomas Now, we could consider \(1\)-minimal power through
+  \(4\)-minimal power.
 \item
   \emph{Complete power} is the proportion of the \(tnum\) rows in which
   all of the null hypotheses were rejected based on the raw \(p\)-values
@@ -935,16 +1019,16 @@ of \(f(t_1, \dots, t_M)\). With these distributions specified, we can
 calculate \(p\)-values.
 
 Note that this approach of simulating test statistics builds on work by
-\citet{RN33089}, who use simulated test statistics to identify critical
-values based on the distribution of the maximum test statistics. Their
-approach produces the same estimates as the approach described here for
-the single-step Westfall-Young MTP. As an alternative to a
-simulation-based approach, \citet{RN23882} derived explicit formulae for
-\(d-\)minimal powers of stepwise procedures and for complete power of
-single-step procedures, but only for \(1\), \(2\), or \(3\) tests. The
-approach presented here is more generally applicable, as it can be used
-for all MTPs, for any number of tests, and for all definitions of power
-discussed in the present paper.
+Bang, Jung, and George (2005), who use simulated test statistics to
+identify critical values based on the distribution of the maximum test
+statistics. Their approach produces the same estimates as the approach
+described here for the single-step Westfall-Young MTP. As an alternative
+to a simulation-based approach, Chen et al. (2011) derived explicit
+formulae for \(d-\)minimal powers of stepwise procedures and for
+complete power of single-step procedures, but only for \(1\), \(2\), or
+\(3\) tests. The approach presented here is more generally applicable,
+as it can be used for all MTPs, for any number of tests, and for all
+definitions of power discussed in the present paper.
 
 \emph{Remark.} The \(p\)-value adjustment using Westfall-Young
 procedures is the most complex correction procedure, so we briefly
@@ -1000,8 +1084,8 @@ for determining sample size is the same.
 The algorithm first determines an initial range of MDES values that
 likely contain the target MDES. This initial range is calculated using
 formulae for unadjusted power based on the standard errors and degrees
-of freedom. In particular, from \citet{RN4473}, in general the MDES for
-a single outcome can be estimated as
+of freedom. In particular, from Dong and Maynard (2013), in general the
+MDES for a single outcome can be estimated as
 \[ MDES = MT_{df} \times SE / \sigma_{m} \] where \(MT_{df}\), the
 ``multiplier,'' is the sum of two \(t\) statistics with degrees of
 freedom \(df\). For one-tailed tests,
@@ -1009,9 +1093,10 @@ freedom \(df\). For one-tailed tests,
 the Type I error rate and \(\beta\) is the desired power. For two-tailed
 tests, \(MT_{df} = t_{\alpha/2}^\star + t_{1-\beta}^\star\). We do not
 explain the details of the derivations of the multiplier here; for more
-details and understanding, see \citet{RN4473} or \citet{RN27978}. These
-expressions can be further manipulated to obtain sample size formulae;
-see our technical appendix for all formulae used in the package.
+details and understanding, see Dong and Maynard (2013) or Bloom (2006).
+These expressions can be further manipulated to obtain sample size
+formulae; see our technical appendix for all formulae used in the
+package.
 
 We can calculate our initial bounds by manipulating the \(\alpha\) and
 \(\beta\) values in the above. First, to calculate the preliminary lower
@@ -1063,16 +1148,16 @@ see the sample size vignette on CRAN.
 We completed extensive validation checks to ensure our power calculation
 procedures are correct. First, we compared our power estimates in
 scenarios with only one outcome, \(M = 1\), to those from the
-\pkg{PowerUpR} package. Without a multiple testing procedure adjustment,
-our estimates match. Second, in order to validate our estimates under
-multiplicity, we followed the full simulation approach outlined above,
-in Section \ref{sec:est_power}. The simulation approach involves
-generating many iterations of full datasets according to the assumed
-design and model, calculating \(p\)-values, and calculating an empirical
-estimate of power. Using a binomial distribution we constructed Monte
-Carlo confidence intervals for the power estimates from the full
-simulation approach. Then, we validated that the \pkg{PUMP} estimates
-fall within these confidence intervals.
+\texttt{PowerUpR} package. Without a multiple testing procedure
+adjustment, our estimates match. Second, in order to validate our
+estimates under multiplicity, we followed the full simulation approach
+outlined above, in Section \ref{sec:est_power}. The simulation approach
+involves generating many iterations of full datasets according to the
+assumed design and model, calculating \(p\)-values, and calculating an
+empirical estimate of power. Using a binomial distribution we
+constructed Monte Carlo confidence intervals for the power estimates
+from the full simulation approach. Then, we validated that the
+\texttt{PUMP} estimates fall within these confidence intervals.
 
 A more detailed explanation of the validation procedure can be found in
 the Appendix, and full validation code and results are in a
@@ -1103,7 +1188,7 @@ or random. For the same experimental design, the analyst can sometimes
 choose from a variety of possible models, and these two decisions should
 be kept conceptually separated from each other.
 
-\emph{The design.} The \pkg{PUMP} package supports designs with one,
+\emph{The design.} The \texttt{PUMP} package supports designs with one,
 two, or three levels, with randomization occurring at any level. For
 example, a design with two levels and randomization at level one is a
 blocked design (or equivalently a multisite experiment), where level two
@@ -1181,43 +1266,34 @@ corresponding names from the PowerUP! package where appropriate. For
 more details about each combination of design and model, see the
 Technical Appendix.
 
-\begin{CodeChunk}
-
-\begin{tabular}{l|l|l|l}
-\hline
+\begin{table}
+\centering
+\begin{tabular}{llll}
+\toprule
 Code & Design & Model & PowerUp\\
-\hline
+\midrule
 d1.1\_m1c & d1.1 & m1c & n/a\\
-\hline
 d2.1\_m2fc & d2.1 & m2fc & bira2\_1c\\
-\hline
 d2.1\_m2ff & d2.1 & m2ff & bira2\_1f\\
-\hline
 d2.1\_m2fr & d2.1 & m2fr & bira2\_1r\\
-\hline
 d2.1\_m2rr & d2.1 & m2rr & n/a\\
-\hline
+\addlinespace
 d2.2\_m2rc & d2.2 & m2rc & cra2\_2r\\
-\hline
 d3.1\_m3rr2rr & d3.1 & m3rr2rr & bira3\_1r\\
-\hline
 d3.2\_m3ff2rc & d3.2 & m3ff2rc & bcra3\_2f\\
-\hline
 d3.2\_m3fc2rc & d3.2 & m3fc2rc & n/a\\
-\hline
 d3.2\_m3rr2rc & d3.2 & m3rr2rc & bcra3\_2r\\
-\hline
+\addlinespace
 d3.3\_m3rc2rc & d3.3 & m3rc2rc & cra3\_3r\\
-\hline
+\bottomrule
 \end{tabular}
-
-\end{CodeChunk}
+\end{table}
 
 \subsection{Multiple testing procedures}
 
 The supported multiple testing procedures were covered in more detail in
 Section \ref{sec:mtp_overview}. Here we provide a review of the multiple
-testing procedures supported by the \pkg{PUMP} package:
+testing procedures supported by the \texttt{PUMP} package:
 
 \begin{itemize}
 \tightlist
@@ -1251,21 +1327,23 @@ testing procedures supported by the \pkg{PUMP} package:
   corresponding sequential \(p\)-values.
 \end{itemize}
 
-For a more detailed explanation of each MTP, see Appendix A of
-\citet{Porter2018}.
+For a more detailed explanation of each MTP, see Appendix A of Porter
+(2018).
 
-The following table from \citet{Porter2018} summarizes the important
-features for each of the MTPs supported by \pkg{PUMP}.
+The following table from Porter (2018) summarizes the important features
+for each of the MTPs supported by \texttt{PUMP}.
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{l l l l}
-Procedure                             & Control & Single-step or stepwise & Accounts for correlation \\ \hline
+\begin{tabular}{l r r r}
+\toprule
+Procedure                             & Control & Single-step or stepwise & Accounts for correlation \\ \midrule
 Bonferroni (BF)                       & FWER    & single-step             & No                       \\
 Holm (HO)                             & FWER    & stepwise                & No\\
 Westfall-Young Single-step (WY-SS)    & FWER    & single-step             & Yes\\
 Westfall-Young Step-down (WY-SD)      & FWER    & stepwise                & Yes\\
-Benjamini-Hochberg (BH)               & FDR     & stepwise                & No
+Benjamini-Hochberg (BH)               & FDR     & stepwise                & No \\
+\bottomrule
 \end{tabular}
 \caption{Summary of MTP procedures.}
   \label{tab:mtp}
@@ -1277,43 +1355,31 @@ Benjamini-Hochberg (BH)               & FDR     & stepwise                & No
 The table below shows the parameters that influence \(Q_m\), the
 standard error, for different designs and models.
 
-\begin{CodeChunk}
-
-\begin{tabular}{l|l}
-\hline
+\begin{table}
+\centering
+\begin{tabular}{ll}
+\toprule
 Parameter & Description\\
-\hline
-nbar & the harmonic mean of the number of level 1 units per level 2 unit (students per school)\\
-\hline
-J & the number of level 2 units (schools)\\
-\hline
-K & the number of level 3 units (district)\\
-\hline
-Tbar & the proportion of units that are assigned to the treatment\\
-\hline
-numCovar.1 & number of Level 1 (individual) covariates\\
-\hline
-numCovar.2 & number of Level 2 (school) covariates\\
-\hline
-numCovar.3 & number of Level 3 (district) covariates\\
-\hline
-R2.1 & percent of variation explained by Level 1 covariates\\
-\hline
-R2.2 & percent of variation explained by Level 2 covariates\\
-\hline
-R2.3 & percent of variation explained by Level 3 covariates\\
-\hline
+\midrule
+nbar & harmonic mean of level 1 units per level 2 unit (students per school)\\
+J & number of level 2 units per level 3 unit (schools per district)\\
+K & number of level 3 units (districts)\\
+Tbar & proportion of units assigned to treatment\\
+numCovar.1 & number of level 1 (individual) covariates\\
+\addlinespace
+numCovar.2 & number of level 2 (school) covariates\\
+numCovar.3 & number of level 3 (district) covariates\\
+R2.1 & percent of variation explained by level 1 covariates\\
+R2.2 & percent of variation explained by level 2 covariates\\
+R2.3 & percent of variation explained by level 3 covariates\\
+\addlinespace
 ICC.2 & level 2 intraclass correlation\\
-\hline
 ICC.3 & level 3 intraclass correlation\\
-\hline
-omega.2 & ratio of variance of level 2 average impacts to variance of level 2 random intercepts\\
-\hline
-omega.3 & ratio of variance of level 3 average impacts to variance of level 3 random intercepts\\
-\hline
+omega.2 & ratio of variance of level 2 average impacts to level 2 random intercepts\\
+omega.3 & ratio of variance of level 3 average impacts to level 3 random intercepts\\
+\bottomrule
 \end{tabular}
-
-\end{CodeChunk}
+\end{table}
 
 A few parameters warrant more explanation.
 
@@ -1366,8 +1432,8 @@ control the precision of the power estimates themselves:
 \section{Using the PUMP package}
 \label{sec:vignette}
 
-In this section, we illustrate how to use the \pkg{PUMP} package, using
-our example motivated by the Diplomas Now study. Given the study's
+In this section, we illustrate how to use the \texttt{PUMP} package,
+using our example motivated by the Diplomas Now study. Given the study's
 design, we ask a natural initial question: What size of impact could we
 reasonably detect after using a MTP to adjust \(p\)-values to account
 for our multiple outcomes?
@@ -1396,15 +1462,15 @@ using prior knowledge, pilot studies, or other sources of information.
 
 We next discuss selection of all needed design parameters and modeling
 choices. For further discussion of selecting these parameters see, for
-example \citet{RN27978} and \citet{RN4473}. For discussion in the
+example Bloom (2006) and Dong and Maynard (2013). For discussion in the
 multiple testing context, especially with regards to the overall power
-measures such as \(1-\)minimal or complete power, see
-\citet{Porter2018}; the findings there are general, as they are a
-function of the final distribution of test statistics. The key insight
-is that power is a function of only a few summarizing elements: the
-individual-level standard errors, the degrees of freedom, and the
-correlation structure of the test statistics. Once we have these
-elements, regardless of the design, we can proceed.
+measures such as \(1-\)minimal or complete power, see Porter (2018); the
+findings there are general, as they are a function of the final
+distribution of test statistics. The key insight is that power is a
+function of only a few summarizing elements: the individual-level
+standard errors, the degrees of freedom, and the correlation structure
+of the test statistics. Once we have these elements, regardless of the
+design, we can proceed.
 
 \emph{Analytic model.} We first need to specify how we will analyze our
 data; this choice also determines which design parameters we will need
@@ -1459,12 +1525,6 @@ relatively high level three ICC as we expect our school type by district
 blocks to isolate variation; in particular we might believe middle and
 high school attendance rates would be markedly different.
 
-\emph{Impact variation.} We next need to specify the assumed degree of
-treatment impact variation. We allow treatment variation across school
-type and district by setting omega.3 to 0.50 (a substantial amount).
-While most power analyses would assume no variation, we do here for
-illustration.
-
 \emph{Correlation of outcomes.} We finally need to specify the number
 and relationship among our outcomes and associated test-statistics. For
 illustration, we select attendance as our outcome group. We assume we
@@ -1484,7 +1544,7 @@ to further guide this choice.
 If the information were available, we could specify different values for
 the design parameters such as the \(R^2\)s and \(ICC\)s for each
 outcome, if we thought they had different characteristics; for
-simplicity we do not do this here. The \pkg{PUMP} package also allows
+simplicity we do not do this here. The \texttt{PUMP} package also allows
 specifying different pairwise correlations between the test statistics
 of the different outcomes via a matrix of \(\rho\)s rather than a single
 \(\rho\); also for simplicity, we do not do that here.
@@ -1515,47 +1575,50 @@ and desired power (\texttt{target.power}).
 Here, for example, we find the MDES if we want an 80\% chance of
 detecting an impact on our first outcome when using the Holm procedure:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> m <- pump_mdes(
-+   design = "d3.2_m3fc2rc",      # choice of design and analysis strategy
-+   MTP = "Holm",                 # multiple testing procedure
-+   target.power = 0.80,          # desired power
-+   power.definition = "D1indiv", # power type
-+   M = 5,                        # number of outcomes
-+   J = 3,                        # number of schools per block
-+   K = 21,                       # number districts
-+   nbar = 258,                   # average number of students per school
-+   Tbar = 0.50,                  # prop treated
-+   alpha = 0.05,                 # significance level
-+   numCovar.1 = 5,               # number of covariates at level 1
-+   numCovar.2 = 3,               # number of covariates at level 2
-+   R2.1 = 0.1, R2.2 = 0.7,       # explanatory power of covariates for each level
-+   ICC.2 = 0.05, ICC.3 = 0.4,    # intraclass correlation coefficients
-+   omega.3 = 0.50,               # amount of treatment variation at level 3
-+   rho = 0.4 )                   # how correlated outcomes are
-\end{CodeInput}
-\begin{CodeOutput}
-Warning in validate_inputs(design, params.list, mdes.call = TRUE, verbose
-= verbose): Omega is assumed to be 0 for constant treatment effects models.
-Ignoring input omega.3 value
-\end{CodeOutput}
-\end{CodeChunk}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m }\OtherTok{\textless{}{-}} \FunctionTok{pump\_mdes}\NormalTok{(}
+  \AttributeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{,      }\CommentTok{\# choice of design and analysis strategy}
+  \AttributeTok{MTP =} \StringTok{"Holm"}\NormalTok{,                 }\CommentTok{\# multiple testing procedure}
+  \AttributeTok{target.power =} \FloatTok{0.80}\NormalTok{,          }\CommentTok{\# desired power}
+  \AttributeTok{power.definition =} \StringTok{"D1indiv"}\NormalTok{, }\CommentTok{\# power type}
+  \AttributeTok{M =} \DecValTok{5}\NormalTok{,                        }\CommentTok{\# number of outcomes}
+  \AttributeTok{J =} \DecValTok{3}\NormalTok{,                        }\CommentTok{\# number of schools per block}
+  \AttributeTok{K =} \DecValTok{21}\NormalTok{,                       }\CommentTok{\# number districts}
+  \AttributeTok{nbar =} \DecValTok{258}\NormalTok{,                   }\CommentTok{\# average number of students per school}
+  \AttributeTok{Tbar =} \FloatTok{0.50}\NormalTok{,                  }\CommentTok{\# prop treated}
+  \AttributeTok{alpha =} \FloatTok{0.05}\NormalTok{,                 }\CommentTok{\# significance level}
+  \AttributeTok{numCovar.1 =} \DecValTok{5}\NormalTok{,               }\CommentTok{\# number of covariates at level 1}
+  \AttributeTok{numCovar.2 =} \DecValTok{3}\NormalTok{,               }\CommentTok{\# number of covariates at level 2}
+  \AttributeTok{R2.1 =} \FloatTok{0.1}\NormalTok{, }\AttributeTok{R2.2 =} \FloatTok{0.7}\NormalTok{,       }\CommentTok{\# explanatory power of covariates for each level}
+  \AttributeTok{ICC.2 =} \FloatTok{0.05}\NormalTok{, }\AttributeTok{ICC.3 =} \FloatTok{0.4}\NormalTok{,    }\CommentTok{\# intraclass correlation coefficients}
+  \AttributeTok{rho =} \FloatTok{0.4}\NormalTok{ )                   }\CommentTok{\# how correlated outcomes are}
+\end{Highlighting}
+\end{Shaded}
 
 The results are easily made into a nice table via the \texttt{knitr}
 \texttt{kable()} command:
 
-\begin{CodeChunk}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{( m, }\AttributeTok{digits =} \DecValTok{3}\NormalTok{, }\AttributeTok{booktabs =} \ConstantTok{TRUE}\NormalTok{,}
+              \AttributeTok{position =} \StringTok{"h!"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"MDES Estimate"}\NormalTok{ ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  kableExtra}\SpecialCharTok{::}\FunctionTok{kable\_styling}\NormalTok{( }\AttributeTok{position =} \StringTok{"center"}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
 
-\begin{tabular}{l|r|r}
-\hline
+\begin{table}[h!]
+
+\caption{\label{tab:unnamed-chunk-3}MDES Estimate}
+\centering
+\begin{tabular}[t]{lrr}
+\toprule
 MTP & Adjusted.MDES & D1indiv.power\\
-\hline
-Holm & 0.11 & 0.81\\
-\hline
+\midrule
+Holm & 0.104 & 0.792\\
+\bottomrule
 \end{tabular}
-
-\end{CodeChunk}
+\end{table}
 
 The answers \texttt{pump\_mdes()} gives are approximate as we are
 calculating them via monte carlo simulation. To control accuracy, we can
@@ -1573,21 +1636,19 @@ across all observations such that we will find at least one significant
 result with 80\% power?), we simply update our result with our new power
 definition:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> m2 <- update( m, power.definition = "min1" )
-R> knitr::kable( m2, digits = 2, format = 'latex' )
-\end{CodeInput}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m2 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( m, }\AttributeTok{power.definition =} \StringTok{"min1"}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
 
-\begin{tabular}{l|r|r}
-\hline
-MTP & Adjusted.MDES & min1.power\\
-\hline
-Holm & 0.08 & 0.81\\
-\hline
-\end{tabular}
-
-\end{CodeChunk}
+\begin{verbatim}
+#> mdes result: d3.2_m3fc2rc design with 5 outcomes
+#>   target min1 power: 0.80
+#>   MTP Adjusted.MDES min1.power          SE
+#>  Holm    0.08188259      0.804 0.002363978
+#>  (13 steps in search)
+\end{verbatim}
 
 The \texttt{update()} method can replace any number of arguments of the
 prior call with new ones, making exploration of different scenarios very
@@ -1605,21 +1666,19 @@ effects, to hedge against circumstances such as one of the outcomes not
 being well measured. One way to do this is to set two of our outcomes to
 no effect with the \texttt{numZero} parameter:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> m3 <- update( m2, numZero = 2 )
-R> knitr::kable( m3, digits = 2, format = 'latex' )
-\end{CodeInput}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m3 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( m2, }\AttributeTok{numZero =} \DecValTok{2}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
 
-\begin{tabular}{l|r|r}
-\hline
-MTP & Adjusted.MDES & min1.power\\
-\hline
-Holm & 0.09 & 0.8\\
-\hline
-\end{tabular}
-
-\end{CodeChunk}
+\begin{verbatim}
+#> mdes result: d3.2_m3fc2rc design with 5 outcomes
+#>   target min1 power: 0.80
+#>   MTP Adjusted.MDES min1.power          SE
+#>  Holm    0.08913163      0.791 0.002553031
+#>  (16 steps in search)
+\end{verbatim}
 
 The MDES goes up, as expected: when there are not effects on some
 outcomes, there are fewer good chances for detecting an effect.
@@ -1643,33 +1702,26 @@ blocks we would need to achieve a MDES of 0.10 for \(1-\)minimal power
 order to have an 80\% chance of finding at least one outcome
 significant, if all outcomes had a true effect size of 0.10).
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> smp <- pump_sample(
-+   design = "d3.2_m3fc2rc",
-+   MTP = "Holm",
-+   typesample = "K",
-+   target.power = 0.80, power.definition = "min1", tol = 0.01,
-+   MDES = 0.10, M = 5, nbar = 258, J = 3,
-+   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 3,
-+   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.40, rho = 0.4 )
-\end{CodeInput}
-\end{CodeChunk}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{smp }\OtherTok{\textless{}{-}} \FunctionTok{pump\_sample}\NormalTok{(}
+  \AttributeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{,}
+  \AttributeTok{MTP =} \StringTok{"Holm"}\NormalTok{,}
+  \AttributeTok{typesample =} \StringTok{"K"}\NormalTok{,}
+  \AttributeTok{target.power =} \FloatTok{0.80}\NormalTok{, }\AttributeTok{power.definition =} \StringTok{"min1"}\NormalTok{, }\AttributeTok{tol =} \FloatTok{0.01}\NormalTok{,}
+  \AttributeTok{MDES =} \FloatTok{0.10}\NormalTok{, }\AttributeTok{M =} \DecValTok{5}\NormalTok{, }\AttributeTok{nbar =} \DecValTok{258}\NormalTok{, }\AttributeTok{J =} \DecValTok{3}\NormalTok{,}
+  \AttributeTok{Tbar =} \FloatTok{0.50}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\AttributeTok{numCovar.1 =} \DecValTok{5}\NormalTok{, }\AttributeTok{numCovar.2 =} \DecValTok{3}\NormalTok{,}
+  \AttributeTok{R2.1 =} \FloatTok{0.1}\NormalTok{, }\AttributeTok{R2.2 =} \FloatTok{0.7}\NormalTok{, }\AttributeTok{ICC.2 =} \FloatTok{0.05}\NormalTok{, }\AttributeTok{ICC.3 =} \FloatTok{0.40}\NormalTok{, }\AttributeTok{rho =} \FloatTok{0.4}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> knitr::kable( smp, format = 'latex' )
-\end{CodeInput}
-
-\begin{tabular}{l|l|r|r}
-\hline
-MTP & Sample.type & Sample.size & min1.power\\
-\hline
-Holm & K & 15 & 0.80025\\
-\hline
-\end{tabular}
-
-\end{CodeChunk}
+\begin{verbatim}
+#> sample result: d3.2_m3fc2rc design with 5 outcomes
+#>   target min1 power: 0.80
+#>   MTP Sample.type Sample.size min1.power   SE
+#>  Holm           K          15    0.80025 0.01
+#>  (13 steps in search)
+\end{verbatim}
 
 We would need 15 blocks, rather than the originally specified 21, giving
 45 total schools in our study, to achieve 80\% \(1-\)minimal power.
@@ -1684,42 +1736,37 @@ to pass all the design parameters automatically). When we do this, we
 can also increase the number of iterations to get more precise estimates
 of power, as well:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> p_check <- update( smp, type = "power", tnum = 100000,
-+                    long.table = TRUE)
-R> knitr::kable( p_check, row.names = FALSE, format = 'latex' )
-\end{CodeInput}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p\_check }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( smp, }\AttributeTok{type =} \StringTok{"power"}\NormalTok{, }\AttributeTok{tnum =} \DecValTok{100000}\NormalTok{,}
+                   \AttributeTok{long.table =} \ConstantTok{TRUE}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
 
-\begin{tabular}{l|r|r}
-\hline
+\begin{table}[h!]
+
+\caption{\label{tab:unnamed-chunk-7}Power table}
+\centering
+\begin{tabular}[t]{lrr}
+\toprule
 power & None & Holm\\
-\hline
-individual outcome 1 & 0.70045 & 0.52490\\
-\hline
-individual outcome 2 & 0.69964 & 0.52468\\
-\hline
-individual outcome 3 & 0.69754 & 0.52377\\
-\hline
-individual outcome 4 & 0.69868 & 0.52501\\
-\hline
-individual outcome 5 & 0.70049 & 0.52524\\
-\hline
-mean individual & 0.69936 & 0.52472\\
-\hline
-1-minimum & NA & 0.80818\\
-\hline
-2-minimum & NA & 0.64127\\
-\hline
-3-minimum & NA & 0.50432\\
-\hline
-4-minimum & NA & 0.38873\\
-\hline
-complete & NA & 0.32497\\
-\hline
+\midrule
+individual outcome 1 & 0.7 & 0.52\\
+individual outcome 2 & 0.7 & 0.52\\
+individual outcome 3 & 0.7 & 0.52\\
+individual outcome 4 & 0.7 & 0.53\\
+individual outcome 5 & 0.7 & 0.53\\
+\addlinespace
+mean individual & 0.7 & 0.52\\
+1-minimum &  & 0.81\\
+2-minimum &  & 0.64\\
+3-minimum &  & 0.50\\
+4-minimum &  & 0.39\\
+\addlinespace
+complete &  & 0.32\\
+\bottomrule
 \end{tabular}
-
-\end{CodeChunk}
+\end{table}
 
 When calculating power directly, we get power for all the implemented
 definitions of power applicable to the design.
@@ -1744,15 +1791,13 @@ assess how sensitive power is to our level two sample size:\footnote{The
   points on the plots show the evaluated simulation trials, with larger
   points corresponding to more iterations and greater precision.}
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> plot_power_curve( smp )
-\end{CodeInput}
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot\_power\_curve}\NormalTok{( smp )}
+\end{Highlighting}
+\end{Shaded}
 
-
-\begin{center}\includegraphics{jss_manuscript_files/figure-latex/plotsamplepowercurve-1} \end{center}
-
-\end{CodeChunk}
+\begin{center}\includegraphics{plotsamplepowercurve-1} \end{center}
 
 \emph{Remark.} In certain settings, a wide range of sample sizes may
 result in very similar levels of power. In this case, the algorithm may
@@ -1777,19 +1822,17 @@ power for our scenario using Bonferroni, Holm and Westfall-Young
 adjustments, and plot the results using the default \texttt{plot()}
 method:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> p2 <- update( p_check,
-+               MTP = c("Bonferroni", "Holm", "WY-SD"),
-+               tnum = 10000,
-+               parallel.WY.clusters = 3 )
-R> plot( p2 )
-\end{CodeInput}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check,}
+              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"Holm"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
+              \AttributeTok{tnum =} \DecValTok{10000}\NormalTok{,}
+              \AttributeTok{parallel.WY.clusters =} \DecValTok{3}\NormalTok{ )}
+\FunctionTok{plot}\NormalTok{( p2 )}
+\end{Highlighting}
+\end{Shaded}
 
-
-\begin{center}\includegraphics{jss_manuscript_files/figure-latex/othercorrections-1} \end{center}
-
-\end{CodeChunk}
+\begin{center}\includegraphics{othercorrections-1} \end{center}
 
 To speed up computation, we set \texttt{parallel.WY.clusters\ =\ 3} to
 parallelize the computation. We also reduce \texttt{tnum} to decrease
@@ -1802,7 +1845,7 @@ individual power. Note, however, that we do not see elevated rates for
 statistics when adjusting \(p\)-values can drive some power (individual
 power) up, but on the flip side \(1-\)power can be driven down as the
 lack of independence between tests gives fewer chances for a significant
-result. See \citet{Porter2018} for further discussion; while the paper
+result. See Porter (2018) for further discussion; while the paper
 focuses on the multisite randomized trial context, the lessons learned
 there apply to all designs as the only substantive differences between
 different design and modeling choices is in how we calculate the
@@ -1837,22 +1880,20 @@ in a prior call; we saw \texttt{update()} used several times above. As a
 further example, here we examine what happens if the ICCs are more
 equally split across levels two and three:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> p_b <- update( p_check, ICC.2 = 0.20, ICC.3 = 0.25 )
-R> print( p_b )
-\end{CodeInput}
-\begin{CodeOutput}
-power result: d3.2_m3fc2rc design with 5 outcomes
-  MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2
- None 0.24513 0.24236 0.24333 0.24256 0.24491   0.243658      NA      NA
- Holm 0.09800 0.09737 0.09711 0.09704 0.09799   0.097502 0.26677 0.11533
-    min3    min4 complete
-      NA      NA       NA
- 0.05815 0.03112  0.02399
-    0.000 <= SE <= 0.001
-\end{CodeOutput}
-\end{CodeChunk}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p\_b }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check, }\AttributeTok{ICC.2 =} \FloatTok{0.20}\NormalTok{, }\AttributeTok{ICC.3 =} \FloatTok{0.25}\NormalTok{ )}
+\FunctionTok{print}\NormalTok{( p\_b )}
+\CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
+\CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
+\CommentTok{\#\textgreater{}  None 0.24513 0.24236 0.24333 0.24256 0.24491   0.243658      NA      NA}
+\CommentTok{\#\textgreater{}  Holm 0.09800 0.09737 0.09711 0.09704 0.09799   0.097502 0.26677 0.11533}
+\CommentTok{\#\textgreater{}     min3    min4 complete}
+\CommentTok{\#\textgreater{}       NA      NA       NA}
+\CommentTok{\#\textgreater{}  0.05815 0.03112  0.02399}
+\CommentTok{\#\textgreater{}  0.000 \textless{}= SE \textless{}= 0.001}
+\end{Highlighting}
+\end{Shaded}
 
 We immediately see that our assumption of substantial variation in level
 three matters a great deal for power.
@@ -1861,32 +1902,22 @@ When calculating power for a given scenario, it is also easy to vary
 many of our design parameters by outcome. For example, if we thought we
 had better predictive covariates for our second outcome, we might try:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> p_d <- update( p_check,
-+                  R2.1 = c( 0.1, 0.3, 0.1, 0.2, 0.2 ),
-+                  R2.2 = c( 0.4, 0.8, 0.3, 0.2, 0.2 ),
-+                  omega.3 = c( 0.2, 0.4, 0.3, 0.2, 0.2 ) )
-\end{CodeInput}
-\begin{CodeOutput}
-Warning in validate_inputs(design, params.list, power.call = TRUE, verbose
-= verbose): Omega is assumed to be 0 for constant treatment effects models.
-Ignoring input omega.3 value
-\end{CodeOutput}
-\begin{CodeInput}
-R> print( p_d )
-\end{CodeInput}
-\begin{CodeOutput}
-power result: d3.2_m3fc2rc design with 5 outcomes
-  MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2
- None 0.43265 0.85325 0.38075 0.34358 0.34337   0.470720      NA      NA
- Holm 0.24398 0.65388 0.21066 0.18851 0.18856   0.297118 0.71219 0.37367
-    min3    min4 complete
-      NA      NA       NA
- 0.21062 0.12208  0.08596
-    0.000 <= SE <= 0.001
-\end{CodeOutput}
-\end{CodeChunk}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{p\_d }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check,}
+               \AttributeTok{R2.1 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ),}
+               \AttributeTok{R2.2 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ) )}
+\FunctionTok{print}\NormalTok{( p\_d )}
+\CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
+\CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
+\CommentTok{\#\textgreater{}  None 0.43265 0.85325 0.38075 0.34358 0.34337   0.470720      NA      NA}
+\CommentTok{\#\textgreater{}  Holm 0.24398 0.65388 0.21066 0.18851 0.18856   0.297118 0.71219 0.37367}
+\CommentTok{\#\textgreater{}     min3    min4 complete}
+\CommentTok{\#\textgreater{}       NA      NA       NA}
+\CommentTok{\#\textgreater{}  0.21062 0.12208  0.08596}
+\CommentTok{\#\textgreater{}  0.000 \textless{}= SE \textless{}= 0.001}
+\end{Highlighting}
+\end{Shaded}
 
 Notice how the individual powers are heavily impacted. The \(d\)-minimal
 powers naturally take the varying outcomes into account as we are
@@ -1898,29 +1929,28 @@ After several \texttt{update()}s, we may lose track of where we are; to
 find out, we can always check details with \texttt{print\_design()} or
 \texttt{summary()}:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> summary( p_d )
-\end{CodeInput}
-\begin{CodeOutput}
-power result: d3.2_m3fc2rc design with 5 outcomes
-  MDES vector: 0.1, 0.1, 0.1, 0.1, 0.1
-  nbar: 258 J: 3    K: 15   Tbar: 0.5
-  alpha: 0.05   
-  Level:
-    1: R2: 0.1 / 0.3 / 0.1 / 0.2 / 0.2 (5 covariates)
-    2: R2: 0.4 / 0.8 / 0.3 / 0.2 / 0.2 (3 covariates)   ICC: 0.05   omega: 0
-    3:   fixed effects    rho = 0.4
-  MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2
- None 0.43265 0.85325 0.38075 0.34358 0.34337   0.470720      NA      NA
- Holm 0.24398 0.65388 0.21066 0.18851 0.18856   0.297118 0.71219 0.37367
-    min3    min4 complete
-      NA      NA       NA
- 0.21062 0.12208  0.08596
-    0.000 <= SE <= 0.001
-    (tnum = 100000)
-\end{CodeOutput}
-\end{CodeChunk}
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{( p\_d )}
+\CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
+\CommentTok{\#\textgreater{}   MDES vector: 0.1, 0.1, 0.1, 0.1, 0.1}
+\CommentTok{\#\textgreater{}   nbar: 258  J: 3    K: 15   Tbar: 0.5}
+\CommentTok{\#\textgreater{}   alpha: 0.05    }
+\CommentTok{\#\textgreater{}   Level:}
+\CommentTok{\#\textgreater{}     1: R2: 0.1 / 0.3 / 0.1 / 0.2 / 0.2 (5 covariates)}
+\CommentTok{\#\textgreater{}     2: R2: 0.4 / 0.8 / 0.3 / 0.2 / 0.2 (3 covariates)    ICC: 0.05   omega: 0}
+\CommentTok{\#\textgreater{}     3:   fixed effects   ICC: 0.4    omega: 0}
+\CommentTok{\#\textgreater{}   rho = 0.4}
+\CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
+\CommentTok{\#\textgreater{}  None 0.43265 0.85325 0.38075 0.34358 0.34337   0.470720      NA      NA}
+\CommentTok{\#\textgreater{}  Holm 0.24398 0.65388 0.21066 0.18851 0.18856   0.297118 0.71219 0.37367}
+\CommentTok{\#\textgreater{}     min3    min4 complete}
+\CommentTok{\#\textgreater{}       NA      NA       NA}
+\CommentTok{\#\textgreater{}  0.21062 0.12208  0.08596}
+\CommentTok{\#\textgreater{}  0.000 \textless{}= SE \textless{}= 0.001}
+\CommentTok{\#\textgreater{}  (tnum = 100000)}
+\end{Highlighting}
+\end{Shaded}
 
 Using update allows for targeted comparison of major choices, but if we
 are interested in how power changes across a range of options, we can do
@@ -1936,26 +1966,24 @@ set of plausible values. The \texttt{update\_grid()} call makes this
 straightforward: we pass our baseline scenario along with lists of
 parameters to additionally explore:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> grid <- update_grid( p_check,
-+                      ICC.2 = seq( 0, 0.3, 0.05 ),
-+                      ICC.3 = seq( 0, 0.60, 0.20 ),
-+                      tnum = 5000 )
-R> 
-R> grid$ICC.3 <- as.factor( grid$ICC.3 )
-R> grid <- dplyr::filter( grid, MTP == "Holm" )
-R> 
-R> ggplot2::ggplot( grid, aes( ICC.2, min1, group = ICC.3, col = ICC.3 ) ) +
-+   geom_line() + geom_point() +
-+   labs( y = "Min-1 Power" ) +
-+   coord_cartesian( ylim = c( 0, 1 ) )
-\end{CodeInput}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{grid }\OtherTok{\textless{}{-}} \FunctionTok{update\_grid}\NormalTok{( p\_check,}
+            \AttributeTok{ICC.2 =} \FunctionTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.05}\NormalTok{ ),}
+            \AttributeTok{ICC.3 =} \FunctionTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.60}\NormalTok{, }\FloatTok{0.20}\NormalTok{ ),}
+            \AttributeTok{tnum =} \DecValTok{5000}\NormalTok{ )}
 
+\NormalTok{grid}\SpecialCharTok{$}\NormalTok{ICC}\FloatTok{.3} \OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{( grid}\SpecialCharTok{$}\NormalTok{ICC}\FloatTok{.3}\NormalTok{ )}
+\NormalTok{grid }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{( grid, MTP }\SpecialCharTok{==} \StringTok{"Holm"}\NormalTok{ )}
 
-\begin{center}\includegraphics{jss_manuscript_files/figure-latex/unnamed-chunk-8-1} \end{center}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{( grid, }\FunctionTok{aes}\NormalTok{( ICC}\FloatTok{.2}\NormalTok{, min1, }\AttributeTok{group =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{, }\AttributeTok{col =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{ ) ) }\SpecialCharTok{+}
+    \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+    \FunctionTok{labs}\NormalTok{( }\AttributeTok{y =} \StringTok{"Min{-}1 Power"}\NormalTok{ ) }\SpecialCharTok{+}
+  \FunctionTok{coord\_cartesian}\NormalTok{( }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{) )}
+\end{Highlighting}
+\end{Shaded}
 
-\end{CodeChunk}
+\begin{center}\includegraphics{unnamed-chunk-11-1} \end{center}
 
 Note that in addition to \texttt{update\_grid()}, there are also base
 functions \texttt{pump\_power\_grid()}, \texttt{pump\_mdes\_grid()}, and
@@ -2002,38 +2030,36 @@ individual adjustment less severe, and on the other correlation means we
 succeed or fail all together. We can explore this question relatively
 easily by letting \texttt{rho} vary as so:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> gridRho <- update_grid( p_check,
-+           MTP = c( "Bonferroni", "WY-SD" ),
-+           rho = seq( 0, 0.9, by = 0.15 ),
-+           tnum = 500,
-+           B = 10000 )
-\end{CodeInput}
-\end{CodeChunk}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gridRho }\OtherTok{\textless{}{-}} \FunctionTok{update\_grid}\NormalTok{( p\_check,}
+              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
+              \AttributeTok{rho =} \FunctionTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.9}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.15}\NormalTok{ ),}
+              \AttributeTok{tnum =} \DecValTok{500}\NormalTok{,}
+              \AttributeTok{B =} \DecValTok{10000}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
 
 We then plot our results.
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> gridL <- dplyr::filter( gridRho, MTP != "None" ) %>%
-+   tidyr::pivot_longer( cols = c(indiv.mean, min1, min2, complete),
-+                        names_to = "definition", values_to = "power" ) %>%
-+   mutate( definition = factor( definition,
-+           levels = c("indiv.mean", "min1", "min2", "complete" ) ) )
-R> 
-R> ggplot2::ggplot( gridL, aes( rho, power, col=MTP ) ) +
-+   facet_grid( . ~ definition ) +
-+   geom_line() + geom_point() +
-+   geom_hline( yintercept = c( 0, 0.80 ) ) + 
-+   theme_minimal() +
-+   coord_cartesian( ylim = c( 0, 1 ) )
-\end{CodeInput}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gridL }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{( gridRho, MTP }\SpecialCharTok{!=} \StringTok{"None"}\NormalTok{ ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  tidyr}\SpecialCharTok{::}\FunctionTok{pivot\_longer}\NormalTok{( }\AttributeTok{cols =} \FunctionTok{c}\NormalTok{(indiv.mean, min1, min2, complete),}
+                         \AttributeTok{names\_to =} \StringTok{"definition"}\NormalTok{, }\AttributeTok{values\_to =} \StringTok{"power"}\NormalTok{ ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{( }\AttributeTok{definition =} \FunctionTok{factor}\NormalTok{( definition,}
+          \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"indiv.mean"}\NormalTok{, }\StringTok{"min1"}\NormalTok{, }\StringTok{"min2"}\NormalTok{, }\StringTok{"complete"}\NormalTok{ ) ) )}
 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{( gridL, }\FunctionTok{aes}\NormalTok{( rho, power, }\AttributeTok{col =}\NormalTok{ MTP ) ) }\SpecialCharTok{+}
+  \FunctionTok{facet\_grid}\NormalTok{( . }\SpecialCharTok{\textasciitilde{}}\NormalTok{ definition ) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{( }\AttributeTok{yintercept =} \FunctionTok{c}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.80}\NormalTok{ ) ) }\SpecialCharTok{+} 
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{coord\_cartesian}\NormalTok{( }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{( }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{ ) )}
+\end{Highlighting}
+\end{Shaded}
 
-\begin{center}\includegraphics{jss_manuscript_files/figure-latex/unnamed-chunk-11-1} \end{center}
-
-\end{CodeChunk}
+\begin{center}\includegraphics{unnamed-chunk-14-1} \end{center}
 
 First, we see the benefit of the Westfall-Young single-step procedure is
 minimal, as compared to Bonferroni. Second, the impact on individual
@@ -2050,28 +2076,17 @@ poorly, or are simply not impacted by treatment. We use a grid search,
 varying the number of outcomes that have no treatment impact via the
 \texttt{numZero} design parameter:
 
-\begin{CodeChunk}
-\begin{CodeInput}
-R> gridZero <- update_grid( p_check,
-+                          numZero = 0:4,
-+                          M = 5 )
-\end{CodeInput}
-\end{CodeChunk}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{gridZero }\OtherTok{\textless{}{-}} \FunctionTok{update\_grid}\NormalTok{( p\_check,}
+                           \AttributeTok{numZero =} \DecValTok{0}\SpecialCharTok{:}\DecValTok{4}\NormalTok{,}
+                         \AttributeTok{M =} \DecValTok{5}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
 
 We then can make a plot as we did above:
 
-\begin{CodeChunk}
-\begin{CodeOutput}
-Warning: Removed 3 row(s) containing missing values (geom_path).
-\end{CodeOutput}
-\begin{CodeOutput}
-Warning: Removed 6 rows containing missing values (geom_point).
-\end{CodeOutput}
-
-
-\begin{center}\includegraphics{jss_manuscript_files/figure-latex/unnamed-chunk-14-1} \end{center}
-
-\end{CodeChunk}
+\begin{center}\includegraphics{unnamed-chunk-17-1} \end{center}
 
 There are other ways of exploring the impact of weak or null effects on
 some outcomes. In particular, the \texttt{pump\_power()} and
@@ -2085,51 +2100,30 @@ parameter also works with \texttt{pump\_power()} if desired.)
 \section{Conclusion}
 \label{sec:conclusion}
 
-We introduce the power under multiplicity project (\pkg{PUMP})
-\proglang{R} package, which estimates power for multi-level randomized
-control trials with multiple outcomes. \pkg{PUMP} allows users to
+We introduce the power under multiplicity project (\texttt{PUMP})
+\texttt{R} package, which estimates power for multi-level randomized
+control trials with multiple outcomes. \texttt{PUMP} allows users to
 estimate power, MDES, and sample size requirements for a wide variety of
 commonly used RCT designs and models across different definitions of
-power and applying different MTPs. The functionality of \pkg{PUMP} fills
-an important gap, as existing tools do not allow researchers to conduct
-power, MDES or sample size calculations when applying a MTP. An online
-interface is also available at \url{https://mdrcpump.shinyapps.io/pump}.
+power and applying different MTPs. The functionality of \texttt{PUMP}
+fills an important gap, as existing tools do not allow researchers to
+conduct power, MDES or sample size calculations when applying a MTP. An
+online interface is also available at
+\url{https://mdrc.shinyapps.io/pump/}.
 
-The main advantage of the \pkg{PUMP} package is to provide easily
+The main advantage of the \texttt{PUMP} package is to provide easily
 accessible estimation procedures so that users can properly account for
 power when making adjustments for multiple hypothesis testing. However,
 one of the additional strengths of the package is the ease with which a
 user can explore the impact of different designs, models, and
 assumptions on power, MDES or sample size. Even if a user is only
-interested in a single outcome, \pkg{PUMP} provides useful functionality
-for more robust power calculations. A user can and should try a range of
-parameter values to determine the sensitivity of the power of their
-study to different assumptions; this package simplifies that process.
+interested in a single outcome, \texttt{PUMP} provides useful
+functionality for more robust power calculations. A user can and should
+try a range of parameter values to determine the sensitivity of the
+power of their study to different assumptions; this package simplifies
+that process.
 
-In addition to this paper, there is a variety of supporting information.
-
-\begin{itemize}
-\tightlist
-\item
-  The code is available on github, \url{https://github.com/MDRCNY/PUMP}.
-\item
-  The Technical Appendix contains detailed information about each design
-  and model, the assumed data generating process, and understanding
-  parameters such as \(ICC\) and \(\omega\). It is a useful reference
-  not just for users of the package, but also as a general summary of
-  multi-level models.
-\item
-  The package has an additional vignette on understanding sample size
-  calculations, which present unique challenges.
-\item
-  The package has supplementary functions that allow a user to simulate
-  data from multi-level models. Although these functions are not
-  directly related to the power calculations, we provide them as a
-  potentially useful tool. A short vignette explains these functions.
-\item
-  The code and results for validating the package are in a separate
-  repository, \url{https://github.com/MDRCNY/pump_validate}.
-\end{itemize}
+The \texttt{PUMP} package will soon be available on CRAN.
 
 \section*{Acknowledgements}
 
@@ -2138,68 +2132,264 @@ package was supported by a grant from the Institute of Education
 Sciences (R305D170030). We would like to thank members of the Harvard
 CARES lab for their feedback on the manuscript.
 
-\bibliography{refs}
+\section*{References}
 
-\newpage
+\hypertarget{refs}{}
+\begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-RN33089}{}}%
+Bang, H., S. Jung, and S. L. George. 2005. {``Sample Size Calculation
+for Simulation-Based Mulitple-Testing Procedures.''} \emph{Journal of
+Biopharmaceutical Statistics} 15: 957--67.
 
-\begin{appendix}
+\leavevmode\vadjust pre{\hypertarget{ref-lme4}{}}%
+Bates, D., M. Mächler, B. Bolker, and S. Walker. 2015. {``Fitting Linear
+Mixed-Effects Models Using {lme4}.''} \emph{Journal of Statistical
+Software} 67 (1): 1--48.
 
-In order to validate that our power estimates are working as intended, we compared three different methods of estimating power:
-  
-* \pkg{PUMP}
-* \pkg{PowerUpR}
-* Monte Carlo simulations
+\leavevmode\vadjust pre{\hypertarget{ref-BenjaminiHochberg1995}{}}%
+Benjamini, Y., and Y. Hochberg. 1995. {``Controlling the False Discovery
+Rate: A Practical and Powerful Approach to Multiple Testing.''}
+\emph{Journal of the Royal Statistical Society: Series B} 57: 289--300.
 
-We compute values from \pkg{PowerUpR} for individual, unadjusted power, as \pkg{PowerUpR} only provides power estimates in that setting.
-For all other types of power definitions and adjustments, we compare \pkg{PUMP} to the estimated power obtained from full Monte Carlo simulations.
-We follow the simulation approach outlined in detail in Section \ref{sec:est_power}.
-After repeatedly simulating data and calculating $p$-values, we calculate power and a 95\% confidence interval, assuming a conservative standard error estimate of $\sqrt{0.25/S}$.
+\leavevmode\vadjust pre{\hypertarget{ref-BenjaminiYekutieli2001}{}}%
+Benjamini, Y., and D. Yekutieli. 2001. {``The Control of the False
+Discovery Rate: A Practical and Powerful Approach to Multiple Testing
+Under Dependency.''} \emph{Annals of Statistics} 29: 1165--88.
 
-To validate the estimates, we first check that the \pkg{PUMP} and \pkg{PowerUpR} estimates match.
-In some settings we expect some discrepancies between these values because \pkg{PUMP} has different assumptions than \pkg{PowerUpR} for certain models.
-For details about differences between \pkg{PUMP} and \pkg{PowerUpR} assumptions, see the Technical Appendixs.
-Second, we check that the \pkg{PUMP} estimate is within the Monte Carlo confidence interval.
+\leavevmode\vadjust pre{\hypertarget{ref-Berger1982}{}}%
+Berger, Roger L. 1982. {``Multiparameter Hypothesis Testing and
+Acceptance Sampling.''} \emph{Technometrics} 24 (4): 295--300.
 
-We also validate MDES and sample size calculations.
-For MDES, we choose one default scenario for each design and model, then input the already-calculated individual power and see if the output MDES is the same as the original input MDES.
-Similarly, for sample size validation, we input the already-calculated individual power and see if the output sample size (`nbar`, `J`, and `K` depending on design) is the same as the original input sample size.
+\leavevmode\vadjust pre{\hypertarget{ref-Berger1996}{}}%
+Berger, Roger L., and Jason C. Hsu. 1996. {``Bioequivalence Trials,
+Intersection--Union Tests and Equivalence Confidence Sets.''}
+\emph{Statistical Science} 11 (4): 283--319.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN27978}{}}%
+Bloom, Howard S. 2006. {``The Core Analytics of Randomized Experiments
+for Social Research.''} MDRC.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN33091}{}}%
+Bretz, F, T. Hothorn, and P. Westfall. 2010. \emph{Multiple Comparisons
+Using {R}}. Chapman \& Hall/CRC.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN23882}{}}%
+Chen, J., J. Luo, K. Liu, and D. Mehrotra. 2011. {``On Power and Sample
+Size Computation for Multiple Testing Procedures.''} \emph{Computational
+Statistics and Data Analysis} 55: 110--22.
+
+\leavevmode\vadjust pre{\hypertarget{ref-DNREPORT}{}}%
+Corrin, W., S. Sepanik, R. Rosen, and A. Shane. 2016. {``Addressing
+Early Warning Indicators: Interim Impact Findings from the Investing in
+Innovation (I3) Evaluation of Diplomas Now.''} MDRC.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Deng2008}{}}%
+Deng, Xutao, Jun Xu, and Charles Wang. 2008. {``Improving the Power for
+Detecting Overlapping Genes from Multiple DNA Microarray-Derived Gene
+Lists.''} \emph{BMC Bioinformatics} 9.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN4473}{}}%
+Dong, Nianbo, and Rebecca Maynard. 2013. {``PowerUP!: A Tool for
+Calculating Minimum Detectable Effect Sizes and Minimum Required Sample
+Sizes for Experimental and Quasi-Experimental Design Studies.''}
+\emph{Journal of Research on Educational Effectiveness} 6 (1): 24--67.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN23878}{}}%
+Dudoit, S., J. P. Shaffer, and J. C. Boldrick. 2003. {``Multiple
+Hypothesis Testing in Microarray Experiments.''} \emph{Statistical
+Science} 18 (1): 71--103.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN24280}{}}%
+Dunn, Olive Jean. 1959. {``Estimation of the Medians for Dependent
+Variables.''} \emph{The Annals of Mathematical Statistics} 30 (1):
+192--97.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN24281}{}}%
+---------. 1961. {``Multiple Comparisons Among Means.''} \emph{Journal
+of the American Statistical Association} 56 (293): 52--64.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN33093}{}}%
+Ge, Y., S. Dudoit, and T. P. Speed. 2003. {``Resampling-Based Multiple
+Testing for Microarray Data Analsysis.''} \emph{Test} 12: 1--77.
+
+\leavevmode\vadjust pre{\hypertarget{ref-GelmanHill2007}{}}%
+Gelman, A., J. Hill, and M. Yajima. 2007. \emph{Data Analysis Using
+Regression and Multilevel/Hierarchical Models}. Cambridge University
+Press.
+
+\leavevmode\vadjust pre{\hypertarget{ref-GELMANETAL2012}{}}%
+---------. 2012. {``Why We (Usually) Don't Have to Worry about Multiple
+Comparisons.''} \emph{Journal of Research on Educational Effectiveness}
+5: 189--211.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN30153}{}}%
+Hedges, Larry V., and Christopher Rhoads. 2010. {``Statistical Power
+Analysis in Education Research.''} National Center for Special Education
+Research.
+\url{http://www.eric.ed.gov/ERICWebPortal/detail?accno=ED509387}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN24282}{}}%
+Holm, S. 1979. {``A Simple Sequentially Rejective Multiple Test
+Procedure.''} \emph{Scand. J. Statist.} 6 (2): 65--70.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN33095}{}}%
+Maurer, W., and B. Mellein. 1988. {``On New Multiple Test Procedures
+Based on Independent {P-values} and the Assessment of Their Powers.''}
+In \emph{Multiple Hypotheses Testing}, edited by P. Bauer, G. Hommel,
+and E. Sonnermann, 48--66. Springer.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Porter2018}{}}%
+Porter, Kristin E. 2018. {``Statistical Power in Evaluations That
+Investigate Effects on Multiple Outcomes: A Guide for Researchers.''}
+\emph{Journal of Research on Educational Effectiveness} 11: 267--95.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN33097}{}}%
+Ramsey, P. H. 1978. {``Power Differences Between Pairwise Multiple
+Comparisons.''} \emph{Journal of American Statistical Association} 75:
+479--87.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN23884}{}}%
+Raudenbush, S. W., J. Spybrook, R. Congdon, X. Liu, A. Martinez, H.
+Bloom, and C Hill. 2011. {``Optimal Design Plus Empirical Evidence
+(Version 3.0).''}
+\url{http://wtgrantfoundation.org/resource/optimal-design-with-empirical-information-od}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN23748}{}}%
+Schochet, Peter Z. 2008. {``Guidelines for Multiple Testing in Impact
+Evaluations of Educational Interventions. Final Report.''} Mathematica
+Policy Research, Inc. P.O. Box 2393, Princeton, NJ 08543-2393.
+\url{http://www.eric.ed.gov/ERICWebPortal/contentdelivery/servlet/ERICServlet?accno=ED502199}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN23881}{}}%
+Senn, Stephen, and Frank Bretz. 2007. {``Power and Sample Size When
+Multiple Endpoints Are Considered.''} \emph{Pharmaceutical Statistics}
+6: 161--70. \url{https://doi.org/10.1002/pst.301}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN352}{}}%
+Shaffer, Juliet Popper. 1995. {``Multiple Hypothesis Testing.''}
+\emph{Annual Review of Psychology} 46 (1): 561--84.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN24179}{}}%
+Spybrook, Jessica, H. S. Bloom, Richard Congdon, Carolyn J. Hill, Andres
+Martinez, and Stephen W. Raudenbush. 2011. {``Optimal Design Plus
+Empirical Evidence: Documentation for the {`Optimal Design'} Software
+Version 3.0.''}
+\url{http://wtgrantfoundation.org/resource/optimal-design-with-empirical-information-od}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN33098}{}}%
+Tukey, J. W. 1953. {``The Problem of Multiple Comparisions.''} Princeton
+University.
+
+\leavevmode\vadjust pre{\hypertarget{ref-MTSAS}{}}%
+Westfall, Peter H, R. D. Tobias, and R. D. Wolfinger. 2011.
+\emph{Multiple Comparisons and Multiple Tests Using SAS}. The SAS
+Institute.
+
+\leavevmode\vadjust pre{\hypertarget{ref-RN28696}{}}%
+Westfall, Peter H, and S Stanley Young. 1993. \emph{Resampling-Based
+Multiple Testing: Examples and Methods for {P-value} Adjustment}. Vol.
+279. John Wiley \& Sons.
+
+\end{CSLReferences}
+
+\section*{Appendix: Validation}
+
+In order to validate that our power estimates are working as intended,
+we compared three different methods of estimating power:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{PUMP}
+\item
+  \texttt{PowerUpR}
+\item
+  Monte Carlo simulations
+\end{itemize}
+
+We compute values from \texttt{PowerUpR} for individual, unadjusted
+power, as \texttt{PowerUpR} only provides power estimates in that
+setting. For all other types of power definitions and adjustments, we
+compare \texttt{PUMP} to the estimated power obtained from full Monte
+Carlo simulations. We follow the simulation approach outlined in detail
+in Section \ref{sec:est_power}. After repeatedly simulating data and
+calculating \(p\)-values, we calculate power and a 95\% confidence
+interval, assuming a conservative standard error estimate of
+\(\sqrt{0.25/S}\).
+
+To validate the estimates, we first check that the \texttt{PUMP} and
+\texttt{PowerUpR} estimates match. In some settings we expect some
+discrepancies between these values because \texttt{PUMP} has different
+assumptions than \texttt{PowerUpR} for certain models. For details about
+differences between \texttt{PUMP} and \texttt{PowerUpR} assumptions, see
+the Technical Appendixs. Second, we check that the \texttt{PUMP}
+estimate is within the Monte Carlo confidence interval.
+
+We also validate MDES and sample size calculations. For MDES, we choose
+one default scenario for each design and model, then input the
+already-calculated individual power and see if the output MDES is the
+same as the original input MDES. Similarly, for sample size validation,
+we input the already-calculated individual power and see if the output
+sample size (\texttt{nbar}, \texttt{J}, and \texttt{K} depending on
+design) is the same as the original input sample size.
 
 \textbf{Simulation parameters}
 
-In order to validate that the method works in a wide range of scenarios, we vary the following parameters.
-For most scenarios, we vary only one parameter at a time.
-Thus, to test varying $\rho$, we set $\rho = 0.2$ with all other parameters being set to the default values, and try another scenario with $\rho = 0.8$ with all other parameters being set to the default values.
-Table \ref{tab:val_params} shows the default parameter values, and the other values we try to test out varying that parameter.
+In order to validate that the method works in a wide range of scenarios,
+we vary the following parameters. For most scenarios, we vary only one
+parameter at a time. Thus, to test varying \(\rho\), we set
+\(\rho = 0.2\) with all other parameters being set to the default
+values, and try another scenario with \(\rho = 0.8\) with all other
+parameters being set to the default values. Table \ref{tab:val_params}
+shows the default parameter values, and the other values we try to test
+out varying that parameter.
 
 \begin{table}
 \centering
 \begin{tabular}{l l l}
-Parameter               & Default                & Other values \\ \hline
+\toprule
+Parameter               & Default                & Other values \\ \midrule
 school size $\bar{n}$   & 50                     & 75, 100           \\
 $R^2$                   & 0.1                    & 0.6               \\
 $\rho$                  & 0.5                    & 0.2, 0.8          \\
 MDES                    & (0.125, 0.125, 0.125)  & (0.125, 0, 0)     \\
 ICC                     & 0.2                    & 0.7               \\
 $\omega$                & 0.1                    & 0.8               \\
+\bottomrule
 \end{tabular}
 \label{tab:val_params}
+\caption{Validation parameters}
 \end{table}
 
 We do not vary:
 
-* `M = 3`
-* `J` and `K` are fixed for each scenario
-* Scalar grand mean of control outcomes
-* Correlations between school random effects and impacts
-* `rho` informs all correlations; we keep the same correlation between covariates, residuals, impacts, random effects for all levels and across all outcomes.
+\begin{itemize}
+\tightlist
+\item
+  \texttt{M\ =\ 3}
+\item
+  \texttt{J} and \texttt{K} are fixed for each scenario
+\item
+  Scalar grand mean of control outcomes
+\item
+  Correlations between school random effects and impacts
+\item
+  \texttt{rho} informs all correlations; we keep the same correlation
+  between covariates, residuals, impacts, random effects for all levels
+  and across all outcomes.
+\end{itemize}
 
 \textbf{Validation results}
 
-Figure \ref{fig:validate} is an example of a graph we use for validation.
-The green dots are \pkg{PUMP} estimate of power, the red dot is the \pkg{PowerUpR} estimate of power, and the 95\% confidence intervals based on the Monte Carlo simulations are shown in blue.
-To validate that \pkg{PUMP} produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals.
-Figure \ref{fig:validate} shows the results across different types of power and different MTPs.
-We repeat this plot for a variety of different parameter values for each design and model.
+Figure \ref{fig:validate} is an example of a graph we use for
+validation. The green dots are \texttt{PUMP} estimate of power, the red
+dot is the \texttt{PowerUpR} estimate of power, and the 95\% confidence
+intervals based on the Monte Carlo simulations are shown in blue. To
+validate that \texttt{PUMP} produces the expected result, we want to see
+the red and green points match, and for the red point to be within the
+blue intervals. Figure \ref{fig:validate} shows the results across
+different types of power and different MTPs. We repeat this plot for a
+variety of different parameter values for each design and model.
 
 \begin{figure}[h!]
 \centering
@@ -2208,44 +2398,47 @@ We repeat this plot for a variety of different parameter values for each design 
   \caption{Validation plot}
 \end{figure}
 
-Next, we validate MDES and sample size calculations.
-We put in our found power, and then see if the $`pump_mdes()`$ function returns the MDES we originally plugged in to achieve this power.
-In Table \ref{tab:mdes}, the first column shows the calculated MDES, the middle column is the power we plugged into the calculation, and the last column shows the MDES that we are targeting.
-Thus, ideally we want the first and last columns to match.
+Next, we validate MDES and sample size calculations. We put in our found
+power, and then see if the \texttt{pump\_mdes()} function returns the
+MDES we originally plugged in to achieve this power. In Table
+\ref{tab:mdes}, the first column shows the calculated MDES, the middle
+column is the power we plugged into the calculation, and the last column
+shows the MDES that we are targeting. Thus, ideally we want the first
+and last columns to match.
 
 \begin{table}[h!]
 \centering
 \begin{tabular}{lrrr}
+\toprule
 MTP & Adjusted MDES & D1indiv Power & Target MDES\\
-\hline
+\midrule
 Bonferroni & 0.122 & 0.447 & 0.125\\
 BH & 0.127 & 0.578 & 0.125\\
-Holm & 0.125 & 0.540 & 0.125
+Holm & 0.125 & 0.540 & 0.125\\
+\bottomrule
 \end{tabular}
 \label{tab:mdes}
 \caption{MDES validation}
 \end{table}
 
-Similarly, we validate our sample size calculations.
-Using our found power, we see if $`pump_sample()`$ returns the original sample size.
-In Table \ref{tab:ss}, we are targeting a sample size of $J = 20$.
+Similarly, we validate our sample size calculations. Using our found
+power, we see if \texttt{pump\_sample()} returns the original sample
+size. In Table \ref{tab:ss}, we are targeting a sample size of
+\(J = 20\).
 
 \begin{table}[h!]
 \centering
 \begin{tabular}{llrr}
+\toprule
 MTP & Sample.type & Sample.size & D1indiv.power\\
-\hline
+\midrule
 Bonferroni & J & 21 & 0.500\\
 BH & J & 21 & 0.580\\
-Holm & J & 20 & 0.544
+Holm & J & 20 & 0.544\\
+\bottomrule
 \end{tabular}
 \label{tab:ss}
 \caption{Sample size validation}
 \end{table}
-
-\end{appendix}
-
-
-
 
 \end{document}

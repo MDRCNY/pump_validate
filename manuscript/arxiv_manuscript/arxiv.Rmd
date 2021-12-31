@@ -1,21 +1,27 @@
 ---
 title: 'Power Under Multiplicity Project (PUMP): Estimating Power, Minimum Detectable Effect Size, and Sample Size When Adjusting for Multiple Outcomes'
-author:
-  - Kristen Hunter^[Harvard University Department of Statistics]
-  - Luke Miratrix^[Harvard Graduate School of Education]
-  - Kristin Porter^[MDRC]
-output:
-  pdf_document:
-    keep_tex: yes
-    number_sections: yes
+authors:
+  - name: Kristen Hunter
+    department: Department of Statistics
+    affiliation: Harvard University
+    email: kristenbhunter@gmail.com
+  - name: Luke Miratrix
+    affiliation: Harvard Graduate School of Education
+    email: lmiratrix@g.harvard.edu
+  - name: Kristin Porter
+    affiliation: MDRC
+    email: kristin.porter@mdrc.org
+abstract: |
+  For randomized controlled trials (RCTs) with a single intervention being measured on multiple outcomes, researchers often apply a multiple testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust $p$-values. Such an adjustment reduces the likelihood of spurious findings, but also changes the statistical power, sometimes substantially, which reduces the probability of detecting effects when they do exist. However, this consideration is frequently ignored in typical power analyses, as existing tools do not easily accommodate the use of multiple testing procedures. We introduce the `PUMP` `R` package as a tool for analysts to estimate statistical power, minimum detectable effect size, and sample size requirements for multi-level RCTs with multiple outcomes. Multiple outcomes are accounted for in two ways. First, power estimates from `PUMP` properly account for the adjustment in $p$-values from applying a multiple testing procedure. Second, as researchers change their focus from one outcome to multiple outcomes, different definitions of statistical power emerge. `PUMP` allows researchers to consider a variety of definitions of power, as some may be more appropriate for the goals of their study. The package estimates power for frequentist multi-level mixed effects models, and supports a variety of commonly-used RCT designs and models and multiple testing procedures. In addition to the main functionality of estimating power, minimum detectable effect size, and sample size requirements, the package allows the user to easily explore sensitivity of these quantities to changes in underlying assumptions.
 bibliography: refs.bib
+biblio-style: unsrt
+output: rticles::arxiv_article
 header-includes:
-  - \usepackage{hyperref}
-editor_options: 
-  chunk_output_type: console
+  - \usepackage{amsmath}
 ---
 
 ```{r setup, include = FALSE}
+library( here )
 library( kableExtra )
 library( knitr )
 library( PUMP )
@@ -34,19 +40,6 @@ options( knitr.kable.NA = '' )
 theme_set( theme_minimal() )
 set.seed( 1010203 )
 ```
-
-\section*{Abstract}
-
-For randomized controlled trials (RCTs) with a single intervention being measured on multiple outcomes, researchers often apply a multiple testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust $p$-values.
-Such an adjustment reduces the likelihood of spurious findings, but also changes the statistical power, sometimes substantially, which reduces the probability of detecting effects when they do exist.
-However, this consideration is frequently ignored in typical power analyses, as existing tools do not easily accommodate the use of multiple testing procedures.
-We introduce the `PUMP` `R` package as a tool for analysts to estimate statistical power, minimum detectable effect size, and sample size requirements for multi-level RCTs with multiple outcomes.
-Multiple outcomes are accounted for in two ways.
-First, power estimates from `PUMP` properly account for the adjustment in $p$-values from applying a multiple testing procedure.
-Second, as researchers change their focus from one outcome to multiple outcomes, different definitions of statistical power emerge.
-`PUMP` allows researchers to consider a variety of definitions of power, as some may be more appropriate for the goals of their study.
-The package estimates power for frequentist multi-level mixed effects models, and supports a variety of commonly-used RCT designs and models and multiple testing procedures.
-In addition to the main functionality of estimating power, minimum detectable effect size, and sample size requirements, the package allows the user to easily explore sensitivity of these quantities to changes in underlying assumptions.
 
 \section{Introduction}
 \label{sec:intro}
@@ -784,6 +777,8 @@ m2 <- update( m, power.definition = "min1" )
 
 ```{r echo = FALSE}
 print( m2 )
+# knitr::kable( m2, digits = 2, booktabs = TRUE, position = "h!", caption = "" ) %>%
+#  kableExtra::kable_styling(position = "center")
 ```
 
 The `update()` method can replace any number of arguments of the prior call with new ones, making exploration of different scenarios very straightforward.^[The update() method re-runs the underlying call of pump_mdes(), pump_sample(), or pump_power() with the revised set of design parameters. You can even change which call to use via the type parameter.]
@@ -797,6 +792,8 @@ m3 <- update( m2, numZero = 2 )
 ```
 
 ```{r echo = FALSE}
+#knitr::kable( m3, digits = 2, booktabs = TRUE ) %>%
+#  kableExtra::kable_styling(position = "center")
 print( m3 )
 ```
 
@@ -831,6 +828,8 @@ smp <- pump_sample(
 ```
 
 ```{r echo = FALSE}
+# knitr::kable( smp, digits = 2, booktabs = TRUE ) %>%
+#   kableExtra::kable_styling(position = "center")
 print( smp )
 ```
 
@@ -1081,25 +1080,17 @@ However, one of the additional strengths of the package is the ease with which a
 Even if a user is only interested in a single outcome, `PUMP` provides useful functionality for more robust power calculations.
 A user can and should try a range of parameter values to determine the sensitivity of the power of their study to different assumptions; this package simplifies that process.
 
-In addition to this paper, there is a variety of supporting information.
-
-  - The code is available on github, \url{https://github.com/MDRCNY/PUMP}.
-  - The Technical Appendix contains detailed information about each design and model, the assumed data generating process, and understanding parameters such as $ICC$ and $\omega$. It is a useful reference not just for users of the package, but also as a general summary of multi-level models.
-  - The package has an additional vignette on understanding sample size calculations, which present unique challenges.
-  - The package has supplementary functions that allow a user to simulate data from multi-level models. Although these functions are not directly related to the power calculations, we provide them as a potentially useful tool. A short vignette explains these functions.
-  - The code and results for validating the package are in a separate repository, \url{https://github.com/MDRCNY/pump_validate}.
-
 \section*{Acknowledgements}
 
 We acknowledge the Diplomas Now team at MDRC.
 Development of this package was supported by a grant from the Institute of Education Sciences (R305D170030).
 We would like to thank members of the Harvard CARES lab for their feedback on the manuscript.
 
-\section{References}
+\section*{References}
 
 <div id="refs"></div>
 
-\section{Appendix: Validation}
+\section*{Appendix: Validation}
 
 In order to validate that our power estimates are working as intended, we compared three different methods of estimating power:
   
@@ -1142,7 +1133,6 @@ $\omega$                & 0.1                    & 0.8               \\
 \bottomrule
 \end{tabular}
 \label{tab:val_params}
-\caption{Validation parameters}
 \end{table}
 
 We do not vary:

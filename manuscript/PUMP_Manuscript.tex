@@ -362,7 +362,7 @@ application built with R Shiny. This web application calls the
 \texttt{PUMP} package and allows users to conduct calculations with a
 user-friendly interface, but it is less flexible than the package, with
 a focus on simpler scenarios (e.g., 10 or fewer outcomes). The app can
-be found at \url{https://mdrcpump.shinyapps.io/pump_shiny/}.
+be found at \url{https://mdrc.shinyapps.io/pump/}.
 
 The remainder of this paper is organized as follows. In Section
 \ref{sec:diplomas}, we introduce Diplomas Now, an educational
@@ -610,12 +610,14 @@ hypotheses that were not rejected.
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{l l l l}
-                                      & \multicolumn{3}{c}{Observed decisions}\\ \hline
-Unobserved truths                     & Number not rejected     & Number rejected   & Total \\ \hline
+\begin{tabular}{l r r r}
+\toprule
+                                      & \multicolumn{3}{c}{Observed decisions}\\
+Unobserved truths                     & Number not rejected     & Number rejected   & Total \\ \midrule
 Number of true null hypotheses        & $U$                     & $V$               & $M_0$ \\
 Number of false null hypotheses       & $W$                     & $X$               & $M_1$ \\ \hline
-Total                                 & $M-R$                   & $R$               & $M$
+Total                                 & $M-R$                   & $R$               & $M$ \\
+\bottomrule
 \end{tabular}
 \caption{Numbers of hypothesis types and decisions.}
   \label{tab:twobytwo}
@@ -651,11 +653,11 @@ FDR &= E\left(\frac{V}{R}\right)\\
 &=  E\left(\frac{V}{R}\mid R = 0\right) Pr(R = 0) + E\left(\frac{V}{R} \mid R > 0\right)Pr(R > 0) \\
 &= 0 \times Pr(R = 0) + 1 \times Pr(R > 0) \\
 &= Pr(R > 0) = FWER
-\end{align*} However, if any effects truly exist, then
-\(FWER \geq FDR\). As a result of the difference in objective between
-FWER and FDR, in the case where there is at least one false null
-hypothesis (at least one true effect), a MTP that controls the FDR at
-\(5\%\) will have a Type I error rate that is greater than \(5\%\).
+\end{align*} However, if any effects truly exist, then FWER \(\geq\)
+FDR. As a result of the difference in objective between FWER and FDR, in
+the case where there is at least one false null hypothesis (at least one
+true effect), a MTP that controls the FDR at \(5\%\) will have a Type I
+error rate that is greater than \(5\%\).
 
 A side remark is that MTPs may provide either ``weak control'' or
 ``strong control'' of the error rate they target. A MTP ``provides weak
@@ -1281,33 +1283,28 @@ corresponding names from the PowerUP! package where appropriate. For
 more details about each combination of design and model, see the
 Technical Appendix.
 
-\begin{tabular}{l|l|l|l}
-\hline
+\begin{table}
+\centering
+\begin{tabular}{llll}
+\toprule
 Code & Design & Model & PowerUp\\
-\hline
+\midrule
 d1.1\_m1c & d1.1 & m1c & n/a\\
-\hline
 d2.1\_m2fc & d2.1 & m2fc & bira2\_1c\\
-\hline
 d2.1\_m2ff & d2.1 & m2ff & bira2\_1f\\
-\hline
 d2.1\_m2fr & d2.1 & m2fr & bira2\_1r\\
-\hline
 d2.1\_m2rr & d2.1 & m2rr & n/a\\
-\hline
+\addlinespace
 d2.2\_m2rc & d2.2 & m2rc & cra2\_2r\\
-\hline
 d3.1\_m3rr2rr & d3.1 & m3rr2rr & bira3\_1r\\
-\hline
 d3.2\_m3ff2rc & d3.2 & m3ff2rc & bcra3\_2f\\
-\hline
 d3.2\_m3fc2rc & d3.2 & m3fc2rc & n/a\\
-\hline
 d3.2\_m3rr2rc & d3.2 & m3rr2rc & bcra3\_2r\\
-\hline
+\addlinespace
 d3.3\_m3rc2rc & d3.3 & m3rc2rc & cra3\_3r\\
-\hline
+\bottomrule
 \end{tabular}
+\end{table}
 
 \subsection{Multiple testing procedures}
 
@@ -1355,13 +1352,15 @@ for each of the MTPs supported by \texttt{PUMP}.
 
 \begin{table}[h!]
 \centering
-\begin{tabular}{l l l l}
-Procedure                             & Control & Single-step or stepwise & Accounts for correlation \\ \hline
+\begin{tabular}{l r r r}
+\toprule
+Procedure                             & Control & Single-step or stepwise & Accounts for correlation \\ \midrule
 Bonferroni (BF)                       & FWER    & single-step             & No                       \\
 Holm (HO)                             & FWER    & stepwise                & No\\
 Westfall-Young Single-step (WY-SS)    & FWER    & single-step             & Yes\\
 Westfall-Young Step-down (WY-SD)      & FWER    & stepwise                & Yes\\
-Benjamini-Hochberg (BH)               & FDR     & stepwise                & No
+Benjamini-Hochberg (BH)               & FDR     & stepwise                & No \\
+\bottomrule
 \end{tabular}
 \caption{Summary of MTP procedures.}
   \label{tab:mtp}
@@ -1373,39 +1372,31 @@ Benjamini-Hochberg (BH)               & FDR     & stepwise                & No
 The table below shows the parameters that influence \(Q_m\), the
 standard error, for different designs and models.
 
-\begin{tabular}{l|l}
-\hline
+\begin{table}
+\centering
+\begin{tabular}{ll}
+\toprule
 Parameter & Description\\
-\hline
-nbar & the harmonic mean of the number of level 1 units per level 2 unit (students per school)\\
-\hline
-J & the number of level 2 units (schools)\\
-\hline
-K & the number of level 3 units (district)\\
-\hline
-Tbar & the proportion of units that are assigned to the treatment\\
-\hline
-numCovar.1 & number of Level 1 (individual) covariates\\
-\hline
-numCovar.2 & number of Level 2 (school) covariates\\
-\hline
-numCovar.3 & number of Level 3 (district) covariates\\
-\hline
-R2.1 & percent of variation explained by Level 1 covariates\\
-\hline
-R2.2 & percent of variation explained by Level 2 covariates\\
-\hline
-R2.3 & percent of variation explained by Level 3 covariates\\
-\hline
+\midrule
+nbar & harmonic mean of level 1 units per level 2 unit (students per school)\\
+J & number of level 2 units per level 3 unit (schools per district)\\
+K & number of level 3 units (districts)\\
+Tbar & proportion of units assigned to treatment\\
+numCovar.1 & number of level 1 (individual) covariates\\
+\addlinespace
+numCovar.2 & number of level 2 (school) covariates\\
+numCovar.3 & number of level 3 (district) covariates\\
+R2.1 & percent of variation explained by level 1 covariates\\
+R2.2 & percent of variation explained by level 2 covariates\\
+R2.3 & percent of variation explained by level 3 covariates\\
+\addlinespace
 ICC.2 & level 2 intraclass correlation\\
-\hline
 ICC.3 & level 3 intraclass correlation\\
-\hline
-omega.2 & ratio of variance of level 2 average impacts to variance of level 2 random intercepts\\
-\hline
-omega.3 & ratio of variance of level 3 average impacts to variance of level 3 random intercepts\\
-\hline
+omega.2 & ratio of variance of level 2 average impacts to level 2 random intercepts\\
+omega.3 & ratio of variance of level 3 average impacts to level 3 random intercepts\\
+\bottomrule
 \end{tabular}
+\end{table}
 
 A few parameters warrant more explanation.
 
@@ -1551,12 +1542,6 @@ relatively high level three ICC as we expect our school type by district
 blocks to isolate variation; in particular we might believe middle and
 high school attendance rates would be markedly different.
 
-\emph{Impact variation.} We next need to specify the assumed degree of
-treatment impact variation. We allow treatment variation across school
-type and district by setting omega.3 to 0.50 (a substantial amount).
-While most power analyses would assume no variation, we do here for
-illustration.
-
 \emph{Correlation of outcomes.} We finally need to specify the number
 and relationship among our outcomes and associated test-statistics. For
 illustration, we select attendance as our outcome group. We assume we
@@ -1610,34 +1595,47 @@ detecting an impact on our first outcome when using the Holm procedure:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{m }\OtherTok{\textless{}{-}} \FunctionTok{pump\_mdes}\NormalTok{(}
-            \AttributeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{, }\CommentTok{\# choice of design and analysis strategy}
-            \AttributeTok{MTP =} \StringTok{"Holm"}\NormalTok{, }\CommentTok{\# multiple testing procedure}
-            \AttributeTok{target.power =} \FloatTok{0.80}\NormalTok{, }\CommentTok{\# desired power}
-            \AttributeTok{power.definition =} \StringTok{"D1indiv"}\NormalTok{, }\CommentTok{\# power type}
-            \AttributeTok{M =} \DecValTok{5}\NormalTok{, }\CommentTok{\# number of outcomes}
-            \AttributeTok{J =} \DecValTok{3}\NormalTok{, }\CommentTok{\# number of schools/block}
-            \AttributeTok{K =} \DecValTok{21}\NormalTok{, }\CommentTok{\# number RA blocks}
-            \AttributeTok{nbar =} \DecValTok{258}\NormalTok{, }\CommentTok{\# average number of students per school}
-            \AttributeTok{Tbar =} \FloatTok{0.50}\NormalTok{, }\CommentTok{\# prop Tx}
-            \AttributeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\CommentTok{\# significance level}
-            \AttributeTok{numCovar.1 =} \DecValTok{5}\NormalTok{, }\AttributeTok{numCovar.2 =} \DecValTok{3}\NormalTok{, }\CommentTok{\# number of covariates per level}
-            \AttributeTok{R2.1 =} \FloatTok{0.1}\NormalTok{, }\AttributeTok{R2.2 =} \FloatTok{0.7}\NormalTok{, }\CommentTok{\# Explanatory power of covariates for each level}
-            \AttributeTok{ICC.2 =} \FloatTok{0.05}\NormalTok{, }\AttributeTok{ICC.3 =} \FloatTok{0.4}\NormalTok{, }\CommentTok{\# Intraclass correlation coefficients}
-            \AttributeTok{omega.3 =} \FloatTok{0.50}\NormalTok{, }\CommentTok{\# Amount of treatment variation at level 3.}
-            \AttributeTok{rho =} \FloatTok{0.4}\NormalTok{ ) }\CommentTok{\# how correlated outcomes are}
+  \AttributeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{,      }\CommentTok{\# choice of design and analysis strategy}
+  \AttributeTok{MTP =} \StringTok{"Holm"}\NormalTok{,                 }\CommentTok{\# multiple testing procedure}
+  \AttributeTok{target.power =} \FloatTok{0.80}\NormalTok{,          }\CommentTok{\# desired power}
+  \AttributeTok{power.definition =} \StringTok{"D1indiv"}\NormalTok{, }\CommentTok{\# power type}
+  \AttributeTok{M =} \DecValTok{5}\NormalTok{,                        }\CommentTok{\# number of outcomes}
+  \AttributeTok{J =} \DecValTok{3}\NormalTok{,                        }\CommentTok{\# number of schools per block}
+  \AttributeTok{K =} \DecValTok{21}\NormalTok{,                       }\CommentTok{\# number districts}
+  \AttributeTok{nbar =} \DecValTok{258}\NormalTok{,                   }\CommentTok{\# average number of students per school}
+  \AttributeTok{Tbar =} \FloatTok{0.50}\NormalTok{,                  }\CommentTok{\# prop treated}
+  \AttributeTok{alpha =} \FloatTok{0.05}\NormalTok{,                 }\CommentTok{\# significance level}
+  \AttributeTok{numCovar.1 =} \DecValTok{5}\NormalTok{,               }\CommentTok{\# number of covariates at level 1}
+  \AttributeTok{numCovar.2 =} \DecValTok{3}\NormalTok{,               }\CommentTok{\# number of covariates at level 2}
+  \AttributeTok{R2.1 =} \FloatTok{0.1}\NormalTok{, }\AttributeTok{R2.2 =} \FloatTok{0.7}\NormalTok{,       }\CommentTok{\# explanatory power of covariates for each level}
+  \AttributeTok{ICC.2 =} \FloatTok{0.05}\NormalTok{, }\AttributeTok{ICC.3 =} \FloatTok{0.4}\NormalTok{,    }\CommentTok{\# intraclass correlation coefficients}
+  \AttributeTok{rho =} \FloatTok{0.4}\NormalTok{ )                   }\CommentTok{\# how correlated outcomes are}
 \end{Highlighting}
 \end{Shaded}
 
 The results are easily made into a nice table via the \texttt{knitr}
 \texttt{kable()} command:
 
-\begin{tabular}{l|r|r}
-\hline
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{( m, }\AttributeTok{digits =} \DecValTok{3}\NormalTok{, }\AttributeTok{booktabs =} \ConstantTok{TRUE}\NormalTok{,}
+              \AttributeTok{position =} \StringTok{"h!"}\NormalTok{, }\AttributeTok{caption =} \StringTok{"MDES Estimate"}\NormalTok{ ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  kableExtra}\SpecialCharTok{::}\FunctionTok{kable\_styling}\NormalTok{( }\AttributeTok{position =} \StringTok{"center"}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[h!]
+
+\caption{\label{tab:unnamed-chunk-3}MDES Estimate}
+\centering
+\begin{tabular}[t]{lrr}
+\toprule
 MTP & Adjusted.MDES & D1indiv.power\\
-\hline
-Holm & 0.1 & 0.79\\
-\hline
+\midrule
+Holm & 0.104 & 0.792\\
+\bottomrule
 \end{tabular}
+\end{table}
 
 The answers \texttt{pump\_mdes()} gives are approximate as we are
 calculating them via monte carlo simulation. To control accuracy, we can
@@ -1658,17 +1656,16 @@ definition:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{m2 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( m, }\AttributeTok{power.definition =} \StringTok{"min1"}\NormalTok{ )}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(m2, }\AttributeTok{digits =} \DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{tabular}{l|r|r}
-\hline
-MTP & Adjusted.MDES & min1.power\\
-\hline
-Holm & 0.08 & 0.8\\
-\hline
-\end{tabular}
+\begin{verbatim}
+#> mdes result: d3.2_m3fc2rc design with 5 outcomes
+#>   target min1 power: 0.80
+#>   MTP Adjusted.MDES min1.power          SE
+#>  Holm    0.08188259      0.804 0.002363978
+#>  (13 steps in search)
+\end{verbatim}
 
 The \texttt{update()} method can replace any number of arguments of the
 prior call with new ones, making exploration of different scenarios very
@@ -1689,17 +1686,16 @@ no effect with the \texttt{numZero} parameter:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{m3 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( m2, }\AttributeTok{numZero =} \DecValTok{2}\NormalTok{ )}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(m3, }\AttributeTok{digits =} \DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{tabular}{l|r|r}
-\hline
-MTP & Adjusted.MDES & min1.power\\
-\hline
-Holm & 0.09 & 0.79\\
-\hline
-\end{tabular}
+\begin{verbatim}
+#> mdes result: d3.2_m3fc2rc design with 5 outcomes
+#>   target min1 power: 0.80
+#>   MTP Adjusted.MDES min1.power          SE
+#>  Holm    0.08913163      0.791 0.002553031
+#>  (16 steps in search)
+\end{verbatim}
 
 The MDES goes up, as expected: when there are not effects on some
 outcomes, there are fewer good chances for detecting an effect.
@@ -1736,19 +1732,13 @@ significant, if all outcomes had a true effect size of 0.10).
 \end{Highlighting}
 \end{Shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(smp)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{tabular}{l|l|r|r}
-\hline
-MTP & Sample.type & Sample.size & min1.power\\
-\hline
-Holm & K & 15 & 0.80025\\
-\hline
-\end{tabular}
+\begin{verbatim}
+#> sample result: d3.2_m3fc2rc design with 5 outcomes
+#>   target min1 power: 0.80
+#>   MTP Sample.type Sample.size min1.power   SE
+#>  Holm           K          15    0.80025 0.01
+#>  (13 steps in search)
+\end{verbatim}
 
 We would need 15 blocks, rather than the originally specified 21, giving
 45 total schools in our study, to achieve 80\% \(1-\)minimal power.
@@ -1766,38 +1756,34 @@ of power, as well:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{p\_check }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( smp, }\AttributeTok{type =} \StringTok{"power"}\NormalTok{, }\AttributeTok{tnum =} \DecValTok{100000}\NormalTok{,}
-                   \AttributeTok{long.table =} \ConstantTok{TRUE}\NormalTok{)}
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(p\_check, }\AttributeTok{row.names =} \ConstantTok{FALSE}\NormalTok{)}
+                   \AttributeTok{long.table =} \ConstantTok{TRUE}\NormalTok{ )}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{tabular}{l|r|r}
-\hline
+\begin{table}[h!]
+
+\caption{\label{tab:unnamed-chunk-7}Power table}
+\centering
+\begin{tabular}[t]{lrr}
+\toprule
 power & None & Holm\\
-\hline
-individual outcome 1 & 0.70045 & 0.52490\\
-\hline
-individual outcome 2 & 0.69964 & 0.52468\\
-\hline
-individual outcome 3 & 0.69754 & 0.52377\\
-\hline
-individual outcome 4 & 0.69868 & 0.52501\\
-\hline
-individual outcome 5 & 0.70049 & 0.52524\\
-\hline
-mean individual & 0.69936 & 0.52472\\
-\hline
-1-minimum &  & 0.80818\\
-\hline
-2-minimum &  & 0.64127\\
-\hline
-3-minimum &  & 0.50432\\
-\hline
-4-minimum &  & 0.38873\\
-\hline
-complete &  & 0.32497\\
-\hline
+\midrule
+individual outcome 1 & 0.7 & 0.52\\
+individual outcome 2 & 0.7 & 0.52\\
+individual outcome 3 & 0.7 & 0.52\\
+individual outcome 4 & 0.7 & 0.53\\
+individual outcome 5 & 0.7 & 0.53\\
+\addlinespace
+mean individual & 0.7 & 0.52\\
+1-minimum &  & 0.81\\
+2-minimum &  & 0.64\\
+3-minimum &  & 0.50\\
+4-minimum &  & 0.39\\
+\addlinespace
+complete &  & 0.32\\
+\bottomrule
 \end{tabular}
+\end{table}
 
 When calculating power directly, we get power for all the implemented
 definitions of power applicable to the design.
@@ -1856,9 +1842,10 @@ method:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check,}
-              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{(}\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"Holm"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{),}
+              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"Holm"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
               \AttributeTok{tnum =} \DecValTok{10000}\NormalTok{,}
               \AttributeTok{parallel.WY.clusters =} \DecValTok{3}\NormalTok{ )}
+\CommentTok{\#\textgreater{} Estimated time to finish 10000 WY iterations with B = 1000 : 3 minutes}
 \FunctionTok{plot}\NormalTok{( p2 )}
 \end{Highlighting}
 \end{Shaded}
@@ -1936,9 +1923,8 @@ had better predictive covariates for our second outcome, we might try:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{p\_d }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check,}
-            \AttributeTok{R2.1 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ),}
-            \AttributeTok{R2.2 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ),}
-            \AttributeTok{omega.3 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ) )}
+               \AttributeTok{R2.1 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ),}
+               \AttributeTok{R2.2 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ) )}
 \FunctionTok{print}\NormalTok{( p\_d )}
 \CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
 \CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
@@ -1963,7 +1949,7 @@ find out, we can always check details with \texttt{print\_design()} or
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{summary}\NormalTok{(p\_d)}
+\FunctionTok{summary}\NormalTok{( p\_d )}
 \CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
 \CommentTok{\#\textgreater{}   MDES vector: 0.1, 0.1, 0.1, 0.1, 0.1}
 \CommentTok{\#\textgreater{}   nbar: 258  J: 3    K: 15   Tbar: 0.5}
@@ -1971,7 +1957,8 @@ find out, we can always check details with \texttt{print\_design()} or
 \CommentTok{\#\textgreater{}   Level:}
 \CommentTok{\#\textgreater{}     1: R2: 0.1 / 0.3 / 0.1 / 0.2 / 0.2 (5 covariates)}
 \CommentTok{\#\textgreater{}     2: R2: 0.4 / 0.8 / 0.3 / 0.2 / 0.2 (3 covariates)    ICC: 0.05   omega: 0}
-\CommentTok{\#\textgreater{}     3:   fixed effects    rho = 0.4}
+\CommentTok{\#\textgreater{}     3:   fixed effects   ICC: 0.4    omega: 0}
+\CommentTok{\#\textgreater{}   rho = 0.4}
 \CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
 \CommentTok{\#\textgreater{}  None 0.43265 0.85325 0.38075 0.34358 0.34337   0.470720      NA      NA}
 \CommentTok{\#\textgreater{}  Holm 0.24398 0.65388 0.21066 0.18851 0.18856   0.297118 0.71219 0.37367}
@@ -2006,14 +1993,15 @@ parameters to additionally explore:
 
 \NormalTok{grid}\SpecialCharTok{$}\NormalTok{ICC}\FloatTok{.3} \OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{( grid}\SpecialCharTok{$}\NormalTok{ICC}\FloatTok{.3}\NormalTok{ )}
 \NormalTok{grid }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{( grid, MTP }\SpecialCharTok{==} \StringTok{"Holm"}\NormalTok{ )}
+
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{( grid, }\FunctionTok{aes}\NormalTok{( ICC}\FloatTok{.2}\NormalTok{, min1, }\AttributeTok{group =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{, }\AttributeTok{col =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{ ) ) }\SpecialCharTok{+}
     \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
     \FunctionTok{labs}\NormalTok{( }\AttributeTok{y =} \StringTok{"Min{-}1 Power"}\NormalTok{ ) }\SpecialCharTok{+}
-  \FunctionTok{coord\_cartesian}\NormalTok{( }\AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{) )}
+  \FunctionTok{coord\_cartesian}\NormalTok{( }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{) )}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{PUMP_Manuscript_files/figure-latex/unnamed-chunk-8-1} \end{center}
+\begin{center}\includegraphics{PUMP_Manuscript_files/figure-latex/unnamed-chunk-11-1} \end{center}
 
 Note that in addition to \texttt{update\_grid()}, there are also base
 functions \texttt{pump\_power\_grid()}, \texttt{pump\_mdes\_grid()}, and
@@ -2063,10 +2051,17 @@ easily by letting \texttt{rho} vary as so:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{gridRho }\OtherTok{\textless{}{-}} \FunctionTok{update\_grid}\NormalTok{( p\_check,}
-            \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
-            \AttributeTok{rho =} \FunctionTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.9}\NormalTok{, }\AttributeTok{by=}\FloatTok{0.15}\NormalTok{ ),}
-            \AttributeTok{tnum =} \DecValTok{500}\NormalTok{,}
-            \AttributeTok{B =} \DecValTok{10000}\NormalTok{ )}
+              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
+              \AttributeTok{rho =} \FunctionTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.9}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.15}\NormalTok{ ),}
+              \AttributeTok{tnum =} \DecValTok{500}\NormalTok{,}
+              \AttributeTok{B =} \DecValTok{10000}\NormalTok{ )}
+\CommentTok{\#\textgreater{} Estimated time to finish 500 WY iterations with B = 10000 : 1 minutes}
+\CommentTok{\#\textgreater{} Estimated time to finish 500 WY iterations with B = 10000 : 1 minutes}
+\CommentTok{\#\textgreater{} Estimated time to finish 500 WY iterations with B = 10000 : 1 minutes}
+\CommentTok{\#\textgreater{} Estimated time to finish 500 WY iterations with B = 10000 : 1 minutes}
+\CommentTok{\#\textgreater{} Estimated time to finish 500 WY iterations with B = 10000 : 1 minutes}
+\CommentTok{\#\textgreater{} Estimated time to finish 500 WY iterations with B = 10000 : 1 minutes}
+\CommentTok{\#\textgreater{} Estimated time to finish 500 WY iterations with B = 10000 : 1 minutes}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2075,21 +2070,21 @@ We then plot our results.
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{gridL }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{( gridRho, MTP }\SpecialCharTok{!=} \StringTok{"None"}\NormalTok{ ) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{pivot\_longer}\NormalTok{( }\AttributeTok{cols =} \FunctionTok{c}\NormalTok{(indiv.mean, min1, min2, complete),}
-                \AttributeTok{names\_to =} \StringTok{"definition"}\NormalTok{, }\AttributeTok{values\_to =} \StringTok{"power"}\NormalTok{ ) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{mutate}\NormalTok{( }\AttributeTok{definition =} \FunctionTok{factor}\NormalTok{( definition,}
-                            \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"indiv.mean"}\NormalTok{, }\StringTok{"min1"}\NormalTok{, }\StringTok{"min2"}\NormalTok{, }\StringTok{"complete"}\NormalTok{ ) ) )}
+\NormalTok{  tidyr}\SpecialCharTok{::}\FunctionTok{pivot\_longer}\NormalTok{( }\AttributeTok{cols =} \FunctionTok{c}\NormalTok{(indiv.mean, min1, min2, complete),}
+                         \AttributeTok{names\_to =} \StringTok{"definition"}\NormalTok{, }\AttributeTok{values\_to =} \StringTok{"power"}\NormalTok{ ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{( }\AttributeTok{definition =} \FunctionTok{factor}\NormalTok{( definition,}
+          \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"indiv.mean"}\NormalTok{, }\StringTok{"min1"}\NormalTok{, }\StringTok{"min2"}\NormalTok{, }\StringTok{"complete"}\NormalTok{ ) ) )}
 
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{( gridL, }\FunctionTok{aes}\NormalTok{( rho, power, }\AttributeTok{col=}\NormalTok{MTP ) ) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{( gridL, }\FunctionTok{aes}\NormalTok{( rho, power, }\AttributeTok{col =}\NormalTok{ MTP ) ) }\SpecialCharTok{+}
   \FunctionTok{facet\_grid}\NormalTok{( . }\SpecialCharTok{\textasciitilde{}}\NormalTok{ definition ) }\SpecialCharTok{+}
   \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
   \FunctionTok{geom\_hline}\NormalTok{( }\AttributeTok{yintercept =} \FunctionTok{c}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.80}\NormalTok{ ) ) }\SpecialCharTok{+} 
   \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
-  \FunctionTok{coord\_cartesian}\NormalTok{( }\AttributeTok{ylim=}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{) )}
+  \FunctionTok{coord\_cartesian}\NormalTok{( }\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{( }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{ ) )}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{PUMP_Manuscript_files/figure-latex/unnamed-chunk-11-1} \end{center}
+\begin{center}\includegraphics{PUMP_Manuscript_files/figure-latex/unnamed-chunk-14-1} \end{center}
 
 First, we see the benefit of the Westfall-Young single-step procedure is
 minimal, as compared to Bonferroni. Second, the impact on individual
@@ -2116,7 +2111,12 @@ varying the number of outcomes that have no treatment impact via the
 
 We then can make a plot as we did above:
 
-\begin{center}\includegraphics{PUMP_Manuscript_files/figure-latex/unnamed-chunk-14-1} \end{center}
+\begin{verbatim}
+#> Warning: Removed 3 row(s) containing missing values (geom_path).
+#> Warning: Removed 6 rows containing missing values (geom_point).
+\end{verbatim}
+
+\begin{center}\includegraphics{PUMP_Manuscript_files/figure-latex/unnamed-chunk-17-1} \end{center}
 
 There are other ways of exploring the impact of weak or null effects on
 some outcomes. In particular, the \texttt{pump\_power()} and
@@ -2139,7 +2139,7 @@ power and applying different MTPs. The functionality of \texttt{PUMP}
 fills an important gap, as existing tools do not allow researchers to
 conduct power, MDES or sample size calculations when applying a MTP. An
 online interface is also available at
-\url{https://mdrcpump.shinyapps.io/pump_shiny/}.
+\url{https://mdrc.shinyapps.io/pump/}.
 
 The main advantage of the \texttt{PUMP} package is to provide easily
 accessible estimation procedures so that users can properly account for
@@ -2400,13 +2400,15 @@ out varying that parameter.
 \begin{table}
 \centering
 \begin{tabular}{l l l}
-Parameter               & Default                & Other values \\ \hline
+\toprule
+Parameter               & Default                & Other values \\ \midrule
 school size $\bar{n}$   & 50                     & 75, 100           \\
 $R^2$                   & 0.1                    & 0.6               \\
 $\rho$                  & 0.5                    & 0.2, 0.8          \\
 MDES                    & (0.125, 0.125, 0.125)  & (0.125, 0, 0)     \\
 ICC                     & 0.2                    & 0.7               \\
 $\omega$                & 0.1                    & 0.8               \\
+\bottomrule
 \end{tabular}
 \label{tab:val_params}
 \end{table}
@@ -2459,11 +2461,13 @@ and last columns to match.
 \begin{table}[h!]
 \centering
 \begin{tabular}{lrrr}
+\toprule
 MTP & Adjusted MDES & D1indiv Power & Target MDES\\
-\hline
+\midrule
 Bonferroni & 0.122 & 0.447 & 0.125\\
 BH & 0.127 & 0.578 & 0.125\\
-Holm & 0.125 & 0.540 & 0.125
+Holm & 0.125 & 0.540 & 0.125\\
+\bottomrule
 \end{tabular}
 \label{tab:mdes}
 \caption{MDES validation}
@@ -2477,11 +2481,13 @@ size. In Table \ref{tab:ss}, we are targeting a sample size of
 \begin{table}[h!]
 \centering
 \begin{tabular}{llrr}
+\toprule
 MTP & Sample.type & Sample.size & D1indiv.power\\
-\hline
+\midrule
 Bonferroni & J & 21 & 0.500\\
 BH & J & 21 & 0.580\\
-Holm & J & 20 & 0.544
+Holm & J & 20 & 0.544\\
+\bottomrule
 \end{tabular}
 \label{tab:ss}
 \caption{Sample size validation}

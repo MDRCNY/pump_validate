@@ -52,6 +52,9 @@ inst/doc
 ManuScript/appendix/appendix_files/*
 manuscript/PUMP_Manuscript_files/*
 validation/results/*files*/
+manuscript/jss_manuscript/jss_manuscript_files/*
+manuscript/jss_manuscript/jss_manuscript_files/figure-latex/*
+manuscript/jss_manuscript/jss_manuscript_files/figure-latex/*.pdf
 
 # Temporary files created by R markdown
 *.utf8.md

@@ -1,33 +1,20 @@
 
 Updated: Dec 30 by KH
 
-# R package
+*TODO*
 
-- Silence ROxygen documentation for non-exported functions (ZH? LM?)
+- add correlation tool to validation repo (KH)
+- finish validation of WY writeup (KH)
+- finish formatting and submit to JSS (KH)
+- move vignette into package (KH)
 
-# Manuscript
-
-- explanation of min power when numZero > 0 (KP, shiny)
-
-*Waiting*
-
-- prepare formatting for submission (KH)
-- move vignette into package (KH or LM)
-
-# Package updates
-
-- write simulation correlation tool (KH)
-
-# Validation
-
-- WY validation finish run and writeup (KH in progress)
-  
 # Stretch goals
 
 - messaging (KH or LM)
   - collect errors from grid and only print out unique errors
   - give user estimate of runtime for WY for MDES and SS
 - vary multiple factors in plots (LM)
+- plot behavior for grid objects
 - surface WY functions to user with good documentation (KH)
 - tool that helps user build a block matrix of correlations based on a list of correlations between outcomes (KH)
 - generate a data frame of reasonable defaults for shiny that produce 80% power

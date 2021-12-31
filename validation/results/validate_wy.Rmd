@@ -237,7 +237,7 @@ print(d3.1_m3rr2rr_power_plot)
 
 ```{r}
 model.params.list <- model.params.default
-sim.params.list[['B']] <- 2000
+sim.params.list[['B']] <- 3000
 sim.params.list[['S']] <- 30 * Q
 
 # assumptions
@@ -245,8 +245,8 @@ model.params.list[['omega.2']] <- NULL
 model.params.list[['omega.3']] <- NULL
 
 # for a reasonable runtime and power
-model.params.list[['J']] <- 10
-model.params.list[['K']] <- 10
+model.params.list[['J']] <- 20
+model.params.list[['K']] <- 20
 model.params.list[['nbar']] <- 100
 model.params.list[['MDES']] <- rep(0.3, M)
 model.params.list[['ICC.3']] <- rep(0.05, M)
@@ -303,12 +303,12 @@ Random effects
 
 ```{r}
 # for reasonable power and runtime
-sim.params.list[['B']] <- 2000
+sim.params.list[['B']] <- 3000
 sim.params.list[['S']] <- 30 * Q
 
 model.params.list[['nbar']] <- 100
-model.params.list[['J']] <- 5
-model.params.list[['K']] <- 5
+model.params.list[['J']] <- 10
+model.params.list[['K']] <- 10
 model.params.list[['MDES']] <- rep(0.3, M)
 model.params.list[['ICC.3']] <- rep(0.1, M)
 model.params.list[['ICC.2']] <- rep(0.1, M)

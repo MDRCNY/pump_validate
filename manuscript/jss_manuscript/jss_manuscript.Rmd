@@ -10,17 +10,16 @@ author:
     affiliation: |
        | Harvard Graduate
        | School of Education
-    # To add another line, use \AND at the end of the previous one as above
+    email: \email{lmiratrix@g.harvard.edu}
   - name: Kristin Porter
-    address: |
+    email: \email{kristin.porter@mdrc.org}
+    affiliation: |
       | MDRC
+    address: |
       | 475 14th Street
       | Suite 750
       | Oakland, CA 94612-1900
-    affiliation: |
-      | MDRC
-    # use a different affiliation in adress field (differently formated here)
-    affiliation2: Universitat Autònoma de Barcelona
+
 title:
   formatted: "Power Under Multiplicity Project (\\pkg{PUMP}): Estimating Power, Minimum Detectable Effect Size, and Sample Size When Adjusting for Multiple Outcomes"
   # If you use tex in the formatted title, also supply version without
@@ -35,18 +34,18 @@ keywords:
   plain:     [power, multiple testing, multi-level models, randomized controlled trials, R]
 preamble: >
   \usepackage{amsmath}
-bibliography: refs
+# bibliography: refs
 output: rticles::jss_article
 ---
 
 ```{r, setup, include=FALSE}
 options(prompt = 'R> ', continue = '+ ')
 library(knitr)
-library(ggplot2)
 library(PUMP)
-library(dplyr)
+library(tidyverse)
 knitr::opts_chunk$set(
   cache = TRUE,
+  message = FALSE,
   fig.width = 7,
   fig.height = 4,
   fig.align = "center"
@@ -56,7 +55,7 @@ knitr::opts_chunk$set(
 \section{Introduction}
 \label{sec:intro}
 
-The `PUMP` `R` package fills in an important gap in open-source software tools to design multi-level randomized controlled trials (RCTs) with adequate statistical power.
+The \pkg{PUMP} \proglang{R} package fills in an important gap in open-source software tools to design multi-level randomized controlled trials (RCTs) with adequate statistical power.
 With this package, researchers can estimate statistical power, minimum detectable effect size (MDES), and needed sample size for multi-level experimental designs, in which units are nested within hierarchical structures such as students nested within schools nested within school districts.
 The statistical power is calculated for estimating the impact of a single intervention on multiple outcomes.
 The package uses a frequentist framework of mixed effects regression models, which is currently the prevailing framework for estimating impacts from experiments in education and other social policy research.^[Other options include nonparametric or Bayesian methods, but these are less prevalent in applied research (for example, see @GELMANETAL2012, @GelmanHill2007).]
@@ -67,7 +66,7 @@ This adjustment can result in a substantial change in statistical power, greatly
 Unfortunately, when designing studies, researchers who plan to test for effects on multiple outcomes and employ MTPs frequently ignore the power implications of the MTPs.
 
 Also, as researchers change their focus from one outcome to multiple outcomes, multiple definitions of statistical power emerge (@RN23882; @RN23878; @RN23881; @MTSAS).
-The `PUMP` package allows researchers to consider multiple definitions of power, selecting those most suited to the goals of their study.
+The \pkg{PUMP} package allows researchers to consider multiple definitions of power, selecting those most suited to the goals of their study.
 The definitions of power include:
 
   - **individual power**: the probability of detecting an effect of a particular size (specified by the researcher) or larger for each hypothesis test.
@@ -80,7 +79,7 @@ As noted in @Porter2018, the prevailing default in many studies–-individual po
 If the researcher’s goal is to find statistically significant estimates of effects on most or all primary outcomes of interest, then their power may be much lower than anticipated when multiplicity adjustments are taken into account.
 On the other hand, if the researcher’s goal is to find statistically significant estimates of effects on at least one or a small proportion of outcomes, their power may be much better than anticipated.
 In both of these cases, by not accounting for both the challenges and opportunities arising from multiple outcomes, a researcher may find they have wasted resources, either by designing an underpowered study that cannot detect the desired effect sizes, or by designing an overpowered study that had a larger sample size than necessary.
-We introduce the `PUMP` package to allow for directly answering questions that take multiple outcomes into account, such as:
+We introduce the \pkg{PUMP} package to allow for directly answering questions that take multiple outcomes into account, such as:
 
   - How many schools would I need to detect a given effect on at least three of my five outcomes?
   - What size effect can I reliably detect on each outcome, given a planned MTP across all my outcomes?
@@ -92,7 +91,7 @@ This earlier paper also did not produce software to assist researchers in implem
 With this current paper and with the introduction of the PUMP package, we extend the methodology to nine additional multi-level RCT designs and models.
 Also, while @Porter2018 focused on estimates of power, PUMP goes further to also estimate MDES and sample size requirements that take multiplicity adjustments into account.
 
-`PUMP` extends functionality of the popular PowerUp! `R` package (and its related tools in the form of a spreadsheet and Shiny application), which compute power or MDES for multi-level RCTs with a single outcome (@RN4473).
+\pkg{PUMP} extends functionality of the popular PowerUp! \proglang{R} package (and its related tools in the form of a spreadsheet and Shiny application), which compute power or MDES for multi-level RCTs with a single outcome (@RN4473).
 For a wide variety of RCT designs with a single outcome, researchers can take advantage of closed-form solutions and numerous power estimation tools.
 For example, in education and social policy research, see @RN4473; @RN30153; @RN23884; @RN24179.
 However, closed-form solutions are difficult or impossible to derive when a MTP is applied to a setting with multiple outcomes.
@@ -111,24 +110,24 @@ The package includes three core functions:
 
 For any of these core functions, the user begins with two main choices.
 First, the user chooses the assumed design and model of the RCT.
-The `PUMP` package covers a range of multi-level designs, up to three levels of hierarchy, that researchers typically use in practice, in which research units are nested in hierarchical groups.
+The \pkg{PUMP} package covers a range of multi-level designs, up to three levels of hierarchy, that researchers typically use in practice, in which research units are nested in hierarchical groups.
 Our power calculations assume the user will be analyzing these RCTs using frequentist mixed-effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels, as we explain in detail in Section \ref{sec:est_power} and in the Technical Appendix. 
 Second, the user chooses the MTP to be applied.
-`PUMP` supports five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg.
+\pkg{PUMP} supports five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg.
 After these two main choices, the user must also make a variety of decisions about parameters of the data generating distribution.
 
 The package also includes functions that allow users to easily explore power over a range of possible values of parameters.
 This exploration encourages the user to determine the sensitivity of estimates to different assumptions.
-`PUMP` also visually displays results.
+\pkg{PUMP} also visually displays results.
 These additional functions include:
 
 - `pump_power_grid()`, `pump_mdes_grid()`, and `pump_sample_grid()` for calculating the given output over a range of possible parameter values.
 - `update()` to re-run an existing calculation with a small number of parameters updated.
-- `plot()` on `PUMP`-generated objects to generate plots (including grid outputs).
+- `plot()` on \pkg{PUMP}-generated objects to generate plots (including grid outputs).
 
-The authors of the `PUMP` package have also created a web application built with R Shiny.
-This web application calls the `PUMP` package and allows users to conduct calculations with a user-friendly interface, but it is less flexible than the package, with a focus on simpler scenarios (e.g., 10 or fewer outcomes).
-The app can be found at \url{https://mdrcpump.shinyapps.io/pump_shiny/}.  
+The authors of the \pkg{PUMP} package have also created a web application built with R Shiny.
+This web application calls the \pkg{PUMP} package and allows users to conduct calculations with a user-friendly interface, but it is less flexible than the package, with a focus on simpler scenarios (e.g., 10 or fewer outcomes).
+The app can be found at \url{https://mdrcpump.shinyapps.io/pump}.  
 
 The remainder of this paper is organized as follows.
 In Section \ref{sec:diplomas}, we introduce Diplomas Now, an educational experiment, to be used as a running example throughout the paper.
@@ -138,7 +137,7 @@ Also in Section \ref{sec:mtp_overview}, we present an overview of the statistica
 In Section \ref{sec:est}, we introduce our methodology for estimating power when taking the use of MTPs into account.
 This section also briefly discusses our validation process.
 Section \ref{sec:choices} discusses the various choices a user must make when using the package, including the designs and models, MTPs, and key design and model parameters.
-Section \ref{sec:vignette} provides a detailed presentation of the `PUMP` package with multiple examples of using the packages functions to conduct calculations for our education RCT example.
+Section \ref{sec:vignette} provides a detailed presentation of the \pkg{PUMP} package with multiple examples of using the packages functions to conduct calculations for our education RCT example.
 Section \ref{sec:conclusion} is a brief conclusion. 
 
 \section{Diplomas Now}
@@ -147,7 +146,7 @@ Section \ref{sec:conclusion} is a brief conclusion.
 We illustrate our package using an example of a published RCT that evaluated a secondary school model called Diplomas Now.
 The Diplomas Now model is designed to increase high school graduation rates and post-secondary readiness.
 Evaluators conducted a RCT comparing schools who implemented the model to business-as-usual.
-We refer to this example throughout this paper to illustrate key concepts and to illustrate the application of the `PUMP` package.
+We refer to this example throughout this paper to illustrate key concepts and to illustrate the application of the \pkg{PUMP} package.
 
 The Diplomas Now model, created by three national organizations, Talent Development, City Year, and Communities In Schools, targets underfunded urban middle and high schools with many students who are not performing well academically.
 The model is designed to be robust enough to transform high-poverty and high-needs middle and high schools attended by many students who fall off the path to high school graduation.
@@ -201,8 +200,8 @@ t_m = \frac{\widehat{ES}_m}{SE(\hat{ES}_m)},
 where $SE(\hat{ES}_m)$ is the standard error.
 A raw $p$-value would then be computed as the probability of being at least as extreme as the one observed, given that the null hypothesis is true.
 The term "raw" is used to denote unadjusted $p$-values, in contrast to values that have been adjusted using a MTP.
-For a two-sided test, the raw $p$-value for test $m$ is $p_m=2*Pr(T_m \geq |t_m|)$.
-The `PUMP` package allows for either one-sided or two-sided tests, but we proceed assuming two-sided tests going forward.^[For a one-sided test, depending on the direction of our alternative hypothesis, the raw $p$-value for test $m$ is computed as $p_m=Pr(T_m \leq t_m)$ or $p_m=Pr(T_m \geq t_m)$.]
+For a two-sided test, the raw $p$-value for test $m$ is $p_m=2*\Prob(T_m \geq |t_m|)$.
+The \pkg{PUMP} package allows for either one-sided or two-sided tests, but we proceed assuming two-sided tests going forward.^[For a one-sided test, depending on the direction of our alternative hypothesis, the raw $p$-value for test $m$ is computed as $p_m=\Prob(T_m \leq t_m)$ or $p_m=\Prob(T_m \geq t_m)$.]
 
 When testing a _single_ hypothesis under this framework, "researchers typically specify $\alpha$, the maximum acceptable probability of making a Type I error.
 A Type I error is the probability of erroneously rejecting the null hypothesis when it is true.
@@ -211,7 +210,7 @@ If $\alpha=0.05$, then the null hypothesis is rejected if the $p$-value is less 
 
 In contrast, "when one tests _multiple_ hypotheses under this framework (such that $M>1$) and one conducts a separate test for each of the hypotheses with $\alpha=0.05$, there is a _greater_ than $5\%$ overall chance of a false positive finding in the study.
 If the multiple tests are independent, the probability that at least one of the null hypothesis tests will be erroneously rejected is
-$$1-Pr(\text{none of the null hypotheses will be erroneously rejected}) = 1-(1-\alpha)^M.$$
+$$1-\Prob(\text{none of the null hypotheses will be erroneously rejected}) = 1-(1-\alpha)^M.$$
 Therefore, if researchers are estimating effects on three outcomes (and if these outcomes are independent) the probability of at least one false positive finding is $1-(1-0.05)^3=0.14$.
 If the researchers were instead estimating effects on five independent outcomes, the probability of at least one false positive finding rises to $0.23$.
 This Type I error inflation for independent outcomes demonstrates the crux of the multiple testing problem.
@@ -232,7 +231,7 @@ We refer to a setting in which the true impact is at least as large as the desir
 In the proceeding explanations, when we refer to rejecting a null hypothesis or detecting an effect, we assume that we are detecting an effect of a certain pre-specified size.
 If $p$-values are adjusted upward, one is less likely to reject true nulls, which reduces the probability of Type I errors, or false positive findings.
 At the same time, MTPs increase the probability of a Type II error, or false negative findings, when the test fails to reject a false null.
-Individual power is $1 - Pr(\text{Type II error})$, so MTPs have the tradeoff of reducing Type I errors but also reducing individual power.
+Individual power is $1 - \Prob(\text{Type II error})$, so MTPs have the tradeoff of reducing Type I errors but also reducing individual power.
 
 Next, we consider the impact of multiple outcomes on other definitions of power.
 Applying a MTP reduces power according to all definitions of power relative to the case when no MTP is applied to adjust $p$-values.
@@ -278,14 +277,14 @@ Total                                 & $M-R$                   & $R$           
 \end{table}
 
 In Table \ref{tab:twobytwo}, $V$ is the number of erroneously rejected null hypotheses, or the number of false positive findings.
-Therefore, the FWER is equivalent to $Pr(V > 0)$, the probability of at least one false positive finding.
+Therefore, the FWER is equivalent to $\Prob(V > 0)$, the probability of at least one false positive finding.
 As noted in @Porter2018, "recall that Type I error is inflated when testing for effects when no MTPs are applied.
 Consider the setting when all the outcomes are independent of each other.
 The Type I error is almost $10\%$ when testing effects on two independent outcomes and $23\%$ when testing effects on five independent outcomes.
 These Type I error rates both correspond to the FWER.
 The goal of MTPs that control the FWER is to bring these percentages back down to $5\%$." 
 
-Also in Table \ref{tab:twobytwo}, the FDR is equal to $E(V/R)$ but is defined to be $0$ when $R=0$, or when no hypotheses are rejected.
+Also in Table \ref{tab:twobytwo}, the FDR is equal to $\E(V/R)$ but is defined to be $0$ when $R=0$, or when no hypotheses are rejected.
 "As is frequently noted in the literature (e.g., @RN352; @RN23748), the FWER and FDR have different objectives.
 Control of the FWER protects researchers from spurious findings and so may be preferred when even a single false positive could lead to the wrong conclusion about the effectiveness of an intervention.
 On the other hand, the FDR is more lenient with false positives" (@Porter2018).
@@ -293,12 +292,12 @@ Researchers may be willing to accept a few false positives, $V$, when the total 
 Note that under the complete null hypothesis that all $M$ null hypotheses are true, the FDR is equal to the FWER.
 Referring back to Table \ref{tab:twobytwo}, under the complete null we have $V = R$, so
 \begin{align*}
-FDR &= E\left(\frac{V}{R}\right)\\
-&=  E\left(\frac{V}{R}\mid R = 0\right) Pr(R = 0) + E\left(\frac{V}{R} \mid R > 0\right)Pr(R > 0) \\
-&= 0 \times Pr(R = 0) + 1 \times Pr(R > 0) \\
-&= Pr(R > 0) = FWER
+FDR &= \E\left(\frac{V}{R}\right)\\
+&=  \E\left(\frac{V}{R}\mid R = 0\right) \Prob(R = 0) + \E\left(\frac{V}{R} \mid R > 0\right)\Prob(R > 0) \\
+&= 0 \times \Prob(R = 0) + 1 \times \Prob(R > 0) \\
+&= \Prob(R > 0) = FWER
 \end{align*}
-However, if any effects truly exist, then $FWER \geq FDR$.
+However, if any effects truly exist, then FWER $\geq$ FDR.
 As a result of the difference in objective between FWER and FDR, in the case where there is at least one false null hypothesis (at least one true effect), a MTP that controls the FDR at $5\%$ will have a Type I error rate that is greater than $5\%$.
 
 A side remark is that MTPs may provide either "weak control" or "strong control" of the error rate they target.
@@ -408,7 +407,7 @@ This process would involve specifying parameter values such as $R^2$, the amount
 
 2. *Estimate impacts on the simulated data.*
 Given simulated data, we could fit $M$ regression models (specified to match the experimental design and model assumptions).
-For the models supported by `PUMP`, the relevant functions would be `lm()`, `lmer()` from the `lme4` library (@lme4), and `interacted_linear_estimators()` from the `blkvar` library.^[This package is currently under development on GitHub; see \url{https://github.com/lmiratrix/blkvar}]
+For the models supported by \pkg{PUMP}, the relevant functions would be `lm()`, `lmer()` from the \pkg{lme4} library (@lme4), and `interacted_linear_estimators()` from the \pkg{blkvar} library.^[This package is currently under development on GitHub; see \url{https://github.com/lmiratrix/blkvar}]
 From the model output we extract the test statistics $t_m$ for the estimated impacts, one statistic for each outcome, along with estimated standard errors.
 
 3. *Calculate unadjusted $p$-values.*
@@ -422,7 +421,7 @@ One row corresponds to one set of simulated raw $p$-values from regressions for 
 
 5. *Adjust $p$-values.*
 For each row, corresponding to one simulated dataset, the $M$ raw $p$-values corresponding to the $M$ hypothesis tests can be adjusted according to the desired multiple testing procedure. This process  generates a new matrix $\mathbf{G}$ of adjusted $p$-values.
-For Bonferroni, Holm, and Benjamini-Hochberg adjustments, we use the function `p.adjust` in `R` (found in the `stats` package).
+For Bonferroni, Holm, and Benjamini-Hochberg adjustments, we use the function `p.adjust` in \proglang{R} (found in the `stats` package).
 We developed our own functions for implementing adjustment using the Westfall-Young procedures.
 One row corresponds to one set of simulated *adjusted* $p$-values for the $5$ attendance outcomes of interest for Diplomas Now.
 
@@ -549,12 +548,12 @@ For more information on applying the search algorithm, see the sample size vigne
 \subsection{Package Validation}
 
 We completed extensive validation checks to ensure our power calculation procedures are correct.
-First, we compared our power estimates in scenarios with only one outcome, $M = 1$, to those from the `PowerUpR` package.
+First, we compared our power estimates in scenarios with only one outcome, $M = 1$, to those from the \pkg{PowerUpR} package.
 Without a multiple testing procedure adjustment, our estimates match.
 Second, in order to validate our estimates under multiplicity, we followed the full simulation approach outlined above, in Section \ref{sec:est_power}.
 The simulation approach involves generating many iterations of full datasets according to the assumed design and model, calculating $p$-values, and calculating an empirical estimate of power.
 Using a binomial distribution we constructed Monte Carlo confidence intervals for the power estimates from the full simulation approach.
-Then, we validated that the `PUMP` estimates fall within these confidence intervals.
+Then, we validated that the \pkg{PUMP} estimates fall within these confidence intervals.
 
 A more detailed explanation of the validation procedure can be found in the Appendix, and full validation code and results are in a supplementary github repository [pump_validate](https://github.com/MDRCNY/pump_validate).
 For some scenarios, we have some apparent discrepancies from PowerUp, but these result from different modeling choices.
@@ -573,7 +572,7 @@ Second, based on the design and the inferential goals of the study, the research
 For the same experimental design, the analyst can sometimes choose from a variety of possible models, and these two decisions should be kept conceptually separated from each other.
 
 
-*The design.* The `PUMP` package supports designs with one, two, or three levels, with randomization occurring at any level.
+*The design.* The \pkg{PUMP} package supports designs with one, two, or three levels, with randomization occurring at any level.
 For example, a design with two levels and randomization at level one is a blocked design (or equivalently a multisite experiment), where level two forms the blocks (blocks being groups of units, some of which are treated and some not).
 Ideally, the blocks in a trial will be groups of relatively homogenous units, but frequently they are a consequence of the units being studied (e.g., evaluations of college supports, with students, the units, nested in colleges, the blocks).
 A design with two levels and randomization at level two is commonly called a cluster design (e.g., a collection of schools, with treatment applied to a subset of the schools, with outcomes at the student level); here the schools are the clusters, with a cluster being a collection of units which is entirely treated or entirely not.
@@ -603,13 +602,13 @@ For more details about each combination of design and model, see the Technical A
 
 ```{r, echo = FALSE}
 info <- pump_info()
-kable(info$Design[,1:4], format = 'latex')
+knitr::kable( info$Design[,1:4], format = 'latex' )
 ```
 
 \subsection{Multiple testing procedures}
 
 The supported multiple testing procedures were covered in more detail in Section \ref{sec:mtp_overview}.
-Here we provide a review of the multiple testing procedures supported by the `PUMP` package:
+Here we provide a review of the multiple testing procedures supported by the \pkg{PUMP} package:
 
 - *Bonferroni*: adjusts $p$-values by multiplying them by $M$ to ensure strong control of the FWER.  Bonferroni is a simple procedure, but the most conservative.
 - *Holm*: a step-down version of Bonferroni. Starting from smallest to largest, $p$-values are sequentially adjusted by different multipliers. Holm is less conservative than Bonferroni for larger $p$-values.
@@ -619,7 +618,7 @@ Here we provide a review of the multiple testing procedures supported by the `PU
 
 For a more detailed explanation of each MTP, see Appendix A of @Porter2018.
 
-The following table from @Porter2018 summarizes the important features for each of the MTPs supported by `PUMP`.
+The following table from @Porter2018 summarizes the important features for each of the MTPs supported by \pkg{PUMP}.
 
 \begin{table}[h!]
 \centering
@@ -641,7 +640,7 @@ Benjamini-Hochberg (BH)               & FDR     & stepwise                & No
 The table below shows the parameters that influence $Q_m$, the standard error, for different designs and models.
 
 ```{r, echo = FALSE}
-kable(info$Parameters)
+knitr::kable(info$Parameters, format = 'latex')
 ```
 
 A few parameters warrant more explanation.
@@ -660,12 +659,12 @@ In addition to design parameters, there are additional parameters that control t
 
 - `tnum` is the number of test statistics generated in order to estimate power. A larger number of test statistics results in greater computation time, but also a more precise estimate of power. Note that the `pump_mdes()` and `pump_sample()` have multiple `tnum` parameters controlling the precision of the search.
 - `B` is the number of Westfall-Young permutations. Again, there is a tradeoff between precision and computation time.
-- `parallel.WY.cores` specifies the number of cores to use for parallel computation of the Westfall-Young Step-Down procedure, which is the most computationally intensive. The default of `1` does not result in parallel computation. Parallelization is done using `parApply` from the `parallel` package.
+- `parallel.WY.clusters` specifies the number of cores to use for parallel computation of the Westfall-Young Step-Down procedure, which is the most computationally intensive. The default of `1` does not result in parallel computation. Parallelization is done using `parApply` from the `parallel` package.
 
 \section{Using the PUMP package}
 \label{sec:vignette}
 
-In this section, we illustrate how to use the `PUMP` package, using our example motivated by the Diplomas Now study.
+In this section, we illustrate how to use the \pkg{PUMP} package, using our example motivated by the Diplomas Now study.
 Given the study's design, we ask a natural initial question: What size of impact could we reasonably detect after using a MTP to adjust $p$-values to account for our multiple outcomes?
 
 We mimic the planning process one might use for planning a study similar to Diplomas Now (e.g., if we were planning a replication trial in a slightly different context).
@@ -731,7 +730,7 @@ This value is an estimate, and we strongly encourage exploration of different va
 Selecting a candidate rho is difficult, and will be new for those only familiar with power analyses of single outcomes; we need to more research in the field, both empirical and theoretical, to further guide this choice.
 
 If the information were available, we could specify different values for the design parameters such as the $R^2$s and $ICC$s for each outcome, if we thought they had different characteristics; for simplicity we do not do this here.
-The `PUMP` package also allows specifying different pairwise correlations between the test statistics of the different outcomes via a matrix of $\rho$s rather than a single $\rho$; also for simplicity, we do not do that here.
+The \pkg{PUMP} package also allows specifying different pairwise correlations between the test statistics of the different outcomes via a matrix of $\rho$s rather than a single $\rho$; also for simplicity, we do not do that here.
 
 Once we have established initial values for all needed parameters, we first conduct a baseline calculation, and then explore how MDES or other quantities change as these parameters change.
 
@@ -751,26 +750,27 @@ Here, for example, we find the MDES if we want an 80% chance of detecting an imp
 
 ```{r MDEScalc}
 m <- pump_mdes(
-        	design = "d3.2_m3fc2rc", # choice of design and analysis strategy
-        	MTP = "Holm", # multiple testing procedure
-        	target.power = 0.80, # desired power
-        	power.definition = "D1indiv", # power type
-        	M = 5, # number of outcomes
-        	J = 3, # number of schools/block
-        	K = 21, # number RA blocks
-        	nbar = 258, # average number of students per school
-        	Tbar = 0.50, # prop Tx
-        	alpha = 0.05, # significance level
-        	numCovar.1 = 5, numCovar.2 = 3, # number of covariates per level
-        	R2.1 = 0.1, R2.2 = 0.7, # Explanatory power of covariates for each level
-        	ICC.2 = 0.05, ICC.3 = 0.4, # Intraclass correlation coefficients
-        	omega.3 = 0.50, # Amount of treatment variation at level 3.
-        	rho = 0.4 ) # how correlated outcomes are
+  design = "d3.2_m3fc2rc",      # choice of design and analysis strategy
+  MTP = "Holm",                 # multiple testing procedure
+  target.power = 0.80,          # desired power
+  power.definition = "D1indiv", # power type
+  M = 5,                        # number of outcomes
+  J = 3,                        # number of schools per block
+  K = 21,                       # number districts
+  nbar = 258,                   # average number of students per school
+  Tbar = 0.50,                  # prop treated
+  alpha = 0.05,                 # significance level
+  numCovar.1 = 5,               # number of covariates at level 1
+  numCovar.2 = 3,               # number of covariates at level 2
+  R2.1 = 0.1, R2.2 = 0.7,       # explanatory power of covariates for each level
+  ICC.2 = 0.05, ICC.3 = 0.4,    # intraclass correlation coefficients
+  omega.3 = 0.50,               # amount of treatment variation at level 3
+  rho = 0.4 )                   # how correlated outcomes are
 ```
 
 The results are easily made into a nice table via the `knitr` `kable()` command:
 ```{r echo = FALSE}
-knitr::kable(m, digits = 2)
+knitr::kable( m, digits = 2, format = 'latex' )
 ```
 
 The answers `pump_mdes()` gives are approximate as we are calculating them via monte carlo simulation.
@@ -782,7 +782,7 @@ Changing the type of power is straightforward: for example, to identify the MDES
 
 ```{r MDEScalcmin1, echo=TRUE}
 m2 <- update( m, power.definition = "min1" )
-knitr::kable(m2, digits = 2)
+knitr::kable( m2, digits = 2, format = 'latex' )
 ```
 
 The `update()` method can replace any number of arguments of the prior call with new ones, making exploration of different scenarios very straightforward.^[The update() method re-runs the underlying call of pump_mdes(), pump_sample(), or pump_power() with the revised set of design parameters. You can even change which call to use via the type parameter.]
@@ -793,7 +793,7 @@ One way to do this is to set two of our outcomes to no effect with the `numZero`
 
 ```{r MDESwithNumZero, echo=TRUE}
 m3 <- update( m2, numZero = 2 )
-knitr::kable(m3, digits = 2)
+knitr::kable( m3, digits = 2, format = 'latex' )
 ```
 
 The MDES goes up, as expected: when there are not effects on some outcomes, there are fewer good chances for detecting an effect.
@@ -827,7 +827,7 @@ smp <- pump_sample(
 ```
 
 ```{r samplesizecalckableecho = FALSE}
-knitr::kable(smp)
+knitr::kable( smp, format = 'latex' )
 ```
 
 We would need 15 blocks, rather than the originally specified 21, giving 45 total schools in our study, to achieve 80% $1-$minimal power.
@@ -839,7 +839,7 @@ When we do this, we can also increase the number of iterations to get more preci
 ```{r samplesizeverify}
 p_check <- update( smp, type = "power", tnum = 100000,
                    long.table = TRUE)
-knitr::kable(p_check, row.names = FALSE)
+knitr::kable( p_check, row.names = FALSE, format = 'latex' )
 ```
 
 When calculating power directly, we get power for all the implemented definitions of power applicable to the design.
@@ -921,9 +921,9 @@ For example, if we thought we had better predictive covariates for our second ou
 
 ```{r}
 p_d <- update( p_check,
-          	R2.1 = c( 0.1, 0.3, 0.1, 0.2, 0.2 ),
-          	R2.2 = c( 0.4, 0.8, 0.3, 0.2, 0.2 ),
-          	omega.3 = c( 0.2, 0.4, 0.3, 0.2, 0.2 ) )
+          	   R2.1 = c( 0.1, 0.3, 0.1, 0.2, 0.2 ),
+          	   R2.2 = c( 0.4, 0.8, 0.3, 0.2, 0.2 ),
+          	   omega.3 = c( 0.2, 0.4, 0.3, 0.2, 0.2 ) )
 print( p_d )
 ```
 
@@ -933,7 +933,7 @@ The $d$-minimal powers naturally take the varying outcomes into account as we ar
 After several `update()`s, we may lose track of where we are; to find out, we can always check details with `print_design()` or `summary()`:
 
 ```{r}
-summary(p_d)
+summary( p_d )
 ```
 
 Using update allows for targeted comparison of major choices, but if we are interested in how power changes across a range of options, we can do this more systematically with the `grid()` functions, as we do next.
@@ -946,16 +946,17 @@ The `update_grid()` call makes this straightforward: we pass our baseline scenar
 
 ```{r, fig.height=3, fig.width=7}
 grid <- update_grid( p_check,
-        	ICC.2 = seq( 0, 0.3, 0.05 ),
-        	ICC.3 = seq( 0, 0.60, 0.20 ),
-        	tnum = 5000 )
+        	           ICC.2 = seq( 0, 0.3, 0.05 ),
+        	           ICC.3 = seq( 0, 0.60, 0.20 ),
+        	           tnum = 5000 )
 
 grid$ICC.3 <- as.factor( grid$ICC.3 )
 grid <- dplyr::filter( grid, MTP == "Holm" )
+
 ggplot2::ggplot( grid, aes( ICC.2, min1, group = ICC.3, col = ICC.3 ) ) +
 	geom_line() + geom_point() +
 	labs( y = "Min-1 Power" ) +
-  coord_cartesian( ylim = c(0,1) )
+  coord_cartesian( ylim = c( 0, 1 ) )
 ```
 
 Note that in addition to `update_grid()`, there are also base functions `pump_power_grid()`, `pump_mdes_grid()`, and `pump_sample_grid()`.
@@ -996,7 +997,7 @@ set.seed( 4040440 )
 ```{r, fig.height=3, fig.width=7}
 gridRho <- update_grid( p_check,
         	MTP = c( "Bonferroni", "WY-SD" ),
-        	rho = seq( 0, 0.9, by=0.15 ),
+        	rho = seq( 0, 0.9, by = 0.15 ),
         	tnum = 500,
         	B = 10000 )
 ```
@@ -1004,17 +1005,17 @@ gridRho <- update_grid( p_check,
 We then plot our results.
 ```{r, fig.height=3, fig.width=7}
 gridL <- dplyr::filter( gridRho, MTP != "None" ) %>%
-  pivot_longer( cols = c(indiv.mean, min1, min2, complete),
-            	names_to = "definition", values_to = "power" ) %>%
+  tidyr::pivot_longer( cols = c(indiv.mean, min1, min2, complete),
+            	         names_to = "definition", values_to = "power" ) %>%
   mutate( definition = factor( definition,
-                           	levels = c("indiv.mean", "min1", "min2", "complete" ) ) )
+          levels = c("indiv.mean", "min1", "min2", "complete" ) ) )
 
 ggplot2::ggplot( gridL, aes( rho, power, col=MTP ) ) +
   facet_grid( . ~ definition ) +
   geom_line() + geom_point() +
   geom_hline( yintercept = c( 0, 0.80 ) ) + 
   theme_minimal() +
-  coord_cartesian( ylim=c(0,1) )
+  coord_cartesian( ylim = c( 0, 1 ) )
 ```
 
 First, we see the benefit of the Westfall-Young single-step procedure is minimal, as compared to Bonferroni.
@@ -1042,15 +1043,15 @@ gridZero <- update_grid( p_check,
 We then can make a plot as we did above:
 ```{r, echo=FALSE, fig.width = 7, fig.height = 2.25, warnings=FALSE }
 gridL <- dplyr::filter( gridZero, MTP != "None" ) %>%
-  pivot_longer( cols = c(indiv.mean, min1, min2, min3, min4 ),
-            	names_to = "definition", values_to = "power" ) %>%
+  tidyr::pivot_longer( cols = c(indiv.mean, min1, min2, min3, min4 ),
+            	  names_to = "definition", values_to = "power" ) %>%
   mutate( definition = as.factor( definition ) )
 
 ggplot2::ggplot( gridL, aes( numZero, power ) ) +
   facet_grid( . ~ definition ) +
-  geom_line( ) + geom_point() +
-  geom_hline( yintercept = 0.80, col="darkgrey" ) +
-  coord_cartesian( ylim = c(0,1) ) +
+  geom_line() + geom_point() +
+  geom_hline( yintercept = 0.80, col = "darkgrey" ) +
+  coord_cartesian( ylim = c( 0, 1 ) ) +
   theme_minimal()
 ```
 
@@ -1062,14 +1063,14 @@ The `grid()` functions, by contrast, take a single MDES value for the non-null o
 \section{Conclusion}
 \label{sec:conclusion}
 
-We introduce the power under multiplicity project (`PUMP`) `R` package, which estimates power for multi-level randomized control trials with multiple outcomes.
-`PUMP` allows users to estimate power, MDES, and sample size requirements for a wide variety of commonly used RCT designs and models across different definitions of power and applying different MTPs.
-The functionality of `PUMP` fills an important gap, as existing tools do not allow researchers to conduct power, MDES or sample size calculations when applying a MTP.
-An online interface is also available at \url{https://mdrcpump.shinyapps.io/pump_shiny/}.
+We introduce the power under multiplicity project (\pkg{PUMP}) \proglang{R} package, which estimates power for multi-level randomized control trials with multiple outcomes.
+\pkg{PUMP} allows users to estimate power, MDES, and sample size requirements for a wide variety of commonly used RCT designs and models across different definitions of power and applying different MTPs.
+The functionality of \pkg{PUMP} fills an important gap, as existing tools do not allow researchers to conduct power, MDES or sample size calculations when applying a MTP.
+An online interface is also available at \url{https://mdrcpump.shinyapps.io/pump}.
 
-The main advantage of the `PUMP` package is to provide easily accessible estimation procedures so that users can properly account for power when making adjustments for multiple hypothesis testing.
+The main advantage of the \pkg{PUMP} package is to provide easily accessible estimation procedures so that users can properly account for power when making adjustments for multiple hypothesis testing.
 However, one of the additional strengths of the package is the ease with which a user can explore the impact of different designs, models, and assumptions on power, MDES or sample size.
-Even if a user is only interested in a single outcome, `PUMP` provides useful functionality for more robust power calculations.
+Even if a user is only interested in a single outcome, \pkg{PUMP} provides useful functionality for more robust power calculations.
 A user can and should try a range of parameter values to determine the sensitivity of the power of their study to different assumptions; this package simplifies that process.
 
 In addition to this paper, there is a variety of supporting information.
@@ -1086,27 +1087,27 @@ We acknowledge the Diplomas Now team at MDRC.
 Development of this package was supported by a grant from the Institute of Education Sciences (R305D170030).
 We would like to thank members of the Harvard CARES lab for their feedback on the manuscript.
 
-\section{References}
+\bibliography{refs}
 
-<div id="refs"></div>
+\newpage
 
-\section{Appendix: Validation}
+\begin{appendix}
 
 In order to validate that our power estimates are working as intended, we compared three different methods of estimating power:
   
-* `PUMP`
-* `PowerUpR`
+* \pkg{PUMP}
+* \pkg{PowerUpR}
 * Monte Carlo simulations
 
-We compute values from `PowerUpR` for individual, unadjusted power, as `PowerUpR` only provides power estimates in that setting.
-For all other types of power definitions and adjustments, we compare `PUMP` to the estimated power obtained from full Monte Carlo simulations.
+We compute values from \pkg{PowerUpR} for individual, unadjusted power, as \pkg{PowerUpR} only provides power estimates in that setting.
+For all other types of power definitions and adjustments, we compare \pkg{PUMP} to the estimated power obtained from full Monte Carlo simulations.
 We follow the simulation approach outlined in detail in Section \ref{sec:est_power}.
 After repeatedly simulating data and calculating $p$-values, we calculate power and a 95\% confidence interval, assuming a conservative standard error estimate of $\sqrt{0.25/S}$.
 
-To validate the estimates, we first check that the `PUMP` and `PowerUpR` estimates match.
-In some settings we expect some discrepancies between these values because `PUMP` has different assumptions than `PowerUpR` for certain models.
-For details about differences between `PUMP` and `PowerUpR` assumptions, see the Technical Appendixs.
-Second, we check that the `PUMP` estimate is within the Monte Carlo confidence interval.
+To validate the estimates, we first check that the \pkg{PUMP} and \pkg{PowerUpR} estimates match.
+In some settings we expect some discrepancies between these values because \pkg{PUMP} has different assumptions than \pkg{PowerUpR} for certain models.
+For details about differences between \pkg{PUMP} and \pkg{PowerUpR} assumptions, see the Technical Appendixs.
+Second, we check that the \pkg{PUMP} estimate is within the Monte Carlo confidence interval.
 
 We also validate MDES and sample size calculations.
 For MDES, we choose one default scenario for each design and model, then input the already-calculated individual power and see if the output MDES is the same as the original input MDES.
@@ -1144,8 +1145,8 @@ We do not vary:
 \textbf{Validation results}
 
 Figure \ref{fig:validate} is an example of a graph we use for validation.
-The green dots are `PUMP` estimate of power, the red dot is the `PowerUpR` estimate of power, and the 95\% confidence intervals based on the Monte Carlo simulations are shown in blue.
-To validate that `PUMP` produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals.
+The green dots are \pkg{PUMP} estimate of power, the red dot is the \pkg{PowerUpR} estimate of power, and the 95\% confidence intervals based on the Monte Carlo simulations are shown in blue.
+To validate that \pkg{PUMP} produces the expected result, we want to see the red and green points match, and for the red point to be within the blue intervals.
 Figure \ref{fig:validate} shows the results across different types of power and different MTPs.
 We repeat this plot for a variety of different parameter values for each design and model.
 
@@ -1157,7 +1158,7 @@ We repeat this plot for a variety of different parameter values for each design 
 \end{figure}
 
 Next, we validate MDES and sample size calculations.
-We put in our found power, and then see if the `pump_mdes()` function returns the MDES we originally plugged in to achieve this power.
+We put in our found power, and then see if the $`pump_mdes()`$ function returns the MDES we originally plugged in to achieve this power.
 In Table \ref{tab:mdes}, the first column shows the calculated MDES, the middle column is the power we plugged into the calculation, and the last column shows the MDES that we are targeting.
 Thus, ideally we want the first and last columns to match.
 
@@ -1175,7 +1176,7 @@ Holm & 0.125 & 0.540 & 0.125
 \end{table}
 
 Similarly, we validate our sample size calculations.
-Using our found power, we see if `pump_sample()` returns the original sample size.
+Using our found power, we see if $`pump_sample()`$ returns the original sample size.
 In Table \ref{tab:ss}, we are targeting a sample size of $J = 20$.
 
 \begin{table}[h!]
@@ -1190,3 +1191,5 @@ Holm & J & 20 & 0.544
 \label{tab:ss}
 \caption{Sample size validation}
 \end{table}
+
+\end{appendix}
