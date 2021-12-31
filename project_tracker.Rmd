@@ -1,22 +1,21 @@
 
-Updated: Dec 30 by KH
+Updated: Dec 31 by KH
 
 *TODO*
 
-- add correlation tool to validation repo (KH)
-- finish validation of WY writeup (KH)
-- finish formatting and submit to JSS (KH)
-- move vignette into package (KH)
+- finish validation of WY writeup
+- finish formatting and submit to JSS
+- move vignette into package
 
-# Stretch goals
+# Future goals
 
-- messaging (KH or LM)
+- messaging
   - collect errors from grid and only print out unique errors
   - give user estimate of runtime for WY for MDES and SS
-- vary multiple factors in plots (LM)
+- vary multiple factors in plots
 - plot behavior for grid objects
-- surface WY functions to user with good documentation (KH)
-- tool that helps user build a block matrix of correlations based on a list of correlations between outcomes (KH)
+- surface WY functions to user with good documentation
+- tool that helps user build a block matrix of correlations based on a list of correlations between outcomes
 - generate a data frame of reasonable defaults for shiny that produce 80% power
 - additional designs: d2.2_m2rr, d3.3_m2ff, d3.1_m3fc2rr, d2.2_m2cc with cluster robust standard errors
 - effect size calculator

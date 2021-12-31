@@ -54,8 +54,8 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
     samp.obs <- samp.full
     samp.obs$Yobs <- PUMP::gen_Yobs(samp.full, T.x)
     
-    dat.all <- makelist.samp(samp.obs, T.x) # list length M
-    rawpt.out <- get.rawpt(dat.all, d_m = d_m, model.params.list = model.params.list)
+    dat.all <- makelist_samp(samp.obs, T.x) # list length M
+    rawpt.out <- get_rawpt(dat.all, d_m = d_m, model.params.list = model.params.list)
     rawp <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['pval']])})
     rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
     
@@ -101,17 +101,13 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
   return(adjp.proc)
 }
 
-# --------------------------------------------------------------------- #
-#  Function: make.model	Inputs:dat,dummies      	                        #
-#		a reshaped dataset (dat)-->data for one m 			                      #
-#		dummies, string of dummy names in formula, if function needs          #
-#		funct, the model type to use as string				                        #
-#         fixfastLm, fixlmer, or random                                   #
-#	Outputs: model object of type function					                        #
-#	Notes: dummies can be output of make.dummies $dnames			              #
-# --------------------------------------------------------------------- #
-
-make.model <- function(dat.m, d_m) {
+#'  Function: make.model		                                       
+#'  
+#'  function to generate a model for simulated data
+#'
+#' @param dat.m a data frame for a single outcome
+#' @param d_m design/model
+make_model <- function(dat.m, d_m) {
   # dat.m = dat.all[[1]];
   
   singular <- FALSE
@@ -174,13 +170,14 @@ make.model <- function(dat.m, d_m) {
 }
 
 
-# --------------------------------------------------------------------- #
-#	Function: get.pval 	Inputs: mod						                              #
-#		a model object, mod							                                      #
-#	Outputs: pvalue 									                                      #
-# --------------------------------------------------------------------- #
-
-get.pval.tstat <- function(mod, d_m, model.params.list) {
+#'  Function: get_pval_tstat	                                       
+#'  
+#' extracts p-value and t statistics from a given model
+#'
+#' @param mod model object
+#' @param d_m design/model
+#' @param model.params.list list of model parameters
+get_pval_tstat <- function(mod, d_m, model.params.list) {
   if(class(mod) == "lm") {
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
@@ -203,36 +200,27 @@ get.pval.tstat <- function(mod, d_m, model.params.list) {
   return(list(tstat = tstat, pval = pval))
 }
 
-# --------------------------------------------------------------------- #
-#	Function: get.rawp	Inputs: dat.all, d_m, nbar, J      	            #
-#   dat.all, a single dataset from list of S datasets as a list length M  #
-#												                                                  #
-# Calls: make.dummies, make.model, get.pval                               #
-#	Outputs: matrix of raw p-values for a single sample		                  #
-#	Notes: gets raw p-vals for a single dataset and funct at a time	        #
-# --------------------------------------------------------------------- #
-
-get.rawpt <- function(dat.all, d_m, model.params.list) {
-  mods.out <- lapply(dat.all, function(m) make.model(m, d_m))
+#' Function: get_rawpt                                      
+#'  
+#' fits models and extracts p values and t statistics
+#'
+#' @param dat.all list of datasets
+#' @param d_m design/model
+#' @param model.params.list list of model parameters
+get_rawpt <- function(dat.all, d_m, model.params.list) {
+  mods.out <- lapply(dat.all, function(m) make_model(m, d_m))
   mods <- lapply(mods.out, function(m){ return(m[['mod']]) })
   singular <- sapply(mods.out, function(m){ return(m[['singular']]) })
   failed.converge <- sapply(mods.out, function(m){ return(m[['failed.converge']]) })
-  rawpt <- lapply(mods, function(x) get.pval.tstat(x, d_m, model.params.list))
+  rawpt <- lapply(mods, function(x) get_pval_tstat(x, d_m, model.params.list))
   return(list(rawpt = rawpt, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
 }
 
-# --------------------------------------------------------------------- #
-#  Function: makelist.samp
-# Inputs 
-#		    M, number of domains                                              #
-#		    samp, a single sample of data                                     #
-#                                                                         #
-#	Outputs: list length M of data by domain                                #
-#          each entry is a dataset for a single domain               			#
-#	Notes:                                                        	        #
-# --------------------------------------------------------------------- #
-
-makelist.samp <-function(samp.obs, T.x) {
+#' takes in multi-outcome data and returns a list for each outcome
+#'
+#' @param samp.obs a single iteration of observed data
+#' @param T.x vector of treatment assignments
+makelist_samp <-function(samp.obs, T.x) {
 
   mdat.rn <- NULL
   for(m in 1:ncol(samp.obs$Yobs))

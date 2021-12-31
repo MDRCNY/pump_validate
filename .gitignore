@@ -55,6 +55,10 @@ validation/results/*files*/
 manuscript/jss_manuscript/jss_manuscript_files/*
 manuscript/jss_manuscript/jss_manuscript_files/figure-latex/*
 manuscript/jss_manuscript/jss_manuscript_files/figure-latex/*.pdf
+manuscript/arxiv/arxiv_cache/*
+manuscript/arxiv/arxiv_files/*
+manuscript/jss/jss_manuscript_cache/*
+manuscript/jss/jss_manuscript_files/*
 
 # Temporary files created by R markdown
 *.utf8.md
