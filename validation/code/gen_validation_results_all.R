@@ -8,16 +8,16 @@ library(here)
 # overwrite existing results that have already been saved?
 overwrite = FALSE
 # whether or not to run power, mdes and sample size
-run.power = FALSE
+run.power = TRUE
 run.mdes.ss = FALSE
 # whether to run limited westfall young validations
-run.wy = TRUE
+run.wy = FALSE
 # which d_ms to run
 run.d2.1 = FALSE
 run.d2.2 = FALSE
 run.d3.1 = TRUE
 run.d3.3 = FALSE
-run.d3.2 = TRUE
+run.d3.2 = FALSE
 
 # for parallel processing
 q <- as.numeric(as.character(Sys.getenv("q")))
@@ -38,7 +38,7 @@ source(here::here("validation/code", "misc.R"))
 
 sim.params.list <- list(
   S = 3                     # Number of samples for Monte Carlo Simulation
-  , Q = 20                    # Number of times entire simulation is repeated, so total iterations = S * Q
+  , Q = 1                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
   , tol = 0.01               # tolerance for MDES and sample  size calculations
