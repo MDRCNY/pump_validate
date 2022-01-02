@@ -1,5 +1,11 @@
 library(PUMP)
 
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(tidyr)
+
 set.seed( 0440044 )
 
 #------------------------------------------------------------#

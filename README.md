@@ -5,6 +5,14 @@ This repo contains code and results that validate the power results from the [PU
 This package compares the PUMP package power estimation with a simulation-based approach to validate that the
 power calculations are correct.
 
+Development of this project was supported by a grant from the Institute of Education Sciences (R305D170030).
+
+Authors:
+  - Kristen Hunter
+  - Luke Miratrix
+  - Kristin Porter
+  - Zarni Htet
+
 ## Validation results
 
 The complete set of validation results can be found in validation/results.

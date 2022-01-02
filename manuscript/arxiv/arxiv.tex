@@ -1261,30 +1261,30 @@ e.g.~\texttt{d2.1\_m3fc}. The Diplomas Now model, for example, is
 
 The full list of supported design and model combinations is below. The
 user can see the list by calling \texttt{pump\_info()}, which provides
-the designs and models, MTPs, and model parameters. We also include the
-corresponding names from the PowerUP! package where appropriate. For
-more details about each combination of design and model, see the
-Technical Appendix.
+the designs and models, MTPs, power definitions, and model parameters.
+We also include the corresponding names from the PowerUP! package where
+appropriate. For more details about each combination of design and
+model, see the Technical Appendix.
 
 \begin{table}
 \centering
-\begin{tabular}{llll}
+\begin{tabular}{lllll}
 \toprule
-Code & Design & Model & PowerUp\\
+d\_m & Design & Model & PowerUp & Params\\
 \midrule
-d1.1\_m1c & d1.1 & m1c & n/a\\
-d2.1\_m2fc & d2.1 & m2fc & bira2\_1c\\
-d2.1\_m2ff & d2.1 & m2ff & bira2\_1f\\
-d2.1\_m2fr & d2.1 & m2fr & bira2\_1r\\
-d2.1\_m2rr & d2.1 & m2rr & n/a\\
+d1.1\_m1c & d1.1 & m1c & n/a & R2.1\\
+d2.1\_m2fc & d2.1 & m2fc & bira2\_1c & R2.1, ICC.2\\
+d2.1\_m2ff & d2.1 & m2ff & bira2\_1f & R2.1, ICC.2\\
+d2.1\_m2fr & d2.1 & m2fr & bira2\_1r & R2.1, ICC.2, omega.2\\
+d2.1\_m2rr & d2.1 & m2rr & n/a & R2.1, ICC.2, omega.2\\
 \addlinespace
-d2.2\_m2rc & d2.2 & m2rc & cra2\_2r\\
-d3.1\_m3rr2rr & d3.1 & m3rr2rr & bira3\_1r\\
-d3.2\_m3ff2rc & d3.2 & m3ff2rc & bcra3\_2f\\
-d3.2\_m3fc2rc & d3.2 & m3fc2rc & n/a\\
-d3.2\_m3rr2rc & d3.2 & m3rr2rc & bcra3\_2r\\
+d2.2\_m2rc & d2.2 & m2rc & cra2\_2r & R2.1, R2.2, ICC.2\\
+d3.1\_m3rr2rr & d3.1 & m3rr2rr & bira3\_1r & R2.1, ICC.2, omega.2, ICC.3, omega.3\\
+d3.2\_m3ff2rc & d3.2 & m3ff2rc & bcra3\_2f & R2.1, R2.2, ICC.2, ICC.3\\
+d3.2\_m3fc2rc & d3.2 & m3fc2rc & n/a & R2.1, R2.2, ICC.2, ICC.3\\
+d3.2\_m3rr2rc & d3.2 & m3rr2rc & bcra3\_2r & R2.1, R2.2, ICC.2, ICC.3, omega.3\\
 \addlinespace
-d3.3\_m3rc2rc & d3.3 & m3rc2rc & cra3\_3r\\
+d3.3\_m3rc2rc & d3.3 & m3rc2rc & cra3\_3r & R2.1, R2.2, ICC.2, R2.3, ICC.3\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1361,8 +1361,10 @@ standard error, for different designs and models.
 \toprule
 Parameter & Description\\
 \midrule
-nbar & harmonic mean of level 1 units per level 2 unit (students per school)\\
-J & number of level 2 units per level 3 unit (schools per district)\\
+nbar & harmonic mean of level 1 units per
+                     level 2 unit (students per school)\\
+J & harmonic mean of number of level 2 
+                      units per level 3 unit (schools per district)\\
 K & number of level 3 units (districts)\\
 Tbar & proportion of units assigned to treatment\\
 numCovar.1 & number of level 1 (individual) covariates\\
@@ -1375,8 +1377,10 @@ R2.3 & percent of variation explained by level 3 covariates\\
 \addlinespace
 ICC.2 & level 2 intraclass correlation\\
 ICC.3 & level 3 intraclass correlation\\
-omega.2 & ratio of variance of level 2 average impacts to level 2 random intercepts\\
-omega.3 & ratio of variance of level 3 average impacts to level 3 random intercepts\\
+omega.2 & ratio of variance of level 2 average impacts to
+                      level 2 random intercepts\\
+omega.3 & ratio of variance of level 3 average impacts to
+                      level 3 random intercepts\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1422,7 +1426,7 @@ control the precision of the power estimates themselves:
   \texttt{B} is the number of Westfall-Young permutations. Again, there
   is a tradeoff between precision and computation time.
 \item
-  \texttt{parallel.WY.clusters} specifies the number of cores to use for
+  \texttt{parallel.WY.cores} specifies the number of cores to use for
   parallel computation of the Westfall-Young Step-Down procedure, which
   is the most computationally intensive. The default of \texttt{1} does
   not result in parallel computation. Parallelization is done using
@@ -1578,8 +1582,8 @@ detecting an impact on our first outcome when using the Holm procedure:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{m }\OtherTok{\textless{}{-}} \FunctionTok{pump\_mdes}\NormalTok{(}
-  \AttributeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{,      }\CommentTok{\# choice of design and analysis strategy}
-  \AttributeTok{MTP =} \StringTok{"Holm"}\NormalTok{,                 }\CommentTok{\# multiple testing procedure}
+  \AttributeTok{d\_m =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{,      }\CommentTok{\# choice of design and analysis strategy}
+  \AttributeTok{MTP =} \StringTok{"HO"}\NormalTok{,                 }\CommentTok{\# multiple testing procedure}
   \AttributeTok{target.power =} \FloatTok{0.80}\NormalTok{,          }\CommentTok{\# desired power}
   \AttributeTok{power.definition =} \StringTok{"D1indiv"}\NormalTok{, }\CommentTok{\# power type}
   \AttributeTok{M =} \DecValTok{5}\NormalTok{,                        }\CommentTok{\# number of outcomes}
@@ -1615,7 +1619,7 @@ The results are easily made into a nice table via the \texttt{knitr}
 \toprule
 MTP & Adjusted.MDES & D1indiv.power\\
 \midrule
-Holm & 0.104 & 0.792\\
+HO & 0.104 & 0.792\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1643,10 +1647,10 @@ definition:
 \end{Shaded}
 
 \begin{verbatim}
-#> mdes result: d3.2_m3fc2rc design with 5 outcomes
+#> mdes result: d3.2_m3fc2rc d_m with 5 outcomes
 #>   target min1 power: 0.80
-#>   MTP Adjusted.MDES min1.power          SE
-#>  Holm    0.08188259      0.804 0.002363978
+#>  MTP Adjusted.MDES min1.power          SE
+#>   HO    0.08188259      0.804 0.002363978
 #>  (13 steps in search)
 \end{verbatim}
 
@@ -1673,10 +1677,10 @@ no effect with the \texttt{numZero} parameter:
 \end{Shaded}
 
 \begin{verbatim}
-#> mdes result: d3.2_m3fc2rc design with 5 outcomes
+#> mdes result: d3.2_m3fc2rc d_m with 5 outcomes
 #>   target min1 power: 0.80
-#>   MTP Adjusted.MDES min1.power          SE
-#>  Holm    0.08913163      0.791 0.002553031
+#>  MTP Adjusted.MDES min1.power          SE
+#>   HO    0.08913163      0.791 0.002553031
 #>  (16 steps in search)
 \end{verbatim}
 
@@ -1705,8 +1709,8 @@ significant, if all outcomes had a true effect size of 0.10).
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{smp }\OtherTok{\textless{}{-}} \FunctionTok{pump\_sample}\NormalTok{(}
-  \AttributeTok{design =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{,}
-  \AttributeTok{MTP =} \StringTok{"Holm"}\NormalTok{,}
+  \AttributeTok{d\_m =} \StringTok{"d3.2\_m3fc2rc"}\NormalTok{,}
+  \AttributeTok{MTP =} \StringTok{"HO"}\NormalTok{,}
   \AttributeTok{typesample =} \StringTok{"K"}\NormalTok{,}
   \AttributeTok{target.power =} \FloatTok{0.80}\NormalTok{, }\AttributeTok{power.definition =} \StringTok{"min1"}\NormalTok{, }\AttributeTok{tol =} \FloatTok{0.01}\NormalTok{,}
   \AttributeTok{MDES =} \FloatTok{0.10}\NormalTok{, }\AttributeTok{M =} \DecValTok{5}\NormalTok{, }\AttributeTok{nbar =} \DecValTok{258}\NormalTok{, }\AttributeTok{J =} \DecValTok{3}\NormalTok{,}
@@ -1716,10 +1720,10 @@ significant, if all outcomes had a true effect size of 0.10).
 \end{Shaded}
 
 \begin{verbatim}
-#> sample result: d3.2_m3fc2rc design with 5 outcomes
+#> sample result: d3.2_m3fc2rc d_m with 5 outcomes
 #>   target min1 power: 0.80
-#>   MTP Sample.type Sample.size min1.power   SE
-#>  Holm           K          15    0.80025 0.01
+#>  MTP Sample.type Sample.size min1.power   SE
+#>   HO           K          15    0.80025 0.01
 #>  (13 steps in search)
 \end{verbatim}
 
@@ -1749,7 +1753,7 @@ of power, as well:
 \centering
 \begin{tabular}[t]{lrr}
 \toprule
-power & None & Holm\\
+power & None & HO\\
 \midrule
 individual outcome 1 & 0.7 & 0.52\\
 individual outcome 2 & 0.7 & 0.52\\
@@ -1797,7 +1801,7 @@ assess how sensitive power is to our level two sample size:\footnote{The
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{plotsamplepowercurve-1} \end{center}
+\begin{center}\includegraphics{arxiv_files/figure-latex/plotsamplepowercurve-1} \end{center}
 
 \emph{Remark.} In certain settings, a wide range of sample sizes may
 result in very similar levels of power. In this case, the algorithm may
@@ -1825,16 +1829,16 @@ method:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{p2 }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check,}
-              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"Holm"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
+              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"BF"}\NormalTok{, }\StringTok{"HO"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
               \AttributeTok{tnum =} \DecValTok{10000}\NormalTok{,}
-              \AttributeTok{parallel.WY.clusters =} \DecValTok{3}\NormalTok{ )}
+              \AttributeTok{parallel.WY.cores =} \DecValTok{2}\NormalTok{ )}
 \FunctionTok{plot}\NormalTok{( p2 )}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{othercorrections-1} \end{center}
+\begin{center}\includegraphics{arxiv_files/figure-latex/othercorrections-1} \end{center}
 
-To speed up computation, we set \texttt{parallel.WY.clusters\ =\ 3} to
+To speed up computation, we set \texttt{parallel.WY.cores\ =\ 2} to
 parallelize the computation. We also reduce \texttt{tnum} to decrease
 computation time.
 
@@ -1884,10 +1888,10 @@ equally split across levels two and three:
 \begin{Highlighting}[]
 \NormalTok{p\_b }\OtherTok{\textless{}{-}} \FunctionTok{update}\NormalTok{( p\_check, }\AttributeTok{ICC.2 =} \FloatTok{0.20}\NormalTok{, }\AttributeTok{ICC.3 =} \FloatTok{0.25}\NormalTok{ )}
 \FunctionTok{print}\NormalTok{( p\_b )}
-\CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
+\CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc d\_m with 5 outcomes}
 \CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
 \CommentTok{\#\textgreater{}  None 0.24513 0.24236 0.24333 0.24256 0.24491   0.243658      NA      NA}
-\CommentTok{\#\textgreater{}  Holm 0.09800 0.09737 0.09711 0.09704 0.09799   0.097502 0.26677 0.11533}
+\CommentTok{\#\textgreater{}    HO 0.09800 0.09737 0.09711 0.09704 0.09799   0.097502 0.26677 0.11533}
 \CommentTok{\#\textgreater{}     min3    min4 complete}
 \CommentTok{\#\textgreater{}       NA      NA       NA}
 \CommentTok{\#\textgreater{}  0.05815 0.03112  0.02399}
@@ -1908,10 +1912,10 @@ had better predictive covariates for our second outcome, we might try:
                \AttributeTok{R2.1 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.1}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ),}
                \AttributeTok{R2.2 =} \FunctionTok{c}\NormalTok{( }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.8}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.2}\NormalTok{ ) )}
 \FunctionTok{print}\NormalTok{( p\_d )}
-\CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
+\CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc d\_m with 5 outcomes}
 \CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
 \CommentTok{\#\textgreater{}  None 0.43265 0.85325 0.38075 0.34358 0.34337   0.470720      NA      NA}
-\CommentTok{\#\textgreater{}  Holm 0.24398 0.65388 0.21066 0.18851 0.18856   0.297118 0.71219 0.37367}
+\CommentTok{\#\textgreater{}    HO 0.24398 0.65388 0.21066 0.18851 0.18856   0.297118 0.71219 0.37367}
 \CommentTok{\#\textgreater{}     min3    min4 complete}
 \CommentTok{\#\textgreater{}       NA      NA       NA}
 \CommentTok{\#\textgreater{}  0.21062 0.12208  0.08596}
@@ -1932,7 +1936,7 @@ find out, we can always check details with \texttt{print\_design()} or
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{summary}\NormalTok{( p\_d )}
-\CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc design with 5 outcomes}
+\CommentTok{\#\textgreater{} power result: d3.2\_m3fc2rc d\_m with 5 outcomes}
 \CommentTok{\#\textgreater{}   MDES vector: 0.1, 0.1, 0.1, 0.1, 0.1}
 \CommentTok{\#\textgreater{}   nbar: 258  J: 3    K: 15   Tbar: 0.5}
 \CommentTok{\#\textgreater{}   alpha: 0.05    }
@@ -1943,7 +1947,7 @@ find out, we can always check details with \texttt{print\_design()} or
 \CommentTok{\#\textgreater{}   rho = 0.4}
 \CommentTok{\#\textgreater{}   MTP D1indiv D2indiv D3indiv D4indiv D5indiv indiv.mean    min1    min2}
 \CommentTok{\#\textgreater{}  None 0.43265 0.85325 0.38075 0.34358 0.34337   0.470720      NA      NA}
-\CommentTok{\#\textgreater{}  Holm 0.24398 0.65388 0.21066 0.18851 0.18856   0.297118 0.71219 0.37367}
+\CommentTok{\#\textgreater{}    HO 0.24398 0.65388 0.21066 0.18851 0.18856   0.297118 0.71219 0.37367}
 \CommentTok{\#\textgreater{}     min3    min4 complete}
 \CommentTok{\#\textgreater{}       NA      NA       NA}
 \CommentTok{\#\textgreater{}  0.21062 0.12208  0.08596}
@@ -1974,7 +1978,7 @@ parameters to additionally explore:
             \AttributeTok{tnum =} \DecValTok{5000}\NormalTok{ )}
 
 \NormalTok{grid}\SpecialCharTok{$}\NormalTok{ICC}\FloatTok{.3} \OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{( grid}\SpecialCharTok{$}\NormalTok{ICC}\FloatTok{.3}\NormalTok{ )}
-\NormalTok{grid }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{( grid, MTP }\SpecialCharTok{==} \StringTok{"Holm"}\NormalTok{ )}
+\NormalTok{grid }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{( grid, MTP }\SpecialCharTok{==} \StringTok{"HO"}\NormalTok{ )}
 
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{( grid, }\FunctionTok{aes}\NormalTok{( ICC}\FloatTok{.2}\NormalTok{, min1, }\AttributeTok{group =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{, }\AttributeTok{col =}\NormalTok{ ICC}\FloatTok{.3}\NormalTok{ ) ) }\SpecialCharTok{+}
     \FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
@@ -1983,7 +1987,7 @@ parameters to additionally explore:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{unnamed-chunk-11-1} \end{center}
+\begin{center}\includegraphics{arxiv_files/figure-latex/unnamed-chunk-11-1} \end{center}
 
 Note that in addition to \texttt{update\_grid()}, there are also base
 functions \texttt{pump\_power\_grid()}, \texttt{pump\_mdes\_grid()}, and
@@ -2033,7 +2037,7 @@ easily by letting \texttt{rho} vary as so:
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{gridRho }\OtherTok{\textless{}{-}} \FunctionTok{update\_grid}\NormalTok{( p\_check,}
-              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"Bonferroni"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
+              \AttributeTok{MTP =} \FunctionTok{c}\NormalTok{( }\StringTok{"BF"}\NormalTok{, }\StringTok{"WY{-}SD"}\NormalTok{ ),}
               \AttributeTok{rho =} \FunctionTok{seq}\NormalTok{( }\DecValTok{0}\NormalTok{, }\FloatTok{0.9}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.15}\NormalTok{ ),}
               \AttributeTok{tnum =} \DecValTok{500}\NormalTok{,}
               \AttributeTok{B =} \DecValTok{10000}\NormalTok{ )}
@@ -2059,7 +2063,7 @@ We then plot our results.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{unnamed-chunk-14-1} \end{center}
+\begin{center}\includegraphics{arxiv_files/figure-latex/unnamed-chunk-14-1} \end{center}
 
 First, we see the benefit of the Westfall-Young single-step procedure is
 minimal, as compared to Bonferroni. Second, the impact on individual
@@ -2086,7 +2090,7 @@ varying the number of outcomes that have no treatment impact via the
 
 We then can make a plot as we did above:
 
-\begin{center}\includegraphics{unnamed-chunk-17-1} \end{center}
+\begin{center}\includegraphics{arxiv_files/figure-latex/unnamed-chunk-17-1} \end{center}
 
 There are other ways of exploring the impact of weak or null effects on
 some outcomes. In particular, the \texttt{pump\_power()} and
@@ -2122,8 +2126,6 @@ functionality for more robust power calculations. A user can and should
 try a range of parameter values to determine the sensitivity of the
 power of their study to different assumptions; this package simplifies
 that process.
-
-The \texttt{PUMP} package will soon be available on CRAN.
 
 \section*{Acknowledgements}
 
@@ -2358,7 +2360,6 @@ $\omega$                & 0.1                    & 0.8               \\
 \bottomrule
 \end{tabular}
 \label{tab:val_params}
-\caption{Validation parameters}
 \end{table}
 
 We do not vary:
@@ -2440,5 +2441,9 @@ Holm & J & 20 & 0.544\\
 \label{tab:ss}
 \caption{Sample size validation}
 \end{table}
+
+\bibliographystyle{unsrt}
+\bibliography{refs.bib}
+
 
 \end{document}

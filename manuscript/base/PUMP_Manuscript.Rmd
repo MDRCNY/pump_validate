@@ -594,13 +594,13 @@ The full design and model are specified by concatenating these together, e.g. `d
 The Diplomas Now model, for example, is `d3.2_m3fc2rc`. 
 
 The full list of supported design and model combinations is below.
-The user can see the list by calling `pump_info()`, which provides the designs and models, MTPs, and model parameters.
+The user can see the list by calling `pump_info()`, which provides the designs and models, MTPs, power definitions, and model parameters.
 We also include the corresponding names from the PowerUP! package where appropriate.
 For more details about each combination of design and model, see the Technical Appendix.
 
 ```{r, echo = FALSE}
-info <- pump_info()
-kable( info$Design[,1:4], format = 'latex', booktabs = TRUE ) %>%
+info <- pump_info(comment = FALSE)
+kable( info$Context, format = 'latex', booktabs = TRUE ) %>%
   kable_styling(position = "center")
 ```
 
@@ -661,7 +661,7 @@ In addition to design parameters, there are additional parameters that control t
 
 - `tnum` is the number of test statistics generated in order to estimate power. A larger number of test statistics results in greater computation time, but also a more precise estimate of power. Note that the `pump_mdes()` and `pump_sample()` have multiple `tnum` parameters controlling the precision of the search.
 - `B` is the number of Westfall-Young permutations. Again, there is a tradeoff between precision and computation time.
-- `parallel.WY.clusters` specifies the number of cores to use for parallel computation of the Westfall-Young Step-Down procedure, which is the most computationally intensive. The default of `1` does not result in parallel computation. Parallelization is done using `parApply` from the `parallel` package.
+- `parallel.WY.cores` specifies the number of cores to use for parallel computation of the Westfall-Young Step-Down procedure, which is the most computationally intensive. The default of `1` does not result in parallel computation. Parallelization is done using `parApply` from the `parallel` package.
 
 \section{Using the PUMP package}
 \label{sec:vignette}
@@ -747,8 +747,8 @@ Here, for example, we find the MDES if we want an 80% chance of detecting an imp
 
 ```{r MDEScalc}
 m <- pump_mdes(
-  design = "d3.2_m3fc2rc",      # choice of design and analysis strategy
-  MTP = "Holm",                 # multiple testing procedure
+  d_m = "d3.2_m3fc2rc",      # choice of design and analysis strategy
+  MTP = "HO",                 # multiple testing procedure
   target.power = 0.80,          # desired power
   power.definition = "D1indiv", # power type
   M = 5,                        # number of outcomes
@@ -821,8 +821,8 @@ set.seed( 0440044 )
 
 ```{r samplesizecalc}
 smp <- pump_sample(
-  design = "d3.2_m3fc2rc",
-  MTP = "Holm",
+  d_m = "d3.2_m3fc2rc",
+  MTP = "HO",
   typesample = "K",
   target.power = 0.80, power.definition = "min1", tol = 0.01,
   MDES = 0.10, M = 5, nbar = 258, J = 3,
@@ -884,13 +884,13 @@ Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young 
 
 ```{r othercorrections}
 p2 <- update( p_check,
-              MTP = c( "Bonferroni", "Holm", "WY-SD" ),
+              MTP = c( "BF", "HO", "WY-SD" ),
               tnum = 10000,
-              parallel.WY.clusters = 3 )
+              parallel.WY.cores = 2 )
 plot( p2 )
 ```
 
-To speed up computation, we set `parallel.WY.clusters = 3` to parallelize the computation.
+To speed up computation, we set `parallel.WY.cores = 2` to parallelize the computation.
 We also reduce `tnum` to decrease computation time.
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
@@ -959,7 +959,7 @@ grid <- update_grid( p_check,
         	tnum = 5000 )
 
 grid$ICC.3 <- as.factor( grid$ICC.3 )
-grid <- dplyr::filter( grid, MTP == "Holm" )
+grid <- dplyr::filter( grid, MTP == "HO" )
 
 ggplot2::ggplot( grid, aes( ICC.2, min1, group = ICC.3, col = ICC.3 ) ) +
 	geom_line() + geom_point() +
@@ -1004,7 +1004,7 @@ set.seed( 4040440 )
 
 ```{r, fig.height=3, fig.width=7}
 gridRho <- update_grid( p_check,
-        	  MTP = c( "Bonferroni", "WY-SD" ),
+        	  MTP = c( "BF", "WY-SD" ),
         	  rho = seq( 0, 0.9, by = 0.15 ),
         	  tnum = 500,
         	  B = 10000 )

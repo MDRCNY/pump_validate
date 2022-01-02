@@ -6,7 +6,7 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = FALSE
+overwrite = TRUE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
 run.mdes.ss = FALSE
@@ -50,10 +50,10 @@ sim.params.list <- list(
   , final.tnum = 100000      # final number of iterations to check power
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
-  , MTP = c("Bonferroni", "BH", "Holm") # Multiple testing procedures
+  , MTP = c("BF", "BH", "HO") # Multiple testing procedures
   , runSim = TRUE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = FALSE       # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = FALSE     # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
+  , runPump = TRUE       # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPowerUp = TRUE     # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
 #------------------------------------------------------------------#
@@ -111,8 +111,7 @@ sim.params.default <- sim.params.list
 if(run.wy)
 {
   sim.params.list <- sim.params.default
-  # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
-  sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+  sim.params.list[['MTP']] <- c("BF", "BH", "HO", "WY-SS", "WY-SD")
   
   #------------------------------------#
   # blocked 2 level
@@ -179,7 +178,6 @@ if(run.wy)
   if(run.d3.1)
   {
     model.params.list <- model.params.default
-    # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
     sim.params.list[['S']] <- 30
     sim.params.list[['B']] <- 2000
     
@@ -209,7 +207,7 @@ if(run.wy)
   if(run.d3.3)
   {
     model.params.list <- model.params.default
-    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
+    sim.params.list[['MTP']] <- c("BF", "BH", "HO", "WY-SS")
     sim.params.list[['S']] <- 30
     sim.params.list[['B']] <- 3000
     
@@ -240,8 +238,7 @@ if(run.wy)
   {
     # constant effects
     model.params.list <- model.params.default
-    sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS")
-    # sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm", "WY-SS", "WY-SD")
+    sim.params.list[['MTP']] <- c("BF", "BH", "HO", "WY-SS")
     sim.params.list[['S']] <- 50
     sim.params.list[['B']] <- 2000
     
@@ -293,7 +290,7 @@ if(run.wy)
   # reset
   model.params.list <- model.params.default
   sim.params.list <- sim.params.default
-  sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm")
+  sim.params.list[['MTP']] <- c("BF", "BH", "HO")
 }
 
 #------------------------------------------------------------------#

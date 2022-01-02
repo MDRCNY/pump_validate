@@ -346,7 +346,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
       
       for (MTP in sim.params.list[['MTP']]){
         pump_results_iter <- PUMP::pump_power(
-          design = d_m,
+          d_m = d_m,
           MTP = MTP,
           MDES = model.params.list[['MDES']],
           M = model.params.list[['M']],
@@ -480,7 +480,7 @@ validate_mdes <- function(model.params.list, sim.params.list, d_m,
       
       
       mdes_results_iter <- PUMP::pump_mdes(
-        design = d_m,
+        d_m = d_m,
         MTP = proc,
         M = model.params.list[['M']],
         J = model.params.list[['J']],
@@ -606,7 +606,7 @@ validate_sample <- function(model.params.list, sim.params.list, d_m,
       ]
       
       sample_results_iter <- PUMP::pump_sample(
-        design = d_m,
+        d_m = d_m,
         MTP = proc,
         typesample = typesample,
         MDES = model.params.list[['MDES']],

@@ -282,12 +282,15 @@ get.adjp <- function(proc, rawp, dat.all, S.id, D.id,
   else {
     # return a matrix with m columns (domains) and b rows (samples)
     # this needs rawp to be a matrix with m columns and was d_med for all samples to be a row.
-    if (proc == "Bonferroni"){
+    if (proc == "BF"){
       adjp.proc <- p.adjust(rawp, method = "bonferroni")
-    } else if (proc == "Holm") {
+    } else if (proc == "HO") {
       adjp.proc <- p.adjust(rawp, method = "holm")
     } else if (proc == "BH") {
       adjp.proc <- p.adjust(rawp, method = "hochberg")
+    } else
+    {
+      stop("Unknown MTP")
     }
   }
   return(adjp.proc)
