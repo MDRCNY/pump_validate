@@ -13,6 +13,7 @@ Validation/wy_test/*
 validation/output/*.RDS
 validation/output/*
 validation/output/intermediate_results/*.RDS
+output/*
 
 # out and error files
 *.out

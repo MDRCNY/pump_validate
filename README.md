@@ -1,6 +1,6 @@
 # Validation repo
 
-This repo contains code and results that validate the power results from the [PUMP package](https://github.com/MDRCNY/PUMP)
+This repo contains code and results that validate the power results from the [PUMP package](https://github.com/MDRCNY/PUMP).
 
 This package compares the PUMP package power estimation with a simulation-based approach to validate that the
 power calculations are correct.
@@ -42,22 +42,21 @@ The functions return data frames with estimates and lower and upper confidence i
 
 ### Folder structure
 
-* __Validation__
-     * __output__
-          * stored validation results output for rendering markdowns.
-     * __code__
-          * __adjust_WY.R__: Code specific to Westfall-young adjustments
-          * __estimate_power_with_simulation.R__: Estimating power with Monte Carlo Simulations
-          * __gen_validation_results_all.R__: Script that runs all validation scenarios
-          * __gen_validation_results_one.R__: Script that runs a single validation scenario
-          * __misc.R__: supporting functions
-          * __validate_power.R__: wrapper functions that calculate power by simulation, pump, powerup
-          * __cloud__: contains code for running batch scripts in the cloud
-               * __readme.txt__: reminder for how to run all validation scenarios on the cloud
-               * __run_sim.txt__: bash script to run all validation scenarios in parallel on the cloud
-               * __validate_sim_parallel.slurm__: slurm file for running all simulations in parallel on the cloud
-               * __validate_pum.slurm__: slurm file for running PUM and PUP results on the cloud
-      * __results__
-          * contains markdown documents and rendered PDFs of all validation scenarios.
-          * for a general guide to the format of these documents, see validate_format.
+* __output__
+     * stored validation results output for rendering markdowns.
+* __code__
+     * __adjust_WY.R__: Code specific to Westfall-young adjustments
+     * __estimate_power_with_simulation.R__: Estimating power with Monte Carlo Simulations
+     * __gen_validation_results_all.R__: Script that runs all validation scenarios
+     * __gen_validation_results_one.R__: Script that runs a single validation scenario
+     * __misc.R__: supporting functions
+     * __validate_power.R__: wrapper functions that calculate power by simulation, pump, powerup
+     * __cloud__: contains code for running batch scripts in the cloud
+          * __readme.txt__: reminder for how to run all validation scenarios on the cloud
+          * __run_sim.txt__: bash script to run all validation scenarios in parallel on the cloud
+          * __validate_sim_parallel.slurm__: slurm file for running all simulations in parallel on the cloud
+          * __validate_pum.slurm__: slurm file for running PUM and PUP results on the cloud
+* __results__
+     * contains markdown documents and rendered PDFs of all validation scenarios.
+     * for a general guide to the format of these documents, see validate_format.
 
