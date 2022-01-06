@@ -42,8 +42,6 @@ The functions return data frames with estimates and lower and upper confidence i
 
 ### Folder structure
 
-* __output__
-     * stored validation results output for rendering markdowns.
 * __code__
      * __adjust_WY.R__: Code specific to Westfall-young adjustments
      * __estimate_power_with_simulation.R__: Estimating power with Monte Carlo Simulations
