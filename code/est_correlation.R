@@ -1,3 +1,5 @@
+source(here::here('code', 'estimate_power_with_simulation.R'))
+
 get_rho <- function(d_m, model.params.list, Tbar, S = 100)
 {
   M <- model.params.list$M
@@ -65,6 +67,31 @@ model.params.list <- list(
   # by indiv covariates
 )
 Tbar <- 0.5
-S <- 10
 
-cor.tstat <- get_rho(d_m, model.params.list, Tbar, S)
+out.data <- NULL
+
+for(n.sims in c(10, 30, 1000))
+{
+  time.start <- Sys.time()
+  cor.tstat <- get_rho(d_m = d_m, model.params.list = model.params.list, Tbar = Tbar, S = n.sims)
+  rho <- cor.tstat[lower.tri(cor.tstat)]
+  mean.rho <- mean(rho)
+  time.end <- Sys.time()
+  
+  difftime(time.end, time.start)
+  
+  cor.data <- data.frame(
+    input.rho = model.params.list$rho.default,
+    output.rho = mean.rho,
+    n.sims = n.sims
+  )
+  
+  out.data <- rbind(out.data, cor.data)
+}
+
+print(out.data)
+saveRDS(out.data, file = here::here('cor_out.rds'))
+
+
+
+
