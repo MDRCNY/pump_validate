@@ -1,12 +1,33 @@
+---
+title: "Estimate Correlation"
+author: "Kristen Hunter"
+date: "2/12/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(PUMP)
 source(here::here('code', 'estimate_power_with_simulation.R'))
-base.dir = '/Users/khunter/Dropbox/pump_validate/'
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-# simulation parameters
-n.sims <- 1000
-d_m.list <- c('d2.1_m2fr', 'd2.2_m2rc', 'd3.1_m3rr2rr', 'd3.2_m3rr2rc')
-rho.list <- c(0.1, 0.5, 0.8)
+# Correlation estimation strategy
 
+- For $s = 1, \dots, S$:
+  - Input DGP parameters, including assumed correlation $\rho$.
+  - Generate full simulated data. 
+  - Generate treatment assignments and observed data.
+  - Calculate $t$ statistics from regressions for each outcome. So for $M$ outcomes, we have a $M$-vector of test statistics.
+- Returns a matrix of test statistics $S \times M$.
 
+Next:
+
+- Calculate correlation of matrix of test statistics.
+- Take upper triangle of matrix and take average.
+- Returns a single mean estimated correlation.
+
+The following function returns the $S \times M$ matrix of test statistics:
+```{r}
 get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
 {
   M <- model.params.list$M
@@ -16,7 +37,7 @@ get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
   # number of simulations
   for(s in 1:n.sims)
   {
-    if (s %% 100 == 0){ message(paste0("Now processing simulation ", s, " of ", n.sims)) }
+    if (s %% 20 == 0){ message(paste0("Now processing simulation ", s, " of ", n.sims)) }
     
     # generate simulated data
     samp.full <- PUMP::gen_full_data(dgp.params.list)
@@ -42,7 +63,11 @@ get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
   
   return(rawt.all)
 }
+```
 
+The following function takes in the matrix of test statistics and returns the estimated correlation.
+
+```{r}
 get_cor <- function(rawt.all)
 {
   
@@ -50,11 +75,17 @@ get_cor <- function(rawt.all)
   cor.tstat <- cor(rawt.all)
   est.cor <- cor.tstat[lower.tri(cor.tstat)]
   mean.est.cor <- mean(est.cor)
-  
+
   return(mean.est.cor)
 }
+```
 
 
+# Simulation results
+
+The following sets up the design and DGP parameters.
+
+```{r, echo = FALSE}
 model.params.list <- list(
   M = 3                             # number of outcomes
   , J = 30                          # number of schools
@@ -83,23 +114,31 @@ model.params.list <- list(
   # by indiv covariates
 )
 Tbar <- 0.5
+```
 
+
+```{r}
+# simulation parameters
+n.sims <- 10
+d_m.list <- c('d2.1_m2fr', 'd2.2_m2rc', 'd3.1_m3rr2rr', 'd3.2_m3rr2rc')
+rho.list <- c(0.1, 0.5, 0.8)
+```
+
+```{r echo = FALSE}
 # store results
 out.data <- NULL
 
 for(d_m in d_m.list)
 {
   print(paste('Design:', d_m))
-  
   for(rho in rho.list)
   {
     print(paste('Rho:', rho))
-    
     rawt.all <- get_rawt(
       d_m = d_m, model.params.list = model.params.list, Tbar = Tbar, n.sims = n.sims
     )
     est.cor <- get_cor(rawt.all)
-    
+  
     cor.data <- data.frame(
       d_m = d_m,
       input.rho = rho,
@@ -107,13 +146,13 @@ for(d_m in d_m.list)
       n.sims = n.sims
     )
     out.data <- rbind(out.data, cor.data)
-    
-    saveRDS(out.data, file = paste0(base.dir, 'cor_results.rds'))
-    print(out.data)
   }
 }
 
+print(out.data)
+```
 
 
-
+  
+  
 
