@@ -1,10 +1,17 @@
+library(PUMP)
 source(here::here('code', 'estimate_power_with_simulation.R'))
-base.dir = '/Users/khunter/Dropbox/pump_validate/'
+# base.dir = '/Users/khunter/Dropbox/mordred/pump_validate/'
+base.dir = '/n/home01/khunter33/pump_validate/'
 
 # simulation parameters
 n.sims <- 1000
-d_m.list <- c('d2.1_m2fr', 'd2.2_m2rc', 'd3.1_m3rr2rr', 'd3.2_m3rr2rc')
-rho.list <- c(0.1, 0.5, 0.8)
+d_m.list <- c('d2.1_m2fc')
+#d_m.list <- c('d2.1_m2fr', 'd2.2_m2rc', 'd3.1_m3rr2rr', 'd3.2_m3rr2rc')
+rho.list <- c(0, 0.5, 0.99)
+
+Sys.setenv(TZ = 'America/New_york')
+time.start <- Sys.time()
+run <- format(time.start, format = '%Y%m%d_%H')
 
 
 get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
@@ -49,37 +56,36 @@ get_cor <- function(rawt.all)
   # calculate correlation
   cor.tstat <- cor(rawt.all)
   est.cor <- cor.tstat[lower.tri(cor.tstat)]
-  mean.est.cor <- mean(est.cor)
   
-  return(mean.est.cor)
+  return(est.cor)
 }
 
 
 model.params.list <- list(
   M = 3                             # number of outcomes
-  , J = 30                          # number of schools
+  , J = 30                         # number of schools
   , K = 10                          # number of districts
   , nbar = 50                       # number of individuals per school
   , rho.default = 0.5               # default rho value (optional)
   ################################################## impact
   , MDES = 0.125                    # minimum detectable effect size      
   ################################################## level 3: districts
-  , numCovar.3 = 1                  # number of district covariates
-  , R2.3 = 0.1                      # percent of district variation
+  , numCovar.3 = 0                  # number of district covariates
+  , R2.3 = 0                        # percent of district variation
   # explained by district covariates
   , ICC.3 = 0.2                     # district intraclass correlation
-  , omega.3 = 0.1                   # ratio of district effect size variability
+  , omega.3 = 0                     # ratio of district effect size variability
   # to random effects variability
   ################################################## level 2: schools
-  , numCovar.2 = 1                  # number of school covariates
-  , R2.2 = 0.1                      # percent of school variation
+  , numCovar.2 = 0                  # number of school covariates
+  , R2.2 = 0                        # percent of school variation
   # explained by school covariates
   , ICC.2 = 0.2                     # school intraclass correlation	
-  , omega.2 = 0.1                   # ratio of school effect size variability
+  , omega.2 = 0                     # ratio of school effect size variability
   # to random effects variability
   ################################################## level 1: individuals
-  , numCovar.1 = 1                  # number of individual covariates
-  , R2.1 = 0.1                      # percent of indiv variation explained
+  , numCovar.1 = 0                  # number of individual covariates
+  , R2.1 = 0                        # percent of indiv variation explained
   # by indiv covariates
 )
 Tbar <- 0.5
@@ -96,19 +102,22 @@ for(d_m in d_m.list)
     print(paste('Rho:', rho))
     
     rawt.all <- get_rawt(
-      d_m = d_m, model.params.list = model.params.list, Tbar = Tbar, n.sims = n.sims
+      d_m = d_m,
+      model.params.list = model.params.list,
+      Tbar = Tbar, 
+      n.sims = n.sims
     )
-    est.cor <- get_cor(rawt.all)
+    est.cor <- matrix(get_cor(rawt.all), ncol = M, nrow = 1)
     
     cor.data <- data.frame(
       d_m = d_m,
       input.rho = rho,
-      output.rho = est.cor,
-      n.sims = n.sims
+      n.sims = n.sims,
+      output.rho = est.cor
     )
     out.data <- rbind(out.data, cor.data)
     
-    saveRDS(out.data, file = paste0(base.dir, 'cor_results.rds'))
+    saveRDS(out.data, file = paste0(base.dir, 'cor_results_', run, '.rds'))
     print(out.data)
   }
 }
