@@ -1,10 +1,8 @@
 library(PUMP)
 source(here::here('code', 'estimate_power_with_simulation.R'))
-# base.dir = '/Users/khunter/Dropbox/mordred/pump_validate/'
-base.dir = '/n/home01/khunter33/pump_validate/'
 
 # simulation parameters
-n.sims <- 1000
+n.sims <- 5
 d_m.list <- c('d2.1_m2fc')
 #d_m.list <- c('d2.1_m2fr', 'd2.2_m2rc', 'd3.1_m3rr2rr', 'd3.2_m3rr2rc')
 rho.list <- c(0, 0.5, 0.99)
@@ -16,8 +14,7 @@ run <- format(time.start, format = '%Y%m%d_%H')
 
 get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
 {
-  M <- model.params.list$M
-  rawt.all <- matrix(NA, nrow = n.sims, ncol = M)
+  rawt.all <- matrix(NA, nrow = n.sims, ncol = model.params.list$M)
   dgp.params.list <- PUMP::convert_params(model.params.list)
   
   # number of simulations
@@ -109,7 +106,7 @@ for(d_m in d_m.list)
       Tbar = Tbar, 
       n.sims = n.sims
     )
-    est.cor <- matrix(get_cor(rawt.all), ncol = M, nrow = 1)
+    est.cor <- matrix(get_cor(rawt.all), ncol = model.params.list$M, nrow = 1)
     
     cor.data <- data.frame(
       d_m = d_m,
@@ -119,7 +116,7 @@ for(d_m in d_m.list)
     )
     out.data <- rbind(out.data, cor.data)
     
-    saveRDS(out.data, file = paste0(base.dir, 'cor_results_', run, '.rds'))
+    saveRDS(out.data, file = paste0(here::here(), 'cor_results_', run, '.rds'))
     print(out.data)
   }
 }
