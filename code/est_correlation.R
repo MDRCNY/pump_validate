@@ -101,6 +101,8 @@ for(d_m in d_m.list)
   {
     print(paste('Rho:', rho))
     
+    model.params.list$rho.default <- rho
+    
     rawt.all <- get_rawt(
       d_m = d_m,
       model.params.list = model.params.list,
