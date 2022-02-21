@@ -69,15 +69,15 @@ model.params.list <- list(
 
 
 power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
-print(power.results$results)
+print(power.results)
 power.file <- gen_params_file_base(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
 gen.power.results.plot(power.file, d_m = "d3.2_m3ff2rc")
   
 mdes.results <- validate_mdes(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
-print(mdes.results$results)
+print(mdes.results)
 
 j.results <- validate_sample(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", typesample = "J")
-print(j.results$results)
+print(j.results)
 
 nbar.results <- validate_sample(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", typesample = "nbar")
-print(nbar.results$results)
+print(nbar.results)

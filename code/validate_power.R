@@ -436,7 +436,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
     t2 = Sys.time()
     message(paste('Total time:', difftime(t2, t1, units = 'mins'), 'minutes'))
     
-    return(list(results = compare_results, filename = compare.filename))
+    return(compare_results)
   } else
   {
     print('Validation already completed.')
@@ -543,7 +543,7 @@ validate_mdes <- function(model.params.list, sim.params.list, d_m,
     }
     
     saveRDS(mdes_compare_results, file = here::here("output", mdes.filename))
-    return(list(results = mdes_compare_results, filename = mdes.filename))
+    return(mdes_compare_results)
   } else
   {
     print('Validation already completed.')
@@ -670,7 +670,7 @@ validate_sample <- function(model.params.list, sim.params.list, d_m,
     }
     
     saveRDS(sample_compare_results, file = here::here("output", sample.filename))
-    return(list(results = sample_compare_results, filename = sample.filename))
+    return(sample_compare_results)
   } else
   {
     print('Validation already completed.')
