@@ -8,17 +8,17 @@ library(here)
 # source files
 #------------------------------------------------------------------#
 
-source(here::here("validation/code", "adjust_WY.R"))
-source(here::here("validation/code", "estimate_power_with_simulation.R"))
-source(here::here("validation/code", "validate_power.R"))
-source(here::here("validation/code", "misc.R"))
+source(here::here("code", "adjust_WY.R"))
+source(here::here("code", "estimate_power_with_simulation.R"))
+source(here::here("code", "validate_power.R"))
+source(here::here("code", "misc.R"))
 
 #------------------------------------------------------------------#
 # simulation parameters
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 100                      # Number of samples for Monte Carlo Simulation
+  S = 10                    # Number of samples for Monte Carlo Simulation
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
   , tol = 0.01               # tolerance for MDES and sample  size calculations
@@ -30,7 +30,7 @@ sim.params.list <- list(
   , final.tnum = 100000      # final number of iterations to check power
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
-  , MTP = c("Bonferroni", "BH", "Holm") # Multiple testing procedures
+  , MTP = c("BF", "BH", "HO") # Multiple testing procedures
   , runSim = TRUE            # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
   , runPump = TRUE           # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
   , runPowerUp = TRUE        # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
@@ -69,15 +69,15 @@ model.params.list <- list(
 
 
 power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
-print(power.results)
+print(power.results$results)
 power.file <- gen_params_file_base(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
 gen.power.results.plot(power.file, d_m = "d3.2_m3ff2rc")
   
 mdes.results <- validate_mdes(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
-print(mdes.results)
+print(mdes.results$results)
 
 j.results <- validate_sample(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", typesample = "J")
-print(j.results)
+print(j.results$results)
 
 nbar.results <- validate_sample(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", typesample = "nbar")
-print(nbar.results)
+print(nbar.results$results)

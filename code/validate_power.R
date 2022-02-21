@@ -44,7 +44,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
   current.file <- find_file(params.file.base, type = 'power')
   
   # store some files in intermediate results file
-  data.dir <- here::here("validation/output")
+  data.dir <- here::here("output")
   intermediate.data.dir <- paste0(data.dir, "/intermediate_results/")
   if(!dir.exists(intermediate.data.dir))
   {
@@ -403,6 +403,25 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
       compare_results_long <- data.frame(rbind(pump_results, powerup_results, sim_results))
       colnames(compare_results_long) <- c('MTP', 'power_type', 'value', 'method', 'value.type')
       compare_results <- compare_results_long[,c('MTP', 'power_type','method', 'value.type', 'value')]
+      
+      # add in parameter info
+      compare_results$d_m      <- d_m
+      compare_results$S        <- sim.params.list$S * sim.params.list$Q
+      compare_results$M        <- model.params.list$M
+      compare_results$MDES     <- model.params.list$MDES[1]
+      compare_results$numZero  <- sum(model.params.list$MDES == 0)
+      compare_results$J        <- model.params.list$J
+      compare_results$K        <- model.params.list$K
+      compare_results$nbar     <- model.params.list$nbar
+      compare_results$rho      <- model.params.list$rho.default
+      compare_results$omega.2  <- model.params.list$omega.2[1]
+      compare_results$omega.3  <- model.params.list$omega.3[1]
+      compare_results$R2.1     <- model.params.list$R2.1[1]
+      compare_results$R2.2     <- model.params.list$R2.2[1]
+      compare_results$R2.3     <- model.params.list$R2.3[1]
+      compare_results$ICC.2    <- model.params.list$ICC.2[1]
+      compare_results$ICC.3    <- model.params.list$ICC.3[1]
+      
       saveRDS(compare_results, file = paste(data.dir, compare.filename, sep = "/"))
     } else
     {
@@ -417,7 +436,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
     t2 = Sys.time()
     message(paste('Total time:', difftime(t2, t1, units = 'mins'), 'minutes'))
     
-    return(compare_results)
+    return(list(results = compare_results, filename = compare.filename))
   } else
   {
     print('Validation already completed.')
@@ -523,8 +542,8 @@ validate_mdes <- function(model.params.list, sim.params.list, d_m,
       parallel::stopCluster(cl)
     }
     
-    saveRDS(mdes_compare_results, file = here::here("validation/output", mdes.filename))
-    return(mdes_compare_results)
+    saveRDS(mdes_compare_results, file = here::here("output", mdes.filename))
+    return(list(results = mdes_compare_results, filename = mdes.filename))
   } else
   {
     print('Validation already completed.')
@@ -650,8 +669,8 @@ validate_sample <- function(model.params.list, sim.params.list, d_m,
       parallel::stopCluster(cl)
     }
     
-    saveRDS(sample_compare_results, file = here::here("validation/output", sample.filename))
-    return(sample_compare_results)
+    saveRDS(sample_compare_results, file = here::here("output", sample.filename))
+    return(list(results = sample_compare_results, filename = sample.filename))
   } else
   {
     print('Validation already completed.')

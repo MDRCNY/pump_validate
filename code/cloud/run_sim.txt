@@ -9,7 +9,7 @@ sbatch -o /n/home01/khunter33/pump_validate/log/%j_${q}.out\
   -e /n/home01/khunter33/pump_validate/log/%j_${q}.err \
   --mail-user=kristenbhunter@gmail.com \
   --mail-type=ALL \
-  /n/home01/khunter33/pump_validate/validation/code/cloud/validate_sim_parallel.slurm
+  /n/home01/khunter33/pump_validate/code/cloud/validate_sim_parallel.slurm
 
 sleep 5 # pause to be kind to the scheduler
 
@@ -24,7 +24,7 @@ export q
 # Run R script, and produce output files
 sbatch -o /n/home01/khunter33/pump_validate/log/%j_${q}.out\
   -e /n/home01/khunter33/pump_validate/log/%j_${q}.err \
-  /n/home01/khunter33/pump_validate/validation/code/cloud/validate_sim_parallel.slurm
+  /n/home01/khunter33/pump_validate/code/cloud/validate_sim_parallel.slurm
   sleep 5 # pause to be kind to the scheduler
 done
 
