@@ -13,10 +13,9 @@ run.mdes.ss = FALSE
 # whether to run limited westfall young validations
 run.wy = FALSE
 # which d_ms to run
-run.d1.1 = TRUE
 run.d2.1 = FALSE
 run.d2.2 = FALSE
-run.d3.1 = FALSE
+run.d3.1 = TRUE
 run.d3.3 = FALSE
 run.d3.2 = FALSE
 
@@ -292,134 +291,6 @@ if(run.wy)
   model.params.list <- model.params.default
   sim.params.list <- sim.params.default
   sim.params.list[['MTP']] <- c("BF", "BH", "HO")
-}
-
-#------------------------------------------------------------------#
-# Blocked 1 level: power
-#------------------------------------------------------------------#
-
-if(run.d1.1 & run.power)
-{
-  scenarios <- 20
-  model.params.list <- model.params.default
-  sim.params.list <- sim.params.default
-  sim.params.list[['B']] <- NULL
-  
-  # assumptions
-  model.params.list[['K']] <- NULL
-  model.params.list[['J']] <- NULL
-  model.params.list[['ICC.3']] <- NULL
-  model.params.list[['omega.3']] <- NULL
-  model.params.list[['numCovar.3']] <- 0
-  model.params.list[['R2.3']] <- NULL
-  model.params.list[['numCovar.2']] <- 0
-  model.params.list[['R2.2']] <- NULL
-  
-  #------------------------------------------------------------------#
-  # base case
-  #------------------------------------------------------------------#
-  
-  model.params.list[['nbar']] <- 50
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-
-  
-  #------------------------------------------------------------------#
-  # vary sample size
-  #------------------------------------------------------------------#
-  model.params.list[['nbar']] <- 100
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-  
-  print('-----------------------------------------------------------------------------')
-  print(paste('Completed 3 out of', scenarios))
-  print('-----------------------------------------------------------------------------')
-  
-  model.params.list[['nbar']] <- 75
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-  
-  print('-----------------------------------------------------------------------------')
-  print(paste('Completed 6 out of', scenarios))
-  print('-----------------------------------------------------------------------------')
-  
-  # reset
-  model.params.list[['nbar']] <- model.params.default[['nbar']]
-  
-  print('-----------------------------------------------------------------------------')
-  print(paste('Completed sample size scenarios, 9 out of', scenarios))
-  print('-----------------------------------------------------------------------------')
-  
-  #------------------------------------------------------------------#
-  # Vary R2
-  #------------------------------------------------------------------#
-  
-  # vary R2.1
-  model.params.list[['R2.1']] <- rep(0.6, M)
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-  # reset
-  model.params.list[['R2.1']] <- model.params.default[['R2.1']]
-  
-  # set to 0
-  model.params.list[['R2.1']] <- rep(0, M)
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-  # reset
-  model.params.list[['R2.1']] <- model.params.default[['R2.1']]
-  
-  print('-----------------------------------------------------------------------------')
-  print(paste('Completed R2 scenarios, 11 out of', scenarios))
-  print('-----------------------------------------------------------------------------')
-  
-  #------------------------------------------------------------------#
-  # Vary rho
-  #------------------------------------------------------------------#
-  
-  rho.default <- 0
-  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-  model.params.list[['rho.default']] <- rho.default
-  model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
-  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- model.params.list[['rho.r']] <- default.rho.matrix
-  
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-  
-  rho.default <- 0.2
-  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-  model.params.list[['rho.default']] <- rho.default
-  model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
-  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- model.params.list[['rho.r']] <- default.rho.matrix
-  
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-  
-  rho.default <- 0.8
-  model.params.list[['rho.default']] <- rho.default
-  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-  model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
-  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- model.params.list[['rho.r']] <- default.rho.matrix
-  
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-  
-  # reset
-  rho.default <- model.params.default[['rho.default']]
-  model.params.list[['rho.default']] <- rho.default
-  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-  model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
-  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- model.params.list[['rho.r']] <- default.rho.matrix
-  
-  print('-----------------------------------------------------------------------------')
-  print(paste('Completed rho scenarios, 13 out of', scenarios))
-  print('-----------------------------------------------------------------------------')
-  
-  #------------------------------------------------------------------#
-  # Vary true positives
-  #------------------------------------------------------------------#
-  
-  model.params.list[['MDES']] <- c(0.125, 0, 0)
-  
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-  
-  # reset
-  model.params.list[['MDES']] <- model.params.default[['MDES']]
-  
-  model.params.list <- model.params.default
-  sim.params.list <- sim.params.default
-  
 }
 
 #------------------------------------------------------------------#

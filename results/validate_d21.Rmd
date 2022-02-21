@@ -23,7 +23,7 @@ library(PUMP)
 library(pander)
 # default tables to round to 3 digits
 panderOptions('round', 3)
-source(here::here("validation/code", "misc.R"))
+source(here::here("code", "misc.R"))
 ```
 
 ```{r sim.params}

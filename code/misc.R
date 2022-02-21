@@ -178,10 +178,10 @@ find_file <- function(params.file.base, type, intermediate = FALSE)
 {
   if(intermediate)
   {
-    results.files <- list.files(here::here("validation/output/intermediate_results"), full.names = TRUE)
+    results.files <- list.files(here::here("output/intermediate_results"), full.names = TRUE)
   } else
   {
-    results.files <- list.files(here::here("validation/output"), full.names = TRUE)
+    results.files <- list.files(here::here("output"), full.names = TRUE)
   }
   
   results.files <- results.files[grep(params.file.base, results.files)]
