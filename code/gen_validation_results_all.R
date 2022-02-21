@@ -28,10 +28,10 @@ if(is.na(q)) { q <- 1 }
 # source files
 #------------------------------------------------------------------#
 
-source(here::here("validation/code", "adjust_WY.R"))
-source(here::here("validation/code", "estimate_power_with_simulation.R"))
-source(here::here("validation/code", "validate_power.R"))
-source(here::here("validation/code", "misc.R"))
+source(here::here("code", "adjust_WY.R"))
+source(here::here("code", "estimate_power_with_simulation.R"))
+source(here::here("code", "validate_power.R"))
+source(here::here("code", "misc.R"))
 
 #------------------------------------------------------------------#
 # simulation parameters
