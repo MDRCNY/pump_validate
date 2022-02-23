@@ -9,7 +9,7 @@ library(here)
 overwrite = TRUE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
-run.mdes.ss = FALSE
+run.mdes.ss = TRUE
 # whether to run limited westfall young validations
 run.wy = FALSE
 # which d_ms to run
@@ -52,9 +52,9 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , MTP = c("BF", "BH", "HO") # Multiple testing procedures
-  , runSim = TRUE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = FALSE       # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = FALSE     # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
+  , runSim = FALSE        # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = TRUE      # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPowerUp = TRUE    # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
 #------------------------------------------------------------------#
@@ -321,7 +321,6 @@ if(run.d1.1 & run.power)
   
   model.params.list[['nbar']] <- 50
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
-
   
   #------------------------------------------------------------------#
   # vary sample size
@@ -649,7 +648,7 @@ if(run.d2.1 & run.mdes.ss)
   model.params.list[['R2.2']] <- NULL
   
   # don't do WY for now
-  sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm")
+  sim.params.list[['MTP']] <- c("BF", "BH", "HO")
   
   model.params.list[['omega.2']] <- NULL
   mdes.results <- validate_mdes(
