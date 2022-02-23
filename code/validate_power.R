@@ -143,7 +143,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
         adj_power <- data.frame(adj_power)
         adj_power$MTP <- rownames(adj_power)
         adj_power_melt <- melt(adj_power, id.vars = 'MTP')
-        adj_power_melt$method = 'sim'
+        adj_power_melt$method = 'Sim'
         return(adj_power_melt)
       }
       
@@ -303,14 +303,18 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
           J = model.params.list[['J']],
           K = model.params.list[['K']]
         )
-      } else {
+      } else if(d_m %in% PUMP::pump_info$Context$d_m) {
+        # if a valid but non-powerup d_m
+        powerup_results <- NULL
+      } else
+      {
         stop(paste('Unknown d_m:', d_m)) 
       }
 
       powerup_results <- data.frame(
         MTP = 'None',
         variable = 'D1indiv',
-        method = 'pup',
+        method = 'PowerUp',
         value = powerup_results$power,
         value.type = 'adjusted_power'
       )
@@ -380,7 +384,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
       # format results table nicely
       pump_results_table <- pump_results
       pump_results <- melt(pump_results_table, id.vars = 'MTP')
-      pump_results$method = 'pum'
+      pump_results$method = 'PUMP'
       pump_results$value.type = 'adjusted_power'
       
       saveRDS(pump_results, file = pump.file)
@@ -494,7 +498,7 @@ validate_mdes <- function(model.params.list, sim.params.list, d_m,
       target.power <- power.results$value[
         power.results$MTP == proc &
         power.results$power_type == power.definition &
-        power.results$method == 'pum'
+        power.results$method == 'PUMP'
       ]
       
       
@@ -621,7 +625,7 @@ validate_sample <- function(model.params.list, sim.params.list, d_m,
       target.power <- power.results$value[
         power.results$MTP == proc &
         power.results$power_type == power.definition &
-        power.results$method == 'pum'
+        power.results$method == 'PUMP'
       ]
       
       sample_results_iter <- PUMP::pump_sample(
