@@ -416,17 +416,17 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
       compare_results$M        <- model.params.list$M
       compare_results$MDES     <- model.params.list$MDES[1]
       compare_results$numZero  <- sum(model.params.list$MDES == 0)
-      compare_results$J        <- model.params.list$J
-      compare_results$K        <- model.params.list$K
+      compare_results$J        <- ifelse(!is.null(model.params.list$J), model.params.list$J, NA) 
+      compare_results$K        <- ifelse(!is.null(model.params.list$K), model.params.list$K, NA) 
       compare_results$nbar     <- model.params.list$nbar
       compare_results$rho      <- model.params.list$rho.default
-      compare_results$omega.2  <- model.params.list$omega.2[1]
-      compare_results$omega.3  <- model.params.list$omega.3[1]
-      compare_results$R2.1     <- model.params.list$R2.1[1]
-      compare_results$R2.2     <- model.params.list$R2.2[1]
-      compare_results$R2.3     <- model.params.list$R2.3[1]
-      compare_results$ICC.2    <- model.params.list$ICC.2[1]
-      compare_results$ICC.3    <- model.params.list$ICC.3[1]
+      compare_results$omega.2  <- ifelse(!is.null(model.params.list$omega.2[1]), model.params.list$omega.2[1], NA) 
+      compare_results$omega.3  <- ifelse(!is.null(model.params.list$omega.3[1]), model.params.list$omega.3[1], NA) 
+      compare_results$R2.1     <- ifelse(!is.null(model.params.list$R2.1[1]),    model.params.list$R2.1[1], NA) 
+      compare_results$R2.2     <- ifelse(!is.null(model.params.list$R2.2[1]),    model.params.list$R2.2[1], NA) 
+      compare_results$R2.3     <- ifelse(!is.null(model.params.list$R2.3[1]),    model.params.list$R2.3[1], NA) 
+      compare_results$ICC.2    <- ifelse(!is.null(model.params.list$ICC.2[1]),   model.params.list$ICC.2[1], NA) 
+      compare_results$ICC.3    <- ifelse(!is.null(model.params.list$ICC.3[1]),   model.params.list$ICC.3[1], NA) 
       
       saveRDS(compare_results, file = paste(data.dir, compare.filename, sep = "/"))
     } else
