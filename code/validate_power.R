@@ -543,6 +543,24 @@ validate_mdes <- function(model.params.list, sim.params.list, d_m,
     colnames(mdes_compare_results) <- c('MTP', 'Adjusted MDES', paste(power.definition, 'Power'), 'Target MDES')
     rownames(mdes_compare_results) <- NULL
     
+    # add in parameter info
+    mdes_compare_results$d_m      <- d_m
+    mdes_compare_results$S        <- sim.params.list$S * sim.params.list$Q
+    mdes_compare_results$M        <- model.params.list$M
+    mdes_compare_results$MDES     <- model.params.list$MDES[1]
+    mdes_compare_results$numZero  <- sum(model.params.list$MDES == 0)
+    mdes_compare_results$J        <- ifelse(!is.null(model.params.list$J), model.params.list$J, NA) 
+    mdes_compare_results$K        <- ifelse(!is.null(model.params.list$K), model.params.list$K, NA) 
+    mdes_compare_results$nbar     <- model.params.list$nbar
+    mdes_compare_results$rho      <- model.params.list$rho.default
+    mdes_compare_results$omega.2  <- ifelse(!is.null(model.params.list$omega.2[1]), model.params.list$omega.2[1], NA) 
+    mdes_compare_results$omega.3  <- ifelse(!is.null(model.params.list$omega.3[1]), model.params.list$omega.3[1], NA) 
+    mdes_compare_results$R2.1     <- ifelse(!is.null(model.params.list$R2.1[1]),    model.params.list$R2.1[1], NA) 
+    mdes_compare_results$R2.2     <- ifelse(!is.null(model.params.list$R2.2[1]),    model.params.list$R2.2[1], NA) 
+    mdes_compare_results$R2.3     <- ifelse(!is.null(model.params.list$R2.3[1]),    model.params.list$R2.3[1], NA) 
+    mdes_compare_results$ICC.2    <- ifelse(!is.null(model.params.list$ICC.2[1]),   model.params.list$ICC.2[1], NA) 
+    mdes_compare_results$ICC.3    <- ifelse(!is.null(model.params.list$ICC.3[1]),   model.params.list$ICC.3[1], NA) 
+    
     if(sim.params.list[['parallel']])
     {
       parallel::stopCluster(cl)
@@ -669,6 +687,24 @@ validate_sample <- function(model.params.list, sim.params.list, d_m,
     sample.filename <- paste0(
       params.file.base, 'comparison_sample_', typesample, '_', power.definition, '_results.RDS'
     )
+    
+    # add in parameter info
+    sample_compare_results$d_m      <- d_m
+    sample_compare_results$S        <- sim.params.list$S * sim.params.list$Q
+    sample_compare_results$M        <- model.params.list$M
+    sample_compare_results$MDES     <- model.params.list$MDES[1]
+    sample_compare_results$numZero  <- sum(model.params.list$MDES == 0)
+    sample_compare_results$J        <- ifelse(!is.null(model.params.list$J), model.params.list$J, NA) 
+    sample_compare_results$K        <- ifelse(!is.null(model.params.list$K), model.params.list$K, NA) 
+    sample_compare_results$nbar     <- model.params.list$nbar
+    sample_compare_results$rho      <- model.params.list$rho.default
+    sample_compare_results$omega.2  <- ifelse(!is.null(model.params.list$omega.2[1]), model.params.list$omega.2[1], NA) 
+    sample_compare_results$omega.3  <- ifelse(!is.null(model.params.list$omega.3[1]), model.params.list$omega.3[1], NA) 
+    sample_compare_results$R2.1     <- ifelse(!is.null(model.params.list$R2.1[1]),    model.params.list$R2.1[1], NA) 
+    sample_compare_results$R2.2     <- ifelse(!is.null(model.params.list$R2.2[1]),    model.params.list$R2.2[1], NA) 
+    sample_compare_results$R2.3     <- ifelse(!is.null(model.params.list$R2.3[1]),    model.params.list$R2.3[1], NA) 
+    sample_compare_results$ICC.2    <- ifelse(!is.null(model.params.list$ICC.2[1]),   model.params.list$ICC.2[1], NA) 
+    sample_compare_results$ICC.3    <- ifelse(!is.null(model.params.list$ICC.3[1]),   model.params.list$ICC.3[1], NA) 
     
     if(sim.params.list[['parallel']])
     {
