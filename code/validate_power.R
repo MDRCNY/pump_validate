@@ -303,9 +303,11 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
           J = model.params.list[['J']],
           K = model.params.list[['K']]
         )
-      } else if(d_m %in% PUMP::pump_info$Context$d_m) {
+      } else if(d_m %in% PUMP::pump_info()$Context$d_m) {
         # if a valid but non-powerup d_m
-        powerup_results <- NULL
+        powerup_results <- data.frame(
+          power = NA
+        )
       } else
       {
         stop(paste('Unknown d_m:', d_m)) 

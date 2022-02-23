@@ -10,7 +10,8 @@ rho.list <- c(0, 0.5, 0.99)
 Sys.setenv(TZ = 'America/New_york')
 time.start <- Sys.time()
 run <- format(time.start, format = '%Y%m%d_%H')
-
+file.name = paste0(here::here(), 'cor_results_', run, '.rds')
+print(file.name)
 
 get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
 {
@@ -116,7 +117,7 @@ for(d_m in d_m.list)
     )
     out.data <- rbind(out.data, cor.data)
     
-    saveRDS(out.data, file = paste0(here::here(), 'cor_results_', run, '.rds'))
+    saveRDS(out.data, file = file.name)
     print(out.data)
   }
 }
