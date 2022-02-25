@@ -140,18 +140,11 @@ gen.power.results.plot <- function(params.file.base, d_m, small.font = FALSE)
     power.results <- readRDS(power.file)
     
     power.results$compare = TRUE
-    power.results$compare[power.results$method == 'sim'] = FALSE
+    power.results$compare[power.results$method == 'Sim'] = FALSE
     
     power.results$Method = plyr::revalue(power.results$method,
-        c("pum" = "PUMP", "pup" = "PowerUp", "sim" = "Simulation")
+        c("PUMP" = "PUMP", "PowerUp" = "PowerUp", "Sim" = "Simulation")
     )
-    
-    power.results$MTP = plyr::revalue(power.results$MTP,
-       c("None" = "N", "Bonferroni" = "BF", "Holm" = "HO",
-         "WY-SS" = "WYSS", "WY-SD" = "WYSD")
-    )
-    
-    power.results$method = factor(power.results$method, labels = )
     
     results.plot <- ggplot(power.results, aes(x = MTP, y = value, color = Method)) +
       geom_point(aes(size = compare)) +
