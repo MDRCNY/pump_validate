@@ -11,7 +11,7 @@ library(PUMP)
 source(here::here('code', 'estimate_power_with_simulation.R'))
 knitr::opts_chunk$set(echo = TRUE)
 
-run.name = '20220218_23'
+run.name = '20220223_18'
 ```
 
 # Correlation estimation strategy

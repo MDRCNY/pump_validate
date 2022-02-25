@@ -308,6 +308,8 @@ if(run.d1.1 & run.power)
   # assumptions
   model.params.list[['K']] <- 1
   model.params.list[['J']] <- 1
+  model.params.list[['ICC.2']] <- NULL
+  model.params.list[['omega.2']] <- NULL
   model.params.list[['ICC.3']] <- NULL
   model.params.list[['omega.3']] <- NULL
   model.params.list[['numCovar.3']] <- 0
