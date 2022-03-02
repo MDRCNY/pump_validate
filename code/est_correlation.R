@@ -1,5 +1,5 @@
 library(PUMP)
-source(here::here('code', 'estimate_power_with_simulation.R'))
+# source(here::here('code', 'estimate_power_with_simulation.R'))
 
 # simulation parameters
 n.sims <- 5

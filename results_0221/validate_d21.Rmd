@@ -4,11 +4,9 @@ date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: pdf_document
 ---
 
-Design: Blocked RCT, with 2 levels, and randomization done at level 1 (individual level).
+d_m: Blocked RCT, with 2 levels, and randomization done at level 1 (individual level).
 
 Models: Constant treatment effects, fixed treatment effects, and random treatment effects.
-
-d_m codes: `d2.1_m2fc`, `d2.1_m2ff`, `d2.1_m2fr`
 
 Note: we expect a discrepancy when ICC is not zero between powerup and pump.
 
@@ -25,7 +23,7 @@ library(PUMP)
 library(pander)
 # default tables to round to 3 digits
 panderOptions('round', 3)
-source(here::here("code", "misc.R"))
+source(here::here("validation/code", "misc.R"))
 ```
 
 ```{r sim.params}
@@ -73,7 +71,7 @@ Assumptions:
 
 * Two-level design: $\text{ICC}_3 = 0$,  $\omega_3 = 0$, $K = 1$
 
-*Remark*. For all $d2.1_m2fc$ and $d2.1_m2ff$ designs and models, PowerUpR! assumes $ICC.2 = 0$, but we do not make that assumption here. Thus, we expect to see a discrepancy between PUMP and Powerup except for the setting when we assume $ICC.2 = 0$ for these designs and models. PowerUpR! does allow for a non-zero `ICC.2` for  $d2.1_m2fr$.
+*Remark*. For all $d2.1$ designs and models, PowerUpR! assumes $ICC.2 = 0$, but we do not make that assumption here. Thus, we expect to see a discrepancy betweeen PUMP and Powerup except for the setting when we assume $ICC.2 = 0$.
 
 # Power Validation
 

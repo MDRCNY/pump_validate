@@ -1,0 +1,191 @@
+---
+title: "Summary of validation results"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+
+```{r knit.options, echo = FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE,
+  fig.height = 7
+)
+opts <- options(knitr.kable.NA = "--")
+```
+
+```{r setup}
+library(here)
+library(kableExtra)
+library(magrittr) 
+library(PUMP)
+library(pander)
+library(tibble)
+library(tidyr)
+# default tables to round to 3 digits
+panderOptions('round', 3)
+source(here::here("code", "misc.R"))
+```
+
+```{r}
+
+# extract and summarize results for a particular d_m
+get.d_m.results <- function(d_m, power.files)
+{
+  results.files <- grep(d_m, power.files, value = TRUE)
+  # remove WY files
+  all.files <- grep('__B', power.files, value = TRUE)
+  
+  # stack results
+  d_m.results <- NULL
+  for(file in results.files)
+  {
+    results <- readRDS(here::here('output', file))
+
+    results.wide <- results %>%
+      pivot_wider(names_from = c(method, value.type), values_from = value)
+    
+    d_m.results <- rbind(d_m.results, results.wide)
+  }
+
+  row.names(d_m.results) <- NULL
+  d_m.results %<>% mutate(
+    cover =
+      Sim_ci_lower <= PUMP_adjusted_power &
+      Sim_ci_upper >= PUMP_adjusted_power,
+    bias.sim = abs(Sim_adjusted_power - PUMP_adjusted_power) / PUMP_adjusted_power,
+    bias.pow = abs(PowerUp_adjusted_power - PUMP_adjusted_power) / PUMP_adjusted_power
+  )
+  d_m.results$d_m <- d_m
+  
+  # append information about whether we expect results to agree
+  d_m.results$agree <- TRUE
+  if(d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
+  {
+    d_m.results$agree[d_m.results$ICC.2 > 0] <- FALSE
+  }
+
+  return(d_m.results)
+}
+```
+
+
+```{r}
+# find files
+all.files <- list.files(here::here('output'))
+# restrict to relevant files
+power.files <- grep('power', all.files, value = TRUE)
+# power.files <- grep('5000_S', power.files, value = TRUE)
+power.files <- grep('5000_S', power.files, value = TRUE)
+
+# d_m.list <- c(
+#   "d1.1_m1c", "d2.1_m2fc", "d2.1_m2ff", "d2.1_m2fr",
+#   "d2.2_m2rc", "d3.1_m3rr2rr", "d3.2_m3ff2rc", "d3.2_m3rr2rc", "d3.3_m3rc2rc"
+# )
+d_m.list <- c(
+  "d2.1_m2fc", "d2.1_m2ff", "d2.1_m2fr",
+  "d2.2_m2rc", "d3.1_m3rr2rr", "d3.2_m3ff2rc", "d3.2_m3rr2rc", "d3.3_m3rc2rc"
+)
+
+all.results <- NULL
+for(d_m in d_m.list)
+{
+  d_m.results <- get.d_m.results(d_m, power.files)
+  all.results <- rbind(all.results, d_m.results)
+}
+
+```
+
+```{r}
+# summarize coverage
+cover.results <- ddply(
+  all.results, c('d_m', 'MTP', 'power_type'),
+  summarise,
+  cover = mean(cover)
+)
+```
+
+```{r}
+# summarize bias
+bias.results <- ddply(
+  all.results[all.results$cover,],
+  c('d_m', 'MTP', 'power_type'),
+  summarise,
+  mean.bias.sim = mean(bias.sim),
+  mean.bias.pow = mean(bias.pow[agree == TRUE], na.rm = TRUE)
+)
+# clean up for table printing
+bias.results$mean.bias.pow[is.nan(bias.results$mean.bias.pow)] = NA
+```
+
+# Summary of validation coverage results
+
+```{r, results = 'asis'}
+for(scenario in d_m.list)
+{
+  table.data <- dplyr::filter(cover.results, d_m == scenario)
+  table.data <- table.data  %>%
+    dplyr::arrange(MTP, power_type)
+  
+  print(kable(table.data, booktabs = TRUE, row.names = FALSE, digits = 3,
+              linesep = c("", "", "", "", "", "", "\\addlinespace")))
+}
+```
+
+\clearpage
+\newpage
+
+# Coverage discrepancies
+
+We summarize below the scenarios where the simulation intervals do not cover the PUMP value.
+For brevity, we only display results for Bonferroni adjustments, beause 
+```{r, results = 'asis'}
+# extract out problem rows
+problems <- all.results[!is.na(all.results$cover) & all.results$cover != 1 & all.results$agree,]
+problems <- problems %>%
+  dplyr::select(d_m, MTP, power_type, omega.2, omega.3, ICC.2, ICC.3, 
+         PUMP_adjusted_power, PowerUp_adjusted_power, Sim_adjusted_power,
+         Sim_ci_lower, Sim_ci_upper) %>%
+  dplyr::rename(
+         type = power_type,
+         pump = PUMP_adjusted_power,
+         pow = PowerUp_adjusted_power,
+         sim = Sim_adjusted_power,
+         low = Sim_ci_lower,
+         up = Sim_ci_upper)
+
+problem.table <- data.frame(problems)
+
+for(scenario in d_m.list)
+{
+  problem.table.data <- dplyr::filter(problem.table, d_m == scenario, MTP == 'BF')
+  
+  if(nrow(problem.table.data) > 0)
+  {
+    print(kable(problem.table.data, booktabs = TRUE, row.names = FALSE, digits = 3))
+  }
+}
+```
+
+\clearpage
+\newpage
+
+
+# Summary of validation "bias" results
+
+```{r, results = 'asis'}
+for(scenario in d_m.list)
+{
+  table.data <- dplyr::filter(bias.results, d_m == scenario)
+  table.data <- table.data  %>%
+    dplyr::arrange(MTP, power_type)
+  
+  print(kable(table.data, booktabs = TRUE, row.names = FALSE, digits = 3,
+              linesep = c("", "", "", "", "", "", "\\addlinespace")))
+}
+```
+
+
+
+
+
+

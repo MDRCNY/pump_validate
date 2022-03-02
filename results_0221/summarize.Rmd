@@ -1,0 +1,132 @@
+---
+title: "Validate Power: d2.1"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+d_m: Blocked RCT, with 2 levels, and randomization done at level 1 (individual level).
+
+Models: Constant treatment effects, fixed treatment effects, and random treatment effects.
+
+Note: we expect a discrepancy when ICC is not zero between powerup and pump.
+
+```{r knit.options, echo = FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE,
+  fig.height = 7
+)
+```
+
+```{r setup}
+library(here)
+library(PUMP)
+library(pander)
+library(tibble)
+library(tidyr)
+# default tables to round to 3 digits
+panderOptions('round', 3)
+source(here::here("code", "misc.R"))
+```
+
+```{r sim.params}
+sim.params.list <- list(
+  S = 5000                     # Number of samples for Monte Carlo Simulation
+  , Q = 1
+)
+```
+
+```{r model.params}
+M <- 3
+model.params.list <- list(
+  M = 3                                   # number of outcomes
+  , J = 20                                # number of schools
+  , K = 1                                 # number of districts (for two-level model, set K = 1)
+  , nbar = 50                             # number of individuals per school
+  , rho.default = 0.5                     # default rho value
+  ################################################## grand mean outcome and impact
+  , MDES = rep(0.125, M)                  # minimum detectable effect size      
+  ################################################## level 2: schools
+  , ICC.2 = rep(0.2, M)                   # school intraclass correlation	
+  , omega.2 = rep(0.1, M)                 # ratio of school effect size variability to random effects variability
+  ################################################## level 1: individuals
+  , numCovar.1 = 1                        # number of individual covariates
+  , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
+)
+
+params.default <- model.params.list
+```
+
+
+```{r}
+# find files
+all.files <- list.files(here::here('output'))
+d_m <- "d2.1_m2fc"
+rel.files <- grep(d_m, all.files, value = TRUE)
+# restrict to power files
+rel.files <- grep('power', all.files, value = TRUE)
+# remove  WY files
+rel.files <- grep('__B', rel.files, value = TRUE)
+```
+
+```{r}
+# stack results
+all.results <- NULL
+for(file in rel.files)
+{
+  results <- readRDS(here::here('output', file))
+  file.params <- unlist(strsplit(file, '_'))
+  
+  results$S      <- file.params[3]
+  results$M      <- file.params[5]
+  results$MDES   <- paste0(substr(file.params[9], 1, 1), '.', substr(file.params[9], 2, 4))
+  results$J      <- file.params[11]
+  results$K      <- file.params[13]
+  results$nbar   <- file.params[15]
+  results$rho    <- paste0(substr(file.params[17], 1, 1), '.', substr(file.params[17], 2, 2))
+  results$omega2 <- ifelse(
+    nchar(file.params[19]) == 0, 0,
+    paste0(substr(file.params[19], 1, 1), '.', substr(file.params[19], 2, 2))
+  )
+  results$omega3 <- ifelse(
+    nchar(file.params[21]) == 0, 0,
+    paste0(substr(file.params[21], 1, 1), '.', substr(file.params[21], 2, 2))
+  )
+  results$R21    <- ifelse(
+    nchar(file.params[23]) == 3, 0,
+    paste0(substr(file.params[23], 1, 1), '.', substr(file.params[23], 2, 2))
+  )
+  results$R22 <- ifelse(
+    nchar(file.params[25]) == 3 | nchar(file.params[25]) == 0, 0,
+    paste0(substr(file.params[25], 1, 1), '.', substr(file.params[25], 2, 2))
+  )
+  results$R23    <- ifelse(
+    nchar(file.params[27]) == 3 | nchar(file.params[27]) == 0, 0,
+    paste0(substr(file.params[27], 1, 1), '.', substr(file.params[27], 2, 2))
+  )
+  results$ICC2   <- ifelse(
+    nchar(file.params[29]) == 3 | nchar(file.params[29]) == 0, 0,
+    paste0(substr(file.params[29], 1, 1), '.', substr(file.params[29], 2, 2))
+  )
+  results$ICC3   <- ifelse(
+    nchar(file.params[31]) == 3 | nchar(file.params[31]) == 0, 0,
+    paste0(substr(file.params[31], 1, 1), '.', substr(file.params[31], 2, 2))
+  )
+  
+  results.wide <- results %>%
+    pivot_wider(names_from = c(method, value.type), values_from = value)
+  
+  all.results <- rbind(all.results, results.wide)
+}
+```
+
+```{r}
+row.names(all.results) <- NULL
+all.results$MTP <- as.factor(all.results$MTP)
+all.results$method <- as.factor(all.results$method)
+all.results$value.type <- as.factor(all.results$value.type)
+all.results <- tibble(all.results)
+
+all.results.wide <- all.results %>%
+  pivot_wider(names_from = c(method, value.type), values_from = value)
+```
+
