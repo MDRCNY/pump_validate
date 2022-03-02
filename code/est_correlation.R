@@ -2,10 +2,10 @@ library(PUMP)
 # source(here::here('code', 'estimate_power_with_simulation.R'))
 
 # simulation parameters
-n.sims <- 5
-d_m.list <- c('d2.1_m2fc')
-#d_m.list <- c('d2.1_m2fr', 'd2.2_m2rc', 'd3.1_m3rr2rr', 'd3.2_m3rr2rc')
-rho.list <- c(0, 0.5, 0.99)
+n.sims <- 200
+# d_m.list <- c('d2.1_m2fc')
+d_m.list <- c('d2.1_m2fr', 'd2.2_m2rc', 'd3.1_m3rr2rr', 'd3.2_m3rr2rc')
+rho.list <- c(0, 0.2, 0.5, 0.8)
 
 Sys.setenv(TZ = 'America/New_york')
 time.start <- Sys.time()
@@ -13,50 +13,6 @@ run <- format(time.start, format = '%Y%m%d_%H')
 file.name = paste0(here::here(), '/cor_results_', run, '.rds')
 print(file.name)
 
-get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
-{
-  rawt.all <- matrix(NA, nrow = n.sims, ncol = model.params.list$M)
-  dgp.params.list <- PUMP::convert_params(model.params.list)
-  
-  # number of simulations
-  for(s in 1:n.sims)
-  {
-    if (s %% 100 == 0){ message(paste0("Now processing simulation ", s, " of ", n.sims)) }
-    
-    # generate simulated data
-    samp.full <- PUMP::gen_full_data(dgp.params.list)
-    S.id <- samp.full$ID$S.id
-    D.id  <- samp.full$ID$D.id
-    
-    # generate treatment assignments
-    T.x <- PUMP::gen_T.x(d_m = d_m,
-                         S.id = S.id, D.id = D.id,
-                         nbar = dgp.params.list$nbar,
-                         Tbar = 0.5)
-    
-    # convert full data to observed data
-    samp.obs <- samp.full
-    samp.obs$Yobs <- PUMP::gen_Yobs(samp.full, T.x)
-    
-    # calculate t statistics
-    dat.all <- makelist_samp(samp.obs, T.x)
-    rawpt.out <- get_rawpt(dat.all, d_m = d_m, model.params.list = model.params.list)
-    rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
-    rawt.all[s,] <- rawt
-  }
-  
-  return(rawt.all)
-}
-
-get_cor <- function(rawt.all)
-{
-  
-  # calculate correlation
-  cor.tstat <- cor(rawt.all)
-  est.cor <- cor.tstat[lower.tri(cor.tstat)]
-  
-  return(est.cor)
-}
 
 
 model.params.list <- list(
@@ -100,20 +56,16 @@ for(d_m in d_m.list)
     print(paste('Rho:', rho))
     
     model.params.list$rho.default <- rho
-    
-    rawt.all <- get_rawt(
-      d_m = d_m,
-      model.params.list = model.params.list,
-      Tbar = Tbar, 
-      n.sims = n.sims
+
+    cor.tstat <- check_cor(
+      d_m = 'd2.1_m2fr', model.params.list, Tbar = Tbar, n.sims = n.sims
     )
-    est.cor <- matrix(get_cor(rawt.all), ncol = model.params.list$M, nrow = 1)
     
     cor.data <- data.frame(
       d_m = d_m,
       input.rho = rho,
       n.sims = n.sims,
-      output.rho = est.cor
+      output.rho = cor.tstat
     )
     out.data <- rbind(out.data, cor.data)
     
