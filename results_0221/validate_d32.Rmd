@@ -8,8 +8,6 @@ Design: Blocked Cluster RCT, with 3 levels, and randomization done at level 2 (s
 
 Models: random and fixed treatment effects.
 
-d_m codes: `d3.2_m3ff2rc`, `d3.2_m3rr2rc`
-
 ```{r knit.options, echo = FALSE}
 # by default, all code chunks will cache their results
 knitr::opts_chunk$set(
@@ -24,7 +22,7 @@ library(PUMP)
 library(pander)
 # default tables to round to 3 digits
 panderOptions('round', 3)
-source(here::here("code", "misc.R"))
+source(here::here("validation/code", "misc.R"))
 ```
 
 ```{r sim.params}
@@ -71,7 +69,7 @@ Default parameters:
 
 Parameters by model type:
 
-* Omega3: $\omega_3$ = 0 for fixed effects, $\omega_3$ = `r model.params.list[['omega.3']]` for random effects
+* Omega3: $\omega_3$ = 0 for fixed effects, $\text{omega}_3$ = `r model.params.list[['omega.3']]` for random effects
 
 *Remark*.
 For some of the scenarios, the PUMP estimate is slightly outside the range of the monte carlo intervals. This occurs for the `d3.2_m3rr2rc` model when either $\omega_3 = 0$ or $ICC.3 = 0$.
@@ -641,7 +639,7 @@ if(length(sample.file) == 0)
 ```{r, results = 'hide', fig.width=5, fig.height=4}
 set.seed(343059)
 smp <- PUMP::pump_sample(
-  d_m = "d3.2_m3rr2rc",
+  design = "d3.2_m3rr2rc",
   MTP = 'BH',
   typesample = 'nbar',
   MDES = model.params.list[['MDES']],

@@ -6,18 +6,19 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = TRUE
+overwrite = FALSE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
 run.mdes.ss = FALSE
 # whether to run limited westfall young validations
 run.wy = FALSE
 # which d_ms to run
+run.d1.1 = FALSE
 run.d2.1 = FALSE
 run.d2.2 = FALSE
-run.d3.1 = TRUE
+run.d3.1 = FALSE
 run.d3.3 = FALSE
-run.d3.2 = FALSE
+run.d3.2 = TRUE
 
 # for parallel processing
 q <- as.numeric(as.character(Sys.getenv("q")))
@@ -27,17 +28,19 @@ if(is.na(q)) { q <- 1 }
 # source files
 #------------------------------------------------------------------#
 
-source(here::here("validation/code", "adjust_WY.R"))
-source(here::here("validation/code", "estimate_power_with_simulation.R"))
-source(here::here("validation/code", "validate_power.R"))
-source(here::here("validation/code", "misc.R"))
+source(here::here("code", "adjust_WY.R"))
+source(here::here("code", "estimate_power_with_simulation.R"))
+source(here::here("code", "validate_power.R"))
+source(here::here("code", "sim.R"))
+source(here::here("code", "misc.R"))
+
 
 #------------------------------------------------------------------#
 # simulation parameters
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 3                     # Number of samples for Monte Carlo Simulation
+  S = 5000                     # Number of samples for Monte Carlo Simulation
   , Q = 1                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
@@ -51,9 +54,9 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , MTP = c("BF", "BH", "HO") # Multiple testing procedures
-  , runSim = TRUE         # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = TRUE       # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = TRUE     # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
+  , runSim = TRUE       # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = FALSE    # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPowerUp = FALSE    # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
 #------------------------------------------------------------------#
@@ -294,6 +297,135 @@ if(run.wy)
 }
 
 #------------------------------------------------------------------#
+# Blocked 1 level: power
+#------------------------------------------------------------------#
+
+if(run.d1.1 & run.power)
+{
+  scenarios <- 20
+  model.params.list <- model.params.default
+  sim.params.list <- sim.params.default
+  sim.params.list[['B']] <- NULL
+  
+  # assumptions
+  model.params.list[['K']] <- 1
+  model.params.list[['J']] <- 1
+  model.params.list[['ICC.2']] <- NULL
+  model.params.list[['omega.2']] <- NULL
+  model.params.list[['ICC.3']] <- NULL
+  model.params.list[['omega.3']] <- NULL
+  model.params.list[['numCovar.3']] <- 0
+  model.params.list[['R2.3']] <- NULL
+  model.params.list[['numCovar.2']] <- 0
+  model.params.list[['R2.2']] <- NULL
+  
+  #------------------------------------------------------------------#
+  # base case
+  #------------------------------------------------------------------#
+  
+  model.params.list[['nbar']] <- 50
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
+  
+  #------------------------------------------------------------------#
+  # vary sample size
+  #------------------------------------------------------------------#
+  model.params.list[['nbar']] <- 100
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
+  
+  print('-----------------------------------------------------------------------------')
+  print(paste('Completed 3 out of', scenarios))
+  print('-----------------------------------------------------------------------------')
+  
+  model.params.list[['nbar']] <- 75
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
+  
+  print('-----------------------------------------------------------------------------')
+  print(paste('Completed 6 out of', scenarios))
+  print('-----------------------------------------------------------------------------')
+  
+  # reset
+  model.params.list[['nbar']] <- model.params.default[['nbar']]
+  
+  print('-----------------------------------------------------------------------------')
+  print(paste('Completed sample size scenarios, 9 out of', scenarios))
+  print('-----------------------------------------------------------------------------')
+  
+  #------------------------------------------------------------------#
+  # Vary R2
+  #------------------------------------------------------------------#
+  
+  # vary R2.1
+  model.params.list[['R2.1']] <- rep(0.6, M)
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
+  # reset
+  model.params.list[['R2.1']] <- model.params.default[['R2.1']]
+  
+  # set to 0
+  model.params.list[['R2.1']] <- rep(0, M)
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
+  # reset
+  model.params.list[['R2.1']] <- model.params.default[['R2.1']]
+  
+  print('-----------------------------------------------------------------------------')
+  print(paste('Completed R2 scenarios, 11 out of', scenarios))
+  print('-----------------------------------------------------------------------------')
+  
+  #------------------------------------------------------------------#
+  # Vary rho
+  #------------------------------------------------------------------#
+  
+  rho.default <- 0
+  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+  model.params.list[['rho.default']] <- rho.default
+  model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
+  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- model.params.list[['rho.r']] <- default.rho.matrix
+  
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
+  
+  rho.default <- 0.2
+  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+  model.params.list[['rho.default']] <- rho.default
+  model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
+  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- model.params.list[['rho.r']] <- default.rho.matrix
+  
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
+  
+  rho.default <- 0.8
+  model.params.list[['rho.default']] <- rho.default
+  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+  model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
+  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- model.params.list[['rho.r']] <- default.rho.matrix
+  
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
+  
+  # reset
+  rho.default <- model.params.default[['rho.default']]
+  model.params.list[['rho.default']] <- rho.default
+  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+  model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
+  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- model.params.list[['rho.r']] <- default.rho.matrix
+  
+  print('-----------------------------------------------------------------------------')
+  print(paste('Completed rho scenarios, 13 out of', scenarios))
+  print('-----------------------------------------------------------------------------')
+  
+  #------------------------------------------------------------------#
+  # Vary true positives
+  #------------------------------------------------------------------#
+  
+  model.params.list[['MDES']] <- c(0.125, 0, 0)
+  
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d1.1_m1c", q = q, overwrite)
+  
+  # reset
+  model.params.list[['MDES']] <- model.params.default[['MDES']]
+  
+  model.params.list <- model.params.default
+  sim.params.list <- sim.params.default
+  
+}
+
+#------------------------------------------------------------------#
 # Blocked 2 level: power
 #------------------------------------------------------------------#
 
@@ -520,7 +652,7 @@ if(run.d2.1 & run.mdes.ss)
   model.params.list[['R2.2']] <- NULL
   
   # don't do WY for now
-  sim.params.list[['MTP']] <- c("Bonferroni", "BH", "Holm")
+  sim.params.list[['MTP']] <- c("BF", "BH", "HO")
   
   model.params.list[['omega.2']] <- NULL
   mdes.results <- validate_mdes(
@@ -1366,10 +1498,13 @@ if(run.d3.2 & run.power)
   # vary R2.2
   model.params.list[['R2.2']] <- rep(0.6, M)
 
+  model.params.list[['K']] <- 20
+  
   model.params.list[['omega.3']] <- NULL
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
+  
   
   # reset
   model.params.list[['R2.2']] <- model.params.default[['R2.2']]

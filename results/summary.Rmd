@@ -1,0 +1,330 @@
+---
+title: "Summary of validation results"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+
+```{r knit.options, echo = FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE,
+  fig.height = 7
+)
+opts <- options(knitr.kable.NA = "--")
+```
+
+```{r setup}
+library(here)
+library(kableExtra)
+library(magrittr) 
+library(PUMP)
+library(pander)
+library(tibble)
+library(tidyr)
+# default tables to round to 3 digits
+panderOptions('round', 3)
+source(here::here("code", "misc.R"))
+```
+
+# Introduction and notation
+
+\textbf{Simulated power intervals}.
+The Monte Carlo simulations produce a 95\% confidence interval, and we check whether that interval contains the `PUMP` estimates.
+In other words, we check if $\hat{p}_{pump}$ is within $\hat{p}_{sim} \pm 1.96 \sqrt{0.25/5000}$.
+
+\textbf{Simulated power point estimates}.
+We compare the point estimates from the simulations to `PUMP`.
+To do so, we calculate the absolute difference between the power estimates from the simulations and from `PUMP`:
+$$ b_{sim} = \lvert \hat{p}_{sim} - \hat{p}_{pump} \rvert.$$
+
+\textbf{PowerUpR power point estimates}.
+We compare the point estimates from the `PowerUpR` to `PUMP`.
+This comparison is only conducted for individual, unadjusted power.
+Similar to the last metric, we calculate the absolute difference between the power estimates from `PowerUpR` and from `PUMP`:
+$$ b_{pow} = \lvert \hat{p}_{pow} - \hat{p}_{pump} \rvert.$$
+
+
+
+\textbf{PUMP mdes point estimates}.
+We summarize the MDES performance by calculating the absolute difference between the `PUMP` estimate and the target MDES.
+$$ b_{mdes} = \lvert \hat{m}_{pump} - \hat{m}_{target} \rvert.$$
+
+```{r}
+# extract and summarize results for a particular d_m
+get.d_m.power.results <- function(d_m, power.files)
+{
+  results.files <- grep(d_m, power.files, value = TRUE)
+  
+  # stack results
+  d_m.results <- NULL
+  for(file in results.files)
+  {
+    results <- readRDS(here::here('output', file))
+
+    results.wide <- results %>%
+      pivot_wider(names_from = c(method, value.type), values_from = value)
+    
+    d_m.results <- rbind(d_m.results, results.wide)
+  }
+
+  row.names(d_m.results) <- NULL
+  # d_m.results %<>% mutate(
+  #   cover =
+  #     Sim_ci_lower <= PUMP_adjusted_power &
+  #     Sim_ci_upper >= PUMP_adjusted_power,
+  #   bias.sim = abs(Sim_adjusted_power - PUMP_adjusted_power) / PUMP_adjusted_power,
+  #   bias.pow = abs(PowerUp_adjusted_power - PUMP_adjusted_power) / PUMP_adjusted_power
+  # )
+  d_m.results %<>% mutate(
+    cover =
+      Sim_ci_lower <= PUMP_adjusted_power &
+      Sim_ci_upper >= PUMP_adjusted_power,
+    bias.sim = abs(Sim_adjusted_power - PUMP_adjusted_power),
+    bias.pow = abs(PowerUp_adjusted_power - PUMP_adjusted_power)
+  )
+  d_m.results$d_m <- d_m
+  
+  # append information about whether we expect results to agree
+  d_m.results$agree <- TRUE
+  if(d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
+  {
+    d_m.results$agree[d_m.results$ICC.2 > 0] <- FALSE
+  }
+
+  return(d_m.results)
+}
+```
+
+
+```{r}
+# find files
+all.files <- list.files(here::here('output'))
+# restrict to relevant files
+power.files <- grep('power', all.files, value = TRUE)
+# subset into WY and not WY
+main.power.files <- grep('__B', power.files, value = TRUE)
+wy.power.files <- power.files[!(power.files %in% main.power.files)]
+
+d_m.list <- c(
+  "d2.1_m2fc", "d2.1_m2ff", "d2.1_m2fr",
+  "d2.2_m2rc", "d3.1_m3rr2rr", "d3.2_m3ff2rc", "d3.2_m3rr2rc", "d3.3_m3rc2rc"
+)
+
+all.power.results <- NULL
+for(d_m in d_m.list)
+{
+  d_m.results <- get.d_m.power.results(d_m, main.power.files)
+  all.power.results <- rbind(all.power.results, d_m.results)
+}
+
+```
+
+```{r}
+# summarize coverage
+cover.results <- ddply(
+  all.power.results[all.power.results$agree,], c('d_m', 'MTP', 'power_type'),
+  summarise,
+  cover = mean(cover)
+)
+```
+
+```{r}
+# summarize bias
+bias.results <- ddply(
+  all.power.results[!is.na(all.power.results$cover) & all.power.results$cover,],
+  c('d_m', 'MTP', 'power_type'),
+  summarise,
+  mean.b.sim = mean(bias.sim),
+  mean.b.pow = mean(bias.pow[agree == TRUE], na.rm = TRUE)
+)
+# clean up for table printing
+bias.results$mean.b.pow[is.nan(bias.results$mean.b.pow)] = NA
+```
+
+# Summary of validation coverage results
+
+```{r, results = 'asis'}
+for(scenario in d_m.list)
+{
+  table.data <- dplyr::filter(cover.results, d_m == scenario)
+  table.data <- table.data  %>%
+    dplyr::arrange(MTP, power_type)
+  
+  print(kable(table.data, booktabs = TRUE, row.names = FALSE, digits = 3,
+              linesep = c("", "", "", "", "", "", "\\addlinespace")))
+}
+```
+
+\clearpage
+\newpage
+
+# Coverage discrepancies
+
+We summarize below the scenarios where the simulation intervals do not cover the PUMP value.
+For brevity, we only display results for Bonferroni adjustments, because 
+```{r, results = 'asis'}
+# extract out problem rows
+problems <- all.power.results[
+  !is.na(all.power.results$cover) &
+  all.power.results$cover != 1 &
+  all.power.results$agree,
+]
+problems <- problems %>%
+  dplyr::select(d_m, MTP, power_type, omega.2, omega.3, ICC.2, ICC.3, 
+         PUMP_adjusted_power, PowerUp_adjusted_power, Sim_adjusted_power,
+         Sim_ci_lower, Sim_ci_upper) %>%
+  dplyr::rename(
+         type = power_type,
+         pump = PUMP_adjusted_power,
+         pow = PowerUp_adjusted_power,
+         sim = Sim_adjusted_power,
+         low = Sim_ci_lower,
+         up = Sim_ci_upper)
+
+problem.table <- data.frame(problems)
+
+for(scenario in d_m.list)
+{
+  problem.table.data <- dplyr::filter(problem.table, d_m == scenario, MTP == 'BF')
+  
+  if(nrow(problem.table.data) > 0)
+  {
+    print(kable(problem.table.data, booktabs = TRUE, row.names = FALSE, digits = 3))
+  }
+}
+```
+
+\clearpage
+\newpage
+
+
+# Summary of validation "bias" results
+
+```{r, results = 'asis'}
+for(scenario in d_m.list)
+{
+  table.data <- dplyr::filter(bias.results, d_m == scenario)
+  table.data <- table.data  %>%
+    dplyr::arrange(MTP, power_type)
+  
+  print(kable(table.data, booktabs = TRUE, row.names = FALSE, digits = 3,
+              linesep = c("", "", "", "", "", "", "\\addlinespace")))
+}
+```
+
+\newpage
+# Collapsed Summaries
+
+```{r}
+bias.results.summary <- ddply(
+  bias.results, 'd_m',
+  summarise,
+  avg.b.sim = mean(mean.b.sim),
+  max.b.sim = max(mean.b.sim),
+  mean.b.pow = mean(mean.b.pow, na.rm = TRUE)
+)
+colnames(bias.results.summary) <- c('d_m', 'mean.b.sim', 'max.b.sim', 'mean.b.pow')
+kable(bias.results.summary, booktabs = TRUE, row.names = FALSE, digits = 3)
+# kable(bias.results.summary, booktabs = TRUE, row.names = FALSE, digits = 3,
+# format = 'latex')
+```
+
+# WY Summary
+
+```{r}
+wy.power.results <- NULL
+for(d_m in d_m.list)
+{
+  d_m.results <- get.d_m.power.results(d_m, wy.power.files)
+  wy.power.results <- rbind(wy.power.results, d_m.results)
+}
+wy.power.results <- wy.power.results[wy.power.results$MTP %in% c('WY-SS', 'WY-SD'),]
+```
+
+
+```{r}
+wy.cover.results <- ddply(
+  wy.power.results, c('d_m', 'MTP', 'power_type'),
+  summarise,
+  cover = mean(cover)
+)
+```
+
+
+```{r}
+# summarize bias
+wy.bias.results <- ddply(
+  wy.power.results[!is.na(wy.power.results$cover) & wy.power.results$cover,],
+  c('d_m', 'MTP', 'power_type'),
+  summarise,
+  mean.b.sim = mean(bias.sim)
+)
+```
+
+```{r}
+wy.bias.results.summary <- ddply(
+  wy.bias.results, c('d_m', 'MTP'),
+  summarise,
+  avg.b.sim = mean(mean.b.sim),
+  max.b.sim = max(mean.b.sim)
+)
+colnames(wy.bias.results.summary) <- c('d_m', 'MTP', 'mean.b.sim', 'max.b.sim')
+kable(wy.bias.results.summary, booktabs = TRUE, row.names = FALSE, digits = 3)
+# kable(wy.bias.results.summary, booktabs = TRUE, row.names = FALSE, digits = 3,
+# format = 'latex')
+```
+
+# MDES summary
+
+
+```{r}
+# find files
+all.files <- list.files(here::here('output'))
+# restrict to relevant files
+mdes.files <- grep('mdes', all.files, value = TRUE)
+mdes.files <- grep('5000_S', mdes.files, value = TRUE)
+```
+
+```{r}
+# extract and summarize results for a particular d_m
+get.d_m.mdes.results <- function(d_m,  mdes.files)
+{
+  results.files <- grep(d_m, mdes.files, value = TRUE)
+  # remove WY files
+  mdes.file <- grep('__B', results.files, value = TRUE)
+  
+  results <- readRDS(here::here('output', mdes.file))
+
+  results$abs.rel.bias <- abs(results$`Adjusted MDES` - results$`Target MDES`) /  results$`Target MDES`
+
+  return(results)
+}
+```
+
+
+```{r}
+all.mdes.results <- NULL
+
+for(d_m in d_m.list)
+{
+  d_m.results <- get.d_m.mdes.results(d_m, mdes.files)
+  all.mdes.results <- rbind(all.mdes.results, d_m.results)
+}
+```
+
+```{r}
+kable(all.mdes.results, booktabs = TRUE, row.names = FALSE, digits = 3)
+```
+
+```{r}
+mdes.results.summary <- ddply(
+  all.mdes.results, 'd_m',
+  summarise,
+  mean.b.mdes = mean(abs.rel.bias, na.rm = TRUE)
+)
+kable(mdes.results.summary, booktabs = TRUE, row.names = FALSE, digits = 3)
+# kable(mdes.results.summary, format = 'latex', booktabs = TRUE, row.names = FALSE, digits = 3)
+```
+
+
+

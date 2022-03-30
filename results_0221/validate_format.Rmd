@@ -46,3 +46,16 @@ We choose one default scenario for each design and model, then input the already
 Similarly, for sample size validation, we input the already-calculated D1 individual power and see if the output sample size (either $\bar{n}$, $J$, or $K$ depending on design) is the same as the original sample size.
 
 *Remark* In some cases, there will be a discrepancy between the input sample size and the return sample size when the power curve is relatively flat, and a variety of sample sizes result in similar power.
+
+# Validation issues
+
+- d2.1_m2ff: issue with blkvar package?
+  - validate_d21, page 17
+- d3.2_m3rr2rc: convergence issues?
+  - validate_d32, page 23
+  - out of 250 simulation runs:
+    - Number of singular fits: 193
+    - Number of failed convergence: 30
+  - for one with no discrepancy:
+    - Number of singular fits: 181
+    - Number of failed convergence: 41

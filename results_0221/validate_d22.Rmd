@@ -8,8 +8,6 @@ Design: Cluster RCT, with 2 levels, and randomization done at level 2 (school le
 
 Models: random treatment effects.
 
-d_m codes: `d2.2_m2rc`
-
 ```{r knit.options, echo = FALSE}
 knitr::opts_chunk$set(
   cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE,
@@ -23,7 +21,7 @@ library(PUMP)
 library(pander)
 # default tables to round to 3 digits
 panderOptions('round', 3)
-source(here::here("code", "misc.R"))
+source(here::here("validation/code", "misc.R"))
 ```
 
 ```{r sim.params}
@@ -312,8 +310,8 @@ Note: particularly flat power curves results in discrepancy for `nbar`.
 
 ```{r, results = 'hide', fig.width=5, fig.height=4}
 smp <- PUMP::pump_sample(
-  d_m = "d2.2_m2rc",
-  MTP = 'BF',
+  design = "d2.2_m2rc",
+  MTP = 'Bonferroni',
   typesample = 'nbar',
   MDES = model.params.list[['MDES']],
   M = model.params.list[['M']],

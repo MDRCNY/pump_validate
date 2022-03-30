@@ -8,6 +8,8 @@ Design: Blocked RCT, with 3 levels, and randomization done at level 1 (individua
 
 Models: random treatment effects.
 
+d_m codes: `d3.1_m3rr2rr`
+
 ```{r knit.options, echo = FALSE}
 knitr::opts_chunk$set(
   cache = FALSE, warning = FALSE, message = FALSE, echo = FALSE,
@@ -21,7 +23,7 @@ library(PUMP)
 library(pander)
 # default tables to round to 3 digits
 panderOptions('round', 3)
-source(here::here("validation/code", "misc.R"))
+source(here::here("code", "misc.R"))
 ```
 
 ```{r sim.params}
@@ -395,8 +397,8 @@ Note: particularly flat power curves results in discrepancy for `J`.
 
 ```{r, results = 'hide', fig.width=5, fig.height=4}
 smp <- PUMP::pump_sample(
-  design = "d3.1_m3rr2rr",
-  MTP = 'Bonferroni',
+  d_m = "d3.1_m3rr2rr",
+  MTP = 'BF',
   typesample = 'J',
   MDES = model.params.list[['MDES']],
   M = model.params.list[['M']],
@@ -447,7 +449,7 @@ Note: particularly flat power curves results in discrepancy for `nbar`.
 ```{r, results = 'hide', fig.width=5, fig.height=4}
 set.seed(2344)
 smp <- PUMP::pump_sample(
-  design = "d3.1_m3rr2rr",
+  d_m = "d3.1_m3rr2rr",
   MTP = 'BH',
   typesample = 'nbar',
   MDES = model.params.list[['MDES']],

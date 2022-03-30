@@ -44,7 +44,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
   current.file <- find_file(params.file.base, type = 'power')
   
   # store some files in intermediate results file
-  data.dir <- here::here("validation/output")
+  data.dir <- here::here("output")
   intermediate.data.dir <- paste0(data.dir, "/intermediate_results/")
   if(!dir.exists(intermediate.data.dir))
   {
@@ -143,7 +143,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
         adj_power <- data.frame(adj_power)
         adj_power$MTP <- rownames(adj_power)
         adj_power_melt <- melt(adj_power, id.vars = 'MTP')
-        adj_power_melt$method = 'sim'
+        adj_power_melt$method = 'Sim'
         return(adj_power_melt)
       }
       
@@ -303,14 +303,20 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
           J = model.params.list[['J']],
           K = model.params.list[['K']]
         )
-      } else {
+      } else if(d_m %in% PUMP::pump_info()$Context$d_m) {
+        # if a valid but non-powerup d_m
+        powerup_results <- data.frame(
+          power = NA
+        )
+      } else
+      {
         stop(paste('Unknown d_m:', d_m)) 
       }
 
       powerup_results <- data.frame(
         MTP = 'None',
         variable = 'D1indiv',
-        method = 'pup',
+        method = 'PowerUp',
         value = powerup_results$power,
         value.type = 'adjusted_power'
       )
@@ -380,7 +386,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
       # format results table nicely
       pump_results_table <- pump_results
       pump_results <- melt(pump_results_table, id.vars = 'MTP')
-      pump_results$method = 'pum'
+      pump_results$method = 'PUMP'
       pump_results$value.type = 'adjusted_power'
       
       saveRDS(pump_results, file = pump.file)
@@ -403,6 +409,25 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
       compare_results_long <- data.frame(rbind(pump_results, powerup_results, sim_results))
       colnames(compare_results_long) <- c('MTP', 'power_type', 'value', 'method', 'value.type')
       compare_results <- compare_results_long[,c('MTP', 'power_type','method', 'value.type', 'value')]
+      
+      # add in parameter info
+      compare_results$d_m      <- d_m
+      compare_results$S        <- sim.params.list$S * sim.params.list$Q
+      compare_results$M        <- model.params.list$M
+      compare_results$MDES     <- model.params.list$MDES[1]
+      compare_results$numZero  <- sum(model.params.list$MDES == 0)
+      compare_results$J        <- ifelse(!is.null(model.params.list$J), model.params.list$J, NA) 
+      compare_results$K        <- ifelse(!is.null(model.params.list$K), model.params.list$K, NA) 
+      compare_results$nbar     <- model.params.list$nbar
+      compare_results$rho      <- model.params.list$rho.default
+      compare_results$omega.2  <- ifelse(!is.null(model.params.list$omega.2[1]), model.params.list$omega.2[1], NA) 
+      compare_results$omega.3  <- ifelse(!is.null(model.params.list$omega.3[1]), model.params.list$omega.3[1], NA) 
+      compare_results$R2.1     <- ifelse(!is.null(model.params.list$R2.1[1]),    model.params.list$R2.1[1], NA) 
+      compare_results$R2.2     <- ifelse(!is.null(model.params.list$R2.2[1]),    model.params.list$R2.2[1], NA) 
+      compare_results$R2.3     <- ifelse(!is.null(model.params.list$R2.3[1]),    model.params.list$R2.3[1], NA) 
+      compare_results$ICC.2    <- ifelse(!is.null(model.params.list$ICC.2[1]),   model.params.list$ICC.2[1], NA) 
+      compare_results$ICC.3    <- ifelse(!is.null(model.params.list$ICC.3[1]),   model.params.list$ICC.3[1], NA) 
+      
       saveRDS(compare_results, file = paste(data.dir, compare.filename, sep = "/"))
     } else
     {
@@ -475,7 +500,7 @@ validate_mdes <- function(model.params.list, sim.params.list, d_m,
       target.power <- power.results$value[
         power.results$MTP == proc &
         power.results$power_type == power.definition &
-        power.results$method == 'pum'
+        power.results$method == 'PUMP'
       ]
       
       
@@ -518,12 +543,30 @@ validate_mdes <- function(model.params.list, sim.params.list, d_m,
     colnames(mdes_compare_results) <- c('MTP', 'Adjusted MDES', paste(power.definition, 'Power'), 'Target MDES')
     rownames(mdes_compare_results) <- NULL
     
+    # add in parameter info
+    mdes_compare_results$d_m      <- d_m
+    mdes_compare_results$S        <- sim.params.list$S * sim.params.list$Q
+    mdes_compare_results$M        <- model.params.list$M
+    mdes_compare_results$MDES     <- model.params.list$MDES[1]
+    mdes_compare_results$numZero  <- sum(model.params.list$MDES == 0)
+    mdes_compare_results$J        <- ifelse(!is.null(model.params.list$J), model.params.list$J, NA) 
+    mdes_compare_results$K        <- ifelse(!is.null(model.params.list$K), model.params.list$K, NA) 
+    mdes_compare_results$nbar     <- model.params.list$nbar
+    mdes_compare_results$rho      <- model.params.list$rho.default
+    mdes_compare_results$omega.2  <- ifelse(!is.null(model.params.list$omega.2[1]), model.params.list$omega.2[1], NA) 
+    mdes_compare_results$omega.3  <- ifelse(!is.null(model.params.list$omega.3[1]), model.params.list$omega.3[1], NA) 
+    mdes_compare_results$R2.1     <- ifelse(!is.null(model.params.list$R2.1[1]),    model.params.list$R2.1[1], NA) 
+    mdes_compare_results$R2.2     <- ifelse(!is.null(model.params.list$R2.2[1]),    model.params.list$R2.2[1], NA) 
+    mdes_compare_results$R2.3     <- ifelse(!is.null(model.params.list$R2.3[1]),    model.params.list$R2.3[1], NA) 
+    mdes_compare_results$ICC.2    <- ifelse(!is.null(model.params.list$ICC.2[1]),   model.params.list$ICC.2[1], NA) 
+    mdes_compare_results$ICC.3    <- ifelse(!is.null(model.params.list$ICC.3[1]),   model.params.list$ICC.3[1], NA) 
+    
     if(sim.params.list[['parallel']])
     {
       parallel::stopCluster(cl)
     }
     
-    saveRDS(mdes_compare_results, file = here::here("validation/output", mdes.filename))
+    saveRDS(mdes_compare_results, file = here::here("output", mdes.filename))
     return(mdes_compare_results)
   } else
   {
@@ -602,7 +645,7 @@ validate_sample <- function(model.params.list, sim.params.list, d_m,
       target.power <- power.results$value[
         power.results$MTP == proc &
         power.results$power_type == power.definition &
-        power.results$method == 'pum'
+        power.results$method == 'PUMP'
       ]
       
       sample_results_iter <- PUMP::pump_sample(
@@ -645,12 +688,30 @@ validate_sample <- function(model.params.list, sim.params.list, d_m,
       params.file.base, 'comparison_sample_', typesample, '_', power.definition, '_results.RDS'
     )
     
+    # add in parameter info
+    sample_compare_results$d_m      <- d_m
+    sample_compare_results$S        <- sim.params.list$S * sim.params.list$Q
+    sample_compare_results$M        <- model.params.list$M
+    sample_compare_results$MDES     <- model.params.list$MDES[1]
+    sample_compare_results$numZero  <- sum(model.params.list$MDES == 0)
+    sample_compare_results$J        <- ifelse(!is.null(model.params.list$J), model.params.list$J, NA) 
+    sample_compare_results$K        <- ifelse(!is.null(model.params.list$K), model.params.list$K, NA) 
+    sample_compare_results$nbar     <- model.params.list$nbar
+    sample_compare_results$rho      <- model.params.list$rho.default
+    sample_compare_results$omega.2  <- ifelse(!is.null(model.params.list$omega.2[1]), model.params.list$omega.2[1], NA) 
+    sample_compare_results$omega.3  <- ifelse(!is.null(model.params.list$omega.3[1]), model.params.list$omega.3[1], NA) 
+    sample_compare_results$R2.1     <- ifelse(!is.null(model.params.list$R2.1[1]),    model.params.list$R2.1[1], NA) 
+    sample_compare_results$R2.2     <- ifelse(!is.null(model.params.list$R2.2[1]),    model.params.list$R2.2[1], NA) 
+    sample_compare_results$R2.3     <- ifelse(!is.null(model.params.list$R2.3[1]),    model.params.list$R2.3[1], NA) 
+    sample_compare_results$ICC.2    <- ifelse(!is.null(model.params.list$ICC.2[1]),   model.params.list$ICC.2[1], NA) 
+    sample_compare_results$ICC.3    <- ifelse(!is.null(model.params.list$ICC.3[1]),   model.params.list$ICC.3[1], NA) 
+    
     if(sim.params.list[['parallel']])
     {
       parallel::stopCluster(cl)
     }
     
-    saveRDS(sample_compare_results, file = here::here("validation/output", sample.filename))
+    saveRDS(sample_compare_results, file = here::here("output", sample.filename))
     return(sample_compare_results)
   } else
   {

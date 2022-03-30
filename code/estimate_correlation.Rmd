@@ -1,0 +1,96 @@
+---
+title: "Estimate Correlation"
+author: "Kristen Hunter"
+date: "2/12/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(PUMP)
+source(here::here('code', 'estimate_power_with_simulation.R'))
+knitr::opts_chunk$set(echo = TRUE)
+
+run.name = '20220223_18'
+```
+
+# Correlation estimation strategy
+
+- For $s = 1, \dots, S$:
+  - Input DGP parameters, including assumed correlation $\rho$.
+  - Generate full simulated data. 
+  - Generate treatment assignments and observed data.
+  - Calculate $t$ statistics from regressions for each outcome. So for $M$ outcomes, we have a $M$-vector of test statistics.
+- Returns a matrix of test statistics $S \times M$.
+
+Next:
+
+- Calculate correlation of matrix of test statistics.
+- Take upper triangle of matrix and take average.
+- Returns a single mean estimated correlation.
+
+# Code
+
+The following function returns the $S \times M$ matrix of test statistics:
+```{r}
+get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
+{
+  M <- model.params.list$M
+  rawt.all <- matrix(NA, nrow = n.sims, ncol = M)
+  dgp.params.list <- PUMP::convert_params(model.params.list)
+  
+  # number of simulations
+  for(s in 1:n.sims)
+  {
+    if (s %% 20 == 0){ message(paste0("Now processing simulation ", s, " of ", n.sims)) }
+    
+    # generate simulated data
+    samp.full <- PUMP::gen_full_data(dgp.params.list)
+    S.id <- samp.full$ID$S.id
+    D.id  <- samp.full$ID$D.id
+    
+    # generate treatment assignments
+    T.x <- PUMP::gen_T.x(d_m = d_m,
+                         S.id = S.id, D.id = D.id,
+                         nbar = dgp.params.list$nbar,
+                         Tbar = 0.5)
+    
+    # convert full data to observed data
+    samp.obs <- samp.full
+    samp.obs$Yobs <- PUMP::gen_Yobs(samp.full, T.x)
+    
+    # calculate t statistics
+    dat.all <- makelist_samp(samp.obs, T.x)
+    rawpt.out <- get_rawpt(dat.all, d_m = d_m, model.params.list = model.params.list)
+    rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
+    rawt.all[s,] <- rawt
+  }
+  
+  return(rawt.all)
+}
+```
+
+The following function takes in the matrix of test statistics and returns the estimated correlation.
+
+```{r}
+get_cor <- function(rawt.all)
+{
+  
+  # calculate correlation
+  cor.tstat <- cor(rawt.all)
+  est.cor <- cor.tstat[lower.tri(cor.tstat)]
+  mean.est.cor <- mean(est.cor)
+
+  return(mean.est.cor)
+}
+```
+
+
+
+
+# Simulation Results
+
+```{r, echo = FALSE}
+results = readRDS(here::here(paste0('cor_results_', run.name , '.rds')))
+kable(results, digits = 3)
+```

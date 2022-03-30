@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH -n 1 													    # Number of cores requested
 #SBATCH -N 1 													    # Ensure that all cores are on one machine
-#SBATCH -t 60													    # Runtime in minutes
-#SBATCH -p shared												    # Partition to submit to
-#SBATCH --mem-per-cpu=10000 										# Memory per cpu in MB (see also --mem-per-cpu)
+#SBATCH -t 240												        # Runtime in minutes
+#SBATCH -p test												    # Partition to submit to
+#SBATCH --mem-per-cpu=1000 										    # Memory per cpu in MB (see also --mem-per-cpu)
 #SBATCH --open-mode=append
 #SBATCH -o /n/home01/khunter33/pump_validate/log/%j.out 	        # Standard out goes to this file
 #SBATCH -e /n/home01/khunter33/pump_validate/log/%j.err 	        # Standard err goes to this filehostname
@@ -14,7 +14,7 @@ source new-modules.sh
 module load gcc/10.2.0-fasrc01
 module load R/4.1.0-fasrc01
 export R_LIBS_USER=$HOME/apps/R:$R_LIBS_USER
-R CMD BATCH --quiet --no-restore --no-save /n/home01/khunter33/pump_validate/code/gen_validation_results_all.R /n/home01/khunter33/pump_validate/log/$(date +"%Y%m%d_%H%M%S").out
+R CMD BATCH --quiet --no-restore --no-save /n/home01/khunter33/pump_validate/code/test-cor.R /n/home01/khunter33/pump_validate/log/$(date +"%Y%m%d_%H%M%S").out
 
 
 

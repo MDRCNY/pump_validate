@@ -10,7 +10,7 @@ source new-modules.sh
 module load gcc/10.2.0-fasrc01
 module load R/4.1.0-fasrc01
 export R_LIBS_USER=$HOME/apps/R:$R_LIBS_USER
-R CMD BATCH --quiet --no-restore --no-save /n/home01/khunter33/pump_validate/validation/code/gen_validation_results_all.R /n/home01/khunter33/pump_validate/log/$(date +"%Y%m%d_%H%M%S%N").out
+R CMD BATCH --quiet --no-restore --no-save /n/home01/khunter33/pump_validate/code/gen_validation_results_all.R /n/home01/khunter33/pump_validate/log/$(date +"%Y%m%d_%H%M%S%N").out
 
 
 
