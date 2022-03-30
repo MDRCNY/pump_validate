@@ -40,13 +40,12 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
     if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
     
     # generate full, unobserved sample data
-    samp.full <- PUMP::gen_full_data(dgp.params.list)
+    samp.full <- PUMP::gen_base_sim_data(dgp.params.list)
     S.id <- samp.full$ID$S.id
     D.id  <- samp.full$ID$D.id
     
     T.x <- PUMP::gen_T.x(d_m = d_m,
                          S.id = S.id, D.id = D.id,
-                         nbar = dgp.params.list$nbar,
                          Tbar = sim.params.list$Tbar)
     
 
