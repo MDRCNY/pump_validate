@@ -50,7 +50,7 @@ adjust_WY <- function(dat.all, rawp, S.id, D.id,
   if(!is.null(cl))
   {
     clusterExport(cl, list(
-      "perm.regs", "make_model", "get_pval_tstat",
+      "perm.regs", "make_model", "get_pval_tstat", "calc_df",
       "lmer", "interacted_linear_estimators", "isSingular"
     ), envir = environment())
     
