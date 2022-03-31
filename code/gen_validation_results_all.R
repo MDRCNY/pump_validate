@@ -200,6 +200,13 @@ if(run.wy)
     model.params.list[['omega.3']] <- rep(0.05, M)
     
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.1_m3rr2rr", q = q, overwrite)
+    
+    
+    # try a smaller number of clusters
+    model.params.list[['J']] <- 5
+    model.params.list[['K']] <- 5
+    
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.1_m3rr2rr", q = q, overwrite)
     gc()
   }
   
@@ -228,6 +235,12 @@ if(run.wy)
     model.params.list[['R2.1']] <- rep(0.4, M)
     model.params.list[['R2.2']] <- rep(0.4, M)
     model.params.list[['R2.3']] <- rep(0.4, M)
+    
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.3_m3rc2rc", q = q, overwrite)
+    
+    # for a reasonable runtime and power
+    model.params.list[['J']] <- 10
+    model.params.list[['K']] <- 10
     
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.3_m3rc2rc", q = q, overwrite)
     gc()

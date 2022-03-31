@@ -59,6 +59,7 @@ get.d_m.power.results <- function(d_m, power.files)
   d_m.results <- NULL
   for(file in results.files)
   {
+    print(file)
     results <- readRDS(here::here('output', file))
 
     results.wide <- results %>%
@@ -113,6 +114,7 @@ d_m.list <- c(
 all.power.results <- NULL
 for(d_m in d_m.list)
 {
+  print(d_m)
   d_m.results <- get.d_m.power.results(d_m, main.power.files)
   all.power.results <- rbind(all.power.results, d_m.results)
 }

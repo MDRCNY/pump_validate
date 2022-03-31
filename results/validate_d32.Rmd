@@ -194,6 +194,26 @@ d3.2_m3rr2rc_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(mode
 print(d3.2_m3rr2rc_r2.1_power_plot)
 ```
 
+
+```{r 3r_r2206k20}
+d_m <- "d3.2_m3rr2rc"
+model.params.list[['omega.3']] <- params.default[['omega.3']]
+model.params.list[['K']] <- 20
+d3.2_m3rr2rc_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
+print(d3.2_m3rr2rc_r2.1_power_plot)
+model.params.list[['K']] <- params.default[['K']]
+```
+
+
+```{r 3r_r2206j50}
+d_m <- "d3.2_m3rr2rc"
+model.params.list[['omega.3']] <- params.default[['omega.3']]
+model.params.list[['J']] <- 50
+d3.2_m3rr2rc_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
+print(d3.2_m3rr2rc_r2.1_power_plot)
+model.params.list[['J']] <- params.default[['J']]
+```
+
 ```{r r22reset}
 model.params.list[['R2.2']] <- params.default[['R2.2']]  
 ```
@@ -665,5 +685,5 @@ smp <- PUMP::pump_sample(
   alpha = 0.05,
   verbose = TRUE
 )
-plot_power_curve(smp)
+plot(smp)
 ```
