@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -n 1 													    # Number of cores requested
 #SBATCH -N 1 													    # Ensure that all cores are on one machine
-#SBATCH -t 60													    # Runtime in minutes
+#SBATCH -t 240													    # Runtime in minutes
 #SBATCH -p shared												    # Partition to submit to
 #SBATCH --mem-per-cpu=10000 										# Memory per cpu in MB (see also --mem-per-cpu)
 #SBATCH --open-mode=append
