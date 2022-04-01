@@ -6,12 +6,12 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = TRUE
+overwrite = FALSE
 # whether or not to run power, mdes and sample size
-run.power = TRUE
+run.power = FALSE
 run.mdes.ss = FALSE
 # whether to run limited westfall young validations
-run.wy = FALSE
+run.wy = TRUE
 # which d_ms to run
 run.d1.1 = FALSE
 run.d2.1 = FALSE
@@ -54,9 +54,9 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , MTP = c("BF", "BH", "HO") # Multiple testing procedures
-  , runSim = FALSE       # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = TRUE    # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = TRUE    # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
+  , runSim = TRUE       # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = FALSE    # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPowerUp = FALSE    # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
 #------------------------------------------------------------------#
@@ -301,6 +301,14 @@ if(run.wy)
     
     model.params.list[['omega.3']] <- rep(0.05, M)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
+    
+    
+    # for better estiamtes
+    model.params.list[['J']] <- 20
+    model.params.list[['K']] <- 20
+
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
+    
     gc()
   }
   # reset
