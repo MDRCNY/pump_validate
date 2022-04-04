@@ -303,9 +303,18 @@ if(run.wy)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
     
     
-    # for better estiamtes
+    # for better estimates
     model.params.list[['J']] <- 20
     model.params.list[['K']] <- 20
+    
+    # for reasonable power
+    model.params.list[['nbar']] <- 75
+    model.params.list[['MDES']] <- rep(0.125, M)
+    model.params.list[['ICC.3']] <- rep(0.2, M)
+    model.params.list[['ICC.2']] <- rep(0.2, M)
+    model.params.list[['R2.1']] <- rep(0.2, M)
+    model.params.list[['R2.2']] <- rep(0.2, M)
+    model.params.list[['R2.3']] <- rep(0.2, M)
 
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
     
