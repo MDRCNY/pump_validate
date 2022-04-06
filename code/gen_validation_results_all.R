@@ -145,9 +145,24 @@ if(run.wy)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   
-    # try with high correlation and outcomes
-    model.params.list[['M']] <- 10
-    model.params.list[['rho.default']] <- 0.85
+    # try with high correlation and large number of outcomes
+    M <- 10
+    model.params.list <- list(
+      M = 10                                  # number of outcomes
+      , J = 30                                # number of schools
+      , K = 10                                # number of districts (for two-level model, set K = 1)
+      , nbar = 50                             # number of individuals per school
+      , rho.default = 0.85                    # default rho value
+      ################################################## grand mean outcome and impact
+      , MDES = rep(0.125, M)                  # minimum detectable effect size      
+      ################################################## level 3: districts
+      , ICC.2 = rep(0.2, M)                   # school intraclass correlation	
+      , omega.2 = rep(0.1, M)                 # ratio of school effect size variability to random effects variability
+      , kappa.u = matrix(0, M, M)             # MxM matrix of correlations between school random effects and impacts
+      ################################################## level 1: individuals
+      , numCovar.1 = 1                        # number of individual covariates
+      , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
+    )
     
     model.params.list[['omega.2']] <- NULL
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
@@ -155,6 +170,9 @@ if(run.wy)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
     
+    M <- 3
+    model.params.list <- model.params.default
+
     gc()
   }
 
