@@ -14,11 +14,11 @@ run.mdes.ss = FALSE
 run.wy = TRUE
 # which d_ms to run
 run.d1.1 = FALSE
-run.d2.1 = FALSE
+run.d2.1 = TRUE
 run.d2.2 = FALSE
 run.d3.1 = FALSE
 run.d3.3 = FALSE
-run.d3.2 = TRUE
+run.d3.2 = FALSE
 
 # for parallel processing
 q <- as.numeric(as.character(Sys.getenv("q")))
@@ -145,6 +145,16 @@ if(run.wy)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   
+    # try with high correlation and outcomes
+    model.params.list[['M']] <- 10
+    model.params.list[['rho.default']] <- 0.85
+    
+    model.params.list[['omega.2']] <- NULL
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
+    model.params.list[['omega.2']] <- model.params.default[['omega.2']]
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
+    
     gc()
   }
 
