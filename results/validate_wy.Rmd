@@ -207,6 +207,8 @@ ggsave(
 \newpage
 # d3.1 models
 
+$K = 10, J = 10$
+
 ```{r}
 model.params.list <- model.params.default
 sim.params.list[['B']] <- 2000
@@ -235,8 +237,25 @@ d3.1_m3rr2rr_power_plot <- gen.power.results.plot(params.file.base, d_m, small.f
 print(d3.1_m3rr2rr_power_plot)
 ```
 
+
+$K = 5, J = 5$
+
+```{r}
+model.params.list[['J']] <- 5
+model.params.list[['K']] <- 5
+```
+
+```{r}
+d_m <- "d3.1_m3rr2rr"
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d3.1_m3rr2rr_power_plot <- gen.power.results.plot(params.file.base, d_m, small.font = TRUE)
+print(d3.1_m3rr2rr_power_plot)
+```
+
 \newpage
 # d3.3 models
+
+$J = 20, K = 20$
 
 ```{r}
 model.params.list <- model.params.default
@@ -257,6 +276,20 @@ model.params.list[['ICC.2']] <- rep(0.05, M)
 model.params.list[['R2.1']] <- rep(0.4, M)
 model.params.list[['R2.2']] <- rep(0.4, M)
 model.params.list[['R2.3']] <- rep(0.4, M)
+```
+
+```{r}
+d_m <- "d3.3_m3rc2rc"
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d3.3_m3rc2rc_power_plot <- gen.power.results.plot(params.file.base, d_m, small.font = TRUE)
+print(d3.3_m3rc2rc_power_plot)
+```
+
+$J = 10, K = 10$
+
+```{r}
+model.params.list[['J']] <- 10
+model.params.list[['K']] <- 10
 ```
 
 ```{r}
@@ -304,6 +337,8 @@ print(d3.2_m3ff2rc_power_plot)
 \newpage
 Random effects
 
+$J = 10, K = 10$
+
 ```{r}
 # for reasonable power and runtime
 sim.params.list[['B']] <- 3000
@@ -318,6 +353,30 @@ model.params.list[['ICC.2']] <- rep(0.1, M)
 model.params.list[['R2.1']] <- rep(0.4, M)
 model.params.list[['R2.2']] <- rep(0.4, M)
 model.params.list[['R2.3']] <- rep(0.4, M)
+```
+
+```{r}
+d_m <- "d3.2_m3rr2rc"
+model.params.list[['omega.3']] <- rep(0.05, M)
+params.file.base <- gen_params_file_base(model.params.list, sim.params.list, d_m)
+d3.2_m3rr2rc_power_plot <- gen.power.results.plot(params.file.base, d_m, small.font = TRUE)
+print(d3.2_m3rr2rc_power_plot)
+```
+
+$J = 20, K = 20$
+
+```{r}
+model.params.list[['J']] <- 20
+model.params.list[['K']] <- 20
+
+# for reasonable power
+model.params.list[['nbar']] <- 75
+model.params.list[['MDES']] <- rep(0.125, M)
+model.params.list[['ICC.3']] <- rep(0.2, M)
+model.params.list[['ICC.2']] <- rep(0.2, M)
+model.params.list[['R2.1']] <- rep(0.2, M)
+model.params.list[['R2.2']] <- rep(0.2, M)
+model.params.list[['R2.3']] <- rep(0.2, M)
 ```
 
 ```{r}

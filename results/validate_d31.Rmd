@@ -344,7 +344,7 @@ if(length(mdes.file) == 0)
 {
   d3.1_m3rr2rr_mdes_results <- readRDS(mdes.file)
   pander::pandoc.table(
-    d3.1_m3rr2rr_mdes_results,
+    d3.1_m3rr2rr_mdes_results[,1:4],
     style = "grid", split.tables = 100, row.names = FALSE, 
     caption = d_m
   )
@@ -366,7 +366,7 @@ if(length(sample.file) == 0)
 {
   d3.1_m3rr2rr_sample_D1_K_results <- readRDS(sample.file)
   pander::pandoc.table(
-    d3.1_m3rr2rr_sample_D1_K_results,
+    d3.1_m3rr2rr_sample_D1_K_results[,1:4],
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = d_m
   )
@@ -386,7 +386,7 @@ if(length(sample.file) == 0)
 {
   d3.1_m3rr2rr_sample_D1_J_results <- readRDS(sample.file)
   pander::pandoc.table(
-    d3.1_m3rr2rr_sample_D1_J_results,
+    d3.1_m3rr2rr_sample_D1_J_results[,1:4],
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = d_m
   )
@@ -395,10 +395,12 @@ if(length(sample.file) == 0)
 
 Note: particularly flat power curves results in discrepancy for `J`.
 
+For `MTP = BH`:
+
 ```{r, results = 'hide', fig.width=5, fig.height=4}
 smp <- PUMP::pump_sample(
   d_m = "d3.1_m3rr2rr",
-  MTP = 'BF',
+  MTP = "BH",
   typesample = 'J',
   MDES = model.params.list[['MDES']],
   M = model.params.list[['M']],
@@ -421,8 +423,9 @@ smp <- PUMP::pump_sample(
   alpha = 0.05,
   verbose = TRUE
 )
-plot_power_curve(smp)
+plot(smp)
 ```
+
 
 Target value: `r model.params.list[['nbar']]`
 
@@ -437,7 +440,7 @@ if(length(sample.file) == 0)
 {
   d3.1_m3rr2rr_sample_D1_nbar_results <- readRDS(sample.file)
   pander::pandoc.table(
-    d3.1_m3rr2rr_sample_D1_nbar_results,
+    d3.1_m3rr2rr_sample_D1_nbar_results[,1:4],
     style = "grid", split.tables = 100, row.names = FALSE,
     caption = d_m
   )
@@ -446,11 +449,46 @@ if(length(sample.file) == 0)
 
 Note: particularly flat power curves results in discrepancy for `nbar`.
 
+For `MTP = BF`:
+
 ```{r, results = 'hide', fig.width=5, fig.height=4}
 set.seed(2344)
 smp <- PUMP::pump_sample(
   d_m = "d3.1_m3rr2rr",
-  MTP = 'BH',
+  MTP = "BF",
+  typesample = 'nbar',
+  MDES = model.params.list[['MDES']],
+  M = model.params.list[['M']],
+  J = model.params.list[['J']],
+  K = model.params.list[['K']],
+  target.power = 0.721,
+  power.definition = 'D1indiv',
+  numCovar.1 = model.params.list[['numCovar.1']],
+  numCovar.2 = model.params.list[['numCovar.2']],
+  numCovar.3 = model.params.list[['numCovar.3']],
+  R2.1 = model.params.list[['R2.1']],
+  R2.2 = model.params.list[['R2.2']],
+  R2.3 = model.params.list[['R2.3']],
+  ICC.2 = model.params.list[['ICC.2']],
+  ICC.3 = model.params.list[['ICC.3']],
+  rho = model.params.list[['rho.default']],
+  omega.2 = model.params.list[['omega.2']],
+  omega.3 = model.params.list[['omega.3']],
+  Tbar = 0.5,
+  alpha = 0.05,
+  verbose = TRUE
+)
+plot(smp)
+```
+
+
+For `MTP = BH`:
+
+```{r, results = 'hide', fig.width=5, fig.height=4}
+set.seed(2344)
+smp <- PUMP::pump_sample(
+  d_m = "d3.1_m3rr2rr",
+  MTP = "BH",
   typesample = 'nbar',
   MDES = model.params.list[['MDES']],
   M = model.params.list[['M']],
@@ -473,5 +511,39 @@ smp <- PUMP::pump_sample(
   alpha = 0.05,
   verbose = TRUE
 )
-plot_power_curve(smp)
+plot(smp)
 ```
+
+For `MTP = HO`:
+
+```{r, results = 'hide', fig.width=5, fig.height=4}
+set.seed(2344)
+smp <- PUMP::pump_sample(
+  d_m = "d3.1_m3rr2rr",
+  MTP = "HO",
+  typesample = 'nbar',
+  MDES = model.params.list[['MDES']],
+  M = model.params.list[['M']],
+  J = model.params.list[['J']],
+  K = model.params.list[['K']],
+  target.power = 0.813,
+  power.definition = 'D1indiv',
+  numCovar.1 = model.params.list[['numCovar.1']],
+  numCovar.2 = model.params.list[['numCovar.2']],
+  numCovar.3 = model.params.list[['numCovar.3']],
+  R2.1 = model.params.list[['R2.1']],
+  R2.2 = model.params.list[['R2.2']],
+  R2.3 = model.params.list[['R2.3']],
+  ICC.2 = model.params.list[['ICC.2']],
+  ICC.3 = model.params.list[['ICC.3']],
+  rho = model.params.list[['rho.default']],
+  omega.2 = model.params.list[['omega.2']],
+  omega.3 = model.params.list[['omega.3']],
+  Tbar = 0.5,
+  alpha = 0.05,
+  verbose = TRUE
+)
+plot(smp)
+```
+
+
