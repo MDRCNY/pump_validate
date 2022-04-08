@@ -166,7 +166,7 @@ if(run.wy)
     
     model.params.list[['omega.2']] <- NULL
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
-    model.params.list[['omega.2']] <- model.params.default[['omega.2']]
+    model.params.list[['omega.2']] <- rep(0.1, M) 
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
     
