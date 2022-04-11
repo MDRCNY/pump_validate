@@ -1563,7 +1563,7 @@ if(run.d3.2 & run.power)
   
 
   # try with better estimate of rho
-  cor.est <- mean(c(0.4025657, 0.4641189, 0.4672959))
+  cor.est <- 0.44
   model.params.list[['rho.default']] <- cor.est
   default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
   model.params.list[['rho.V']] <- model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
@@ -1571,8 +1571,6 @@ if(run.d3.2 & run.power)
   model.params.list[['rho.w0']] <- model.params.list[['rho.w1']] <- default.rho.matrix
   model.params.list[['rho.r']] <- default.rho.matrix
 
-  model.params.list[['omega.3']] <- NULL
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
 
@@ -1689,7 +1687,7 @@ if(run.d3.2 & run.power)
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
   
   # try with better estimate of rho
-  cor.est <- mean(c(0.4037945, 0.4213898, 0.3806589))
+  cor.est <- 0.4
   model.params.list[['rho.default']] <- cor.est
   default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
   model.params.list[['rho.V']] <- model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
@@ -1697,8 +1695,6 @@ if(run.d3.2 & run.power)
   model.params.list[['rho.w0']] <- model.params.list[['rho.w1']] <- default.rho.matrix
   model.params.list[['rho.r']] <- default.rho.matrix
   
-  model.params.list[['omega.3']] <- NULL
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
   
