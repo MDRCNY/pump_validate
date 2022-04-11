@@ -1561,29 +1561,6 @@ if(run.d3.2 & run.power)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
   
-
-  # try with better estimate of rho
-  cor.est <- 0.44
-  model.params.list[['rho.default']] <- cor.est
-  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-  model.params.list[['rho.V']] <- model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
-  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- default.rho.matrix
-  model.params.list[['rho.w0']] <- model.params.list[['rho.w1']] <- default.rho.matrix
-  model.params.list[['rho.r']] <- default.rho.matrix
-
-  model.params.list[['omega.3']] <- model.params.default[['omega.3']]
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
-
-  # reset
-  rho.default <- model.params.default[['rho.default']]
-  model.params.list[['rho.default']] <- rho.default
-  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-  model.params.list[['rho.V']] <- model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
-  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- default.rho.matrix
-  model.params.list[['rho.w0']] <- model.params.list[['rho.w1']] <- default.rho.matrix
-  model.params.list[['rho.r']] <- default.rho.matrix
-  
-  
   # reset
   model.params.list[['R2.2']] <- model.params.default[['R2.2']]
   
@@ -1676,6 +1653,13 @@ if(run.d3.2 & run.power)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
   
+
+  # try with higher K
+  model.params.list[['K']] <- 20
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
+  model.params.list[['K']] <- model.params.default[['K']]
+  
+  
   model.params.list[['ICC.3']] <- model.params.default[['ICC.3']]
   
   # ICC 2 = 0
@@ -1685,27 +1669,6 @@ if(run.d3.2 & run.power)
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
-  
-  # try with better estimate of rho
-  cor.est <- 0.4
-  model.params.list[['rho.default']] <- cor.est
-  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-  model.params.list[['rho.V']] <- model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
-  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- default.rho.matrix
-  model.params.list[['rho.w0']] <- model.params.list[['rho.w1']] <- default.rho.matrix
-  model.params.list[['rho.r']] <- default.rho.matrix
-  
-  model.params.list[['omega.3']] <- model.params.default[['omega.3']]
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
-  
-  # reset
-  rho.default <- model.params.default[['rho.default']]
-  model.params.list[['rho.default']] <- rho.default
-  default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-  model.params.list[['rho.V']] <- model.params.list[['rho.X']] <- model.params.list[['rho.C']] <- default.rho.matrix
-  model.params.list[['rho.u0']] <- model.params.list[['rho.u1']] <- default.rho.matrix
-  model.params.list[['rho.w0']] <- model.params.list[['rho.w1']] <- default.rho.matrix
-  model.params.list[['rho.r']] <- default.rho.matrix
   
   model.params.list[['ICC.2']] <- model.params.default[['ICC.2']]
   
