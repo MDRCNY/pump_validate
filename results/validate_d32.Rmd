@@ -194,6 +194,7 @@ d3.2_m3rr2rc_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(mode
 print(d3.2_m3rr2rc_r2.1_power_plot)
 ```
 
+$K = 20$
 
 ```{r 3r_r2206k20}
 d_m <- "d3.2_m3rr2rc"
@@ -202,16 +203,6 @@ model.params.list[['K']] <- 20
 d3.2_m3rr2rc_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d3.2_m3rr2rc_r2.1_power_plot)
 model.params.list[['K']] <- params.default[['K']]
-```
-
-
-```{r 3r_r2206j50}
-d_m <- "d3.2_m3rr2rc"
-model.params.list[['omega.3']] <- params.default[['omega.3']]
-model.params.list[['J']] <- 50
-d3.2_m3rr2rc_r2.1_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
-print(d3.2_m3rr2rc_r2.1_power_plot)
-model.params.list[['J']] <- params.default[['J']]
 ```
 
 ```{r r22reset}
@@ -362,6 +353,19 @@ d3.2_m3rr2rc_ICC3.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(
 print(d3.2_m3rr2rc_ICC3.0.7_power_plot)
 ```
 
+
+$K = 20$
+
+```{r 3r_ICC307K20}
+model.params.list[['K']] <- 20
+d_m <- "d3.2_m3rr2rc"
+model.params.list[['omega.3']] <- params.default[['omega.3']]
+d3.2_m3rr2rc_ICC3.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
+print(d3.2_m3rr2rc_ICC3.0.7_power_plot)
+model.params.list[['K']] <- params.default[['K']]
+```
+
+
 ```{r ICC307reset}
 model.params.list[['ICC.3']] <- params.default[['ICC.3']]
 ```
@@ -386,6 +390,17 @@ d_m <- "d3.2_m3rr2rc"
 model.params.list[['omega.3']] <- params.default[['omega.3']]
 d3.2_m3rr2rc_ICC2.0_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
 print(d3.2_m3rr2rc_ICC2.0_power_plot)
+```
+
+$K = 20$
+
+```{r 3r_ICC20K20}
+model.params.list[['K']] <- 20
+d_m <- "d3.2_m3rr2rc"
+model.params.list[['omega.3']] <- params.default[['omega.3']]
+d3.2_m3rr2rc_ICC3.0.7_power_plot <- gen.power.results.plot(gen_params_file_base(model.params.list, sim.params.list, d_m), d_m)
+print(d3.2_m3rr2rc_ICC3.0.7_power_plot)
+model.params.list[['K']] <- params.default[['K']]
 ```
 
 ```{r ICC20reset}

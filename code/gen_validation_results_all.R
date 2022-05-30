@@ -1658,7 +1658,6 @@ if(run.d3.2 & run.power)
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
   model.params.list[['K']] <- model.params.default[['K']]
   
-  
   model.params.list[['ICC.3']] <- model.params.default[['ICC.3']]
   
   # ICC 2 = 0

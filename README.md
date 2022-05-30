@@ -17,6 +17,10 @@ Authors:
 
 The complete set of validation results can be found in validation/results.
 This folder contains Rmarkdown files and output PDF files for all validation scenarios.
+
+A written summary and summary tables of the results can be be found at validation/summary.pdf.
+
+For more detailed results for a particular scenario, reference the document for that scenario.
 Each file shows graphs comparing power estimated using monte carlo simulations compared to PUMP and PowerUP.
 Note that PowerUp only works with a single outcome, M = 1.
 For a general guide to the format of these documents, see validatate_format.
