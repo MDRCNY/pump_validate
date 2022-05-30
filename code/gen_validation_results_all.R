@@ -6,7 +6,7 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = TRUE
+overwrite = FALSE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
 run.mdes.ss = FALSE
@@ -54,9 +54,9 @@ sim.params.list <- list(
   , max.steps = 20           # maximum number of iterations for MDES or sample size calculations
   , max.cum.tnum = 10000000  # maximum cumulative tnum for MDES and sample size
   , MTP = c("BF", "BH", "HO") # Multiple testing procedures
-  , runSim = FALSE       # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
-  , runPump = TRUE    # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
-  , runPowerUp = TRUE    # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
+  , runSim = TRUE       # If TRUE, we will re-run the simulation. If FALSE, we will pull previous run result.
+  , runPump = FALSE    # If TRUE, we will run method from our package. If FALSE, we will pull previous run result.
+  , runPowerUp = FALSE    # If TRUE, we will run method from powerup. If FALSE, we will pull previous run result.
 )
 
 #------------------------------------------------------------------#
@@ -145,6 +145,34 @@ if(run.wy)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
   
+    # try with high correlation and large number of outcomes
+    M <- 10
+    model.params.list <- list(
+      M = 10                                  # number of outcomes
+      , J = 30                                # number of schools
+      , K = 10                                # number of districts (for two-level model, set K = 1)
+      , nbar = 50                             # number of individuals per school
+      , rho.default = 0.85                    # default rho value
+      ################################################## grand mean outcome and impact
+      , MDES = rep(0.125, M)                  # minimum detectable effect size      
+      ################################################## level 3: districts
+      , ICC.2 = rep(0.2, M)                   # school intraclass correlation	
+      , omega.2 = rep(0.1, M)                 # ratio of school effect size variability to random effects variability
+      , kappa.u = matrix(0, M, M)             # MxM matrix of correlations between school random effects and impacts
+      ################################################## level 1: individuals
+      , numCovar.1 = 1                        # number of individual covariates
+      , R2.1 = rep(0.1, M)                    # percent of indiv variation explained by indiv covariates
+    )
+    
+    model.params.list[['omega.2']] <- NULL
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fc", q = q, overwrite)
+    model.params.list[['omega.2']] <- rep(0.1, M) 
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2ff", q = q, overwrite)
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d2.1_m2fr", q = q, overwrite)
+    
+    M <- 3
+    model.params.list <- model.params.default
+
     gc()
   }
 
@@ -301,6 +329,23 @@ if(run.wy)
     
     model.params.list[['omega.3']] <- rep(0.05, M)
     power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
+    
+    
+    # for better estimates
+    model.params.list[['J']] <- 20
+    model.params.list[['K']] <- 20
+    
+    # for reasonable power
+    model.params.list[['nbar']] <- 75
+    model.params.list[['MDES']] <- rep(0.125, M)
+    model.params.list[['ICC.3']] <- rep(0.2, M)
+    model.params.list[['ICC.2']] <- rep(0.2, M)
+    model.params.list[['R2.1']] <- rep(0.2, M)
+    model.params.list[['R2.2']] <- rep(0.2, M)
+    model.params.list[['R2.3']] <- rep(0.2, M)
+
+    power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
+    
     gc()
   }
   # reset
@@ -1511,23 +1556,10 @@ if(run.d3.2 & run.power)
   # vary R2.2
   model.params.list[['R2.2']] <- rep(0.6, M)
 
-  model.params.list[['K']] <- 20
-  
   model.params.list[['omega.3']] <- NULL
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
-  
-  model.params.list[['K']] <- model.params.default[['K']]
-
-  model.params.list[['J']] <- 50
-
-  model.params.list[['omega.3']] <- NULL
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
-  model.params.list[['omega.3']] <- model.params.default[['omega.3']]
-  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
-
-  model.params.list[['J']] <- model.params.default[['J']]
   
   # reset
   model.params.list[['R2.2']] <- model.params.default[['R2.2']]
@@ -1621,6 +1653,11 @@ if(run.d3.2 & run.power)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
   
+  # try with higher K
+  model.params.list[['K']] <- 20
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
+  model.params.list[['K']] <- model.params.default[['K']]
+  
   model.params.list[['ICC.3']] <- model.params.default[['ICC.3']]
   
   # ICC 2 = 0
@@ -1630,6 +1667,11 @@ if(run.d3.2 & run.power)
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", q = q, overwrite)
   model.params.list[['omega.3']] <- model.params.default[['omega.3']]
   power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
+  
+  # try with higher K
+  model.params.list[['K']] <- 20
+  power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc", q = q, overwrite)
+  model.params.list[['K']] <- model.params.default[['K']]
   
   model.params.list[['ICC.2']] <- model.params.default[['ICC.2']]
   

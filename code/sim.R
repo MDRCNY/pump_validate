@@ -69,14 +69,14 @@ get_pval_tstat <- function(mod, d_m, model.params.list) {
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
   } else if(class(mod) == "lmerMod") {
-    df <- calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
+    df <- PUMP::calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
                   model.params.list[['nbar']],
                   numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- summary(mod)$coefficients["T.x","t value"]
     pval <- (1 - stats::pt(abs(tstat), df = df))*2
   } else if (class(mod) == "data.frame") {
     # fixed effects models
-    df <- calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
+    df <- PUMP::calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
                   model.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
     tstat <- mod$ATE_hat[1]/mod$SE[1]
     pval <- 2*(1 - stats::pt(abs(tstat), df = df))
