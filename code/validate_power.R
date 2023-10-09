@@ -30,7 +30,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
 {
 
   # set defaults
-  if(is.null(sim.params.list[['Q']]))
+  if (is.null(sim.params.list[['Q']]))
   {
     sim.params.list[['Q']] <- 1
   }
@@ -46,21 +46,23 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
   # store some files in intermediate results file
   data.dir <- here::here("output")
   intermediate.data.dir <- paste0(data.dir, "/intermediate_results/")
-  if(!dir.exists(intermediate.data.dir))
+  if (!dir.exists(intermediate.data.dir))
   {
     dir.create(intermediate.data.dir)
   }
   
   # search for simulation results
-  adjp.files <- grep(paste0(params.file.base, 'adjp_'), list.files(intermediate.data.dir), value = TRUE)
+  adjp.files <- grep(paste0(params.file.base, 'adjp_'), 
+                     list.files(intermediate.data.dir), value = TRUE)
   
   # what if we only have some of expected files? then we force overwrite
-  if( (length(adjp.files) > 0) & (length(adjp.files) != sim.params.list[['Q']]) )
+  if ( (length(adjp.files) > 0) & 
+       (length(adjp.files) != sim.params.list[['Q']]) )
   {
     overwrite = TRUE
   }
   
-  if(overwrite | length(current.file) == 0)
+  if (overwrite | length(current.file) == 0)
   {
     
     if(sim.params.list[['parallel']])
@@ -167,7 +169,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
     powerup.filename <- paste0(params.file.base, "powerup_results.RDS")
     powerup.file <- paste0(intermediate.data.dir, powerup.filename)
     
-    if( (overwrite | !file.exists(powerup.file))  & sim.params.list[['runPowerUp']])
+    if( (overwrite | !file.exists(powerup.file)))
     {
       message('Running PowerUp')
       if(d_m == 'd1.1_m2fc')
@@ -342,7 +344,7 @@ validate_power <- function(model.params.list, sim.params.list, d_m, q = 1, overw
     pump.filename <- paste0(params.file.base, "pump_results.RDS")
     pump.file <- paste0(intermediate.data.dir, pump.filename)
     
-    if((overwrite | !file.exists(pump.file)) & sim.params.list[['runPump']])
+    if((overwrite | !file.exists(pump.file)))
     {
       
       message('Running PUMP')

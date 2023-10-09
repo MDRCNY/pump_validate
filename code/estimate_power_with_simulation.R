@@ -37,24 +37,13 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
   t1 <- Sys.time()
   for (s in 1:S) {
     
-    if (s %% px == 0){ message(paste0("Now processing sample ", s, " of ", S)) }
+    if (s %% px == 0) { message(paste0("Now processing sample ", s, " of ", S)) }
     
-    # generate full, unobserved sample data
-    samp.full <- PUMP::gen_base_sim_data(dgp.params.list)
-    S.id <- samp.full$ID$S.id
-    D.id  <- samp.full$ID$D.id
-    
-    T.x <- PUMP::gen_T.x(d_m = d_m,
-                         S.id = S.id, D.id = D.id,
-                         Tbar = sim.params.list$Tbar)
-    
-
-    # convert full data to observed data
-    samp.obs <- samp.full
-    samp.obs$Yobs <- PUMP::gen_Yobs(samp.full, T.x)
-    
-    dat.all <- makelist_samp(samp.obs, T.x) # list length M
-    rawpt.out <- get_rawpt(dat.all, d_m = d_m, model.params.list = model.params.list)
+    dat.all <- gen_sim_data(d_m = d_m, model.params.list, Tbar = Tbar)
+    # calculate t statistics
+    rawpt.out <- get_rawpt(
+      dat.all, d_m = d_m, model.params.list = model.params.list
+    )
     rawp <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['pval']])})
     rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
     
@@ -63,18 +52,20 @@ est_power_sim <- function(model.params.list, sim.params.list, d_m, cl = NULL) {
     num.failed.converge.raw <- num.failed.converge.raw + rawpt.out[['num.failed.converge']]
     
     # loop through adjustment procedures (adding 'None' as default in all cases)
-    for (p in 1:(length(MTP) + 1)) {
+    for (p in 1:(length(MTP) + 1)) 
+    {
       if (p == 1) {
         pvals <- rawp
         proc <- "None"
       } else {
         t11 <- Sys.time()
         
-        proc <- MTP[p-1]
+        proc <- MTP[p - 1]
         pvals <- get.adjp(
           proc = proc, rawp = rawp,
           dat.all = dat.all, S.id = S.id, D.id = S.id,
-          sim.params.list = sim.params.list, dgp.params.list = dgp.params.list,
+          sim.params.list = sim.params.list, 
+          dgp.params.list = dgp.params.list,
           d_m = d_m, cl = cl
         )
         

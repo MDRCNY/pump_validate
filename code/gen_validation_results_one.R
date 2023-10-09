@@ -4,6 +4,8 @@
 
 library(here)
 
+overwrite <- TRUE
+
 #------------------------------------------------------------------#
 # source files
 #------------------------------------------------------------------#
@@ -11,7 +13,8 @@ library(here)
 source(here::here("code", "adjust_WY.R"))
 source(here::here("code", "estimate_power_with_simulation.R"))
 source(here::here("code", "validate_power.R"))
-source(here::here("code", "sim.R"))
+source(here::here("code", "PUMP_simulation.R"))
+source(here::here("code", "PUMP_model_fitting.R"))
 source(here::here("code", "misc.R"))
 
 #------------------------------------------------------------------#
@@ -19,7 +22,7 @@ source(here::here("code", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 5000                   # Number of samples for Monte Carlo Simulation
+  S = 5                   # Number of samples for Monte Carlo Simulation
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
   , tol = 0.01               # tolerance for MDES and sample  size calculations
@@ -69,16 +72,30 @@ model.params.list <- list(
 )
 
 
-power.results <- validate_power(model.params.list, sim.params.list, d_m = "d3.2_m3rr2rc")
+power.results <- validate_power(model.params.list, 
+                                sim.params.list, 
+                                d_m = "d3.2_m3rr2rc",
+                                overwrite = overwrite)
 print(power.results)
-power.file <- gen_params_file_base(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
-gen.power.results.plot(power.file, d_m = "d3.2_m3ff2rc")
+power.file <- gen_params_file_base(model.params.list, 
+                                   sim.params.list, 
+                                   d_m = "d3.2_m3rr2rc")
+
+gen.power.results.plot(power.file, d_m = "d3.2_m3rr2rc")
   
-# mdes.results <- validate_mdes(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc")
-# print(mdes.results)
-# 
-# j.results <- validate_sample(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", typesample = "J")
-# print(j.results)
-# 
-# nbar.results <- validate_sample(model.params.list, sim.params.list, d_m = "d3.2_m3ff2rc", typesample = "nbar")
-# print(nbar.results)
+mdes.results <- validate_mdes(model.params.list, 
+                              sim.params.list, 
+                              d_m = "d3.2_m3rr2rc")
+print(mdes.results)
+
+j.results <- validate_sample(model.params.list, 
+                             sim.params.list, 
+                             d_m = "d3.2_m3rr2rc", 
+                             typesample = "J")
+print(j.results)
+
+nbar.results <- validate_sample(model.params.list, 
+                                sim.params.list, 
+                                d_m = "d3.2_m3rr2rc", 
+                                typesample = "nbar")
+print(nbar.results)

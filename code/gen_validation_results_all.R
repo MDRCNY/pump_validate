@@ -6,7 +6,7 @@
 library(here)
 
 # overwrite existing results that have already been saved?
-overwrite = FALSE
+overwrite = TRUE
 # whether or not to run power, mdes and sample size
 run.power = TRUE
 run.mdes.ss = FALSE
@@ -31,7 +31,8 @@ if(is.na(q)) { q <- 1 }
 source(here::here("code", "adjust_WY.R"))
 source(here::here("code", "estimate_power_with_simulation.R"))
 source(here::here("code", "validate_power.R"))
-source(here::here("code", "sim.R"))
+source(here::here("code", "PUMP_simulation.R"))
+source(here::here("code", "PUMP_model_fitting.R"))
 source(here::here("code", "misc.R"))
 
 
@@ -40,8 +41,8 @@ source(here::here("code", "misc.R"))
 #------------------------------------------------------------------#
 
 sim.params.list <- list(
-  S = 250                     # Number of samples for Monte Carlo Simulation
-  , Q = 20                    # Number of times entire simulation is repeated, so total iterations = S * Q
+  S = 10                     # Number of samples for Monte Carlo Simulation
+  , Q = 2                    # Number of times entire simulation is repeated, so total iterations = S * Q
   , B = NULL                 # Number of samples for WestFall-Young. The equivalent is snum in our new method.
   , alpha = 0.05             # Significance level
   , tol = 0.01               # tolerance for MDES and sample  size calculations
